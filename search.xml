@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>设计模式</title>
+    <url>/2021/03/25/designmode/</url>
+    <content><![CDATA[<p>1995年，GoF（Gang of Four，四人组/四人帮）合作出版了《设计模式：可复用面向对象软件的基础》一书，共收录了23种设计模式，从此树立了软件设计模式领域的里程碑，人称「GoF设计模式」。设计模式简单说就是为了可重用代码，让代码更容易被他人理解，保证代码可靠性。</p>
+<p>设计模式有如下原则：</p>
+<p>1、开闭原则<br>对扩展开放，对修改封闭。为了使程序的扩展性更好，易于维护和升级，一般需要使用接口和抽象类。</p>
+<p>2、里氏替换原则<br>任何基类可以出现的地方，子类一定可以出现。里氏替换原则是继承复用的基石，只有当子类可以替换掉基类，基类才能真正被复用，而且子类也可以在基类的基础上增加新的行为。里氏替换原则实际上是对开闭原则的补充。基类与子类的继承关系就是抽象化的具体实现。</p>
+<p>3、依赖倒置原则<br>针对接口编程，高层模块不应该依赖底层模块，二者都应该依赖抽象而不是具体。</p>
+<p>4、接口分离原则<br>使用多个隔离的接口比使用单个庞大的接口好。其目的在于降低耦合度。</p>
+<p>5、单一职责原则<br>类的职责要单一，不能将太多的职责放在一个类中。类的职责主要包括两个方面：数据职责和行为职责。数据职责通过其属性来体现，而行为职责通过其方法来体现。</p>
+<p>6、迪米特法则（最少知道原则）<br>一个实体应当尽可能少的与其它实体之间发生相互作用，使得系统功能模块相对独立。</p>
+<p>7、合成复用原则<br>尽量使用组合/聚合的方式，少使用或不使用继承关系。</p>
+<p>设计模式通常分为3大类：<br>1、创建型模式<br>工厂模式、抽象工厂模式、单例模式、建造者模式、原型模式。</p>
+<p>2、结构型模式<br>适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。</p>
+<p>3、行为型模式<br>策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>设计模式简介</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>位图</title>
+    <url>/2020/11/16/bitmap/</url>
+    <content><![CDATA[<h3 id="1、简介"><a href="#1、简介" class="headerlink" title="1、简介"></a>1、简介</h3><p>在一个结构中，用一个比特位来描述一个数据的状态，这种结构就称为位图。0表示数据不存在，1表示数据存在。位图实际上是哈希表的一种变形。<br>在数据存储方面，位图的应用非常广泛。比如说现在要存储20亿个不重复的数据，int类型为4个字节，就需要80亿个字节来存储。1GB的内存表示的是10亿个字节，此时就需要8GB的内存来存放这些数据，而我们普通的电脑内存一般都是4G的内存，这显然是存放不下的。但是如果能用一个比特位来存放一个整型数据，则只需要0.5GB的内存。这大大节省了内存空间。</p>
+<h3 id="2、位操作符"><a href="#2、位操作符" class="headerlink" title="2、位操作符"></a>2、位操作符</h3><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>描述</th>
+<th>运算规则</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&amp;</td>
+<td>与</td>
+<td>都为1时结果才为1</td>
+</tr>
+<tr>
+<td></td>
+<td>或</td>
+<td>都为0时结果才为0</td>
+</tr>
+<tr>
+<td>^</td>
+<td>异或</td>
+<td>相同为0，相异为1</td>
+</tr>
+<tr>
+<td>~</td>
+<td>取反</td>
+<td>0变1，1变0</td>
+</tr>
+<tr>
+<td>&lt;&lt;</td>
+<td>左移</td>
+<td>左移若干位，高位丢弃，低位补0</td>
+</tr>
+<tr>
+<td></td>
+<td>右移</td>
+<td>右移若干位，无符号数，高位补0；有符号数，有的补符号位（算术右移），有的补0（逻辑右移）</td>
+</tr>
+</tbody></table>
+<h3 id="3、实现"><a href="#3、实现" class="headerlink" title="3、实现"></a>3、实现</h3><p>内存不能以比特位为单位进行申请，所以这里以32位（4字节）为一个数组元素长度进行内存的申请。<br>位图的基本操作有初始化；设置某位为1或0（将数据存入位图或移除）；验证某位是1还是0（验证数据存不存在位图中）等。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line">#include &lt;stdint.h&gt;</span><br><span class="line">#include &lt;string.h&gt;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;指定位图最大能表示的数字</span><br><span class="line">#define MAXSIZE 1000</span><br><span class="line"></span><br><span class="line">struct BitMap</span><br><span class="line">&#123;</span><br><span class="line">    uint32_t *data; &#x2F;&#x2F;位图以uint32_t为单位申请内存</span><br><span class="line">	uint32_t capacity; &#x2F;&#x2F;位图中最大能表示的bit个数</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 位图初始化</span><br><span class="line">*&#x2F; </span><br><span class="line">void BitMapInit(struct BitMap *bm, uint32_t capacity)</span><br><span class="line">&#123;</span><br><span class="line">	if (bm &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		exit(0);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	bm-&gt;capacity &#x3D; capacity;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F;需要申请多少个32bit内存 </span><br><span class="line">	uint32_t size &#x3D; bm-&gt;capacity &#x2F; (sizeof(uint32_t)*8) + 1;</span><br><span class="line">	</span><br><span class="line">	bm-&gt;data &#x3D; (uint32_t *)malloc(size * sizeof(uint32_t));</span><br><span class="line">	</span><br><span class="line">	memset(bm-&gt;data, 0, size * sizeof(uint32_t));</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 获取指定位所在的数组下标及偏移量</span><br><span class="line">*&#x2F;                                                                 </span><br><span class="line">void GetIndexAndOffset(uint32_t x, uint32_t *index, uint32_t *offset)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F;计算该位在哪个数组元素内（数组元素以32位为一个单元）</span><br><span class="line">    *index &#x3D; x &#x2F; (sizeof(uint32_t)*8);</span><br><span class="line"> </span><br><span class="line">    &#x2F;&#x2F;offset表示x在下标为index的数组元素的哪一位（从0开始计算）</span><br><span class="line">    *offset &#x3D; x % (sizeof(uint32_t)*8);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 设置某位为1 </span><br><span class="line">*&#x2F;                                                                                               </span><br><span class="line">void BitMapSetOne(BitMap *bm, uint32_t x)</span><br><span class="line">&#123;</span><br><span class="line">	uint32_t index &#x3D; 0, offset &#x3D; 0;</span><br><span class="line">	GetIndexAndOffset(x, &amp;index, &amp;offset);</span><br><span class="line">	</span><br><span class="line">    if (bm &#x3D;&#x3D; NULL || index &gt;&#x3D; bm-&gt;capacity)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    &#x2F;&#x2F;设置data[index]的第offset位为1，其余不变。</span><br><span class="line">    bm-&gt;data[index] &#x3D; bm-&gt;data[index] | (0x1 &lt;&lt; offset);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 设置某位为0 </span><br><span class="line">*&#x2F; </span><br><span class="line">void BitMapSetZero(BitMap *bm, uint32_t x)</span><br><span class="line">&#123;</span><br><span class="line">	uint32_t index &#x3D; 0, offset &#x3D; 0;</span><br><span class="line">	GetIndexAndOffset(x, &amp;index, &amp;offset);</span><br><span class="line">	</span><br><span class="line">    if (bm &#x3D;&#x3D; NULL || index &gt;&#x3D; bm-&gt;capacity)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0); </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;设置data[index]的第offset位为0，其余不变。</span><br><span class="line">    bm-&gt;data[index] &#x3D; bm-&gt;data[index] &amp; ~(0x1 &lt;&lt; offset);</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 设置位图的所有位为1。 </span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapFill(BitMap *bm)</span><br><span class="line">&#123;</span><br><span class="line">    if (bm &#x3D;&#x3D; NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0); </span><br><span class="line">    &#125;                                                       </span><br><span class="line"> </span><br><span class="line">    &#x2F;&#x2F;计算位图中共有多少32bit的内存单元</span><br><span class="line">    uint32_t size &#x3D; bm-&gt;capacity &#x2F; (sizeof(uint32_t)*8) + 1;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;按字节将所有的比特位均置为0</span><br><span class="line">    memset(bm-&gt;data, 0xff, size * sizeof(uint32_t));</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 设置位图的所有位为0。 </span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapClean(BitMap *bm)</span><br><span class="line">&#123;</span><br><span class="line">    if (bm &#x3D;&#x3D; NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;计算位图中共有多少32bit的内存单元</span><br><span class="line">    uint32_t size &#x3D; bm-&gt;capacity &#x2F; (sizeof(uint32_t)*8) + 1;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;按字节将所有的比特位均置为0</span><br><span class="line">    memset(bm-&gt;data, 0x0, size * sizeof(uint32_t));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 测试某位是否为1</span><br><span class="line">*&#x2F; </span><br><span class="line">int BitMapTest(BitMap *bm, uint32_t x)                                                                       </span><br><span class="line">&#123;</span><br><span class="line">	uint32_t index &#x3D; 0, offset &#x3D; 0;</span><br><span class="line">	GetIndexAndOffset(x, &amp;index, &amp;offset);</span><br><span class="line">	</span><br><span class="line">    if (bm &#x3D;&#x3D; NULL || index &gt;&#x3D; bm-&gt;capacity)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0); </span><br><span class="line">    &#125;</span><br><span class="line">   </span><br><span class="line">    &#x2F;&#x2F;用1与之按位与，如果结果为0，则该位为0，否则为1</span><br><span class="line">    &#x2F;&#x2F;如果该位为1时，按位与完的结果必定只有该位为1，其余位为0，所以对结果进行判断时</span><br><span class="line">    &#x2F;&#x2F;只能跟0进行比较，不能跟1进行比较</span><br><span class="line">    uint32_t ret &#x3D; bm-&gt;data[index] &amp; (0x1 &lt;&lt; offset);</span><br><span class="line">    </span><br><span class="line">    if (ret &#x3D;&#x3D; 0)</span><br><span class="line">    &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125; else</span><br><span class="line">    &#123;</span><br><span class="line">        return 1;</span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 销毁位图</span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapDestroy(BitMap *bm)</span><br><span class="line">&#123;</span><br><span class="line">    if (bm &#x3D;&#x3D; NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0); </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    free(bm);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 输入</span><br><span class="line">*&#x2F;</span><br><span class="line">void InputStandard()</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;请选择操作：&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;*******************************&quot; &lt;&lt; std::endl; </span><br><span class="line">	std::cout &lt;&lt; &quot;0、退出程序&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;1、设置某位为1(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;2、设置某位为0(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;3、设置所有位为1(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;4、设置所有位为0(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;5、测试某位是否为1(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;*******************************&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int x, flag;</span><br><span class="line">	BitMap *bm &#x3D; (BitMap *)malloc(sizeof(BitMap));</span><br><span class="line">	BitMapInit(bm, MAXSIZE);</span><br><span class="line">	</span><br><span class="line">	InputStandard();</span><br><span class="line">	std::cin &gt;&gt; flag;</span><br><span class="line">	</span><br><span class="line">	while (flag !&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		switch(flag)</span><br><span class="line">		&#123;</span><br><span class="line">			case 0:</span><br><span class="line">				exit(0);</span><br><span class="line">				break;</span><br><span class="line">			case 1:</span><br><span class="line">				std::cin &gt;&gt; x;</span><br><span class="line">				BitMapSetOne(bm, x);</span><br><span class="line">				break;</span><br><span class="line">			case 2:</span><br><span class="line">				std::cin &gt;&gt; x;</span><br><span class="line">				BitMapSetZero(bm, x);</span><br><span class="line">				break;</span><br><span class="line">			case 3:</span><br><span class="line">				BitMapFill(bm);</span><br><span class="line">				break;</span><br><span class="line">			case 4:</span><br><span class="line">				BitMapClean(bm);</span><br><span class="line">				break;</span><br><span class="line">			case 5:</span><br><span class="line">				std::cin &gt;&gt; x;</span><br><span class="line">			    if (BitMapTest(bm, x) &#x3D;&#x3D; 1)</span><br><span class="line">			    &#123;</span><br><span class="line">			    	std::cout &lt;&lt; x &lt;&lt; &quot;存在位图中！&quot; &lt;&lt; std::endl;</span><br><span class="line">				&#125; else</span><br><span class="line">				&#123;</span><br><span class="line">					std::cout &lt;&lt; x &lt;&lt; &quot;不存在位图中！&quot; &lt;&lt; std::endl;</span><br><span class="line">				&#125;</span><br><span class="line">				break;</span><br><span class="line">			default: </span><br><span class="line">			    std::cout &lt;&lt; &quot;请输入正确的操作序号！&quot; &lt;&lt; std::endl; </span><br><span class="line">			    break;	</span><br><span class="line">		&#125;</span><br><span class="line">		InputStandard();</span><br><span class="line">		std::cin &gt;&gt; flag;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4、常用小技巧"><a href="#4、常用小技巧" class="headerlink" title="4、常用小技巧"></a>4、常用小技巧</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 判断奇偶</span><br><span class="line">* 根据最未位是0还是1来决定，0就是偶数，1就是奇数。</span><br><span class="line">* 因此可以用if (a &amp; 1 &#x3D;&#x3D; 0)代替if (a % 2 &#x3D;&#x3D; 0)来判断a是不是偶数。</span><br><span class="line">*&#x2F;</span><br><span class="line">void IsOddOrEven(int number)</span><br><span class="line">&#123;</span><br><span class="line">	if ((number &amp; 1) &#x3D;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; number &lt;&lt; &quot; is an even number!&quot; &lt;&lt; std::endl;</span><br><span class="line">	&#125; else</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; number &lt;&lt; &quot; is an odd number!&quot; &lt;&lt; std::endl;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 交换两数</span><br><span class="line">*&#x2F;</span><br><span class="line">void Swap(int &amp;a, int &amp;b)</span><br><span class="line">&#123;</span><br><span class="line">	if (a !&#x3D; b)</span><br><span class="line">	&#123;</span><br><span class="line">		a ^&#x3D; b;</span><br><span class="line">		b ^&#x3D; a;</span><br><span class="line">		a ^&#x3D; b;</span><br><span class="line">	&#125;</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 变换符号</span><br><span class="line">* 二进制只需要取反后加1即可。 </span><br><span class="line">*&#x2F;</span><br><span class="line">int SignReversal(int a)</span><br><span class="line">&#123;</span><br><span class="line">	return ~a + 1; </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 取绝对值  </span><br><span class="line">*&#x2F;</span><br><span class="line">int Abs(int a)</span><br><span class="line">&#123;</span><br><span class="line">	int i &#x3D; a &gt;&gt; 31;</span><br><span class="line">&#x2F;&#x2F;	return i &#x3D;&#x3D; 0 ? a : (~a + 1); </span><br><span class="line">	return ((a ^ i) - i); </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	IsOddOrEven(1);</span><br><span class="line">	IsOddOrEven(2);</span><br><span class="line">	</span><br><span class="line">	int a &#x3D; 3, b &#x3D; 4;</span><br><span class="line">	Swap(a, b);</span><br><span class="line">	std::cout &lt;&lt; a &lt;&lt; &quot; : &quot; &lt;&lt; b &lt;&lt; std::endl;</span><br><span class="line">	</span><br><span class="line">	std::cout &lt;&lt; SignReversal(10) &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; SignReversal(-8) &lt;&lt; std::endl;</span><br><span class="line">	</span><br><span class="line">	std::cout &lt;&lt; Abs(-2) &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; Abs(6) &lt;&lt; std::endl;</span><br><span class="line">	</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<img src="/2020/11/16/bitmap/bitmap.jpg" class="">
+
+<h3 id="5、应用场景"><a href="#5、应用场景" class="headerlink" title="5、应用场景"></a>5、应用场景</h3><p><strong>给定100亿个整数，设计算法找到只出现一次的整数。</strong><br>100亿个整数采用位图存储的话需要1.5G的内存，并且如果需要记录出现次数的话一个比特位是无法做到的，我们需要2个比特位那么就需要2.5G的内存，如果我们系统的内存不足够的话，我们需要将100亿个数据分成1000份文件，将每个文件的数据通过位图存储，我们采用两个比特位00：没有出现，01，出现一次，10出现多次，11舍弃，再将这1000个文件中出现一次的数据，统计到一个文件里。<br><strong>给两个文件，分别有100亿个整数，我们只有1G内存，如何找到两个文件交集。</strong><br>将第一个文件的数据分成1000份存储到位图里，再判断第二份文件中的数据是否在位图中。<br><strong>1个文件有100亿个int，1G内存，设计算法找到出现次数不超过2次的所有整数。</strong><br>我们需要将100亿个数据分成1000份文件，将每个文件的数据通过位图存储，我们采用两个比特位00：没有出现，01，出现一次，10出现2次，11舍弃，再将这1000个文件中出现不超过两次次的数据。</p>
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>bitmap</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>工厂模式</title>
+    <url>/2021/03/26/factory-mode/</url>
+    <content><![CDATA[<p><strong>普通工厂模式</strong>是常用的设计模式之一，它提供了一种创建对象的最佳方式。<br><strong>建立一个工厂类，对实现了同一接口的一些类进行实例的创建。</strong></p>
+<p>优点：调用者想创建对象，只需要知道其名称就行；<br>扩展性高，想增加一个产品，只需创建一个工厂类就行；<br>屏蔽产品的具体实现，调用者只关心产品的接口。</p>
+<p>缺点：每增加一个产品都需要增加一个具体类和对象实现工厂，一定程度上增加了系统的复杂度，也增加了系统具体类的依赖。</p>
+<p>使用场景：日志记录器，可能记录到本地硬盘、系统事件、远程服务等，用户可以自己选择。<br>数据库访问。<br>设计一个框架需要3个协议，pop3、imap、http，可以为这3个产品类共同实现一个接口。</p>
+<p>1.创建接口</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Sender &#123;</span><br><span class="line">    void Send();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2.创建实现类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MailSender implements Sender &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void Send() &#123;</span><br><span class="line">        System.out.println(&quot;this is mail sender!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SmsSender implements Sender &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void Send() &#123;</span><br><span class="line">        System.out.println(&quot;this is sms sender!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3.创建工厂类，生成基于给定信息的实现类的对象</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SendFactory &#123;</span><br><span class="line">    public Sender produce(String type) &#123;</span><br><span class="line">        if (&quot;mail&quot;.equals(type)) &#123;</span><br><span class="line">            return new MailSender();</span><br><span class="line">        &#125; else if (&quot;sms&quot;.equals(type)) &#123;</span><br><span class="line">            return new SmsSender();</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            System.out.println(&quot;请输入正确的类型!&quot;);</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4.测试</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class FactoryTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SendFactory factory &#x3D; new SendFactory();</span><br><span class="line">        Sender sender &#x3D; factory.produce(&quot;mail&quot;);</span><br><span class="line">        sender.Send();  &#x2F;&#x2F; this is mail sender!</span><br><span class="line">        &#x2F;&#x2F;factory.produce(&quot;mail&quot;).Send();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>多个工厂方法模式</strong>是对普通工厂模式的改进，在普通工厂模式中如果传递的字符串出错，则不能正确创建对象。多个工厂方法模式提供多个工厂方法，分别创建对象。<br>工厂类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MultipleSenderFactory &#123;</span><br><span class="line">    public MailSender produceMail() &#123;</span><br><span class="line">        return new MailSender();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public SmsSender produceSms() &#123;</span><br><span class="line">        return new SmsSender();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MultipleFactoryTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        MultipleSenderFactory msf &#x3D; new MultipleSenderFactory();</span><br><span class="line">        Sender sender &#x3D; msf.produceSms();</span><br><span class="line">        sender.Send();  &#x2F;&#x2F; this is sms sender!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>静态工厂方法模式</strong>就是把多个工厂方法模式里的方法设置为静态的，即不需要创建实例，直接调用即可。<br>工厂类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class StaticSenderFactory &#123;</span><br><span class="line">    public static MailSender produceMail() &#123;</span><br><span class="line">        return new MailSender();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static SmsSender produceSms() &#123;</span><br><span class="line">        return new SmsSender();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class StaticFactoryTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Sender sender &#x3D; StaticSenderFactory.produceMail();</span><br><span class="line">        sender.Send();  &#x2F;&#x2F; this is mail sender!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>工厂模式应用：Java库中根据不同的参数，getInstance()方法会返回不同的Calendar对象。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java.util.Calendar - getInstance()</span><br><span class="line">java.util.Calendar - getInstance(TimeZone zone)</span><br><span class="line">java.util.Calendar - getInstance(Locale aLocale)</span><br><span class="line">java.util.Calendar - getInstance(TimeZone zone, Locale aLocale)</span><br><span class="line">java.text.NumberFormat - getInstance()</span><br><span class="line">java.text.NumberFormat - getInstance(Locale inLocale)</span><br></pre></td></tr></table></figure>
+
+<p>以上3种方法模式中，大多数情况下，我们会选用静态工厂方法模式。<br>但工厂模式有一个问题是类的创建依赖工厂类。也就是说，如果想要拓展程序，必须对工厂类进行修改，这违背了闭包原则。为了解决就要用到抽象工厂模式。下节将讲述抽象工厂模式。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>设计模式之工厂模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>第一篇博客</title>
+    <url>/2020/09/20/firstblog/</url>
+    <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
+<h3 id="启程出发"><a href="#启程出发" class="headerlink" title="启程出发"></a>启程出发</h3><p>收拾戎装，准备出发。第一次体验了磁悬浮与飞机的我不得不感叹中国科技发展之迅速。知识的力量是无穷的，希望我国在芯片领域也能更进一步。</p>
+<img src="/2020/09/20/firstblog/plane.jpg" class="">
+
+<h3 id="中蓝公寓"><a href="#中蓝公寓" class="headerlink" title="中蓝公寓"></a>中蓝公寓</h3><p>北京工业大学的研究生基本都住在中蓝公寓，不过中蓝公寓离校内还有一段距离，一般大家都是骑车上课。寝室是四人间，上下铺。厕所和澡堂都是公共的，不过令人疑惑的澡堂周六是不开放的。</p>
+<img src="/2020/09/20/firstblog/navigation.jpg" class="">
+
+<p>我所在的公寓是蓝悦园，在宿舍的阳台上放眼望去满是高大而豪华的建筑。其实我更想看的是充满历史又能反应北京特色的胡同儿。期待国庆能去转转。</p>
+<img src="/2020/09/20/firstblog/scene.jpg" class="">
+
+<h3 id="校内一角"><a href="#校内一角" class="headerlink" title="校内一角"></a>校内一角</h3><p>在这个举办过奥运会的城市，最不缺的就是运动的气息。工大各色各样的运动场馆似乎都有，其中羽毛球场馆还是08年奥运会羽毛球比赛场地。许多人都说研究生的生活充满了枯燥与压力，或许运动就是最好的良药。确实，我非常赞同这个观点，毕竟身体才是革命的本钱。</p>
+<img src="/2020/09/20/firstblog/basketball.jpg" class="">]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>出行</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>创建Java多线程的三种方式</title>
+    <url>/2020/09/23/concurrency/</url>
+    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
+<h3 id="1-Thread"><a href="#1-Thread" class="headerlink" title="1.Thread"></a>1.Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-Runnable"><a href="#2-Runnable" class="headerlink" title="2.Runnable"></a>2.Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-Callable"><a href="#3-Callable" class="headerlink" title="3.Callable"></a>3.Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>刚学到一点皮毛，与大家共勉。如有大神路过，望不吝赐教！</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>线程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>差分时间链</title>
+    <url>/2020/11/16/difftimechain/</url>
+    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。 </span><br><span class="line">*&#x2F; </span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line">	</span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line">		</span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;	</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F; </span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。 </span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表 </span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line">	</span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line">	</span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
+
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>diffchain</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>memory</title>
+    <url>/2021/03/21/memory/</url>
+    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
+<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
+<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
+<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
+<img src="/2021/03/21/memory/memory.jpg" class="">
+
+<p>辛丑牛年农历二月初十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>旅行</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>md5+salt加密</title>
+    <url>/2020/10/10/md5-salt/</url>
+    <content><![CDATA[<p>传统的md5算法通过产生一个128位（16字节）的散列值（hash value），用于确保信息的安全性。但随着技术的发展，md5无法防止碰撞（collision）且可以被加以破解。<br>salt的出现可以一定程度上解决这个问题。</p>
+<h4 id="md5-salt实现原理"><a href="#md5-salt实现原理" class="headerlink" title="md5+salt实现原理"></a>md5+salt实现原理</h4><p><strong>注册</strong><br>1、用户提供用户名和密码<br>2、系统提供一个salt，salt+密码进行散列生成一个hash<br>3、系统将hash和salt分别存放到数据库中</p>
+<p><strong>登录</strong><br>1、用户填写用户名和密码<br>2、系统通过用户名找到对应的hash和salt<br>3、系统将密码和salt进行散列生成new_hash<br>4、比较hash与new_hash，相等则表示密码正确，反之密码错误。</p>
+<p><strong>流程图如下</strong></p>
+<img src="/2020/10/10/md5-salt/md5.png" class="">
+
+<h4 id="md5-salt"><a href="#md5-salt" class="headerlink" title="md5+salt"></a>md5+salt</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;md5</span><br><span class="line">  Md5Hash md5Hash &#x3D; new Md5Hash(&quot;123456&quot;);</span><br><span class="line">  System.out.println(md5Hash.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;md5+salt</span><br><span class="line">  Md5Hash md5HashSalt &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;);</span><br><span class="line">  System.out.println(md5HashSalt.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  e10adc3949ba59abbe56e057f20f883e</span><br><span class="line">  5f9dcb70720b6f58a2b219015fad5c30</span><br></pre></td></tr></table></figure>
+
+<h4 id="md5-salt-hash散列"><a href="#md5-salt-hash散列" class="headerlink" title="md5+salt+hash散列"></a>md5+salt+hash散列</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;md5+salt+hash散列</span><br><span class="line">  Md5Hash md5Hash1 &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;, 1024);</span><br><span class="line">  System.out.println(md5Hash1.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  14b9f6ecccb925f15cf92c44ff9326ce</span><br></pre></td></tr></table></figure>
+
+<h4 id="shiro实现md5-salt"><a href="#shiro实现md5-salt" class="headerlink" title="shiro实现md5+salt"></a>shiro实现md5+salt</h4><p><strong>自定义realm</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 自定义realm  md5+salt+hash散列</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CustomMd5Realm extends AuthorizingRealm &#123;</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException &#123;</span><br><span class="line">        &#x2F;&#x2F;获取身份信息</span><br><span class="line">        String principal &#x3D; (String) token.getPrincipal();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;根据用户名查询数据库</span><br><span class="line">        if (&quot;hj&quot;.equals(principal)) &#123;</span><br><span class="line">            &#x2F;&#x2F;参数1：用户名  参数2：md5+salt之后的密码 参数3：注册时的salt  参数4：realm名字</span><br><span class="line">            return new SimpleAuthenticationInfo(principal, &quot;14b9f6ecccb925f15cf92c44ff9326ce&quot;,</span><br><span class="line">                    ByteSource.Util.bytes(&quot;x0*7ps&quot;), this.getName());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>测试验证</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestCustomMd5Authenticator &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        DefaultSecurityManager defaultSecurityManager &#x3D; new DefaultSecurityManager();</span><br><span class="line"></span><br><span class="line">        CustomMd5Realm realm &#x3D; new CustomMd5Realm();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;realm使用hash凭证匹配器</span><br><span class="line">        HashedCredentialsMatcher credentialsMatcher &#x3D; new HashedCredentialsMatcher();</span><br><span class="line">        &#x2F;&#x2F;设置算法为md5</span><br><span class="line">        credentialsMatcher.setHashAlgorithmName(&quot;md5&quot;);</span><br><span class="line">        &#x2F;&#x2F;设置散列次数为1024</span><br><span class="line">        credentialsMatcher.setHashIterations(1024);</span><br><span class="line"></span><br><span class="line">        realm.setCredentialsMatcher(credentialsMatcher);</span><br><span class="line">        defaultSecurityManager.setRealm(realm);</span><br><span class="line"></span><br><span class="line">        SecurityUtils.setSecurityManager(defaultSecurityManager);</span><br><span class="line"></span><br><span class="line">        Subject subject &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">        UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hj&quot;, &quot;123456&quot;);</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">            System.out.println(&quot;login success&quot;);</span><br><span class="line">        &#125; catch (UnknownAccountException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;username error&quot;);</span><br><span class="line">        &#125; catch (IncorrectCredentialsException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;password error&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+]]></content>
+      <categories>
+        <category>技术栈</category>
+      </categories>
+      <tags>
+        <tag>密码学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>春</title>
+    <url>/2021/03/24/hurt/</url>
+    <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
+<pre><code>        你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</code></pre>
+<p>辛丑牛年农历二月十二</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>初识shiro</title>
+    <url>/2020/10/08/shiro-base/</url>
+    <content><![CDATA[<h3 id="1、简介"><a href="#1、简介" class="headerlink" title="1、简介"></a>1、简介</h3><p>Apache shiro是一个强大的且容易使用的Java安全框架，执行身份验证（认证）、授权、加密和会话管理。<br>Shiro有三个核心概念，<strong>Subject，SecurityManager，Realms</strong>。<br><strong>shiro顶层图</strong></p>
+<img src="/2020/10/08/shiro-base/shiro-high.png" class="">
+
+<p><strong>shiro详细架构图</strong></p>
+<img src="/2020/10/08/shiro-base/shiro-detail.png" class="">
+
+<h4 id="1-1、Subject"><a href="#1-1、Subject" class="headerlink" title="1.1、Subject"></a>1.1、Subject</h4><p>Subject意味着<strong>当前正在执行的用户</strong>，但它不仅仅指代User，还可以是<strong>第三方进程</strong>，<strong>后台账户</strong>或其它类似的任何东西。It simply means ‘the thing that is currently interacting with the software’.</p>
+<h4 id="1-2、SecurityManager"><a href="#1-2、SecurityManager" class="headerlink" title="1.2、SecurityManager"></a>1.2、SecurityManager</h4><p>SecurityManager管理所有用户的安全操作，是shiro的核心。</p>
+<h4 id="1-3、Realms"><a href="#1-3、Realms" class="headerlink" title="1.3、Realms"></a>1.3、Realms</h4><p>Realm在Shiro和你的应用安全数据之间充当桥或者连接器的角色。</p>
+<h4 id="1-4、其它重要概念"><a href="#1-4、其它重要概念" class="headerlink" title="1.4、其它重要概念"></a>1.4、其它重要概念</h4><p><strong>Authentication（认证）</strong><br>认证就是一个验证用户身份的过程，也叫登录。<br><strong>Authorization（授权）</strong><br>授权就是对一个已经登陆的用户授予其访问系统资源的权限。<br><strong>Session Management（会话管理）</strong><br>类似于web中session，这个session是apache shiro特有的。<br><strong>Cryptography（密码学）</strong><br>密码学就是一个混淆或隐藏数据的过程。</p>
+<h3 id="2、单机版应用"><a href="#2、单机版应用" class="headerlink" title="2、单机版应用"></a>2、单机版应用</h3><h4 id="2-1、ini文件"><a href="#2-1、ini文件" class="headerlink" title="2.1、ini文件"></a>2.1、ini文件</h4><p>可以将一些subject对象的数据写到shiro.ini文件里面，例如用户名、密码之类的信息。</p>
+<h4 id="2-2、代码实现"><a href="#2-2、代码实现" class="headerlink" title="2.2、代码实现"></a>2.2、代码实现</h4><p><strong>1.创建安全管理器对象</strong><br><code>DefaultSecurityManager securityManager = new DefaultSecurityManager();</code></p>
+<p><strong>2.给安全管理器设置realm</strong><br><code>securityManager.setRealm(new IniRealm(&quot;classpath:shiro.ini&quot;));</code></p>
+<p><strong>3.SecurityUtils给全局安全工具类设置安全管理器</strong><br><code>SecurityUtils.setSecurityManager(securityManager);</code></p>
+<p><strong>4.关键对象subject（主体）</strong><br><code>Subject subject = SecurityUtils.getSubject();</code></p>
+<p><strong>5.创建令牌</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hejun&quot;,&quot;123456&quot;);</span><br><span class="line"></span><br><span class="line">try&#123;</span><br><span class="line">    subject.login(token);  &#x2F;&#x2F;用户认证</span><br><span class="line">    System.out.println(&quot;认证状态: &quot; + subject.isAuthenticated());</span><br><span class="line">&#125; catch(Exception e) &#123;</span><br><span class="line">    e.printSstackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3、自定义realm"><a href="#3、自定义realm" class="headerlink" title="3、自定义realm"></a>3、自定义realm</h3><p>自定义realm的作用就是将认证/授权的数据来源转为数据库，丢掉shiro.ini文件。</p>
+<img src="/2020/10/08/shiro-base/extends-diagram.png" class="">
+<p><strong>1.继承AuthorizingRealm类，重写两个方法。</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 自定义realm  将认证&#x2F;授权数据的来源转为数据库</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CustomRealm extends AuthorizingRealm &#123;</span><br><span class="line">    &#x2F;&#x2F;授权</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;认证</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException &#123;</span><br><span class="line">        &#x2F;&#x2F;token中获取用户名</span><br><span class="line">        String principal &#x3D; (String) authenticationToken.getPrincipal();</span><br><span class="line">        System.out.println(principal);</span><br><span class="line">        &#x2F;&#x2F;根据身份信息使用jdbc mybatis查询相关数据库</span><br><span class="line">        if (&quot;hj&quot;.equals(principal)) &#123;</span><br><span class="line">            &#x2F;&#x2F;参数1，2：返回数据库中的正确用户名和密码</span><br><span class="line">            return new SimpleAuthenticationInfo(principal, &quot;123&quot;, this.getName());</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.测试</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestCustomRealmAuthenticator &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;创建securityManager</span><br><span class="line">        DefaultSecurityManager defaultSecurityManager &#x3D; new DefaultSecurityManager();</span><br><span class="line">        &#x2F;&#x2F;设置自定义realm</span><br><span class="line">        defaultSecurityManager.setRealm(new CustomRealm());</span><br><span class="line">        &#x2F;&#x2F;为全局安全工具类设置securityManager</span><br><span class="line">        SecurityUtils.setSecurityManager(defaultSecurityManager);</span><br><span class="line">        &#x2F;&#x2F;通过全局安全工具类获得subject</span><br><span class="line">        Subject subject &#x3D; SecurityUtils.getSubject();</span><br><span class="line">        &#x2F;&#x2F;创建token</span><br><span class="line">        UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hj&quot;, &quot;123&quot;);</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">            System.out.println(&quot;login success&quot;);</span><br><span class="line">        &#125; catch (AuthenticationException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4、总结"><a href="#4、总结" class="headerlink" title="4、总结"></a>4、总结</h3><p><strong>最终在SimpleAccountRealm这个类中的doGetAuthenticationInfo方法中完成用户名的校验。</strong></p>
+<p><strong>密码校验在AuthenticatingRealm的assertCredentialsMatch完成。密码校验是自动完成的。</strong></p>
+<p><strong>AuthenticatingRealm 认证realm doGetAuthenticationInfo</strong></p>
+<p><strong>AuthorizingRealm 授权realm doGetAuthorizationInfo</strong></p>
+]]></content>
+      <categories>
+        <category>技术栈</category>
+      </categories>
+      <tags>
+        <tag>shiro</tag>
+      </tags>
+  </entry>
+</search>
