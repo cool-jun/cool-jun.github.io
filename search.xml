@@ -1,6 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>abstract_factory</title>
+    <url>/2021/03/27/abstract-factory/</url>
+    <content><![CDATA[<p><strong>抽象工厂模式</strong>提供了一个创建一系列相关接口或相互依赖对象的接口，无须指定它们具体的类。<br>抽象工厂模式是工厂方法模式的升级，工厂方法模式只生产一个等级的产品，而抽象工厂模式可以生产多个等级的产品。</p>
+<p>类图如下：</p>
+<img src="/2021/03/27/abstract-factory/abstractfactory.png" class="">
+
+<p>优点：当一个产品族中的多个对象被设计成一起工作时，它能保证客户端始终只使用同一个产品族中的对象。</p>
+<p>缺点：产品族扩展非常困难，要增加一个系列的某一产品，既要在抽象的 Creator 里加代码，又要在具体里加代码。</p>
+<p>使用场景： 1、QQ 换皮肤，一整套一起换。 2、生成不同操作系统的程序。</p>
+<p>1.创建接口（抽象产品）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Color &#123;</span><br><span class="line">    void fill();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Shape &#123;</span><br><span class="line">    void draw();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2.创建实现类（具体产品）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Blue implements Color &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void fill() &#123;</span><br><span class="line">        System.out.println(&quot;blue fill&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Red implements Color &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void fill() &#123;</span><br><span class="line">        System.out.println(&quot;red fill&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Square implements Shape &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void draw() &#123;</span><br><span class="line">        System.out.println(&quot;this is a square!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Circle implements Shape &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void draw() &#123;</span><br><span class="line">        System.out.println(&quot;this is a circle!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3.创建工厂接口（抽象工厂）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface AbstractFactory &#123;</span><br><span class="line">    Color newColor();</span><br><span class="line">    Shape newShape();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4.创建实现工厂（具体工厂）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ShapeFactory implements AbstractFactory &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Color newColor() &#123;</span><br><span class="line">        return new Red();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Shape newShape() &#123;</span><br><span class="line">        return new Circle();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ColorFactory implements AbstractFactory &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Color newColor() &#123;</span><br><span class="line">        return new Blue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Shape newShape() &#123;</span><br><span class="line">        return new Square();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>5.测试</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        AbstractFactory blue &#x3D; new ColorFactory();</span><br><span class="line">        blue.newColor().fill();  &#x2F;&#x2F; blue fill</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>抽象工厂模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>位图</title>
     <url>/2020/11/16/bitmap/</url>
     <content><![CDATA[<h3 id="1、简介"><a href="#1、简介" class="headerlink" title="1、简介"></a>1、简介</h3><p>在一个结构中，用一个比特位来描述一个数据的状态，这种结构就称为位图。0表示数据不存在，1表示数据存在。位图实际上是哈希表的一种变形。<br>在数据存储方面，位图的应用非常广泛。比如说现在要存储20亿个不重复的数据，int类型为4个字节，就需要80亿个字节来存储。1GB的内存表示的是10亿个字节，此时就需要8GB的内存来存放这些数据，而我们普通的电脑内存一般都是4G的内存，这显然是存放不下的。但是如果能用一个比特位来存放一个整型数据，则只需要0.5GB的内存。这大大节省了内存空间。</p>
@@ -79,47 +120,6 @@
       </categories>
       <tags>
         <tag>线程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>abstract_factory</title>
-    <url>/2021/03/27/abstract-factory/</url>
-    <content><![CDATA[<p><strong>抽象工厂模式</strong>提供了一个创建一系列相关接口或相互依赖对象的接口，无须指定它们具体的类。<br>抽象工厂模式是工厂方法模式的升级，工厂方法模式只生产一个等级的产品，而抽象工厂模式可以生产多个等级的产品。</p>
-<p>类图如下：</p>
-<img src="/2021/03/27/abstract-factory/abstractfactory.png" class="">
-
-<p>优点：当一个产品族中的多个对象被设计成一起工作时，它能保证客户端始终只使用同一个产品族中的对象。</p>
-<p>缺点：产品族扩展非常困难，要增加一个系列的某一产品，既要在抽象的 Creator 里加代码，又要在具体里加代码。</p>
-<p>使用场景： 1、QQ 换皮肤，一整套一起换。 2、生成不同操作系统的程序。</p>
-<p>1.创建接口（抽象产品）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Color &#123;</span><br><span class="line">    void fill();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Shape &#123;</span><br><span class="line">    void draw();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>2.创建实现类（具体产品）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Blue implements Color &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void fill() &#123;</span><br><span class="line">        System.out.println(&quot;blue fill&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Red implements Color &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void fill() &#123;</span><br><span class="line">        System.out.println(&quot;red fill&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Square implements Shape &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void draw() &#123;</span><br><span class="line">        System.out.println(&quot;this is a square!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Circle implements Shape &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void draw() &#123;</span><br><span class="line">        System.out.println(&quot;this is a circle!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>3.创建工厂接口（抽象工厂）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface AbstractFactory &#123;</span><br><span class="line">    Color newColor();</span><br><span class="line">    Shape newShape();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>4.创建实现工厂（具体工厂）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ShapeFactory implements AbstractFactory &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Color newColor() &#123;</span><br><span class="line">        return new Red();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Shape newShape() &#123;</span><br><span class="line">        return new Circle();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ColorFactory implements AbstractFactory &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Color newColor() &#123;</span><br><span class="line">        return new Blue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Shape newShape() &#123;</span><br><span class="line">        return new Square();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>5.测试</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        AbstractFactory blue &#x3D; new ColorFactory();</span><br><span class="line">        blue.newColor().fill();  &#x2F;&#x2F; blue fill</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>抽象工厂模式</tag>
       </tags>
   </entry>
   <entry>
@@ -238,6 +238,20 @@
       </tags>
   </entry>
   <entry>
+    <title>春</title>
+    <url>/2021/03/24/hurt/</url>
+    <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
+<pre><code>        你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</code></pre>
+<p>辛丑牛年农历二月十二</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>md5+salt加密</title>
     <url>/2020/10/10/md5-salt/</url>
     <content><![CDATA[<p>传统的md5算法通过产生一个128位（16字节）的散列值（hash value），用于确保信息的安全性。但随着技术的发展，md5无法防止碰撞（collision）且可以被加以破解。<br>salt的出现可以一定程度上解决这个问题。</p>
@@ -263,20 +277,6 @@
       </categories>
       <tags>
         <tag>密码学</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>春</title>
-    <url>/2021/03/24/hurt/</url>
-    <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
-<pre><code>        你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</code></pre>
-<p>辛丑牛年农历二月十二</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -352,6 +352,26 @@
       </categories>
       <tags>
         <tag>shiro</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>singleton</title>
+    <url>/2021/03/30/singleton/</url>
+    <content><![CDATA[<p><strong>单例模式</strong>是最简单的设计模式之一，涉及一个单一的类。该类负责创建自己的对象，同时确保只有单个对象被创建。<br>注意：单例类只能有一个实例；单例类必须自己创建自己的唯一实例；单例类必须给其它对象提供这一实例。</p>
+<p>优点：内存里只有一个实例，减少了内存的开销；避免对资源的多重占用。</p>
+<p>缺点：没有接口，不能继承，与单一职责原则冲突。</p>
+<p>使用场景：生产唯一序列号；web中的计数器，不用每次刷新在数据库加一次，而用单例先缓存起来。</p>
+<p>1.创建一个单例类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonFactory &#123;</span><br><span class="line">    private static final SingletonFactory instance &#x3D; new SingletonFactory();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;private 避免类在外部被实例化</span><br><span class="line">    private SingletonFactory() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonFactory getInstance() &#123;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void showMessage() &#123;</span><br><span class="line">        System.out.println(&quot;what are words!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2.测试</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SingletonFactory singletonFactory &#x3D; SingletonFactory.getInstance();</span><br><span class="line">        singletonFactory.showMessage();  &#x2F;&#x2F; what are words!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>单例模式</tag>
       </tags>
   </entry>
 </search>
