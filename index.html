@@ -187,6 +187,106 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/06/adapter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/04/06/adapter/" class="post-title-link" itemprop="url">adapter</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-06 16:07:28 / 修改时间：19:26:23" itemprop="dateCreated datePublished" datetime="2021-04-06T16:07:28+08:00">2021-04-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/04/06/adapter/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/04/06/adapter/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>1.适配器模式<br>适配器模式一般用作两个不兼容的接口之间的桥梁。它属于结构型模式，结合了两个独立接口的功能。<br>uml类图</p>
+<img src="/2021/04/06/adapter/adapter.png" class="">
+
+<p>2.创建两个接口MediaPlayer和AdvancedMP</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public interface MediaPlayer &#123;</span><br><span class="line">    void play(String audioType, String fileName);</span><br><span class="line">&#125;</span><br><span class="line">public interface AdvancedMP &#123;</span><br><span class="line">    void playMp4(String fileName);</span><br><span class="line">    void playAvi(String fileName);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3.创建AdvancedMP接口的实体类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public class AviPlayer implements AdvancedMP &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void playMp4(String fileName) &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void playAvi(String fileName) &#123;</span><br><span class="line">        System.out.println(&quot;Playing avi file, name: &quot; + fileName);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Mp4Player implements AdvancedMP &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void playMp4(String fileName) &#123;</span><br><span class="line">        System.out.println(&quot;Playing mp4 file, name: &quot; + fileName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void playAvi(String fileName) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4.创建MediaPlayer接口的适配器类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public class MediaAdapter implements MediaPlayer &#123;</span><br><span class="line">    AdvancedMP advancedMP;</span><br><span class="line"></span><br><span class="line">    public MediaAdapter(String audioType) &#123;</span><br><span class="line">        if (audioType.equalsIgnoreCase(&quot;avi&quot;)) &#123;</span><br><span class="line">            advancedMP &#x3D; new AviPlayer();</span><br><span class="line">        &#125; else if (audioType.equalsIgnoreCase(&quot;mp4&quot;)) &#123;</span><br><span class="line">            advancedMP &#x3D; new Mp4Player();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void play(String audioType, String fileName) &#123;</span><br><span class="line">        if (audioType.equalsIgnoreCase(&quot;avi&quot;)) &#123;</span><br><span class="line">            advancedMP.playAvi(fileName);</span><br><span class="line">        &#125; else if (audioType.equalsIgnoreCase(&quot;mp4&quot;)) &#123;</span><br><span class="line">            advancedMP.playMp4(fileName);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>5.创建MediaPlayer接口的实体类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class AudioPlayer implements MediaPlayer &#123;</span><br><span class="line">    MediaAdapter mediaAdapter;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void play(String audioType, String fileName) &#123;</span><br><span class="line">        if (audioType.equalsIgnoreCase(&quot;mp3&quot;)) &#123;</span><br><span class="line">            System.out.println(&quot;Playing mp3 file, name: &quot; + fileName);</span><br><span class="line">        &#125; else if (audioType.equalsIgnoreCase(&quot;avi&quot;) ||</span><br><span class="line">                audioType.equalsIgnoreCase(&quot;mp4&quot;)) &#123;</span><br><span class="line">            mediaAdapter &#x3D; new MediaAdapter(audioType);</span><br><span class="line">            mediaAdapter.play(audioType, fileName);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            System.out.println(&quot;Invalid media &quot; + audioType);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>6.测试</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class AdapterTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        AudioPlayer audioPlayer &#x3D; new AudioPlayer();</span><br><span class="line"></span><br><span class="line">        audioPlayer.play(&quot;mp3&quot;, &quot;what are words.mp3&quot;);</span><br><span class="line">        audioPlayer.play(&quot;mp4&quot;, &quot;alone.mp4&quot;);</span><br><span class="line">        audioPlayer.play(&quot;avi&quot;, &quot;beyond.avi&quot;);</span><br><span class="line">        audioPlayer.play(&quot;rmvb&quot;, &quot;mind we.rmvb&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">Playing mp3 file, name: what are words.mp3</span><br><span class="line">Playing mp4 file, name: alone.mp4</span><br><span class="line">Playing avi file, name: beyond.avi</span><br><span class="line">Invalid media rmvb</span><br></pre></td></tr></table></figure>
+
+<p>应用实例：JAVA中的jdbc; Spring中的Advice</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/04/copy/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1123,90 +1223,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/24/hurt/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/24/hurt/" class="post-title-link" itemprop="url">春</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-03-24 15:43:01 / 修改时间：18:47:48" itemprop="dateCreated datePublished" datetime="2021-03-24T15:43:01+08:00">2021-03-24</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index"><span itemprop="name">生活</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/03/24/hurt/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/24/hurt/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
-<pre><code>        你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</code></pre>
-<p>辛丑牛年农历二月十二</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1278,7 +1294,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1291,7 +1307,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
