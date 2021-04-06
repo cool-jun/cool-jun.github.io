@@ -1,40 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>builder</title>
-    <url>/2021/04/03/builder/</url>
-    <content><![CDATA[<p><strong>建造者模式</strong>使用多个简单的对象一步一步构建成一个复杂的对象。<br>基本部分不会变，而其组合经常变化的时候可以考虑使用建造者模式。<br>应用场景：对象具有复杂的内部结构；对象内部属性本身相互依赖。</p>
-<p>类图如下：</p>
-<img src="/2021/04/03/builder/builder.png" class="">
-
-<p>1.创建接口</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Item &#123;</span><br><span class="line">    String name();</span><br><span class="line">    Packing packing();</span><br><span class="line">    float price();</span><br><span class="line">&#125;</span><br><span class="line">public interface Packing &#123;</span><br><span class="line">    String pack();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>2.创建实现Packing接口的具体类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Wrapper implements Packing &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public String pack() &#123;</span><br><span class="line">        return &quot;Wrapper&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Bottle implements Packing &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public String pack() &#123;</span><br><span class="line">        return &quot;Bottle&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>3.创建实现Item接口的抽象类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public abstract class Burger implements Item &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Packing packing() &#123;</span><br><span class="line">        return new Wrapper();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public abstract float price();</span><br><span class="line">&#125;</span><br><span class="line">public abstract class ColdDrink implements Item &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Packing packing() &#123;</span><br><span class="line">        return new Bottle();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public abstract float price();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>4.创建扩展了Burger和ColdDrink的具体类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ChickenBurger extends Burger &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public float price() &#123;</span><br><span class="line">        return 60.0f;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String name() &#123;</span><br><span class="line">        return &quot;Chicken Burger&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public abstract class ColdDrink implements Item &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Packing packing() &#123;</span><br><span class="line">        return new Bottle();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public abstract float price();</span><br><span class="line">&#125;</span><br><span class="line">public class Coke extends ColdDrink &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public float price() &#123;</span><br><span class="line">        return 35.0f;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String name() &#123;</span><br><span class="line">        return &quot;Coke&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Pepsi extends ColdDrink &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public float price() &#123;</span><br><span class="line">        return 38.0f;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String name() &#123;</span><br><span class="line">        return &quot;Pepsi&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>5.创建依赖Item类的具体类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Meal &#123;</span><br><span class="line">    private List&lt;Item&gt; items &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">    </span><br><span class="line">    public void addItem(Item item) &#123;</span><br><span class="line">        items.add(item);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public float getCost() &#123;</span><br><span class="line">        float cost &#x3D; 0.0f;</span><br><span class="line">        for (Item item : items) &#123;</span><br><span class="line">            cost +&#x3D; item.price();</span><br><span class="line">        &#125;</span><br><span class="line">        return cost;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public void showItems() &#123;</span><br><span class="line">        for (Item item : items) &#123;</span><br><span class="line">            System.out.println(&quot;Item : &quot; + item.name());</span><br><span class="line">            System.out.println(&quot;, Packing : &quot; + item.packing().pack());</span><br><span class="line">            System.out.println(&quot;, Price : &quot; + item.price());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>6.创建一个builder类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MealBuilder &#123;</span><br><span class="line">    public Meal prepareVegMeal() &#123;</span><br><span class="line">        Meal meal &#x3D; new Meal();</span><br><span class="line">        meal.addItem(new VegBurger());</span><br><span class="line">        meal.addItem(new Coke());</span><br><span class="line">        return meal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Meal prepareNonVegMeal ()&#123;</span><br><span class="line">        Meal meal &#x3D; new Meal();</span><br><span class="line">        meal.addItem(new ChickenBurger());</span><br><span class="line">        meal.addItem(new Pepsi());</span><br><span class="line">        return meal;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>7.测试</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class BuilderTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        MealBuilder mealBuilder &#x3D; new MealBuilder();</span><br><span class="line"></span><br><span class="line">        Meal veg &#x3D; mealBuilder.prepareVegMeal();</span><br><span class="line">        System.out.println(&quot;Veg Meal&quot;);</span><br><span class="line">        veg.showItems();</span><br><span class="line">        System.out.println(&quot;Total Cost : &quot; + veg.getCost());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">Item : Veg Burger</span><br><span class="line">, Packing : Wrapper</span><br><span class="line">, Price : 30.0</span><br><span class="line">Item : Coke</span><br><span class="line">, Packing : Bottle</span><br><span class="line">, Price : 35.0</span><br><span class="line">Total Cost : 65.0</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>建造者模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>abstractfactory</title>
     <url>/2021/03/27/abstract-factory/</url>
     <content><![CDATA[<p><strong>抽象工厂模式</strong>提供了一个创建一系列相关接口或相互依赖对象的接口，无须指定它们具体的类。<br>抽象工厂模式是工厂方法模式的升级，工厂方法模式只生产一个等级的产品，而抽象工厂模式可以生产多个等级的产品。</p>
@@ -73,6 +39,28 @@
       </categories>
       <tags>
         <tag>抽象工厂模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>创建Java多线程的三种方式</title>
+    <url>/2020/09/23/concurrency/</url>
+    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
+<h3 id="1-Thread"><a href="#1-Thread" class="headerlink" title="1.Thread"></a>1.Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-Runnable"><a href="#2-Runnable" class="headerlink" title="2.Runnable"></a>2.Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-Callable"><a href="#3-Callable" class="headerlink" title="3.Callable"></a>3.Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>刚学到一点皮毛，与大家共勉。如有大神路过，望不吝赐教！</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>多线程</tag>
       </tags>
   </entry>
   <entry>
@@ -135,25 +123,60 @@
       </tags>
   </entry>
   <entry>
-    <title>创建Java多线程的三种方式</title>
-    <url>/2020/09/23/concurrency/</url>
-    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
-<h3 id="1-Thread"><a href="#1-Thread" class="headerlink" title="1.Thread"></a>1.Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    <title>builder</title>
+    <url>/2021/04/03/builder/</url>
+    <content><![CDATA[<p><strong>建造者模式</strong>使用多个简单的对象一步一步构建成一个复杂的对象。<br>基本部分不会变，而其组合经常变化的时候可以考虑使用建造者模式。<br>应用场景：对象具有复杂的内部结构；对象内部属性本身相互依赖。</p>
+<p>类图如下：</p>
+<img src="/2021/04/03/builder/builder.png" class="">
 
-<h3 id="2-Runnable"><a href="#2-Runnable" class="headerlink" title="2.Runnable"></a>2.Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>1.创建接口</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Item &#123;</span><br><span class="line">    String name();</span><br><span class="line">    Packing packing();</span><br><span class="line">    float price();</span><br><span class="line">&#125;</span><br><span class="line">public interface Packing &#123;</span><br><span class="line">    String pack();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="3-Callable"><a href="#3-Callable" class="headerlink" title="3.Callable"></a>3.Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2.创建实现Packing接口的具体类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Wrapper implements Packing &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public String pack() &#123;</span><br><span class="line">        return &quot;Wrapper&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Bottle implements Packing &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public String pack() &#123;</span><br><span class="line">        return &quot;Bottle&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>刚学到一点皮毛，与大家共勉。如有大神路过，望不吝赐教！</p>
-]]></content>
+<p>3.创建实现Item接口的抽象类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public abstract class Burger implements Item &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Packing packing() &#123;</span><br><span class="line">        return new Wrapper();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public abstract float price();</span><br><span class="line">&#125;</span><br><span class="line">public abstract class ColdDrink implements Item &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Packing packing() &#123;</span><br><span class="line">        return new Bottle();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public abstract float price();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4.创建扩展了Burger和ColdDrink的具体类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ChickenBurger extends Burger &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public float price() &#123;</span><br><span class="line">        return 60.0f;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String name() &#123;</span><br><span class="line">        return &quot;Chicken Burger&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public abstract class ColdDrink implements Item &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Packing packing() &#123;</span><br><span class="line">        return new Bottle();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public abstract float price();</span><br><span class="line">&#125;</span><br><span class="line">public class Coke extends ColdDrink &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public float price() &#123;</span><br><span class="line">        return 35.0f;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String name() &#123;</span><br><span class="line">        return &quot;Coke&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Pepsi extends ColdDrink &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public float price() &#123;</span><br><span class="line">        return 38.0f;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String name() &#123;</span><br><span class="line">        return &quot;Pepsi&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>5.创建依赖Item类的具体类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Meal &#123;</span><br><span class="line">    private List&lt;Item&gt; items &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">    </span><br><span class="line">    public void addItem(Item item) &#123;</span><br><span class="line">        items.add(item);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public float getCost() &#123;</span><br><span class="line">        float cost &#x3D; 0.0f;</span><br><span class="line">        for (Item item : items) &#123;</span><br><span class="line">            cost +&#x3D; item.price();</span><br><span class="line">        &#125;</span><br><span class="line">        return cost;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public void showItems() &#123;</span><br><span class="line">        for (Item item : items) &#123;</span><br><span class="line">            System.out.println(&quot;Item : &quot; + item.name());</span><br><span class="line">            System.out.println(&quot;, Packing : &quot; + item.packing().pack());</span><br><span class="line">            System.out.println(&quot;, Price : &quot; + item.price());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>6.创建一个builder类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MealBuilder &#123;</span><br><span class="line">    public Meal prepareVegMeal() &#123;</span><br><span class="line">        Meal meal &#x3D; new Meal();</span><br><span class="line">        meal.addItem(new VegBurger());</span><br><span class="line">        meal.addItem(new Coke());</span><br><span class="line">        return meal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Meal prepareNonVegMeal ()&#123;</span><br><span class="line">        Meal meal &#x3D; new Meal();</span><br><span class="line">        meal.addItem(new ChickenBurger());</span><br><span class="line">        meal.addItem(new Pepsi());</span><br><span class="line">        return meal;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>7.测试</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class BuilderTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        MealBuilder mealBuilder &#x3D; new MealBuilder();</span><br><span class="line"></span><br><span class="line">        Meal veg &#x3D; mealBuilder.prepareVegMeal();</span><br><span class="line">        System.out.println(&quot;Veg Meal&quot;);</span><br><span class="line">        veg.showItems();</span><br><span class="line">        System.out.println(&quot;Total Cost : &quot; + veg.getCost());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">Item : Veg Burger</span><br><span class="line">, Packing : Wrapper</span><br><span class="line">, Price : 30.0</span><br><span class="line">Item : Coke</span><br><span class="line">, Packing : Bottle</span><br><span class="line">, Price : 35.0</span><br><span class="line">Total Cost : 65.0</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
-        <category>Java</category>
+        <category>设计模式</category>
       </categories>
       <tags>
-        <tag>多线程</tag>
+        <tag>建造者模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>designmode</title>
+    <url>/2021/03/25/designmode/</url>
+    <content><![CDATA[<p>1995年，GoF（Gang of Four，四人组/四人帮）合作出版了《设计模式：可复用面向对象软件的基础》一书，共收录了23种设计模式，从此树立了软件设计模式领域的里程碑，人称「GoF设计模式」。设计模式简单说就是为了可重用代码，让代码更容易被他人理解，保证代码可靠性。</p>
+<p>设计模式有如下原则：</p>
+<p>1、开闭原则<br>对扩展开放，对修改封闭。为了使程序的扩展性更好，易于维护和升级，一般需要使用接口和抽象类。</p>
+<p>2、里氏替换原则<br>任何基类可以出现的地方，子类一定可以出现。里氏替换原则是继承复用的基石，只有当子类可以替换掉基类，基类才能真正被复用，而且子类也可以在基类的基础上增加新的行为。里氏替换原则实际上是对开闭原则的补充。基类与子类的继承关系就是抽象化的具体实现。</p>
+<p>3、依赖倒置原则<br>针对接口编程，高层模块不应该依赖底层模块，二者都应该依赖抽象而不是具体。</p>
+<p>4、接口分离原则<br>使用多个隔离的接口比使用单个庞大的接口好。其目的在于降低耦合度。</p>
+<p>5、单一职责原则<br>类的职责要单一，不能将太多的职责放在一个类中。类的职责主要包括两个方面：数据职责和行为职责。数据职责通过其属性来体现，而行为职责通过其方法来体现。</p>
+<p>6、迪米特法则（最少知道原则）<br>一个实体应当尽可能少的与其它实体之间发生相互作用，使得系统功能模块相对独立。</p>
+<p>7、合成复用原则<br>尽量使用组合/聚合的方式，少使用或不使用继承关系。</p>
+<p>设计模式通常分为3大类：<br>1、创建型模式<br>工厂模式、抽象工厂模式、单例模式、建造者模式、原型模式。</p>
+<p>2、结构型模式<br>适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。</p>
+<p>3、行为型模式<br>策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。</p>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>设计模式简介</tag>
       </tags>
   </entry>
   <entry>
@@ -181,6 +204,44 @@
       </categories>
       <tags>
         <tag>深浅拷贝</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>diffchain</title>
+    <url>/2020/11/16/difftimechain/</url>
+    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。 </span><br><span class="line">*&#x2F; </span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line">	</span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line">		</span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;	</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F; </span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。 </span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表 </span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line">	</span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line">	</span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
+
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>差分时间链</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>firstblog</title>
+    <url>/2020/09/20/firstblog/</url>
+    <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
+<h3 id="启程出发"><a href="#启程出发" class="headerlink" title="启程出发"></a>启程出发</h3><p>收拾戎装，准备出发。第一次体验了磁悬浮与飞机的我不得不感叹中国科技发展之迅速。知识的力量是无穷的，希望我国在芯片领域也能更进一步。</p>
+<img src="/2020/09/20/firstblog/plane.jpg" class="">
+
+<h3 id="中蓝公寓"><a href="#中蓝公寓" class="headerlink" title="中蓝公寓"></a>中蓝公寓</h3><p>北京工业大学的研究生基本都住在中蓝公寓，不过中蓝公寓离校内还有一段距离，一般大家都是骑车上课。寝室是四人间，上下铺。厕所和澡堂都是公共的，不过令人疑惑的澡堂周六是不开放的。</p>
+<img src="/2020/09/20/firstblog/navigation.jpg" class="">
+
+<p>我所在的公寓是蓝悦园，在宿舍的阳台上放眼望去满是高大而豪华的建筑。其实我更想看的是充满历史又能反应北京特色的胡同儿。期待国庆能去转转。</p>
+<img src="/2020/09/20/firstblog/scene.jpg" class="">
+
+<h3 id="校内一角"><a href="#校内一角" class="headerlink" title="校内一角"></a>校内一角</h3><p>在这个举办过奥运会的城市，最不缺的就是运动的气息。工大各色各样的运动场馆似乎都有，其中羽毛球场馆还是08年奥运会羽毛球比赛场地。许多人都说研究生的生活充满了枯燥与压力，或许运动就是最好的良药。确实，我非常赞同这个观点，毕竟身体才是革命的本钱。</p>
+<img src="/2020/09/20/firstblog/basketball.jpg" class="">]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>出行</tag>
       </tags>
   </entry>
   <entry>
@@ -238,51 +299,6 @@
       </tags>
   </entry>
   <entry>
-    <title>designmode</title>
-    <url>/2021/03/25/designmode/</url>
-    <content><![CDATA[<p>1995年，GoF（Gang of Four，四人组/四人帮）合作出版了《设计模式：可复用面向对象软件的基础》一书，共收录了23种设计模式，从此树立了软件设计模式领域的里程碑，人称「GoF设计模式」。设计模式简单说就是为了可重用代码，让代码更容易被他人理解，保证代码可靠性。</p>
-<p>设计模式有如下原则：</p>
-<p>1、开闭原则<br>对扩展开放，对修改封闭。为了使程序的扩展性更好，易于维护和升级，一般需要使用接口和抽象类。</p>
-<p>2、里氏替换原则<br>任何基类可以出现的地方，子类一定可以出现。里氏替换原则是继承复用的基石，只有当子类可以替换掉基类，基类才能真正被复用，而且子类也可以在基类的基础上增加新的行为。里氏替换原则实际上是对开闭原则的补充。基类与子类的继承关系就是抽象化的具体实现。</p>
-<p>3、依赖倒置原则<br>针对接口编程，高层模块不应该依赖底层模块，二者都应该依赖抽象而不是具体。</p>
-<p>4、接口分离原则<br>使用多个隔离的接口比使用单个庞大的接口好。其目的在于降低耦合度。</p>
-<p>5、单一职责原则<br>类的职责要单一，不能将太多的职责放在一个类中。类的职责主要包括两个方面：数据职责和行为职责。数据职责通过其属性来体现，而行为职责通过其方法来体现。</p>
-<p>6、迪米特法则（最少知道原则）<br>一个实体应当尽可能少的与其它实体之间发生相互作用，使得系统功能模块相对独立。</p>
-<p>7、合成复用原则<br>尽量使用组合/聚合的方式，少使用或不使用继承关系。</p>
-<p>设计模式通常分为3大类：<br>1、创建型模式<br>工厂模式、抽象工厂模式、单例模式、建造者模式、原型模式。</p>
-<p>2、结构型模式<br>适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。</p>
-<p>3、行为型模式<br>策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。</p>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式简介</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>firstblog</title>
-    <url>/2020/09/20/firstblog/</url>
-    <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
-<h3 id="启程出发"><a href="#启程出发" class="headerlink" title="启程出发"></a>启程出发</h3><p>收拾戎装，准备出发。第一次体验了磁悬浮与飞机的我不得不感叹中国科技发展之迅速。知识的力量是无穷的，希望我国在芯片领域也能更进一步。</p>
-<img src="/2020/09/20/firstblog/plane.jpg" class="">
-
-<h3 id="中蓝公寓"><a href="#中蓝公寓" class="headerlink" title="中蓝公寓"></a>中蓝公寓</h3><p>北京工业大学的研究生基本都住在中蓝公寓，不过中蓝公寓离校内还有一段距离，一般大家都是骑车上课。寝室是四人间，上下铺。厕所和澡堂都是公共的，不过令人疑惑的澡堂周六是不开放的。</p>
-<img src="/2020/09/20/firstblog/navigation.jpg" class="">
-
-<p>我所在的公寓是蓝悦园，在宿舍的阳台上放眼望去满是高大而豪华的建筑。其实我更想看的是充满历史又能反应北京特色的胡同儿。期待国庆能去转转。</p>
-<img src="/2020/09/20/firstblog/scene.jpg" class="">
-
-<h3 id="校内一角"><a href="#校内一角" class="headerlink" title="校内一角"></a>校内一角</h3><p>在这个举办过奥运会的城市，最不缺的就是运动的气息。工大各色各样的运动场馆似乎都有，其中羽毛球场馆还是08年奥运会羽毛球比赛场地。许多人都说研究生的生活充满了枯燥与压力，或许运动就是最好的良药。确实，我非常赞同这个观点，毕竟身体才是革命的本钱。</p>
-<img src="/2020/09/20/firstblog/basketball.jpg" class="">]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>出行</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>春</title>
     <url>/2021/03/24/hurt/</url>
     <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
@@ -294,40 +310,6 @@
       </categories>
       <tags>
         <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>diffchain</title>
-    <url>/2020/11/16/difftimechain/</url>
-    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。 </span><br><span class="line">*&#x2F; </span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line">	</span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line">		</span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;	</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F; </span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。 </span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表 </span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line">	</span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line">	</span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
-
-]]></content>
-      <categories>
-        <category>数据结构</category>
-      </categories>
-      <tags>
-        <tag>差分时间链</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>memory</title>
-    <url>/2021/03/21/memory/</url>
-    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
-<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
-<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
-<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
-<img src="/2021/03/21/memory/memory.jpg" class="">
-
-<p>辛丑牛年农历二月初十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>旅行</tag>
       </tags>
   </entry>
   <entry>
@@ -382,6 +364,24 @@
       </categories>
       <tags>
         <tag>原型模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>memory</title>
+    <url>/2021/03/21/memory/</url>
+    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
+<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
+<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
+<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
+<img src="/2021/03/21/memory/memory.jpg" class="">
+
+<p>辛丑牛年农历二月初十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>旅行</tag>
       </tags>
   </entry>
   <entry>
@@ -442,6 +442,29 @@
       </tags>
   </entry>
   <entry>
+    <title>singleton</title>
+    <url>/2021/03/30/singleton/</url>
+    <content><![CDATA[<p><strong>单例模式</strong>是最简单的设计模式之一，涉及一个单一的类。该类负责创建自己的对象，同时确保只有单个对象被创建。<br>注意：单例类只能有一个实例；单例类必须自己创建自己的唯一实例；单例类必须给其它对象提供这一实例。</p>
+<p>优点：内存里只有一个实例，减少了内存的开销；避免对资源的多重占用。</p>
+<p>缺点：没有接口，不能继承，与单一职责原则冲突。</p>
+<p>使用场景：生产唯一序列号；web中的计数器，不用每次刷新在数据库加一次，而用单例先缓存起来。</p>
+<p>1.创建一个单例类（饿汉式）<br>类加载时就初始化，浪费内存。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonFactory &#123;</span><br><span class="line">    private static final SingletonFactory instance &#x3D; new SingletonFactory();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;private 避免类在外部被实例化</span><br><span class="line">    private SingletonFactory() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonFactory getInstance() &#123;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void showMessage() &#123;</span><br><span class="line">        System.out.println(&quot;what are words!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（双检锁）<br>在多线程情况下能保持高性能</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonFactory &#123;</span><br><span class="line">    &#x2F;&#x2F;双检锁</span><br><span class="line">    private volatile static SingletonFactory instance;</span><br><span class="line"></span><br><span class="line">    private SingletonFactory() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonFactory getInstance() &#123;</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            synchronized (SingletonFactory.class) &#123;</span><br><span class="line">                if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    instance &#x3D; new SingletonFactory();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>双检锁模式，进行了两次if判断。第一次是为了避免不要的实例，第二次是为了进行同步，避免多线程问题。由于instance = new SingletonFactory()对象的创建在JVM中可能会进行重排序，多线程访问下会存在风险，使用volatile关键字修饰SingletonFactory实例变量能有效解决该问题。</p>
+<p>2.测试</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SingletonFactory singletonFactory &#x3D; SingletonFactory.getInstance();</span><br><span class="line">        singletonFactory.showMessage();  &#x2F;&#x2F; what are words!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>单例模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>umlarrow</title>
     <url>/2021/03/31/umlarrow/</url>
     <content><![CDATA[<p>1.泛化（继承）<br>泛化是一种一般与特殊、一般与具体关系的描述，具体建立在一般之上并对其进行扩展。<br><strong>实线空心三角箭头表示</strong></p>
@@ -469,29 +492,6 @@
       </categories>
       <tags>
         <tag>箭头含义</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>singleton</title>
-    <url>/2021/03/30/singleton/</url>
-    <content><![CDATA[<p><strong>单例模式</strong>是最简单的设计模式之一，涉及一个单一的类。该类负责创建自己的对象，同时确保只有单个对象被创建。<br>注意：单例类只能有一个实例；单例类必须自己创建自己的唯一实例；单例类必须给其它对象提供这一实例。</p>
-<p>优点：内存里只有一个实例，减少了内存的开销；避免对资源的多重占用。</p>
-<p>缺点：没有接口，不能继承，与单一职责原则冲突。</p>
-<p>使用场景：生产唯一序列号；web中的计数器，不用每次刷新在数据库加一次，而用单例先缓存起来。</p>
-<p>1.创建一个单例类（饿汉式）<br>类加载时就初始化，浪费内存。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonFactory &#123;</span><br><span class="line">    private static final SingletonFactory instance &#x3D; new SingletonFactory();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;private 避免类在外部被实例化</span><br><span class="line">    private SingletonFactory() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonFactory getInstance() &#123;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void showMessage() &#123;</span><br><span class="line">        System.out.println(&quot;what are words!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>（双检锁）<br>在多线程情况下能保持高性能</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonFactory &#123;</span><br><span class="line">    &#x2F;&#x2F;双检锁</span><br><span class="line">    private volatile static SingletonFactory instance;</span><br><span class="line"></span><br><span class="line">    private SingletonFactory() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonFactory getInstance() &#123;</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            synchronized (SingletonFactory.class) &#123;</span><br><span class="line">                if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    instance &#x3D; new SingletonFactory();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>双检锁模式，进行了两次if判断。第一次是为了避免不要的实例，第二次是为了进行同步，避免多线程问题。由于instance = new SingletonFactory()对象的创建在JVM中可能会进行重排序，多线程访问下会存在风险，使用volatile关键字修饰SingletonFactory实例变量能有效解决该问题。</p>
-<p>2.测试</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SingletonFactory singletonFactory &#x3D; SingletonFactory.getInstance();</span><br><span class="line">        singletonFactory.showMessage();  &#x2F;&#x2F; what are words!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>单例模式</tag>
       </tags>
   </entry>
 </search>
