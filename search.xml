@@ -138,9 +138,10 @@
 <p>传统的多层继承结构方式，在新增类型或品牌时都会牵扯出另一个维度的变化。类的个数也急剧增加。</p>
 <h3 id="桥接模式"><a href="#桥接模式" class="headerlink" title="桥接模式"></a>桥接模式</h3><p><strong>桥接模式</strong>将抽象部分与它的实现部分分离，使它们都可以独立地变化。</p>
 <p>如果某个类存在两个独立变化的维度，可以运用桥接模式将这两个维度分离出来，使两者可以独立扩展，让系统更加符合“单一职责原则”。</p>
+<p>UML类图如下：</p>
 <img src="/2021/04/09/bridge/bridge.png" class="">
 
-<h3 id="代码如下"><a href="#代码如下" class="headerlink" title="代码如下"></a>代码如下</h3><p><strong>创建一个实现类接口</strong></p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p><strong>创建一个实现类接口</strong></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;电脑品牌</span><br><span class="line">public interface Brand &#123;</span><br><span class="line">    void sale();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><strong>创建具体实现类</strong></p>
@@ -162,6 +163,26 @@
       </categories>
       <tags>
         <tag>桥接模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Three ways to create Java Multithread</title>
+    <url>/2020/09/23/concurrency/</url>
+    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
+<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>多线程</tag>
       </tags>
   </entry>
   <entry>
@@ -199,23 +220,27 @@
       </tags>
   </entry>
   <entry>
-    <title>Three ways to create Java Multithread</title>
-    <url>/2020/09/23/concurrency/</url>
-    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
-<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    <title>designmode</title>
+    <url>/2021/03/25/designmode/</url>
+    <content><![CDATA[<p>1995年，GoF（Gang of Four，四人组/四人帮）合作出版了《设计模式：可复用面向对象软件的基础》一书，共收录了23种设计模式，从此树立了软件设计模式领域的里程碑，人称「GoF设计模式」。设计模式简单说就是为了可重用代码，让代码更容易被他人理解，保证代码可靠性。</p>
+<p>设计模式有如下原则：</p>
+<h4 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h4><p>对扩展开放，对修改封闭。为了使程序的扩展性更好，易于维护和升级，一般需要使用接口和抽象类。</p>
+<h4 id="里氏替换原则"><a href="#里氏替换原则" class="headerlink" title="里氏替换原则"></a>里氏替换原则</h4><p>任何基类可以出现的地方，子类一定可以出现。里氏替换原则是继承复用的基石，只有当子类可以替换掉基类，基类才能真正被复用，而且子类也可以在基类的基础上增加新的行为。里氏替换原则实际上是对开闭原则的补充。基类与子类的继承关系就是抽象化的具体实现。</p>
+<h4 id="依赖倒置原则"><a href="#依赖倒置原则" class="headerlink" title="依赖倒置原则"></a>依赖倒置原则</h4><p>针对接口编程，高层模块不应该依赖底层模块，二者都应该依赖抽象而不是具体。</p>
+<h4 id="接口分离原则"><a href="#接口分离原则" class="headerlink" title="接口分离原则"></a>接口分离原则</h4><p>使用多个隔离的接口比使用单个庞大的接口好。其目的在于降低耦合度。</p>
+<h4 id="单一职责原则"><a href="#单一职责原则" class="headerlink" title="单一职责原则"></a>单一职责原则</h4><p>类的职责要单一，不能将太多的职责放在一个类中。类的职责主要包括两个方面：数据职责和行为职责。数据职责通过其属性来体现，而行为职责通过其方法来体现。</p>
+<h4 id="迪米特法则（最少知道原则）"><a href="#迪米特法则（最少知道原则）" class="headerlink" title="迪米特法则（最少知道原则）"></a>迪米特法则（最少知道原则）</h4><p>一个实体应当尽可能少的与其它实体之间发生相互作用，使得系统功能模块相对独立。</p>
+<h4 id="合成复用原则"><a href="#合成复用原则" class="headerlink" title="合成复用原则"></a>合成复用原则</h4><p>尽量使用组合/聚合的方式，少使用或不使用继承关系。</p>
+<p>设计模式通常分为3大类：</p>
+<h3 id="创建型模式"><a href="#创建型模式" class="headerlink" title="创建型模式"></a>创建型模式</h3><p>工厂模式、抽象工厂模式、单例模式、建造者模式、原型模式。</p>
+<h3 id="结构型模式"><a href="#结构型模式" class="headerlink" title="结构型模式"></a>结构型模式</h3><p>适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。</p>
+<h3 id="行为型模式"><a href="#行为型模式" class="headerlink" title="行为型模式"></a>行为型模式</h3><p>策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。</p>
 ]]></content>
       <categories>
-        <category>Java</category>
+        <category>设计模式</category>
       </categories>
       <tags>
-        <tag>多线程</tag>
+        <tag>设计模式简介</tag>
       </tags>
   </entry>
   <entry>
@@ -241,30 +266,6 @@
       </categories>
       <tags>
         <tag>深浅拷贝</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>designmode</title>
-    <url>/2021/03/25/designmode/</url>
-    <content><![CDATA[<p>1995年，GoF（Gang of Four，四人组/四人帮）合作出版了《设计模式：可复用面向对象软件的基础》一书，共收录了23种设计模式，从此树立了软件设计模式领域的里程碑，人称「GoF设计模式」。设计模式简单说就是为了可重用代码，让代码更容易被他人理解，保证代码可靠性。</p>
-<p>设计模式有如下原则：</p>
-<h4 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h4><p>对扩展开放，对修改封闭。为了使程序的扩展性更好，易于维护和升级，一般需要使用接口和抽象类。</p>
-<h4 id="里氏替换原则"><a href="#里氏替换原则" class="headerlink" title="里氏替换原则"></a>里氏替换原则</h4><p>任何基类可以出现的地方，子类一定可以出现。里氏替换原则是继承复用的基石，只有当子类可以替换掉基类，基类才能真正被复用，而且子类也可以在基类的基础上增加新的行为。里氏替换原则实际上是对开闭原则的补充。基类与子类的继承关系就是抽象化的具体实现。</p>
-<h4 id="依赖倒置原则"><a href="#依赖倒置原则" class="headerlink" title="依赖倒置原则"></a>依赖倒置原则</h4><p>针对接口编程，高层模块不应该依赖底层模块，二者都应该依赖抽象而不是具体。</p>
-<h4 id="接口分离原则"><a href="#接口分离原则" class="headerlink" title="接口分离原则"></a>接口分离原则</h4><p>使用多个隔离的接口比使用单个庞大的接口好。其目的在于降低耦合度。</p>
-<h4 id="单一职责原则"><a href="#单一职责原则" class="headerlink" title="单一职责原则"></a>单一职责原则</h4><p>类的职责要单一，不能将太多的职责放在一个类中。类的职责主要包括两个方面：数据职责和行为职责。数据职责通过其属性来体现，而行为职责通过其方法来体现。</p>
-<h4 id="迪米特法则（最少知道原则）"><a href="#迪米特法则（最少知道原则）" class="headerlink" title="迪米特法则（最少知道原则）"></a>迪米特法则（最少知道原则）</h4><p>一个实体应当尽可能少的与其它实体之间发生相互作用，使得系统功能模块相对独立。</p>
-<h4 id="合成复用原则"><a href="#合成复用原则" class="headerlink" title="合成复用原则"></a>合成复用原则</h4><p>尽量使用组合/聚合的方式，少使用或不使用继承关系。</p>
-<p>设计模式通常分为3大类：</p>
-<h3 id="创建型模式"><a href="#创建型模式" class="headerlink" title="创建型模式"></a>创建型模式</h3><p>工厂模式、抽象工厂模式、单例模式、建造者模式、原型模式。</p>
-<h3 id="结构型模式"><a href="#结构型模式" class="headerlink" title="结构型模式"></a>结构型模式</h3><p>适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。</p>
-<h3 id="行为型模式"><a href="#行为型模式" class="headerlink" title="行为型模式"></a>行为型模式</h3><p>策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。</p>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式简介</tag>
       </tags>
   </entry>
   <entry>
@@ -420,24 +421,6 @@
       </tags>
   </entry>
   <entry>
-    <title>memory</title>
-    <url>/2021/03/21/memory/</url>
-    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
-<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
-<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
-<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
-<img src="/2021/03/21/memory/memory.jpg" class="">
-
-<p>辛丑牛年农历二月初十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>旅行</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>prototype</title>
     <url>/2021/04/04/prototype/</url>
     <content><![CDATA[<p>原型模式用于创建重复的对象，同时又能保证性能。当直接创建对象的代价比较大时，可以采用这种模式。<br>UML类图如下</p>
@@ -464,19 +447,21 @@
       </tags>
   </entry>
   <entry>
-    <title>rain</title>
-    <url>/2021/03/26/rain/</url>
-    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
-<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
-<p>辛丑年农历二月十四</p>
-<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
-<p>辛丑年农历二月十五</p>
+    <title>memory</title>
+    <url>/2021/03/21/memory/</url>
+    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
+<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
+<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
+<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
+<img src="/2021/03/21/memory/memory.jpg" class="">
+
+<p>辛丑牛年农历二月初十</p>
 ]]></content>
       <categories>
         <category>生活</category>
       </categories>
       <tags>
-        <tag>如晴似雨</tag>
+        <tag>旅行</tag>
       </tags>
   </entry>
   <entry>
@@ -518,6 +503,22 @@
       </categories>
       <tags>
         <tag>shiro</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>rain</title>
+    <url>/2021/03/26/rain/</url>
+    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
+<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
+<p>辛丑年农历二月十四</p>
+<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
+<p>辛丑年农历二月十五</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>如晴似雨</tag>
       </tags>
   </entry>
   <entry>
