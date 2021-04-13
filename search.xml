@@ -72,74 +72,15 @@
       </tags>
   </entry>
   <entry>
-    <title>bitmap</title>
-    <url>/2020/11/16/bitmap/</url>
-    <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>在一个结构中，用一个比特位来描述一个数据的状态，这种结构就称为位图。0表示数据不存在，1表示数据存在。位图实际上是哈希表的一种变形。<br>在数据存储方面，位图的应用非常广泛。比如说现在要存储20亿个不重复的数据，int类型为4个字节，就需要80亿个字节来存储。1GB的内存表示的是10亿个字节，此时就需要8GB的内存来存放这些数据，而我们普通的电脑内存一般都是4G的内存，这显然是存放不下的。但是如果能用一个比特位来存放一个整型数据，则只需要0.5GB的内存。这大大节省了内存空间。</p>
-<h3 id="位操作符"><a href="#位操作符" class="headerlink" title="位操作符"></a>位操作符</h3><table>
-<thead>
-<tr>
-<th>符号</th>
-<th>描述</th>
-<th>运算规则</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>&amp;</td>
-<td>与</td>
-<td>都为1时结果才为1</td>
-</tr>
-<tr>
-<td></td>
-<td>或</td>
-<td>都为0时结果才为0</td>
-</tr>
-<tr>
-<td>^</td>
-<td>异或</td>
-<td>相同为0，相异为1</td>
-</tr>
-<tr>
-<td>~</td>
-<td>取反</td>
-<td>0变1，1变0</td>
-</tr>
-<tr>
-<td>&lt;&lt;</td>
-<td>左移</td>
-<td>左移若干位，高位丢弃，低位补0</td>
-</tr>
-<tr>
-<td></td>
-<td>右移</td>
-<td>右移若干位，无符号数，高位补0；有符号数，有的补符号位（算术右移），有的补0（逻辑右移）</td>
-</tr>
-</tbody></table>
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>内存不能以比特位为单位进行申请，所以这里以32位（4字节）为一个数组元素长度进行内存的申请。<br>位图的基本操作有初始化；设置某位为1或0（将数据存入位图或移除）；验证某位是1还是0（验证数据存不存在位图中）等。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line">#include &lt;stdint.h&gt;</span><br><span class="line">#include &lt;string.h&gt;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;指定位图最大能表示的数字</span><br><span class="line">#define MAXSIZE 1000</span><br><span class="line"></span><br><span class="line">struct BitMap</span><br><span class="line">&#123;</span><br><span class="line">    uint32_t *data; &#x2F;&#x2F;位图以uint32_t为单位申请内存</span><br><span class="line">	uint32_t capacity; &#x2F;&#x2F;位图中最大能表示的bit个数</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 位图初始化</span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapInit(struct BitMap *bm, uint32_t capacity)</span><br><span class="line">&#123;</span><br><span class="line">	if (bm &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		exit(0);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	bm-&gt;capacity &#x3D; capacity;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;需要申请多少个32bit内存</span><br><span class="line">	uint32_t size &#x3D; bm-&gt;capacity &#x2F; (sizeof(uint32_t)*8) + 1;</span><br><span class="line"></span><br><span class="line">	bm-&gt;data &#x3D; (uint32_t *)malloc(size * sizeof(uint32_t));</span><br><span class="line"></span><br><span class="line">	memset(bm-&gt;data, 0, size * sizeof(uint32_t));</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 获取指定位所在的数组下标及偏移量</span><br><span class="line">*&#x2F;</span><br><span class="line">void GetIndexAndOffset(uint32_t x, uint32_t *index, uint32_t *offset)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F;计算该位在哪个数组元素内（数组元素以32位为一个单元）</span><br><span class="line">    *index &#x3D; x &#x2F; (sizeof(uint32_t)*8);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;offset表示x在下标为index的数组元素的哪一位（从0开始计算）</span><br><span class="line">    *offset &#x3D; x % (sizeof(uint32_t)*8);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 设置某位为1</span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapSetOne(BitMap *bm, uint32_t x)</span><br><span class="line">&#123;</span><br><span class="line">	uint32_t index &#x3D; 0, offset &#x3D; 0;</span><br><span class="line">	GetIndexAndOffset(x, &amp;index, &amp;offset);</span><br><span class="line"></span><br><span class="line">    if (bm &#x3D;&#x3D; NULL || index &gt;&#x3D; bm-&gt;capacity)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;设置data[index]的第offset位为1，其余不变。</span><br><span class="line">    bm-&gt;data[index] &#x3D; bm-&gt;data[index] | (0x1 &lt;&lt; offset);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 设置某位为0</span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapSetZero(BitMap *bm, uint32_t x)</span><br><span class="line">&#123;</span><br><span class="line">	uint32_t index &#x3D; 0, offset &#x3D; 0;</span><br><span class="line">	GetIndexAndOffset(x, &amp;index, &amp;offset);</span><br><span class="line"></span><br><span class="line">    if (bm &#x3D;&#x3D; NULL || index &gt;&#x3D; bm-&gt;capacity)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;设置data[index]的第offset位为0，其余不变。</span><br><span class="line">    bm-&gt;data[index] &#x3D; bm-&gt;data[index] &amp; ~(0x1 &lt;&lt; offset);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 设置位图的所有位为1</span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapFill(BitMap *bm)</span><br><span class="line">&#123;</span><br><span class="line">    if (bm &#x3D;&#x3D; NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;计算位图中共有多少32bit的内存单元</span><br><span class="line">    uint32_t size &#x3D; bm-&gt;capacity &#x2F; (sizeof(uint32_t)*8) + 1;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;按字节将所有的比特位均置为0</span><br><span class="line">    memset(bm-&gt;data, 0xff, size * sizeof(uint32_t));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 设置位图的所有位为0</span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapClean(BitMap *bm)</span><br><span class="line">&#123;</span><br><span class="line">    if (bm &#x3D;&#x3D; NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;计算位图中共有多少32bit的内存单元</span><br><span class="line">    uint32_t size &#x3D; bm-&gt;capacity &#x2F; (sizeof(uint32_t)*8) + 1;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;按字节将所有的比特位均置为0</span><br><span class="line">    memset(bm-&gt;data, 0x0, size * sizeof(uint32_t));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 测试某位是否为1</span><br><span class="line">*&#x2F;</span><br><span class="line">int BitMapTest(BitMap *bm, uint32_t x)</span><br><span class="line">&#123;</span><br><span class="line">	uint32_t index &#x3D; 0, offset &#x3D; 0;</span><br><span class="line">	GetIndexAndOffset(x, &amp;index, &amp;offset);</span><br><span class="line"></span><br><span class="line">    if (bm &#x3D;&#x3D; NULL || index &gt;&#x3D; bm-&gt;capacity)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;用1与之按位与，如果结果为0，则该位为0，否则为1</span><br><span class="line">    &#x2F;&#x2F;如果该位为1时，按位与完的结果必定只有该位为1，其余位为0，所以对结果进行判断时</span><br><span class="line">    &#x2F;&#x2F;只能跟0进行比较，不能跟1进行比较</span><br><span class="line">    uint32_t ret &#x3D; bm-&gt;data[index] &amp; (0x1 &lt;&lt; offset);</span><br><span class="line"></span><br><span class="line">    if (ret &#x3D;&#x3D; 0)</span><br><span class="line">    &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125; else</span><br><span class="line">    &#123;</span><br><span class="line">        return 1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 销毁位图</span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapDestroy(BitMap *bm)</span><br><span class="line">&#123;</span><br><span class="line">    if (bm &#x3D;&#x3D; NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    free(bm);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 输入</span><br><span class="line">*&#x2F;</span><br><span class="line">void InputStandard()</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;请选择操作：&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;*******************************&quot; &lt;&lt; std::endl; </span><br><span class="line">	std::cout &lt;&lt; &quot;0、退出程序&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;1、设置某位为1(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;2、设置某位为0(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;3、设置所有位为1(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;4、设置所有位为0(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;5、测试某位是否为1(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;*******************************&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int x, flag;</span><br><span class="line">	BitMap *bm &#x3D; (BitMap *)malloc(sizeof(BitMap));</span><br><span class="line">	BitMapInit(bm, MAXSIZE);</span><br><span class="line">	</span><br><span class="line">	InputStandard();</span><br><span class="line">	std::cin &gt;&gt; flag;</span><br><span class="line">	</span><br><span class="line">	while (flag !&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		switch(flag)</span><br><span class="line">		&#123;</span><br><span class="line">			case 0:</span><br><span class="line">				exit(0);</span><br><span class="line">				break;</span><br><span class="line">			case 1:</span><br><span class="line">				std::cin &gt;&gt; x;</span><br><span class="line">				BitMapSetOne(bm, x);</span><br><span class="line">				break;</span><br><span class="line">			case 2:</span><br><span class="line">				std::cin &gt;&gt; x;</span><br><span class="line">				BitMapSetZero(bm, x);</span><br><span class="line">				break;</span><br><span class="line">			case 3:</span><br><span class="line">				BitMapFill(bm);</span><br><span class="line">				break;</span><br><span class="line">			case 4:</span><br><span class="line">				BitMapClean(bm);</span><br><span class="line">				break;</span><br><span class="line">			case 5:</span><br><span class="line">				std::cin &gt;&gt; x;</span><br><span class="line">			    if (BitMapTest(bm, x) &#x3D;&#x3D; 1)</span><br><span class="line">			    &#123;</span><br><span class="line">			    	std::cout &lt;&lt; x &lt;&lt; &quot;存在位图中！&quot; &lt;&lt; std::endl;</span><br><span class="line">				&#125; else</span><br><span class="line">				&#123;</span><br><span class="line">					std::cout &lt;&lt; x &lt;&lt; &quot;不存在位图中！&quot; &lt;&lt; std::endl;</span><br><span class="line">				&#125;</span><br><span class="line">				break;</span><br><span class="line">			default:</span><br><span class="line">			    std::cout &lt;&lt; &quot;请输入正确的操作序号！&quot; &lt;&lt; std::endl; </span><br><span class="line">			    break;</span><br><span class="line">		&#125;</span><br><span class="line">		InputStandard();</span><br><span class="line">		std::cin &gt;&gt; flag;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="常用小技巧"><a href="#常用小技巧" class="headerlink" title="常用小技巧"></a>常用小技巧</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 判断奇偶</span><br><span class="line">* 根据最未位是0还是1来决定，0就是偶数，1就是奇数。</span><br><span class="line">* 因此可以用if (a &amp; 1 &#x3D;&#x3D; 0)代替if (a % 2 &#x3D;&#x3D; 0)来判断a是不是偶数。</span><br><span class="line">*&#x2F;</span><br><span class="line">void IsOddOrEven(int number)</span><br><span class="line">&#123;</span><br><span class="line">	if ((number &amp; 1) &#x3D;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; number &lt;&lt; &quot; is an even number!&quot; &lt;&lt; std::endl;</span><br><span class="line">	&#125; else</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; number &lt;&lt; &quot; is an odd number!&quot; &lt;&lt; std::endl;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 交换两数</span><br><span class="line">*&#x2F;</span><br><span class="line">void Swap(int &amp;a, int &amp;b)</span><br><span class="line">&#123;</span><br><span class="line">	if (a !&#x3D; b)</span><br><span class="line">	&#123;</span><br><span class="line">		a ^&#x3D; b;</span><br><span class="line">		b ^&#x3D; a;</span><br><span class="line">		a ^&#x3D; b;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 变换符号</span><br><span class="line">* 二进制只需要取反后加1即可</span><br><span class="line">*&#x2F;</span><br><span class="line">int SignReversal(int a)</span><br><span class="line">&#123;</span><br><span class="line">	return ~a + 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 取绝对值</span><br><span class="line">*&#x2F;</span><br><span class="line">int Abs(int a)</span><br><span class="line">&#123;</span><br><span class="line">	int i &#x3D; a &gt;&gt; 31;</span><br><span class="line">&#x2F;&#x2F;	return i &#x3D;&#x3D; 0 ? a : (~a + 1);</span><br><span class="line">	return ((a ^ i) - i);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	IsOddOrEven(1);</span><br><span class="line">	IsOddOrEven(2);</span><br><span class="line"></span><br><span class="line">	int a &#x3D; 3, b &#x3D; 4;</span><br><span class="line">	Swap(a, b);</span><br><span class="line">	std::cout &lt;&lt; a &lt;&lt; &quot; : &quot; &lt;&lt; b &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; SignReversal(10) &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; SignReversal(-8) &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; Abs(-2) &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; Abs(6) &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="/2020/11/16/bitmap/bitmap.jpg" class="">
-
-<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p><strong>给定100亿个整数，设计算法找到只出现一次的整数。</strong><br>100亿个整数采用位图存储的话需要1.5G的内存，并且如果需要记录出现次数的话一个比特位是无法做到的，我们需要2个比特位那么就需要2.5G的内存，如果我们系统的内存不足够的话，我们需要将100亿个数据分成1000份文件，将每个文件的数据通过位图存储，我们采用两个比特位00：没有出现，01，出现一次，10出现多次，11舍弃，再将这1000个文件中出现一次的数据，统计到一个文件里。<br><strong>给两个文件，分别有100亿个整数，我们只有1G内存，如何找到两个文件交集。</strong><br>将第一个文件的数据分成1000份存储到位图里，再判断第二份文件中的数据是否在位图中。<br><strong>1个文件有100亿个int，1G内存，设计算法找到出现次数不超过2次的所有整数。</strong><br>我们需要将100亿个数据分成1000份文件，将每个文件的数据通过位图存储，我们采用两个比特位00：没有出现，01，出现一次，10出现2次，11舍弃，再将这1000个文件中出现不超过两次次的数据。</p>
-]]></content>
-      <categories>
-        <category>数据结构</category>
-      </categories>
-      <tags>
-        <tag>位图</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>bridge</title>
     <url>/2021/04/09/bridge/</url>
-    <content><![CDATA[<p>场景：处理商品分类销售的问题。</p>
-<h3 id="多层继承结构"><a href="#多层继承结构" class="headerlink" title="多层继承结构"></a>多层继承结构</h3><img src="/2021/04/09/bridge/mulextend.png" class="">
+    <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><strong>桥接模式</strong>将抽象部分与它的实现部分分离，使它们都可以独立地变化。将继承关系转化成关联关系，降低了类与类之间的耦合度，减少了系统中类的数量，也减少了代码量。</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><h4 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h4><p>某电器商场要处理电脑商品分类销售的问题，如果增加一个品牌一个类型则要增加好几个类。</p>
+<h4 id="多层继承结构"><a href="#多层继承结构" class="headerlink" title="多层继承结构"></a>多层继承结构</h4><img src="/2021/04/09/bridge/mulextend.png" class="">
 <p>传统的多层继承结构方式，在新增类型或品牌时都会牵扯出另一个维度的变化。类的个数也急剧增加。</p>
-<h3 id="桥接模式"><a href="#桥接模式" class="headerlink" title="桥接模式"></a>桥接模式</h3><p><strong>桥接模式</strong>将抽象部分与它的实现部分分离，使它们都可以独立地变化。</p>
-<p>如果某个类存在两个独立变化的维度，可以运用桥接模式将这两个维度分离出来，使两者可以独立扩展，让系统更加符合“单一职责原则”。</p>
+<h4 id="桥接模式"><a href="#桥接模式" class="headerlink" title="桥接模式"></a>桥接模式</h4><p>如果某个类存在两个独立变化的维度，可以运用桥接模式将这两个维度分离出来，使两者可以独立扩展，让系统更加符合“单一职责原则”。</p>
 <p>UML类图如下：</p>
-<img src="/2021/04/09/bridge/bri.png" class="">
+<img src="/2021/04/09/bridge/bridge.png" class="">
 
 <h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p><strong>创建一个实现类接口</strong></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;电脑品牌</span><br><span class="line">public interface Brand &#123;</span><br><span class="line">    void sale();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -200,23 +141,62 @@
       </tags>
   </entry>
   <entry>
-    <title>Three ways to create Java Multithread</title>
-    <url>/2020/09/23/concurrency/</url>
-    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
-<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    <title>bitmap</title>
+    <url>/2020/11/16/bitmap/</url>
+    <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>在一个结构中，用一个比特位来描述一个数据的状态，这种结构就称为位图。0表示数据不存在，1表示数据存在。位图实际上是哈希表的一种变形。<br>在数据存储方面，位图的应用非常广泛。比如说现在要存储20亿个不重复的数据，int类型为4个字节，就需要80亿个字节来存储。1GB的内存表示的是10亿个字节，此时就需要8GB的内存来存放这些数据，而我们普通的电脑内存一般都是4G的内存，这显然是存放不下的。但是如果能用一个比特位来存放一个整型数据，则只需要0.5GB的内存。这大大节省了内存空间。</p>
+<h3 id="位操作符"><a href="#位操作符" class="headerlink" title="位操作符"></a>位操作符</h3><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>描述</th>
+<th>运算规则</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&amp;</td>
+<td>与</td>
+<td>都为1时结果才为1</td>
+</tr>
+<tr>
+<td></td>
+<td>或</td>
+<td>都为0时结果才为0</td>
+</tr>
+<tr>
+<td>^</td>
+<td>异或</td>
+<td>相同为0，相异为1</td>
+</tr>
+<tr>
+<td>~</td>
+<td>取反</td>
+<td>0变1，1变0</td>
+</tr>
+<tr>
+<td>&lt;&lt;</td>
+<td>左移</td>
+<td>左移若干位，高位丢弃，低位补0</td>
+</tr>
+<tr>
+<td></td>
+<td>右移</td>
+<td>右移若干位，无符号数，高位补0；有符号数，有的补符号位（算术右移），有的补0（逻辑右移）</td>
+</tr>
+</tbody></table>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>内存不能以比特位为单位进行申请，所以这里以32位（4字节）为一个数组元素长度进行内存的申请。<br>位图的基本操作有初始化；设置某位为1或0（将数据存入位图或移除）；验证某位是1还是0（验证数据存不存在位图中）等。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line">#include &lt;stdint.h&gt;</span><br><span class="line">#include &lt;string.h&gt;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;指定位图最大能表示的数字</span><br><span class="line">#define MAXSIZE 1000</span><br><span class="line"></span><br><span class="line">struct BitMap</span><br><span class="line">&#123;</span><br><span class="line">    uint32_t *data; &#x2F;&#x2F;位图以uint32_t为单位申请内存</span><br><span class="line">	uint32_t capacity; &#x2F;&#x2F;位图中最大能表示的bit个数</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 位图初始化</span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapInit(struct BitMap *bm, uint32_t capacity)</span><br><span class="line">&#123;</span><br><span class="line">	if (bm &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		exit(0);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	bm-&gt;capacity &#x3D; capacity;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;需要申请多少个32bit内存</span><br><span class="line">	uint32_t size &#x3D; bm-&gt;capacity &#x2F; (sizeof(uint32_t)*8) + 1;</span><br><span class="line"></span><br><span class="line">	bm-&gt;data &#x3D; (uint32_t *)malloc(size * sizeof(uint32_t));</span><br><span class="line"></span><br><span class="line">	memset(bm-&gt;data, 0, size * sizeof(uint32_t));</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 获取指定位所在的数组下标及偏移量</span><br><span class="line">*&#x2F;</span><br><span class="line">void GetIndexAndOffset(uint32_t x, uint32_t *index, uint32_t *offset)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F;计算该位在哪个数组元素内（数组元素以32位为一个单元）</span><br><span class="line">    *index &#x3D; x &#x2F; (sizeof(uint32_t)*8);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;offset表示x在下标为index的数组元素的哪一位（从0开始计算）</span><br><span class="line">    *offset &#x3D; x % (sizeof(uint32_t)*8);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 设置某位为1</span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapSetOne(BitMap *bm, uint32_t x)</span><br><span class="line">&#123;</span><br><span class="line">	uint32_t index &#x3D; 0, offset &#x3D; 0;</span><br><span class="line">	GetIndexAndOffset(x, &amp;index, &amp;offset);</span><br><span class="line"></span><br><span class="line">    if (bm &#x3D;&#x3D; NULL || index &gt;&#x3D; bm-&gt;capacity)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;设置data[index]的第offset位为1，其余不变。</span><br><span class="line">    bm-&gt;data[index] &#x3D; bm-&gt;data[index] | (0x1 &lt;&lt; offset);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 设置某位为0</span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapSetZero(BitMap *bm, uint32_t x)</span><br><span class="line">&#123;</span><br><span class="line">	uint32_t index &#x3D; 0, offset &#x3D; 0;</span><br><span class="line">	GetIndexAndOffset(x, &amp;index, &amp;offset);</span><br><span class="line"></span><br><span class="line">    if (bm &#x3D;&#x3D; NULL || index &gt;&#x3D; bm-&gt;capacity)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;设置data[index]的第offset位为0，其余不变。</span><br><span class="line">    bm-&gt;data[index] &#x3D; bm-&gt;data[index] &amp; ~(0x1 &lt;&lt; offset);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 设置位图的所有位为1</span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapFill(BitMap *bm)</span><br><span class="line">&#123;</span><br><span class="line">    if (bm &#x3D;&#x3D; NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;计算位图中共有多少32bit的内存单元</span><br><span class="line">    uint32_t size &#x3D; bm-&gt;capacity &#x2F; (sizeof(uint32_t)*8) + 1;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;按字节将所有的比特位均置为0</span><br><span class="line">    memset(bm-&gt;data, 0xff, size * sizeof(uint32_t));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 设置位图的所有位为0</span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapClean(BitMap *bm)</span><br><span class="line">&#123;</span><br><span class="line">    if (bm &#x3D;&#x3D; NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;计算位图中共有多少32bit的内存单元</span><br><span class="line">    uint32_t size &#x3D; bm-&gt;capacity &#x2F; (sizeof(uint32_t)*8) + 1;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;按字节将所有的比特位均置为0</span><br><span class="line">    memset(bm-&gt;data, 0x0, size * sizeof(uint32_t));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 测试某位是否为1</span><br><span class="line">*&#x2F;</span><br><span class="line">int BitMapTest(BitMap *bm, uint32_t x)</span><br><span class="line">&#123;</span><br><span class="line">	uint32_t index &#x3D; 0, offset &#x3D; 0;</span><br><span class="line">	GetIndexAndOffset(x, &amp;index, &amp;offset);</span><br><span class="line"></span><br><span class="line">    if (bm &#x3D;&#x3D; NULL || index &gt;&#x3D; bm-&gt;capacity)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;用1与之按位与，如果结果为0，则该位为0，否则为1</span><br><span class="line">    &#x2F;&#x2F;如果该位为1时，按位与完的结果必定只有该位为1，其余位为0，所以对结果进行判断时</span><br><span class="line">    &#x2F;&#x2F;只能跟0进行比较，不能跟1进行比较</span><br><span class="line">    uint32_t ret &#x3D; bm-&gt;data[index] &amp; (0x1 &lt;&lt; offset);</span><br><span class="line"></span><br><span class="line">    if (ret &#x3D;&#x3D; 0)</span><br><span class="line">    &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125; else</span><br><span class="line">    &#123;</span><br><span class="line">        return 1;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 销毁位图</span><br><span class="line">*&#x2F;</span><br><span class="line">void BitMapDestroy(BitMap *bm)</span><br><span class="line">&#123;</span><br><span class="line">    if (bm &#x3D;&#x3D; NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        exit(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    free(bm);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 输入</span><br><span class="line">*&#x2F;</span><br><span class="line">void InputStandard()</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;请选择操作：&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;*******************************&quot; &lt;&lt; std::endl; </span><br><span class="line">	std::cout &lt;&lt; &quot;0、退出程序&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;1、设置某位为1(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;2、设置某位为0(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;3、设置所有位为1(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;4、设置所有位为0(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;5、测试某位是否为1(1-1000)&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; &quot;*******************************&quot; &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int x, flag;</span><br><span class="line">	BitMap *bm &#x3D; (BitMap *)malloc(sizeof(BitMap));</span><br><span class="line">	BitMapInit(bm, MAXSIZE);</span><br><span class="line">	</span><br><span class="line">	InputStandard();</span><br><span class="line">	std::cin &gt;&gt; flag;</span><br><span class="line">	</span><br><span class="line">	while (flag !&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		switch(flag)</span><br><span class="line">		&#123;</span><br><span class="line">			case 0:</span><br><span class="line">				exit(0);</span><br><span class="line">				break;</span><br><span class="line">			case 1:</span><br><span class="line">				std::cin &gt;&gt; x;</span><br><span class="line">				BitMapSetOne(bm, x);</span><br><span class="line">				break;</span><br><span class="line">			case 2:</span><br><span class="line">				std::cin &gt;&gt; x;</span><br><span class="line">				BitMapSetZero(bm, x);</span><br><span class="line">				break;</span><br><span class="line">			case 3:</span><br><span class="line">				BitMapFill(bm);</span><br><span class="line">				break;</span><br><span class="line">			case 4:</span><br><span class="line">				BitMapClean(bm);</span><br><span class="line">				break;</span><br><span class="line">			case 5:</span><br><span class="line">				std::cin &gt;&gt; x;</span><br><span class="line">			    if (BitMapTest(bm, x) &#x3D;&#x3D; 1)</span><br><span class="line">			    &#123;</span><br><span class="line">			    	std::cout &lt;&lt; x &lt;&lt; &quot;存在位图中！&quot; &lt;&lt; std::endl;</span><br><span class="line">				&#125; else</span><br><span class="line">				&#123;</span><br><span class="line">					std::cout &lt;&lt; x &lt;&lt; &quot;不存在位图中！&quot; &lt;&lt; std::endl;</span><br><span class="line">				&#125;</span><br><span class="line">				break;</span><br><span class="line">			default:</span><br><span class="line">			    std::cout &lt;&lt; &quot;请输入正确的操作序号！&quot; &lt;&lt; std::endl; </span><br><span class="line">			    break;</span><br><span class="line">		&#125;</span><br><span class="line">		InputStandard();</span><br><span class="line">		std::cin &gt;&gt; flag;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="常用小技巧"><a href="#常用小技巧" class="headerlink" title="常用小技巧"></a>常用小技巧</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 判断奇偶</span><br><span class="line">* 根据最未位是0还是1来决定，0就是偶数，1就是奇数。</span><br><span class="line">* 因此可以用if (a &amp; 1 &#x3D;&#x3D; 0)代替if (a % 2 &#x3D;&#x3D; 0)来判断a是不是偶数。</span><br><span class="line">*&#x2F;</span><br><span class="line">void IsOddOrEven(int number)</span><br><span class="line">&#123;</span><br><span class="line">	if ((number &amp; 1) &#x3D;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; number &lt;&lt; &quot; is an even number!&quot; &lt;&lt; std::endl;</span><br><span class="line">	&#125; else</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; number &lt;&lt; &quot; is an odd number!&quot; &lt;&lt; std::endl;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 交换两数</span><br><span class="line">*&#x2F;</span><br><span class="line">void Swap(int &amp;a, int &amp;b)</span><br><span class="line">&#123;</span><br><span class="line">	if (a !&#x3D; b)</span><br><span class="line">	&#123;</span><br><span class="line">		a ^&#x3D; b;</span><br><span class="line">		b ^&#x3D; a;</span><br><span class="line">		a ^&#x3D; b;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 变换符号</span><br><span class="line">* 二进制只需要取反后加1即可</span><br><span class="line">*&#x2F;</span><br><span class="line">int SignReversal(int a)</span><br><span class="line">&#123;</span><br><span class="line">	return ~a + 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 取绝对值</span><br><span class="line">*&#x2F;</span><br><span class="line">int Abs(int a)</span><br><span class="line">&#123;</span><br><span class="line">	int i &#x3D; a &gt;&gt; 31;</span><br><span class="line">&#x2F;&#x2F;	return i &#x3D;&#x3D; 0 ? a : (~a + 1);</span><br><span class="line">	return ((a ^ i) - i);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	IsOddOrEven(1);</span><br><span class="line">	IsOddOrEven(2);</span><br><span class="line"></span><br><span class="line">	int a &#x3D; 3, b &#x3D; 4;</span><br><span class="line">	Swap(a, b);</span><br><span class="line">	std::cout &lt;&lt; a &lt;&lt; &quot; : &quot; &lt;&lt; b &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; SignReversal(10) &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; SignReversal(-8) &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; Abs(-2) &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; Abs(6) &lt;&lt; std::endl;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<img src="/2020/11/16/bitmap/bitmap.jpg" class="">
+
+<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><p><strong>给定100亿个整数，设计算法找到只出现一次的整数。</strong><br>100亿个整数采用位图存储的话需要1.5G的内存，并且如果需要记录出现次数的话一个比特位是无法做到的，我们需要2个比特位那么就需要2.5G的内存，如果我们系统的内存不足够的话，我们需要将100亿个数据分成1000份文件，将每个文件的数据通过位图存储，我们采用两个比特位00：没有出现，01，出现一次，10出现多次，11舍弃，再将这1000个文件中出现一次的数据，统计到一个文件里。<br><strong>给两个文件，分别有100亿个整数，我们只有1G内存，如何找到两个文件交集。</strong><br>将第一个文件的数据分成1000份存储到位图里，再判断第二份文件中的数据是否在位图中。<br><strong>1个文件有100亿个int，1G内存，设计算法找到出现次数不超过2次的所有整数。</strong><br>我们需要将100亿个数据分成1000份文件，将每个文件的数据通过位图存储，我们采用两个比特位00：没有出现，01，出现一次，10出现2次，11舍弃，再将这1000个文件中出现不超过两次次的数据。</p>
 ]]></content>
       <categories>
-        <category>Java</category>
+        <category>数据结构</category>
       </categories>
       <tags>
-        <tag>多线程</tag>
+        <tag>位图</tag>
       </tags>
   </entry>
   <entry>
@@ -269,19 +249,23 @@
       </tags>
   </entry>
   <entry>
-    <title>diffchain</title>
-    <url>/2020/11/16/difftimechain/</url>
-    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    <title>Three ways to create Java Multithread</title>
+    <url>/2020/09/23/concurrency/</url>
+    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
+<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
+<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
-        <category>数据结构</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>差分时间链</tag>
+        <tag>多线程</tag>
       </tags>
   </entry>
   <entry>
@@ -339,6 +323,22 @@
       </tags>
   </entry>
   <entry>
+    <title>diffchain</title>
+    <url>/2020/11/16/difftimechain/</url>
+    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
+
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>差分时间链</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>filter</title>
     <url>/2021/04/13/filter/</url>
     <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><strong>过滤器模式</strong>使用不同的标准来过滤一组对象，通过逻辑运算以解耦的方式把它们连接起来。</p>
@@ -365,6 +365,20 @@
       </tags>
   </entry>
   <entry>
+    <title>春</title>
+    <url>/2021/03/24/hurt/</url>
+    <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
+<pre><code>        你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</code></pre>
+<p>辛丑牛年农历二月十二</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>firstblog</title>
     <url>/2020/09/20/firstblog/</url>
     <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
@@ -384,45 +398,6 @@
       </categories>
       <tags>
         <tag>出行</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>春</title>
-    <url>/2021/03/24/hurt/</url>
-    <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
-<pre><code>        你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</code></pre>
-<p>辛丑牛年农历二月十二</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>abstract,final,static,this,super</title>
-    <url>/2021/04/07/keyword/</url>
-    <content><![CDATA[<h3 id="abstract"><a href="#abstract" class="headerlink" title="abstract"></a>abstract</h3><p><strong>abstract</strong>关键字修饰类和方法。</p>
-<p>abstract修饰的类称为抽象类，例如：abstract class xxx{}<br>它可以声明引用但不能创建对象。<br>abstract修饰的方法称为抽象方法，例如：abstract void xxx();<br>它只有声明而没有实现。</p>
-<p>注意：含有抽象方法的类一定是抽象类，但抽象类中也可以有具体方法；抽象方法必须要在其子类中实现，除非子类也是抽象类。</p>
-<p><strong>abstract关键字不能与final、private或static修饰类放在一起</strong><br>abstract修饰的类必须被继承，修饰的方法应该被重写。<br>final修饰的类、属性和方法不能被改变，因此修饰的方法不能被重写。<br>private只能修饰内部类，修饰的属性和方法只能在类内部调用，重写的方法不能访问被private修饰的方法和属性。<br>static修饰的方法是静态的，可以被类直接调用。但abstract修饰的方法是抽象的，没有实现不能被直接调用，需要通过类继承或接口实现来重写抽象方法方可被调用。</p>
-<h3 id="final"><a href="#final" class="headerlink" title="final"></a>final</h3><p><strong>final</strong>关键字是最终的、不可修改的，用来修饰类，方法和属性（或变量）。<br>final修饰的类不能被继承，类中的方法也都被隐式的指定为final。<br>final修饰的方法不能被继承类重写。<br>final修饰的属性(或变量)，其值不能被改变。(即常量)<br>finally是异常处理语句，表示总是执行。<br>finalize()是Object中的方法，在垃圾回收器将要回收对象所占内存之前被调用。</p>
-<h3 id="static"><a href="#static" class="headerlink" title="static"></a>static</h3><p><strong>static</strong>关键字可以修饰属性、方法、代码块和类。<br>static修饰的类是静态内部类。非静态内部类在编译完成之后会隐含地保存着一个引用，该引用是指向创建它的外部类，但是静态内部类却没有。所以静态内部类不能访问外部类的非静态成员（变量和方法）。<br>static修饰成员变量和成员方法，它属于类。一般建议通过类名来调用静态成员。类名.静态变量名、对象.静态方法名()。<br>注意：不能在方法体中定义静态变量。<br>static修饰的代码块叫做静态代码块，经常用来初始化静态变量，在类加载时执行，只执行一次。（静态代码块–》非静态代码块–》构造方法）</p>
-<p>一般public、static与final一起用来定义公开静态变量。</p>
-<h3 id="this"><a href="#this" class="headerlink" title="this"></a>this</h3><p><strong>this</strong>关键字表示引用类的当前实例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class What &#123;</span><br><span class="line">  void manage() &#123;</span><br><span class="line">  this.report();  &#x2F;&#x2F;调用类What的当前实例的方法</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  void report() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="super"><a href="#super" class="headerlink" title="super"></a>super</h3><p><strong>super</strong>关键字表示从子类访问父类的变量和方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Father &#123;</span><br><span class="line">  protected int n;</span><br><span class="line"></span><br><span class="line">  protected print() &#123;</span><br><span class="line">    System.out.println(n);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Son extends Father &#123;</span><br><span class="line">  void show() &#123;</span><br><span class="line">    super.n &#x3D; 10;</span><br><span class="line">    super.print();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>this、super不能用在static方法中<br>this代表对本类对象的引用，指向本类对象；super代表对父类对象的引用，指向父类对象。this和super属于对象范畴，静态方法属于类范畴。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>关键字</tag>
       </tags>
   </entry>
   <entry>
@@ -454,6 +429,47 @@
       </tags>
   </entry>
   <entry>
+    <title>rain</title>
+    <url>/2021/03/26/rain/</url>
+    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
+<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
+<p>辛丑年农历二月十四</p>
+<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
+<p>辛丑年农历二月十五</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>如晴似雨</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>abstract,final,static,this,super</title>
+    <url>/2021/04/07/keyword/</url>
+    <content><![CDATA[<h3 id="abstract"><a href="#abstract" class="headerlink" title="abstract"></a>abstract</h3><p><strong>abstract</strong>关键字修饰类和方法。</p>
+<p>abstract修饰的类称为抽象类，例如：abstract class xxx{}<br>它可以声明引用但不能创建对象。<br>abstract修饰的方法称为抽象方法，例如：abstract void xxx();<br>它只有声明而没有实现。</p>
+<p>注意：含有抽象方法的类一定是抽象类，但抽象类中也可以有具体方法；抽象方法必须要在其子类中实现，除非子类也是抽象类。</p>
+<p><strong>abstract关键字不能与final、private或static修饰类放在一起</strong><br>abstract修饰的类必须被继承，修饰的方法应该被重写。<br>final修饰的类、属性和方法不能被改变，因此修饰的方法不能被重写。<br>private只能修饰内部类，修饰的属性和方法只能在类内部调用，重写的方法不能访问被private修饰的方法和属性。<br>static修饰的方法是静态的，可以被类直接调用。但abstract修饰的方法是抽象的，没有实现不能被直接调用，需要通过类继承或接口实现来重写抽象方法方可被调用。</p>
+<h3 id="final"><a href="#final" class="headerlink" title="final"></a>final</h3><p><strong>final</strong>关键字是最终的、不可修改的，用来修饰类，方法和属性（或变量）。<br>final修饰的类不能被继承，类中的方法也都被隐式的指定为final。<br>final修饰的方法不能被继承类重写。<br>final修饰的属性(或变量)，其值不能被改变。(即常量)<br>finally是异常处理语句，表示总是执行。<br>finalize()是Object中的方法，在垃圾回收器将要回收对象所占内存之前被调用。</p>
+<h3 id="static"><a href="#static" class="headerlink" title="static"></a>static</h3><p><strong>static</strong>关键字可以修饰属性、方法、代码块和类。<br>static修饰的类是静态内部类。非静态内部类在编译完成之后会隐含地保存着一个引用，该引用是指向创建它的外部类，但是静态内部类却没有。所以静态内部类不能访问外部类的非静态成员（变量和方法）。<br>static修饰成员变量和成员方法，它属于类。一般建议通过类名来调用静态成员。类名.静态变量名、对象.静态方法名()。<br>注意：不能在方法体中定义静态变量。<br>static修饰的代码块叫做静态代码块，经常用来初始化静态变量，在类加载时执行，只执行一次。（静态代码块–》非静态代码块–》构造方法）</p>
+<p>一般public、static与final一起用来定义公开静态变量。</p>
+<h3 id="this"><a href="#this" class="headerlink" title="this"></a>this</h3><p><strong>this</strong>关键字表示引用类的当前实例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class What &#123;</span><br><span class="line">  void manage() &#123;</span><br><span class="line">  this.report();  &#x2F;&#x2F;调用类What的当前实例的方法</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  void report() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="super"><a href="#super" class="headerlink" title="super"></a>super</h3><p><strong>super</strong>关键字表示从子类访问父类的变量和方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Father &#123;</span><br><span class="line">  protected int n;</span><br><span class="line"></span><br><span class="line">  protected print() &#123;</span><br><span class="line">    System.out.println(n);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Son extends Father &#123;</span><br><span class="line">  void show() &#123;</span><br><span class="line">    super.n &#x3D; 10;</span><br><span class="line">    super.print();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>this、super不能用在static方法中<br>this代表对本类对象的引用，指向本类对象；super代表对父类对象的引用，指向父类对象。this和super属于对象范畴，静态方法属于类范畴。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>关键字</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>memory</title>
     <url>/2021/03/21/memory/</url>
     <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
@@ -469,22 +485,6 @@
       </categories>
       <tags>
         <tag>旅行</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>rain</title>
-    <url>/2021/03/26/rain/</url>
-    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
-<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
-<p>辛丑年农历二月十四</p>
-<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
-<p>辛丑年农历二月十五</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>如晴似雨</tag>
       </tags>
   </entry>
   <entry>
@@ -511,6 +511,59 @@
       </categories>
       <tags>
         <tag>原型模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>umlarrow</title>
+    <url>/2021/03/31/umlarrow/</url>
+    <content><![CDATA[<h3 id="泛化（继承）"><a href="#泛化（继承）" class="headerlink" title="泛化（继承）"></a>泛化（继承）</h3><p>泛化是一种一般与特殊、一般与具体关系的描述，具体建立在一般之上并对其进行扩展。<br><strong>实线空心三角箭头表示</strong></p>
+<img src="/2021/03/31/umlarrow/generate.png" class="">
+
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>实现是类与接口之间关系的描述，类是接口所有特征和行为的具体实现。<br><strong>虚线空心三角箭头表示</strong></p>
+<img src="/2021/03/31/umlarrow/implement.png" class="">
+
+<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><p>依赖是一种使用关系，即一个类的实现需要另一个类的帮助。通常一个类的方法参数中需要传入另一个类的对象，即表示依赖这个类。<br><strong>虚线箭头</strong></p>
+<img src="/2021/03/31/umlarrow/rely.png" class="">
+
+<h3 id="关联"><a href="#关联" class="headerlink" title="关联"></a>关联</h3><p>关联表示类与类之间的联接，一个类知道另一个类的方法和属性，这种关系比依赖更强。一般一个类作为另一个类的全局变量，即表示关联这个类。<br><strong>实线箭头</strong></p>
+<img src="/2021/03/31/umlarrow/relevance.png" class="">
+
+
+<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><p>聚合是关联的一种特例，是更强的关联。聚合是整体和个体之间的关系，即<strong>has-a</strong>的关系。关联关系中两个类是处于相同的层次,而聚合关系中两个类是处于不同的层次，一个表示整体, 一个表示个体。</p>
+<img src="/2021/03/31/umlarrow/juhe.png" class="">
+
+<h3 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h3><p>组合也是关联的一种特例。组合是整体与部分的关系，即<strong>contains-a</strong>的关系，比聚合更强。</p>
+<img src="/2021/03/31/umlarrow/union.png" class="">
+
+]]></content>
+      <categories>
+        <category>UML</category>
+      </categories>
+      <tags>
+        <tag>箭头含义</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>singleton</title>
+    <url>/2021/03/30/singleton/</url>
+    <content><![CDATA[<p><strong>单例模式</strong>是最简单的设计模式之一，涉及一个单一的类。该类负责创建自己的对象，同时确保只有单个对象被创建。<br>注意：单例类只能有一个实例；单例类必须自己创建自己的唯一实例；单例类必须给其它对象提供这一实例。</p>
+<p>优点：内存里只有一个实例，减少了内存的开销；避免对资源的多重占用。</p>
+<p>缺点：没有接口，不能继承，与单一职责原则冲突。</p>
+<p>使用场景：生产唯一序列号；web中的计数器，不用每次刷新在数据库加一次，而用单例先缓存起来。</p>
+<p>1.创建一个单例类（饿汉式）<br>类加载时就初始化，浪费内存。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonFactory &#123;</span><br><span class="line">    private static final SingletonFactory instance &#x3D; new SingletonFactory();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;private 避免类在外部被实例化</span><br><span class="line">    private SingletonFactory() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonFactory getInstance() &#123;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void showMessage() &#123;</span><br><span class="line">        System.out.println(&quot;what are words!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（双检锁）<br>在多线程情况下能保持高性能</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonFactory &#123;</span><br><span class="line">    &#x2F;&#x2F;双检锁</span><br><span class="line">    private volatile static SingletonFactory instance;</span><br><span class="line"></span><br><span class="line">    private SingletonFactory() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonFactory getInstance() &#123;</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            synchronized (SingletonFactory.class) &#123;</span><br><span class="line">                if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    instance &#x3D; new SingletonFactory();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>双检锁模式，进行了两次if判断。第一次是为了避免不要的实例，第二次是为了进行同步，避免多线程问题。由于instance = new SingletonFactory()对象的创建在JVM中可能会进行重排序，多线程访问下会存在风险，使用volatile关键字修饰SingletonFactory实例变量能有效解决该问题。</p>
+<p>2.测试</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SingletonFactory singletonFactory &#x3D; SingletonFactory.getInstance();</span><br><span class="line">        singletonFactory.showMessage();  &#x2F;&#x2F; what are words!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>单例模式</tag>
       </tags>
   </entry>
   <entry>
@@ -552,59 +605,6 @@
       </categories>
       <tags>
         <tag>shiro</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>singleton</title>
-    <url>/2021/03/30/singleton/</url>
-    <content><![CDATA[<p><strong>单例模式</strong>是最简单的设计模式之一，涉及一个单一的类。该类负责创建自己的对象，同时确保只有单个对象被创建。<br>注意：单例类只能有一个实例；单例类必须自己创建自己的唯一实例；单例类必须给其它对象提供这一实例。</p>
-<p>优点：内存里只有一个实例，减少了内存的开销；避免对资源的多重占用。</p>
-<p>缺点：没有接口，不能继承，与单一职责原则冲突。</p>
-<p>使用场景：生产唯一序列号；web中的计数器，不用每次刷新在数据库加一次，而用单例先缓存起来。</p>
-<p>1.创建一个单例类（饿汉式）<br>类加载时就初始化，浪费内存。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonFactory &#123;</span><br><span class="line">    private static final SingletonFactory instance &#x3D; new SingletonFactory();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;private 避免类在外部被实例化</span><br><span class="line">    private SingletonFactory() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonFactory getInstance() &#123;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void showMessage() &#123;</span><br><span class="line">        System.out.println(&quot;what are words!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>（双检锁）<br>在多线程情况下能保持高性能</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonFactory &#123;</span><br><span class="line">    &#x2F;&#x2F;双检锁</span><br><span class="line">    private volatile static SingletonFactory instance;</span><br><span class="line"></span><br><span class="line">    private SingletonFactory() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonFactory getInstance() &#123;</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            synchronized (SingletonFactory.class) &#123;</span><br><span class="line">                if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    instance &#x3D; new SingletonFactory();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>双检锁模式，进行了两次if判断。第一次是为了避免不要的实例，第二次是为了进行同步，避免多线程问题。由于instance = new SingletonFactory()对象的创建在JVM中可能会进行重排序，多线程访问下会存在风险，使用volatile关键字修饰SingletonFactory实例变量能有效解决该问题。</p>
-<p>2.测试</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SingletonFactory singletonFactory &#x3D; SingletonFactory.getInstance();</span><br><span class="line">        singletonFactory.showMessage();  &#x2F;&#x2F; what are words!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>单例模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>umlarrow</title>
-    <url>/2021/03/31/umlarrow/</url>
-    <content><![CDATA[<h3 id="泛化（继承）"><a href="#泛化（继承）" class="headerlink" title="泛化（继承）"></a>泛化（继承）</h3><p>泛化是一种一般与特殊、一般与具体关系的描述，具体建立在一般之上并对其进行扩展。<br><strong>实线空心三角箭头表示</strong></p>
-<img src="/2021/03/31/umlarrow/generate.png" class="">
-
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>实现是类与接口之间关系的描述，类是接口所有特征和行为的具体实现。<br><strong>虚线空心三角箭头表示</strong></p>
-<img src="/2021/03/31/umlarrow/implement.png" class="">
-
-<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><p>依赖是一种使用关系，即一个类的实现需要另一个类的帮助。通常一个类的方法参数中需要传入另一个类的对象，即表示依赖这个类。<br><strong>虚线箭头</strong></p>
-<img src="/2021/03/31/umlarrow/rely.png" class="">
-
-<h3 id="关联"><a href="#关联" class="headerlink" title="关联"></a>关联</h3><p>关联表示类与类之间的联接，一个类知道另一个类的方法和属性，这种关系比依赖更强。一般一个类作为另一个类的全局变量，即表示关联这个类。<br><strong>实线箭头</strong></p>
-<img src="/2021/03/31/umlarrow/relevance.png" class="">
-
-
-<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><p>聚合是关联的一种特例，是更强的关联。聚合是整体和个体之间的关系，即<strong>has-a</strong>的关系。关联关系中两个类是处于相同的层次,而聚合关系中两个类是处于不同的层次，一个表示整体, 一个表示个体。</p>
-<img src="/2021/03/31/umlarrow/juhe.png" class="">
-
-<h3 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h3><p>组合也是关联的一种特例。组合是整体与部分的关系，即<strong>contains-a</strong>的关系，比聚合更强。</p>
-<img src="/2021/03/31/umlarrow/union.png" class="">
-
-]]></content>
-      <categories>
-        <category>UML</category>
-      </categories>
-      <tags>
-        <tag>箭头含义</tag>
       </tags>
   </entry>
 </search>
