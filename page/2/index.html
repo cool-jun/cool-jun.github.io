@@ -310,7 +310,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-03 10:55:36" itemprop="dateModified" datetime="2021-04-03T10:55:36+08:00">2021-04-03</time>
+                <time title="修改时间：2021-04-13 20:17:58" itemprop="dateModified" datetime="2021-04-13T20:17:58+08:00">2021-04-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -347,49 +347,49 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p><strong>简单工厂模式</strong>是常用的设计模式之一，它提供了一种创建对象的最佳方式。<br><strong>建立一个工厂类，对实现了同一接口的一些类进行实例的创建。</strong></p>
+          <h3 id="简单工厂模式简介"><a href="#简单工厂模式简介" class="headerlink" title="简单工厂模式简介"></a>简单工厂模式简介</h3><p><strong>简单工厂模式</strong>是常用的设计模式之一，它提供了一种创建对象的最佳方式。<br><strong>建立一个工厂类，对实现了同一接口的一些类进行实例的创建。</strong></p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><h4 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h4><p>以发送消息为例，创建一个Sender接口，再创建实现Sender接口的类MailSender和SmsSender。最后创建工厂类SendFactory，以便获取对象。</p>
 <p>UML类图如下</p>
 <img src="/2021/03/26/factory-mode/1.png" class="">
 
-<p>在简单工厂模式中创建实例的方法通常为静态（static）方法，因此简单工厂模式（Simple Factory Pattern）又叫作静态工厂方法模式（Static Factory Method Pattern）。</p>
-<p>优点：调用者想创建对象，只需要知道其名称就行；<br>客户端无需知道所创建具体产品的类名，只需知道参数即可。</p>
-<p>缺点：简单工厂模式的工厂类单一，负责所有产品的创建，职责过重，一旦异常，整个系统将受影响；简单工厂模式每增加一个产品就要增加一个具体产品类和一个对应的具体工厂类，这增加了系统的复杂度，<strong>破坏了开闭原则。</strong></p>
-<p>使用场景：日志记录器，可能记录到本地硬盘、系统事件、远程服务等，用户可以自己选择。<br>数据库访问。<br>设计一个框架需要3个协议，pop3、imap、http，可以为这3个产品类共同实现一个接口。</p>
-<p>1.创建接口（抽象产品）</p>
+<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><p><strong>创建接口（抽象产品）</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface Sender &#123;</span><br><span class="line">    void Send();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>2.创建实现类（具体产品）</p>
+<p><strong>创建实现类（具体产品）</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class MailSender implements Sender &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void Send() &#123;</span><br><span class="line">        System.out.println(&quot;this is mail sender!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class SmsSender implements Sender &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void Send() &#123;</span><br><span class="line">        System.out.println(&quot;this is sms sender!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>3.创建工厂类，生成基于给定信息的实现类的对象（简单工厂）</p>
+<p><strong>创建工厂类，生成基于给定信息的实现类的对象（简单工厂）</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class SendFactory &#123;</span><br><span class="line">    public static Sender produce(String type) &#123;</span><br><span class="line">        if (&quot;mail&quot;.equals(type)) &#123;</span><br><span class="line">            return new MailSender();</span><br><span class="line">        &#125; else if (&quot;sms&quot;.equals(type)) &#123;</span><br><span class="line">            return new SmsSender();</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            System.out.println(&quot;请输入正确的类型!&quot;);</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>4.测试</p>
+<p><strong>测试</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public class FactoryTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Sender sender &#x3D; SendFactory.produce(&quot;mail&quot;);</span><br><span class="line">        assert sender !&#x3D; null;</span><br><span class="line">        sender.Send();  &#x2F;&#x2F; this is mail sender!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>简单工厂模式应用：Java库中根据不同的参数，getInstance()方法会返回不同的Calendar对象。</p>
+<h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>在简单工厂模式中创建实例的方法通常为静态（static）方法，因此简单工厂模式（Simple Factory Pattern）又叫作静态工厂方法模式（Static Factory Method Pattern）。</p>
+<p>优点：调用者想创建对象，只需要知道其名称就行；<br>客户端无需知道所创建具体产品的类名，只需知道参数即可。</p>
+<p>缺点：简单工厂模式的工厂类单一，负责所有产品的创建，职责过重，一旦异常，整个系统将受影响；简单工厂模式每增加一个产品就要增加一个具体产品类和一个对应的具体工厂类，这增加了系统的复杂度，<strong>破坏了开闭原则。</strong></p>
+<h3 id="应用实例"><a href="#应用实例" class="headerlink" title="应用实例"></a>应用实例</h3><p>日志记录器，可能记录到本地硬盘、系统事件、远程服务等，用户可以自己选择。<br>设计一个框架需要3个协议，pop3、imap、http，可以为这3个产品类共同实现一个接口。<br>Java库中根据不同的参数，getInstance()方法会返回不同的Calendar对象。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">java.util.Calendar - getInstance()</span><br><span class="line">java.util.Calendar - getInstance(TimeZone zone)</span><br><span class="line">java.util.Calendar - getInstance(Locale aLocale)</span><br><span class="line">java.util.Calendar - getInstance(TimeZone zone, Locale aLocale)</span><br><span class="line">java.text.NumberFormat - getInstance()</span><br><span class="line">java.text.NumberFormat - getInstance(Locale inLocale)</span><br></pre></td></tr></table></figure>
 
 
-<p><strong>工厂方法模式</strong>是对简单工厂模式的进一步抽象，其好处是可以使系统在不修改原来代码的情况下引进新的产品，即满足开闭原则。</p>
-<p>UML类图如下</p>
+<h3 id="工厂方法模式简介"><a href="#工厂方法模式简介" class="headerlink" title="工厂方法模式简介"></a>工厂方法模式简介</h3><p><strong>工厂方法模式</strong>是对简单工厂模式的进一步抽象，其好处是可以使系统在不修改原代码的情况下引进新的产品，即满足开闭原则。</p>
+<h3 id="实现-1"><a href="#实现-1" class="headerlink" title="实现"></a>实现</h3><h4 id="场景-1"><a href="#场景-1" class="headerlink" title="场景"></a>场景</h4><p>如上简单工厂模式场景。<br>UML类图如下</p>
 <img src="/2021/03/26/factory-mode/2.png" class="">
 
-<p>优点：用户只需要知道具体工厂的名称就可得到所要的产品，无须知道产品的具体创建过程；<br>灵活性增强，对于新产品的创建，只需多写一个相应的工厂类；典型的解耦框架。</p>
-<p>缺点：类的个数容易过多，增加复杂度；增加了系统的抽象性和理解难度；<br>抽象产品只能生产一种产品，此弊端可使用抽象工厂模式解决。</p>
-<p>抽象工厂：提供了产品的生成方法</p>
+<h4 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h4><p><strong>抽象工厂：提供了产品的生成方法</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface SenderFactoryMethod &#123;</span><br><span class="line">    Sender newSender();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>具体工厂：实现抽象工厂中的抽象方法，完成具体产品的创建。</p>
+<p><strong>具体工厂：实现抽象工厂中的抽象方法，完成具体产品的创建。</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class SmsFactoryMethod implements SenderFactoryMethod &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Sender newSender() &#123;</span><br><span class="line">        return new SmsSender();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class MailFactoryMethod implements SenderFactoryMethod &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Sender newSender() &#123;</span><br><span class="line">        return new MailSender();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>测试</p>
+<p><strong>测试</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class FactoryMethodTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SenderFactoryMethod mail &#x3D; new MailFactoryMethod();</span><br><span class="line">        mail.newSender().Send();  &#x2F;&#x2F; this is mail sender!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>工厂方法模式在Logback源码中有具体的应用。</p>
+<h4 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h4><p>优点：用户只需要知道具体工厂的名称就可得到所要的产品，无须知道产品的具体创建过程；<br>灵活性增强，对于新产品的创建，只需多写一个相应的工厂类；典型的解耦框架。</p>
+<p>缺点：类的个数容易过多，增加复杂度；增加了系统的抽象性和理解难度；<br>抽象产品只能生产一种产品，此弊端可使用抽象工厂模式解决。</p>
+<h3 id="应用实例-1"><a href="#应用实例-1" class="headerlink" title="应用实例"></a>应用实例</h3><p>Logback源码中的具体应用。</p>
 
       
     </div>
@@ -440,7 +440,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-07 15:19:56" itemprop="dateModified" datetime="2021-04-07T15:19:56+08:00">2021-04-07</time>
+                <time title="修改时间：2021-04-13 19:54:31" itemprop="dateModified" datetime="2021-04-13T19:54:31+08:00">2021-04-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -478,18 +478,16 @@
 
       
           <p>1995年，GoF（Gang of Four，四人组/四人帮）合作出版了《设计模式：可复用面向对象软件的基础》一书，共收录了23种设计模式，从此树立了软件设计模式领域的里程碑，人称「GoF设计模式」。设计模式简单说就是为了可重用代码，让代码更容易被他人理解，保证代码可靠性。</p>
-<p>设计模式有如下原则：</p>
-<h4 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h4><p>对扩展开放，对修改封闭。为了使程序的扩展性更好，易于维护和升级，一般需要使用接口和抽象类。</p>
+<h3 id="设计模式原则"><a href="#设计模式原则" class="headerlink" title="设计模式原则"></a>设计模式原则</h3><h4 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h4><p>对扩展开放，对修改封闭。为了使程序的扩展性更好，易于维护和升级，一般需要使用接口和抽象类。</p>
 <h4 id="里氏替换原则"><a href="#里氏替换原则" class="headerlink" title="里氏替换原则"></a>里氏替换原则</h4><p>任何基类可以出现的地方，子类一定可以出现。里氏替换原则是继承复用的基石，只有当子类可以替换掉基类，基类才能真正被复用，而且子类也可以在基类的基础上增加新的行为。里氏替换原则实际上是对开闭原则的补充。基类与子类的继承关系就是抽象化的具体实现。</p>
 <h4 id="依赖倒置原则"><a href="#依赖倒置原则" class="headerlink" title="依赖倒置原则"></a>依赖倒置原则</h4><p>针对接口编程，高层模块不应该依赖底层模块，二者都应该依赖抽象而不是具体。</p>
 <h4 id="接口分离原则"><a href="#接口分离原则" class="headerlink" title="接口分离原则"></a>接口分离原则</h4><p>使用多个隔离的接口比使用单个庞大的接口好。其目的在于降低耦合度。</p>
 <h4 id="单一职责原则"><a href="#单一职责原则" class="headerlink" title="单一职责原则"></a>单一职责原则</h4><p>类的职责要单一，不能将太多的职责放在一个类中。类的职责主要包括两个方面：数据职责和行为职责。数据职责通过其属性来体现，而行为职责通过其方法来体现。</p>
 <h4 id="迪米特法则（最少知道原则）"><a href="#迪米特法则（最少知道原则）" class="headerlink" title="迪米特法则（最少知道原则）"></a>迪米特法则（最少知道原则）</h4><p>一个实体应当尽可能少的与其它实体之间发生相互作用，使得系统功能模块相对独立。</p>
 <h4 id="合成复用原则"><a href="#合成复用原则" class="headerlink" title="合成复用原则"></a>合成复用原则</h4><p>尽量使用组合/聚合的方式，少使用或不使用继承关系。</p>
-<p>设计模式通常分为3大类：</p>
-<h3 id="创建型模式"><a href="#创建型模式" class="headerlink" title="创建型模式"></a>创建型模式</h3><p>工厂模式、抽象工厂模式、单例模式、建造者模式、原型模式。</p>
-<h3 id="结构型模式"><a href="#结构型模式" class="headerlink" title="结构型模式"></a>结构型模式</h3><p>适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。</p>
-<h3 id="行为型模式"><a href="#行为型模式" class="headerlink" title="行为型模式"></a>行为型模式</h3><p>策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。</p>
+<h3 id="设计模式分类"><a href="#设计模式分类" class="headerlink" title="设计模式分类"></a>设计模式分类</h3><h4 id="创建型模式"><a href="#创建型模式" class="headerlink" title="创建型模式"></a>创建型模式</h4><p>工厂模式、抽象工厂模式、单例模式、建造者模式、原型模式。</p>
+<h4 id="结构型模式"><a href="#结构型模式" class="headerlink" title="结构型模式"></a>结构型模式</h4><p>适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。</p>
+<h4 id="行为型模式"><a href="#行为型模式" class="headerlink" title="行为型模式"></a>行为型模式</h4><p>策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。</p>
 
       
     </div>
