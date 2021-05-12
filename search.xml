@@ -64,7 +64,7 @@
 <p><strong>测试</strong></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class AdapterTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        AudioPlayer audioPlayer &#x3D; new AudioPlayer();</span><br><span class="line"></span><br><span class="line">        audioPlayer.play(&quot;mp3&quot;, &quot;what are words.mp3&quot;);</span><br><span class="line">        audioPlayer.play(&quot;mp4&quot;, &quot;alone.mp4&quot;);</span><br><span class="line">        audioPlayer.play(&quot;avi&quot;, &quot;beyond.avi&quot;);</span><br><span class="line">        audioPlayer.play(&quot;rmvb&quot;, &quot;mind we.rmvb&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">Playing mp3 file, name: what are words.mp3</span><br><span class="line">Playing mp4 file, name: alone.mp4</span><br><span class="line">Playing avi file, name: beyond.avi</span><br><span class="line">Invalid media rmvb</span><br></pre></td></tr></table></figure>
 
-<h3 id="实际应用场景"><a href="#实际应用场景" class="headerlink" title="实际应用场景"></a>实际应用场景</h3><p>JAVA中的jdbc; Spring中的Advice</p>
+<h3 id="实际应用场景"><a href="#实际应用场景" class="headerlink" title="实际应用场景"></a>实际应用场景</h3><p>JAVA中的jdbc;<br>Spring中的Advice。</p>
 ]]></content>
       <categories>
         <category>设计模式</category>
@@ -303,32 +303,6 @@
       </tags>
   </entry>
   <entry>
-    <title>filter</title>
-    <url>/2021/04/13/filter/</url>
-    <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><strong>过滤器模式</strong>使用不同的标准来过滤一组对象，通过逻辑运算以解耦的方式把它们连接起来。</p>
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><h4 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h4><p>人类中有男性、女性、单身、已婚等等。现在要对一些人进行刷选，如选出男性、女性单身、男性已婚等，便可以使用过滤器模式。</p>
-<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><p><strong>创建应用类</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;创建类,对此类应用&quot;标准（过滤器）&quot;</span><br><span class="line">public class Person &#123;</span><br><span class="line">    private String name;</span><br><span class="line">    private String gender;</span><br><span class="line">    private String status;</span><br><span class="line"></span><br><span class="line">    public Person(String name, String gender, String status) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">        this.gender &#x3D; gender;</span><br><span class="line">        this.status &#x3D; status;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getGender() &#123;</span><br><span class="line">        return gender;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setGender(String gender) &#123;</span><br><span class="line">        this.gender &#x3D; gender;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getStatus() &#123;</span><br><span class="line">        return status;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setStatus(String status) &#123;</span><br><span class="line">        this.status &#x3D; status;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>创建标准</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;创建过滤器标准</span><br><span class="line">public interface FilterPerson &#123;</span><br><span class="line">    List&lt;Person&gt; meetFilter(List&lt;Person&gt; personList);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>创建具体标准</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;创建具体过滤器</span><br><span class="line">public class MaleFilter implements FilterPerson &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public List&lt;Person&gt; meetFilter(List&lt;Person&gt; personList) &#123;</span><br><span class="line">        List&lt;Person&gt; malePersonList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">        for (Person person : personList) &#123;</span><br><span class="line">            if (person.getGender().equalsIgnoreCase(&quot;MALE&quot;)) &#123;</span><br><span class="line">                malePersonList.add(person);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return malePersonList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;创建具体过滤器</span><br><span class="line">public class FemaleFilter implements FilterPerson &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public List&lt;Person&gt; meetFilter(List&lt;Person&gt; personList) &#123;</span><br><span class="line">        List&lt;Person&gt; femalePersonList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">        for (Person person : personList) &#123;</span><br><span class="line">            if (person.getGender().equalsIgnoreCase(&quot;FEMALE&quot;)) &#123;</span><br><span class="line">                femalePersonList.add(person);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return femalePersonList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;创建具体过滤器</span><br><span class="line">public class SingleFilter implements FilterPerson &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public List&lt;Person&gt; meetFilter(List&lt;Person&gt; personList) &#123;</span><br><span class="line">        List&lt;Person&gt; singlePersonList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">        for (Person person : personList) &#123;</span><br><span class="line">            if (person.getStatus().equalsIgnoreCase(&quot;SINGLE&quot;)) &#123;</span><br><span class="line">                singlePersonList.add(person);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return singlePersonList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>测试</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;测试</span><br><span class="line">public class FilterTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        List&lt;Person&gt; personList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        personList.add(new Person(&quot;hj&quot;, &quot;Male&quot;, &quot;Single&quot;));</span><br><span class="line">        personList.add(new Person(&quot;cjm&quot;, &quot;Female&quot;, &quot;Single&quot;));</span><br><span class="line">        personList.add(new Person(&quot;xxx&quot;, &quot;Female&quot;, &quot;Married&quot;));</span><br><span class="line"></span><br><span class="line">        FilterPerson male &#x3D; new MaleFilter();</span><br><span class="line">        FilterPerson female &#x3D; new FemaleFilter();</span><br><span class="line">        FilterPerson single &#x3D; new SingleFilter();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;male: &quot;);</span><br><span class="line">        print(male.meetFilter(personList));</span><br><span class="line">        System.out.println(&quot;female: &quot;);</span><br><span class="line">        print(female.meetFilter(personList));</span><br><span class="line">        System.out.println(&quot;single: &quot;);</span><br><span class="line">        print(single.meetFilter(personList));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void print(List&lt;Person&gt; personList) &#123;</span><br><span class="line">        for (Person person : personList) &#123;</span><br><span class="line">            System.out.println(&quot;name: &quot; + person.getName() + &quot;, gender: &quot; + person.getGender()</span><br><span class="line">                    + &quot;, status: &quot; + person.getStatus());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">male:</span><br><span class="line">name: hj, gender: Male, status: Single</span><br><span class="line">female:</span><br><span class="line">name: cjm, gender: Female, status: Single</span><br><span class="line">name: xxx, gender: Female, status: Married</span><br><span class="line">single:</span><br><span class="line">name: hj, gender: Male, status: Single</span><br><span class="line">name: cjm, gender: Female, status: Single</span><br></pre></td></tr></table></figure>
-
-<h3 id="应用实例"><a href="#应用实例" class="headerlink" title="应用实例"></a>应用实例</h3><p>springmvc中过滤器，用来过滤一些请求。</p>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>过滤器模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>factory</title>
     <url>/2021/03/26/factory-mode/</url>
     <content><![CDATA[<h3 id="简单工厂模式简介"><a href="#简单工厂模式简介" class="headerlink" title="简单工厂模式简介"></a>简单工厂模式简介</h3><p><strong>简单工厂模式</strong>是常用的设计模式之一，它提供了一种创建对象的最佳方式。<br><strong>建立一个工厂类，对实现了同一接口的一些类进行实例的创建。</strong></p>
@@ -383,31 +357,6 @@
       </tags>
   </entry>
   <entry>
-    <title>abstract,final,static,this,super</title>
-    <url>/2021/04/07/keyword/</url>
-    <content><![CDATA[<h3 id="abstract"><a href="#abstract" class="headerlink" title="abstract"></a>abstract</h3><p><strong>abstract</strong>关键字修饰类和方法。</p>
-<p>abstract修饰的类称为抽象类，例如：abstract class xxx{}<br>它可以声明引用但不能创建对象。<br>abstract修饰的方法称为抽象方法，例如：abstract void xxx();<br>它只有声明而没有实现。</p>
-<p>注意：含有抽象方法的类一定是抽象类，但抽象类中也可以有具体方法；抽象方法必须要在其子类中实现，除非子类也是抽象类。</p>
-<p><strong>abstract关键字不能与final、private或static修饰类放在一起</strong><br>abstract修饰的类必须被继承，修饰的方法应该被重写。<br>final修饰的类、属性和方法不能被改变，因此修饰的方法不能被重写。<br>private只能修饰内部类，修饰的属性和方法只能在类内部调用，重写的方法不能访问被private修饰的方法和属性。<br>static修饰的方法是静态的，可以被类直接调用。但abstract修饰的方法是抽象的，没有实现不能被直接调用，需要通过类继承或接口实现来重写抽象方法方可被调用。</p>
-<h3 id="final"><a href="#final" class="headerlink" title="final"></a>final</h3><p><strong>final</strong>关键字是最终的、不可修改的，用来修饰类，方法和属性（或变量）。<br>final修饰的类不能被继承，类中的方法也都被隐式的指定为final。<br>final修饰的方法不能被继承类重写。<br>final修饰的属性(或变量)，其值不能被改变。(即常量)<br>finally是异常处理语句，表示总是执行。<br>finalize()是Object中的方法，在垃圾回收器将要回收对象所占内存之前被调用。</p>
-<h3 id="static"><a href="#static" class="headerlink" title="static"></a>static</h3><p><strong>static</strong>关键字可以修饰属性、方法、代码块和类。<br>static修饰的类是静态内部类。非静态内部类在编译完成之后会隐含地保存着一个引用，该引用是指向创建它的外部类，但是静态内部类却没有。所以静态内部类不能访问外部类的非静态成员（变量和方法）。<br>static修饰成员变量和成员方法，它属于类。一般建议通过类名来调用静态成员。类名.静态变量名、对象.静态方法名()。<br>注意：不能在方法体中定义静态变量。<br>static修饰的代码块叫做静态代码块，经常用来初始化静态变量，在类加载时执行，只执行一次。（静态代码块–》非静态代码块–》构造方法）</p>
-<p>一般public、static与final一起用来定义公开静态变量。</p>
-<h3 id="this"><a href="#this" class="headerlink" title="this"></a>this</h3><p><strong>this</strong>关键字表示引用类的当前实例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class What &#123;</span><br><span class="line">  void manage() &#123;</span><br><span class="line">  this.report();  &#x2F;&#x2F;调用类What的当前实例的方法</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  void report() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="super"><a href="#super" class="headerlink" title="super"></a>super</h3><p><strong>super</strong>关键字表示从子类访问父类的变量和方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Father &#123;</span><br><span class="line">  protected int n;</span><br><span class="line"></span><br><span class="line">  protected print() &#123;</span><br><span class="line">    System.out.println(n);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Son extends Father &#123;</span><br><span class="line">  void show() &#123;</span><br><span class="line">    super.n &#x3D; 10;</span><br><span class="line">    super.print();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>this、super不能用在static方法中<br>this代表对本类对象的引用，指向本类对象；super代表对父类对象的引用，指向父类对象。this和super属于对象范畴，静态方法属于类范畴。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>关键字</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>firstblog</title>
     <url>/2020/09/20/firstblog/</url>
     <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
@@ -430,6 +379,32 @@
       </tags>
   </entry>
   <entry>
+    <title>filter</title>
+    <url>/2021/04/13/filter/</url>
+    <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><strong>过滤器模式</strong>使用不同的标准来过滤一组对象，通过逻辑运算以解耦的方式把它们连接起来。</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><h4 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h4><p>人类中有男性、女性、单身、已婚等等。现在要对一些人进行刷选，如选出男性、女性单身、男性已婚等，便可以使用过滤器模式。</p>
+<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><p><strong>创建应用类</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;创建类,对此类应用&quot;标准（过滤器）&quot;</span><br><span class="line">public class Person &#123;</span><br><span class="line">    private String name;</span><br><span class="line">    private String gender;</span><br><span class="line">    private String status;</span><br><span class="line"></span><br><span class="line">    public Person(String name, String gender, String status) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">        this.gender &#x3D; gender;</span><br><span class="line">        this.status &#x3D; status;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getGender() &#123;</span><br><span class="line">        return gender;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setGender(String gender) &#123;</span><br><span class="line">        this.gender &#x3D; gender;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getStatus() &#123;</span><br><span class="line">        return status;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setStatus(String status) &#123;</span><br><span class="line">        this.status &#x3D; status;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>创建标准</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;创建过滤器标准</span><br><span class="line">public interface FilterPerson &#123;</span><br><span class="line">    List&lt;Person&gt; meetFilter(List&lt;Person&gt; personList);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>创建具体标准</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;创建具体过滤器</span><br><span class="line">public class MaleFilter implements FilterPerson &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public List&lt;Person&gt; meetFilter(List&lt;Person&gt; personList) &#123;</span><br><span class="line">        List&lt;Person&gt; malePersonList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">        for (Person person : personList) &#123;</span><br><span class="line">            if (person.getGender().equalsIgnoreCase(&quot;MALE&quot;)) &#123;</span><br><span class="line">                malePersonList.add(person);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return malePersonList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;创建具体过滤器</span><br><span class="line">public class FemaleFilter implements FilterPerson &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public List&lt;Person&gt; meetFilter(List&lt;Person&gt; personList) &#123;</span><br><span class="line">        List&lt;Person&gt; femalePersonList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">        for (Person person : personList) &#123;</span><br><span class="line">            if (person.getGender().equalsIgnoreCase(&quot;FEMALE&quot;)) &#123;</span><br><span class="line">                femalePersonList.add(person);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return femalePersonList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;创建具体过滤器</span><br><span class="line">public class SingleFilter implements FilterPerson &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public List&lt;Person&gt; meetFilter(List&lt;Person&gt; personList) &#123;</span><br><span class="line">        List&lt;Person&gt; singlePersonList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">        for (Person person : personList) &#123;</span><br><span class="line">            if (person.getStatus().equalsIgnoreCase(&quot;SINGLE&quot;)) &#123;</span><br><span class="line">                singlePersonList.add(person);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return singlePersonList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>测试</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;测试</span><br><span class="line">public class FilterTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        List&lt;Person&gt; personList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        personList.add(new Person(&quot;hj&quot;, &quot;Male&quot;, &quot;Single&quot;));</span><br><span class="line">        personList.add(new Person(&quot;cjm&quot;, &quot;Female&quot;, &quot;Single&quot;));</span><br><span class="line">        personList.add(new Person(&quot;xxx&quot;, &quot;Female&quot;, &quot;Married&quot;));</span><br><span class="line"></span><br><span class="line">        FilterPerson male &#x3D; new MaleFilter();</span><br><span class="line">        FilterPerson female &#x3D; new FemaleFilter();</span><br><span class="line">        FilterPerson single &#x3D; new SingleFilter();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;male: &quot;);</span><br><span class="line">        print(male.meetFilter(personList));</span><br><span class="line">        System.out.println(&quot;female: &quot;);</span><br><span class="line">        print(female.meetFilter(personList));</span><br><span class="line">        System.out.println(&quot;single: &quot;);</span><br><span class="line">        print(single.meetFilter(personList));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void print(List&lt;Person&gt; personList) &#123;</span><br><span class="line">        for (Person person : personList) &#123;</span><br><span class="line">            System.out.println(&quot;name: &quot; + person.getName() + &quot;, gender: &quot; + person.getGender()</span><br><span class="line">                    + &quot;, status: &quot; + person.getStatus());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">male:</span><br><span class="line">name: hj, gender: Male, status: Single</span><br><span class="line">female:</span><br><span class="line">name: cjm, gender: Female, status: Single</span><br><span class="line">name: xxx, gender: Female, status: Married</span><br><span class="line">single:</span><br><span class="line">name: hj, gender: Male, status: Single</span><br><span class="line">name: cjm, gender: Female, status: Single</span><br></pre></td></tr></table></figure>
+
+<h3 id="应用实例"><a href="#应用实例" class="headerlink" title="应用实例"></a>应用实例</h3><p>springmvc中过滤器，用来过滤一些请求。</p>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>过滤器模式</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>spring</title>
     <url>/2021/03/24/hurt/</url>
     <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
@@ -444,16 +419,28 @@
       </tags>
   </entry>
   <entry>
-    <title>markdown</title>
-    <url>/2021/04/15/markdown/</url>
-    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
-<p>格式如下图：</p>
-<img src="/2021/04/15/markdown/markdown.jpg" class="">]]></content>
+    <title>abstract,final,static,this,super</title>
+    <url>/2021/04/07/keyword/</url>
+    <content><![CDATA[<h3 id="abstract"><a href="#abstract" class="headerlink" title="abstract"></a>abstract</h3><p><strong>abstract</strong>关键字修饰类和方法。</p>
+<p>abstract修饰的类称为抽象类，例如：abstract class xxx{}<br>它可以声明引用但不能创建对象。<br>abstract修饰的方法称为抽象方法，例如：abstract void xxx();<br>它只有声明而没有实现。</p>
+<p>注意：含有抽象方法的类一定是抽象类，但抽象类中也可以有具体方法；抽象方法必须要在其子类中实现，除非子类也是抽象类。</p>
+<p><strong>abstract关键字不能与final、private或static修饰类放在一起</strong><br>abstract修饰的类必须被继承，修饰的方法应该被重写。<br>final修饰的类、属性和方法不能被改变，因此修饰的方法不能被重写。<br>private只能修饰内部类，修饰的属性和方法只能在类内部调用，重写的方法不能访问被private修饰的方法和属性。<br>static修饰的方法是静态的，可以被类直接调用。但abstract修饰的方法是抽象的，没有实现不能被直接调用，需要通过类继承或接口实现来重写抽象方法方可被调用。</p>
+<h3 id="final"><a href="#final" class="headerlink" title="final"></a>final</h3><p><strong>final</strong>关键字是最终的、不可修改的，用来修饰类，方法和属性（或变量）。<br>final修饰的类不能被继承，类中的方法也都被隐式的指定为final。<br>final修饰的方法不能被继承类重写。<br>final修饰的属性(或变量)，其值不能被改变。(即常量)<br>finally是异常处理语句，表示总是执行。<br>finalize()是Object中的方法，在垃圾回收器将要回收对象所占内存之前被调用。</p>
+<h3 id="static"><a href="#static" class="headerlink" title="static"></a>static</h3><p><strong>static</strong>关键字可以修饰属性、方法、代码块和类。<br>static修饰的类是静态内部类。非静态内部类在编译完成之后会隐含地保存着一个引用，该引用是指向创建它的外部类，但是静态内部类却没有。所以静态内部类不能访问外部类的非静态成员（变量和方法）。<br>static修饰成员变量和成员方法，它属于类。一般建议通过类名来调用静态成员。类名.静态变量名、对象.静态方法名()。<br>注意：不能在方法体中定义静态变量。<br>static修饰的代码块叫做静态代码块，经常用来初始化静态变量，在类加载时执行，只执行一次。（静态代码块–》非静态代码块–》构造方法）</p>
+<p>一般public、static与final一起用来定义公开静态变量。</p>
+<h3 id="this"><a href="#this" class="headerlink" title="this"></a>this</h3><p><strong>this</strong>关键字表示引用类的当前实例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class What &#123;</span><br><span class="line">  void manage() &#123;</span><br><span class="line">  this.report();  &#x2F;&#x2F;调用类What的当前实例的方法</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  void report() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="super"><a href="#super" class="headerlink" title="super"></a>super</h3><p><strong>super</strong>关键字表示从子类访问父类的变量和方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Father &#123;</span><br><span class="line">  protected int n;</span><br><span class="line"></span><br><span class="line">  protected print() &#123;</span><br><span class="line">    System.out.println(n);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Son extends Father &#123;</span><br><span class="line">  void show() &#123;</span><br><span class="line">    super.n &#x3D; 10;</span><br><span class="line">    super.print();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>this、super不能用在static方法中<br>this代表对本类对象的引用，指向本类对象；super代表对父类对象的引用，指向父类对象。this和super属于对象范畴，静态方法属于类范畴。</p>
+]]></content>
       <categories>
-        <category>markdown</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>markdown</tag>
+        <tag>关键字</tag>
       </tags>
   </entry>
   <entry>
@@ -482,6 +469,19 @@
       </categories>
       <tags>
         <tag>密码学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>markdown</title>
+    <url>/2021/04/15/markdown/</url>
+    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
+<p>格式如下图：</p>
+<img src="/2021/04/15/markdown/markdown.jpg" class="">]]></content>
+      <categories>
+        <category>markdown</category>
+      </categories>
+      <tags>
+        <tag>markdown</tag>
       </tags>
   </entry>
   <entry>
