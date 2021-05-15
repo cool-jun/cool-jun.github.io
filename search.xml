@@ -1,79 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>abstractfactory</title>
-    <url>/2021/03/27/abstract-factory/</url>
-    <content><![CDATA[<p><strong>抽象工厂模式</strong>提供了一个创建一系列相关接口或相互依赖对象的接口，无须指定它们具体的类。<br>抽象工厂模式是工厂方法模式的升级，工厂方法模式只生产一个等级的产品，而抽象工厂模式可以生产多个等级的产品。</p>
-<p>类图如下：</p>
-<img src="/2021/03/27/abstract-factory/abstractfactory.png" class="">
-
-<p>优点：当一个产品族中的多个对象被设计成一起工作时，它能保证客户端始终只使用同一个产品族中的对象。</p>
-<p>缺点：产品族扩展非常困难，要增加一个系列的某一产品，既要在抽象的 Creator 里加代码，又要在具体里加代码。</p>
-<p>使用场景： 1、QQ 换皮肤，一整套一起换。 2、生成不同操作系统的程序。</p>
-<p>1.创建接口（抽象产品）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Color &#123;</span><br><span class="line">    void fill();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Shape &#123;</span><br><span class="line">    void draw();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>2.创建实现类（具体产品）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Blue implements Color &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void fill() &#123;</span><br><span class="line">        System.out.println(&quot;blue fill&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Red implements Color &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void fill() &#123;</span><br><span class="line">        System.out.println(&quot;red fill&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Square implements Shape &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void draw() &#123;</span><br><span class="line">        System.out.println(&quot;this is a square!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Circle implements Shape &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void draw() &#123;</span><br><span class="line">        System.out.println(&quot;this is a circle!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>3.创建工厂接口（抽象工厂）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface AbstractFactory &#123;</span><br><span class="line">    Color newColor();</span><br><span class="line">    Shape newShape();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>4.创建实现工厂（具体工厂）</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ShapeFactory implements AbstractFactory &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Color newColor() &#123;</span><br><span class="line">        return new Red();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Shape newShape() &#123;</span><br><span class="line">        return new Circle();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ColorFactory implements AbstractFactory &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Color newColor() &#123;</span><br><span class="line">        return new Blue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Shape newShape() &#123;</span><br><span class="line">        return new Square();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>5.测试</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Test &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        AbstractFactory blue &#x3D; new ColorFactory();</span><br><span class="line">        blue.newColor().fill();  &#x2F;&#x2F; blue fill</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>抽象工厂模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>adapter</title>
-    <url>/2021/04/06/adapter/</url>
-    <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><strong>适配器模式</strong>一般用作两个不兼容的接口之间的桥梁。它属于结构型模式，结合了两个独立接口的功能。</p>
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><h4 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h4><p>假设现在有一个媒体播放器接口MediaPlayer及其实现类AudioPlayer，AudioPlayer可以播放mp3格式的文件。还有一个高级媒体播放器接口AdvancedMediaPlayer及其实现类，可以播放MP4和avi格式的文件。现在想让AudioPlayer也可以播放avi与MP4格式的文件，这时需要创建一个实现了MediaPlayer接口的适配器类MediaAdapter以完成此功能。</p>
-<p>uml类图</p>
-<img src="/2021/04/06/adapter/adapter.png" class="">
-
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p><strong>创建两个接口MediaPlayer和AdvancedMP</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface MediaPlayer &#123;</span><br><span class="line">    void play(String audioType, String fileName);</span><br><span class="line">&#125;</span><br><span class="line">public interface AdvancedMP &#123;</span><br><span class="line">    void playMp4(String fileName);</span><br><span class="line">    void playAvi(String fileName);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>创建AdvancedMP接口的实体类</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class AviPlayer implements AdvancedMP &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void playMp4(String fileName) &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void playAvi(String fileName) &#123;</span><br><span class="line">        System.out.println(&quot;Playing avi file, name: &quot; + fileName);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Mp4Player implements AdvancedMP &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void playMp4(String fileName) &#123;</span><br><span class="line">        System.out.println(&quot;Playing mp4 file, name: &quot; + fileName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void playAvi(String fileName) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>创建MediaPlayer接口的适配器类</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MediaAdapter implements MediaPlayer &#123;</span><br><span class="line">    AdvancedMP advancedMP;</span><br><span class="line"></span><br><span class="line">    public MediaAdapter(String audioType) &#123;</span><br><span class="line">        if (audioType.equalsIgnoreCase(&quot;avi&quot;)) &#123;</span><br><span class="line">            advancedMP &#x3D; new AviPlayer();</span><br><span class="line">        &#125; else if (audioType.equalsIgnoreCase(&quot;mp4&quot;)) &#123;</span><br><span class="line">            advancedMP &#x3D; new Mp4Player();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void play(String audioType, String fileName) &#123;</span><br><span class="line">        if (audioType.equalsIgnoreCase(&quot;avi&quot;)) &#123;</span><br><span class="line">            advancedMP.playAvi(fileName);</span><br><span class="line">        &#125; else if (audioType.equalsIgnoreCase(&quot;mp4&quot;)) &#123;</span><br><span class="line">            advancedMP.playMp4(fileName);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>创建MediaPlayer接口的实体类</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class AudioPlayer implements MediaPlayer &#123;</span><br><span class="line">    MediaAdapter mediaAdapter;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void play(String audioType, String fileName) &#123;</span><br><span class="line">        if (audioType.equalsIgnoreCase(&quot;mp3&quot;)) &#123;</span><br><span class="line">            System.out.println(&quot;Playing mp3 file, name: &quot; + fileName);</span><br><span class="line">        &#125; else if (audioType.equalsIgnoreCase(&quot;avi&quot;) ||</span><br><span class="line">                audioType.equalsIgnoreCase(&quot;mp4&quot;)) &#123;</span><br><span class="line">            mediaAdapter &#x3D; new MediaAdapter(audioType);</span><br><span class="line">            mediaAdapter.play(audioType, fileName);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            System.out.println(&quot;Invalid media &quot; + audioType);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>测试</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class AdapterTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        AudioPlayer audioPlayer &#x3D; new AudioPlayer();</span><br><span class="line"></span><br><span class="line">        audioPlayer.play(&quot;mp3&quot;, &quot;what are words.mp3&quot;);</span><br><span class="line">        audioPlayer.play(&quot;mp4&quot;, &quot;alone.mp4&quot;);</span><br><span class="line">        audioPlayer.play(&quot;avi&quot;, &quot;beyond.avi&quot;);</span><br><span class="line">        audioPlayer.play(&quot;rmvb&quot;, &quot;mind we.rmvb&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">Playing mp3 file, name: what are words.mp3</span><br><span class="line">Playing mp4 file, name: alone.mp4</span><br><span class="line">Playing avi file, name: beyond.avi</span><br><span class="line">Invalid media rmvb</span><br></pre></td></tr></table></figure>
-
-<h3 id="实际应用场景"><a href="#实际应用场景" class="headerlink" title="实际应用场景"></a>实际应用场景</h3><p>JAVA中的jdbc;<br>Spring中的Advice。</p>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>适配器模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>bitmap</title>
     <url>/2020/11/16/bitmap/</url>
     <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>在一个结构中，用一个比特位来描述一个数据的状态，这种结构就称为位图。0表示数据不存在，1表示数据存在。位图实际上是哈希表的一种变形。<br>在数据存储方面，位图的应用非常广泛。比如说现在要存储20亿个不重复的数据，int类型为4个字节，就需要80亿个字节来存储。1GB的内存表示的是10亿个字节，此时就需要8GB的内存来存放这些数据，而我们普通的电脑内存一般都是4G的内存，这显然是存放不下的。但是如果能用一个比特位来存放一个整型数据，则只需要0.5GB的内存。这大大节省了内存空间。</p>
@@ -133,93 +60,6 @@
       </tags>
   </entry>
   <entry>
-    <title>bridge</title>
-    <url>/2021/04/09/bridge/</url>
-    <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><strong>桥接模式</strong>将抽象部分与它的实现部分分离，使它们都可以独立地变化。将继承关系转化成关联关系，降低了类与类之间的耦合度，减少了系统中类的数量，也减少了代码量。</p>
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><h4 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h4><p>某电器商场要处理电脑商品分类销售的问题，如果增加一个品牌一个类型则要增加好几个类。</p>
-<h4 id="多层继承结构"><a href="#多层继承结构" class="headerlink" title="多层继承结构"></a>多层继承结构</h4><img src="/2021/04/09/bridge/mulextend.png" class="">
-<p>传统的多层继承结构方式，在新增类型或品牌时都会牵扯出另一个维度的变化。类的个数也急剧增加。</p>
-<h4 id="桥接模式"><a href="#桥接模式" class="headerlink" title="桥接模式"></a>桥接模式</h4><p>如果某个类存在两个独立变化的维度，可以运用桥接模式将这两个维度分离出来，使两者可以独立扩展，让系统更加符合“单一职责原则”。</p>
-<p>UML类图如下：</p>
-<img src="/2021/04/09/bridge/bridge.png" class="">
-
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><p><strong>创建一个实现类接口</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;电脑品牌</span><br><span class="line">public interface Brand &#123;</span><br><span class="line">    void sale();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>创建具体实现类</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;联想品牌</span><br><span class="line">public class Lenovo implements Brand &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void sale() &#123;</span><br><span class="line">        System.out.println(&quot;联想销售&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;戴尔品牌</span><br><span class="line">public class Dell implements Brand &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void sale() &#123;</span><br><span class="line">        System.out.println(&quot;戴尔销售&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;苹果品牌</span><br><span class="line">public class Apple implements Brand &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void sale() &#123;</span><br><span class="line">        System.out.println(&quot;苹果销售&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>创建抽象类</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;电脑</span><br><span class="line">public abstract class Computer &#123;</span><br><span class="line">    protected Brand brand;  &#x2F;&#x2F; 实现类接口</span><br><span class="line"></span><br><span class="line">    public Computer(Brand brand) &#123;</span><br><span class="line">        this.brand &#x3D; brand;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public abstract void sale();  &#x2F;&#x2F;声明抽象业务方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Desktop extends Computer &#123;</span><br><span class="line">    public Desktop(Brand brand) &#123;</span><br><span class="line">        super(brand);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void sale() &#123;</span><br><span class="line">        System.out.println(&quot;台式电脑销售&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Laptop extends Computer &#123;</span><br><span class="line">    public Laptop(Brand brand) &#123;</span><br><span class="line">        super(brand);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void sale() &#123;</span><br><span class="line">        System.out.println(&quot;笔记本销售&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>测试</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class BridgeTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Computer computer &#x3D; new Laptop(new Lenovo());</span><br><span class="line">        computer.sale();</span><br><span class="line"></span><br><span class="line">        Computer computer1 &#x3D; new Desktop(new Dell());</span><br><span class="line">        computer1.sale();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">笔记本销售</span><br><span class="line">台式电脑销售</span><br></pre></td></tr></table></figure>
-
-<p>桥接模式可以取代多层继承的方案。多层继承违背了单一职责原则，复用性较差，类的个数也非常多，桥接模式可以极大的减少子类的个数。</p>
-<h3 id="实际应用场景"><a href="#实际应用场景" class="headerlink" title="实际应用场景"></a>实际应用场景</h3><p>JDBC<br>java.awt.peer</p>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>桥接模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>builder</title>
-    <url>/2021/04/03/builder/</url>
-    <content><![CDATA[<p><strong>建造者模式</strong>使用多个简单的对象一步一步构建成一个复杂的对象。<br>基本部分不会变，而其组合经常变化的时候可以考虑使用建造者模式。<br>应用场景：对象具有复杂的内部结构；对象内部属性本身相互依赖。</p>
-<p>类图如下：</p>
-<img src="/2021/04/03/builder/builder.png" class="">
-
-<p>1.创建接口</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Item &#123;</span><br><span class="line">    String name();</span><br><span class="line">    Packing packing();</span><br><span class="line">    float price();</span><br><span class="line">&#125;</span><br><span class="line">public interface Packing &#123;</span><br><span class="line">    String pack();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>2.创建实现Packing接口的具体类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Wrapper implements Packing &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public String pack() &#123;</span><br><span class="line">        return &quot;Wrapper&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Bottle implements Packing &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public String pack() &#123;</span><br><span class="line">        return &quot;Bottle&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>3.创建实现Item接口的抽象类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public abstract class Burger implements Item &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Packing packing() &#123;</span><br><span class="line">        return new Wrapper();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public abstract float price();</span><br><span class="line">&#125;</span><br><span class="line">public abstract class ColdDrink implements Item &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Packing packing() &#123;</span><br><span class="line">        return new Bottle();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public abstract float price();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>4.创建扩展了Burger和ColdDrink的具体类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ChickenBurger extends Burger &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public float price() &#123;</span><br><span class="line">        return 60.0f;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String name() &#123;</span><br><span class="line">        return &quot;Chicken Burger&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public abstract class ColdDrink implements Item &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Packing packing() &#123;</span><br><span class="line">        return new Bottle();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public abstract float price();</span><br><span class="line">&#125;</span><br><span class="line">public class Coke extends ColdDrink &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public float price() &#123;</span><br><span class="line">        return 35.0f;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String name() &#123;</span><br><span class="line">        return &quot;Coke&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Pepsi extends ColdDrink &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public float price() &#123;</span><br><span class="line">        return 38.0f;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String name() &#123;</span><br><span class="line">        return &quot;Pepsi&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>5.创建依赖Item类的具体类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Meal &#123;</span><br><span class="line">    private List&lt;Item&gt; items &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">    </span><br><span class="line">    public void addItem(Item item) &#123;</span><br><span class="line">        items.add(item);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public float getCost() &#123;</span><br><span class="line">        float cost &#x3D; 0.0f;</span><br><span class="line">        for (Item item : items) &#123;</span><br><span class="line">            cost +&#x3D; item.price();</span><br><span class="line">        &#125;</span><br><span class="line">        return cost;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public void showItems() &#123;</span><br><span class="line">        for (Item item : items) &#123;</span><br><span class="line">            System.out.println(&quot;Item : &quot; + item.name());</span><br><span class="line">            System.out.println(&quot;, Packing : &quot; + item.packing().pack());</span><br><span class="line">            System.out.println(&quot;, Price : &quot; + item.price());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>6.创建一个builder类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MealBuilder &#123;</span><br><span class="line">    public Meal prepareVegMeal() &#123;</span><br><span class="line">        Meal meal &#x3D; new Meal();</span><br><span class="line">        meal.addItem(new VegBurger());</span><br><span class="line">        meal.addItem(new Coke());</span><br><span class="line">        return meal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public Meal prepareNonVegMeal ()&#123;</span><br><span class="line">        Meal meal &#x3D; new Meal();</span><br><span class="line">        meal.addItem(new ChickenBurger());</span><br><span class="line">        meal.addItem(new Pepsi());</span><br><span class="line">        return meal;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>7.测试</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class BuilderTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        MealBuilder mealBuilder &#x3D; new MealBuilder();</span><br><span class="line"></span><br><span class="line">        Meal veg &#x3D; mealBuilder.prepareVegMeal();</span><br><span class="line">        System.out.println(&quot;Veg Meal&quot;);</span><br><span class="line">        veg.showItems();</span><br><span class="line">        System.out.println(&quot;Total Cost : &quot; + veg.getCost());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">Item : Veg Burger</span><br><span class="line">, Packing : Wrapper</span><br><span class="line">, Price : 30.0</span><br><span class="line">Item : Coke</span><br><span class="line">, Packing : Bottle</span><br><span class="line">, Price : 35.0</span><br><span class="line">Total Cost : 65.0</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>建造者模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>composite</title>
-    <url>/2021/04/21/composite/</url>
-    <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><strong>组合模式</strong>把一组相似的对象当作一个单一的对象，组合模式依据树形结构来组合对象，表示部分以及整体层次。组合模式使得用户对单个对象和组合对象的使用具有一致性。</p>
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><h4 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h4><p>以组织中的员工层次结构为例，可以添加部门层次结构并打印所有员工。</p>
-<p>####代码</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><strong>测试</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>组合模式</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Three ways to create Java Multithread</title>
     <url>/2020/09/23/concurrency/</url>
     <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
@@ -265,28 +105,6 @@
       </tags>
   </entry>
   <entry>
-    <title>designmode</title>
-    <url>/2021/03/25/designmode/</url>
-    <content><![CDATA[<p>1995年，GoF（Gang of Four，四人组/四人帮）合作出版了《设计模式：可复用面向对象软件的基础》一书，共收录了23种设计模式，从此树立了软件设计模式领域的里程碑，人称「GoF设计模式」。设计模式简单说就是为了可重用代码，让代码更容易被他人理解，保证代码可靠性。</p>
-<h3 id="设计模式原则"><a href="#设计模式原则" class="headerlink" title="设计模式原则"></a>设计模式原则</h3><h4 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h4><p>对扩展开放，对修改封闭。为了使程序的扩展性更好，易于维护和升级，一般需要使用接口和抽象类。</p>
-<h4 id="里氏替换原则"><a href="#里氏替换原则" class="headerlink" title="里氏替换原则"></a>里氏替换原则</h4><p>任何基类可以出现的地方，子类一定可以出现。里氏替换原则是继承复用的基石，只有当子类可以替换掉基类，基类才能真正被复用，而且子类也可以在基类的基础上增加新的行为。里氏替换原则实际上是对开闭原则的补充。基类与子类的继承关系就是抽象化的具体实现。</p>
-<h4 id="依赖倒置原则"><a href="#依赖倒置原则" class="headerlink" title="依赖倒置原则"></a>依赖倒置原则</h4><p>针对接口编程，高层模块不应该依赖底层模块，二者都应该依赖抽象而不是具体。</p>
-<h4 id="接口分离原则"><a href="#接口分离原则" class="headerlink" title="接口分离原则"></a>接口分离原则</h4><p>使用多个隔离的接口比使用单个庞大的接口好。其目的在于降低耦合度。</p>
-<h4 id="单一职责原则"><a href="#单一职责原则" class="headerlink" title="单一职责原则"></a>单一职责原则</h4><p>类的职责要单一，不能将太多的职责放在一个类中。类的职责主要包括两个方面：数据职责和行为职责。数据职责通过其属性来体现，而行为职责通过其方法来体现。</p>
-<h4 id="迪米特法则（最少知道原则）"><a href="#迪米特法则（最少知道原则）" class="headerlink" title="迪米特法则（最少知道原则）"></a>迪米特法则（最少知道原则）</h4><p>一个实体应当尽可能少的与其它实体之间发生相互作用，使得系统功能模块相对独立。</p>
-<h4 id="合成复用原则"><a href="#合成复用原则" class="headerlink" title="合成复用原则"></a>合成复用原则</h4><p>尽量使用组合/聚合的方式，少使用或不使用继承关系。</p>
-<h3 id="设计模式分类"><a href="#设计模式分类" class="headerlink" title="设计模式分类"></a>设计模式分类</h3><h4 id="创建型模式"><a href="#创建型模式" class="headerlink" title="创建型模式"></a>创建型模式</h4><p>工厂模式、抽象工厂模式、单例模式、建造者模式、原型模式。</p>
-<h4 id="结构型模式"><a href="#结构型模式" class="headerlink" title="结构型模式"></a>结构型模式</h4><p>适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。</p>
-<h4 id="行为型模式"><a href="#行为型模式" class="headerlink" title="行为型模式"></a>行为型模式</h4><p>策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。</p>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>设计模式简介</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>diffchain</title>
     <url>/2020/11/16/difftimechain/</url>
     <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
@@ -300,60 +118,6 @@
       </categories>
       <tags>
         <tag>差分时间链</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>factory</title>
-    <url>/2021/03/26/factory-mode/</url>
-    <content><![CDATA[<h3 id="简单工厂模式简介"><a href="#简单工厂模式简介" class="headerlink" title="简单工厂模式简介"></a>简单工厂模式简介</h3><p><strong>简单工厂模式</strong>是常用的设计模式之一，它提供了一种创建对象的最佳方式。<br><strong>建立一个工厂类，对实现了同一接口的一些类进行实例的创建。</strong></p>
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><h4 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h4><p>以发送消息为例，创建一个Sender接口，再创建实现Sender接口的类MailSender和SmsSender。最后创建工厂类SendFactory，以便获取对象。</p>
-<p>UML类图如下</p>
-<img src="/2021/03/26/factory-mode/1.png" class="">
-
-<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><p><strong>创建接口（抽象产品）</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Sender &#123;</span><br><span class="line">    void Send();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>创建实现类（具体产品）</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MailSender implements Sender &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void Send() &#123;</span><br><span class="line">        System.out.println(&quot;this is mail sender!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SmsSender implements Sender &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void Send() &#123;</span><br><span class="line">        System.out.println(&quot;this is sms sender!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>创建工厂类，生成基于给定信息的实现类的对象（简单工厂）</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SendFactory &#123;</span><br><span class="line">    public static Sender produce(String type) &#123;</span><br><span class="line">        if (&quot;mail&quot;.equals(type)) &#123;</span><br><span class="line">            return new MailSender();</span><br><span class="line">        &#125; else if (&quot;sms&quot;.equals(type)) &#123;</span><br><span class="line">            return new SmsSender();</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            System.out.println(&quot;请输入正确的类型!&quot;);</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>测试</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class FactoryTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Sender sender &#x3D; SendFactory.produce(&quot;mail&quot;);</span><br><span class="line">        assert sender !&#x3D; null;</span><br><span class="line">        sender.Send();  &#x2F;&#x2F; this is mail sender!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>在简单工厂模式中创建实例的方法通常为静态（static）方法，因此简单工厂模式（Simple Factory Pattern）又叫作静态工厂方法模式（Static Factory Method Pattern）。</p>
-<p>优点：调用者想创建对象，只需要知道其名称就行；<br>客户端无需知道所创建具体产品的类名，只需知道参数即可。</p>
-<p>缺点：简单工厂模式的工厂类单一，负责所有产品的创建，职责过重，一旦异常，整个系统将受影响；简单工厂模式每增加一个产品就要增加一个具体产品类和一个对应的具体工厂类，这增加了系统的复杂度，<strong>破坏了开闭原则。</strong></p>
-<h3 id="应用实例"><a href="#应用实例" class="headerlink" title="应用实例"></a>应用实例</h3><p>日志记录器，可能记录到本地硬盘、系统事件、远程服务等，用户可以自己选择。<br>设计一个框架需要3个协议，pop3、imap、http，可以为这3个产品类共同实现一个接口。<br>Java库中根据不同的参数，getInstance()方法会返回不同的Calendar对象。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java.util.Calendar - getInstance()</span><br><span class="line">java.util.Calendar - getInstance(TimeZone zone)</span><br><span class="line">java.util.Calendar - getInstance(Locale aLocale)</span><br><span class="line">java.util.Calendar - getInstance(TimeZone zone, Locale aLocale)</span><br><span class="line">java.text.NumberFormat - getInstance()</span><br><span class="line">java.text.NumberFormat - getInstance(Locale inLocale)</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="工厂方法模式简介"><a href="#工厂方法模式简介" class="headerlink" title="工厂方法模式简介"></a>工厂方法模式简介</h3><p><strong>工厂方法模式</strong>是对简单工厂模式的进一步抽象，其好处是可以使系统在不修改原代码的情况下引进新的产品，即满足开闭原则。</p>
-<h3 id="实现-1"><a href="#实现-1" class="headerlink" title="实现"></a>实现</h3><h4 id="场景-1"><a href="#场景-1" class="headerlink" title="场景"></a>场景</h4><p>如上简单工厂模式场景。<br>UML类图如下</p>
-<img src="/2021/03/26/factory-mode/2.png" class="">
-
-<h4 id="代码-1"><a href="#代码-1" class="headerlink" title="代码"></a>代码</h4><p><strong>抽象工厂：提供了产品的生成方法</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface SenderFactoryMethod &#123;</span><br><span class="line">    Sender newSender();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>具体工厂：实现抽象工厂中的抽象方法，完成具体产品的创建。</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SmsFactoryMethod implements SenderFactoryMethod &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Sender newSender() &#123;</span><br><span class="line">        return new SmsSender();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MailFactoryMethod implements SenderFactoryMethod &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Sender newSender() &#123;</span><br><span class="line">        return new MailSender();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>测试</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class FactoryMethodTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SenderFactoryMethod mail &#x3D; new MailFactoryMethod();</span><br><span class="line">        mail.newSender().Send();  &#x2F;&#x2F; this is mail sender!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h4><p>优点：用户只需要知道具体工厂的名称就可得到所要的产品，无须知道产品的具体创建过程；<br>灵活性增强，对于新产品的创建，只需多写一个相应的工厂类；典型的解耦框架。</p>
-<p>缺点：类的个数容易过多，增加复杂度；增加了系统的抽象性和理解难度；<br>抽象产品只能生产一种产品，此弊端可使用抽象工厂模式解决。</p>
-<h3 id="应用实例-1"><a href="#应用实例-1" class="headerlink" title="应用实例"></a>应用实例</h3><p>Logback源码中的具体应用。</p>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>工厂模式</tag>
       </tags>
   </entry>
   <entry>
@@ -379,46 +143,6 @@
       </tags>
   </entry>
   <entry>
-    <title>filter</title>
-    <url>/2021/04/13/filter/</url>
-    <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p><strong>过滤器模式</strong>使用不同的标准来过滤一组对象，通过逻辑运算以解耦的方式把它们连接起来。</p>
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><h4 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h4><p>人类中有男性、女性、单身、已婚等等。现在要对一些人进行刷选，如选出男性、女性单身、男性已婚等，便可以使用过滤器模式。</p>
-<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><p><strong>创建应用类</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;创建类,对此类应用&quot;标准（过滤器）&quot;</span><br><span class="line">public class Person &#123;</span><br><span class="line">    private String name;</span><br><span class="line">    private String gender;</span><br><span class="line">    private String status;</span><br><span class="line"></span><br><span class="line">    public Person(String name, String gender, String status) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">        this.gender &#x3D; gender;</span><br><span class="line">        this.status &#x3D; status;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getGender() &#123;</span><br><span class="line">        return gender;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setGender(String gender) &#123;</span><br><span class="line">        this.gender &#x3D; gender;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getStatus() &#123;</span><br><span class="line">        return status;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setStatus(String status) &#123;</span><br><span class="line">        this.status &#x3D; status;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>创建标准</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;创建过滤器标准</span><br><span class="line">public interface FilterPerson &#123;</span><br><span class="line">    List&lt;Person&gt; meetFilter(List&lt;Person&gt; personList);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>创建具体标准</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;创建具体过滤器</span><br><span class="line">public class MaleFilter implements FilterPerson &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public List&lt;Person&gt; meetFilter(List&lt;Person&gt; personList) &#123;</span><br><span class="line">        List&lt;Person&gt; malePersonList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">        for (Person person : personList) &#123;</span><br><span class="line">            if (person.getGender().equalsIgnoreCase(&quot;MALE&quot;)) &#123;</span><br><span class="line">                malePersonList.add(person);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return malePersonList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;创建具体过滤器</span><br><span class="line">public class FemaleFilter implements FilterPerson &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public List&lt;Person&gt; meetFilter(List&lt;Person&gt; personList) &#123;</span><br><span class="line">        List&lt;Person&gt; femalePersonList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">        for (Person person : personList) &#123;</span><br><span class="line">            if (person.getGender().equalsIgnoreCase(&quot;FEMALE&quot;)) &#123;</span><br><span class="line">                femalePersonList.add(person);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return femalePersonList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;创建具体过滤器</span><br><span class="line">public class SingleFilter implements FilterPerson &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public List&lt;Person&gt; meetFilter(List&lt;Person&gt; personList) &#123;</span><br><span class="line">        List&lt;Person&gt; singlePersonList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">        for (Person person : personList) &#123;</span><br><span class="line">            if (person.getStatus().equalsIgnoreCase(&quot;SINGLE&quot;)) &#123;</span><br><span class="line">                singlePersonList.add(person);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return singlePersonList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>测试</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;测试</span><br><span class="line">public class FilterTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        List&lt;Person&gt; personList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        personList.add(new Person(&quot;hj&quot;, &quot;Male&quot;, &quot;Single&quot;));</span><br><span class="line">        personList.add(new Person(&quot;cjm&quot;, &quot;Female&quot;, &quot;Single&quot;));</span><br><span class="line">        personList.add(new Person(&quot;xxx&quot;, &quot;Female&quot;, &quot;Married&quot;));</span><br><span class="line"></span><br><span class="line">        FilterPerson male &#x3D; new MaleFilter();</span><br><span class="line">        FilterPerson female &#x3D; new FemaleFilter();</span><br><span class="line">        FilterPerson single &#x3D; new SingleFilter();</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;male: &quot;);</span><br><span class="line">        print(male.meetFilter(personList));</span><br><span class="line">        System.out.println(&quot;female: &quot;);</span><br><span class="line">        print(female.meetFilter(personList));</span><br><span class="line">        System.out.println(&quot;single: &quot;);</span><br><span class="line">        print(single.meetFilter(personList));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void print(List&lt;Person&gt; personList) &#123;</span><br><span class="line">        for (Person person : personList) &#123;</span><br><span class="line">            System.out.println(&quot;name: &quot; + person.getName() + &quot;, gender: &quot; + person.getGender()</span><br><span class="line">                    + &quot;, status: &quot; + person.getStatus());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">male:</span><br><span class="line">name: hj, gender: Male, status: Single</span><br><span class="line">female:</span><br><span class="line">name: cjm, gender: Female, status: Single</span><br><span class="line">name: xxx, gender: Female, status: Married</span><br><span class="line">single:</span><br><span class="line">name: hj, gender: Male, status: Single</span><br><span class="line">name: cjm, gender: Female, status: Single</span><br></pre></td></tr></table></figure>
-
-<h3 id="应用实例"><a href="#应用实例" class="headerlink" title="应用实例"></a>应用实例</h3><p>springmvc中过滤器，用来过滤一些请求。</p>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>过滤器模式</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>spring</title>
-    <url>/2021/03/24/hurt/</url>
-    <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
-<pre><code>        你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</code></pre>
-<p>辛丑牛年农历二月十二</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>abstract,final,static,this,super</title>
     <url>/2021/04/07/keyword/</url>
     <content><![CDATA[<h3 id="abstract"><a href="#abstract" class="headerlink" title="abstract"></a>abstract</h3><p><strong>abstract</strong>关键字修饰类和方法。</p>
@@ -441,6 +165,33 @@
       </categories>
       <tags>
         <tag>关键字</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>spring</title>
+    <url>/2021/03/24/hurt/</url>
+    <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
+<pre><code>        你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</code></pre>
+<p>辛丑牛年农历二月十二</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>markdown</title>
+    <url>/2021/04/15/markdown/</url>
+    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
+<p>格式如下图：</p>
+<img src="/2021/04/15/markdown/markdown.jpg" class="">]]></content>
+      <categories>
+        <category>markdown</category>
+      </categories>
+      <tags>
+        <tag>markdown</tag>
       </tags>
   </entry>
   <entry>
@@ -472,19 +223,6 @@
       </tags>
   </entry>
   <entry>
-    <title>markdown</title>
-    <url>/2021/04/15/markdown/</url>
-    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
-<p>格式如下图：</p>
-<img src="/2021/04/15/markdown/markdown.jpg" class="">]]></content>
-      <categories>
-        <category>markdown</category>
-      </categories>
-      <tags>
-        <tag>markdown</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>memory</title>
     <url>/2021/03/21/memory/</url>
     <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
@@ -500,32 +238,6 @@
       </categories>
       <tags>
         <tag>旅行</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>prototype</title>
-    <url>/2021/04/04/prototype/</url>
-    <content><![CDATA[<p>原型模式用于创建重复的对象，同时又能保证性能。当直接创建对象的代价比较大时，可以采用这种模式。<br>UML类图如下</p>
-<img src="/2021/04/04/prototype/prototype.png" class="">
-<p>使用场景: 资源优化场景;<br>类初始化需要消化非常多的资源;<br>性能和安全要求的场景;<br>一个对象多个修改者的场景;<br>通过 new 产生一个对象需要非常繁琐的数据准备或访问权限，则可以使用原型模式;<br>一个对象需要提供给其他对象访问，而且各个调用者可能都需要修改其值时，可以考虑使用原型模式拷贝多个对象供调用者使用;<br>在实际项目中，原型模式很少单独出现，一般是和工厂方法模式一起出现，通过 clone 的方法创建一个对象，然后由工厂方法提供给调用者。</p>
-<p>1.创建实现Cloneable接口的抽象类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public abstract class Shape implements Cloneable &#123;</span><br><span class="line">    private String id;</span><br><span class="line">    protected String type;</span><br><span class="line"></span><br><span class="line">    abstract void draw();</span><br><span class="line"></span><br><span class="line">    public String getId() &#123;</span><br><span class="line">        return id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setId(String id) &#123;</span><br><span class="line">        this.id &#x3D; id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getType() &#123;</span><br><span class="line">        return type;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setType(String type) &#123;</span><br><span class="line">        this.type &#x3D; type;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() &#123;</span><br><span class="line">        Object clone &#x3D; null;</span><br><span class="line">        try &#123;</span><br><span class="line">            clone &#x3D; super.clone();</span><br><span class="line">        &#125; catch (CloneNotSupportedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        return clone;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>2.创建继承抽象类的具体实现类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Square extends Shape &#123;</span><br><span class="line">    public Square() &#123;</span><br><span class="line">        type &#x3D; &quot;Square&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    void draw() &#123;</span><br><span class="line">        System.out.println(&quot;Inside Square::draw() method&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">public class Circle extends Shape &#123;</span><br><span class="line">    public Circle() &#123;</span><br><span class="line">        type &#x3D; &quot;Circle&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    void draw() &#123;</span><br><span class="line">        System.out.println(&quot;Inside Circle::draw() method&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>3.创建一个克隆类来获取实现类并存储在hashtable中</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ShapeCache &#123;</span><br><span class="line">    private static final Hashtable&lt;String, Shape&gt; shapeMap &#x3D; new Hashtable&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    public static Shape getShape(String shapeId) &#123;</span><br><span class="line">        Shape cacheShape &#x3D; shapeMap.get(shapeId);</span><br><span class="line">        return (Shape) cacheShape.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void loadCache() &#123;</span><br><span class="line">        Circle circle &#x3D; new Circle();</span><br><span class="line">        circle.setId(&quot;1&quot;);</span><br><span class="line">        shapeMap.put(circle.getId(), circle);</span><br><span class="line"></span><br><span class="line">        Square square &#x3D; new Square();</span><br><span class="line">        square.setId(&quot;2&quot;);</span><br><span class="line">        shapeMap.put(square.getId(), square);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>4.测试</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class PrototypeTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        ShapeCache.loadCache();</span><br><span class="line"></span><br><span class="line">        Shape cloneShape &#x3D; ShapeCache.getShape(&quot;1&quot;);</span><br><span class="line">        System.out.println(&quot;Shape: &quot; + cloneShape.getType());</span><br><span class="line"></span><br><span class="line">        Shape cloneShape2 &#x3D; ShapeCache.getShape(&quot;2&quot;);</span><br><span class="line">        System.out.println(&quot;Shape: &quot; + cloneShape2.getType());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Shape: Circle</span><br><span class="line">Shape: Square</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>原型模式</tag>
       </tags>
   </entry>
   <entry>
@@ -583,29 +295,6 @@
       </categories>
       <tags>
         <tag>shiro</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>singleton</title>
-    <url>/2021/03/30/singleton/</url>
-    <content><![CDATA[<p><strong>单例模式</strong>是最简单的设计模式之一，涉及一个单一的类。该类负责创建自己的对象，同时确保只有单个对象被创建。<br>注意：单例类只能有一个实例；单例类必须自己创建自己的唯一实例；单例类必须给其它对象提供这一实例。</p>
-<p>优点：内存里只有一个实例，减少了内存的开销；避免对资源的多重占用。</p>
-<p>缺点：没有接口，不能继承，与单一职责原则冲突。</p>
-<p>使用场景：生产唯一序列号；web中的计数器，不用每次刷新在数据库加一次，而用单例先缓存起来。</p>
-<p>1.创建一个单例类（饿汉式）<br>类加载时就初始化，浪费内存。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonFactory &#123;</span><br><span class="line">    private static final SingletonFactory instance &#x3D; new SingletonFactory();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;private 避免类在外部被实例化</span><br><span class="line">    private SingletonFactory() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonFactory getInstance() &#123;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void showMessage() &#123;</span><br><span class="line">        System.out.println(&quot;what are words!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>（双检锁）<br>在多线程情况下能保持高性能</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonFactory &#123;</span><br><span class="line">    &#x2F;&#x2F;双检锁</span><br><span class="line">    private volatile static SingletonFactory instance;</span><br><span class="line"></span><br><span class="line">    private SingletonFactory() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonFactory getInstance() &#123;</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            synchronized (SingletonFactory.class) &#123;</span><br><span class="line">                if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    instance &#x3D; new SingletonFactory();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>双检锁模式，进行了两次if判断。第一次是为了避免不要的实例，第二次是为了进行同步，避免多线程问题。由于instance = new SingletonFactory()对象的创建在JVM中可能会进行重排序，多线程访问下会存在风险，使用volatile关键字修饰SingletonFactory实例变量能有效解决该问题。</p>
-<p>2.测试</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonTest &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SingletonFactory singletonFactory &#x3D; SingletonFactory.getInstance();</span><br><span class="line">        singletonFactory.showMessage();  &#x2F;&#x2F; what are words!</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>单例模式</tag>
       </tags>
   </entry>
   <entry>
