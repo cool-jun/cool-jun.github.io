@@ -1,6 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>diffchain</title>
+    <url>/2020/11/16/difftimechain/</url>
+    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
+
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>差分时间链</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Three ways to create Java Multithread</title>
+    <url>/2020/09/23/concurrency/</url>
+    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
+<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>多线程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>copy constructor</title>
+    <url>/2021/04/04/copy/</url>
+    <content><![CDATA[<h3 id="浅拷贝简介"><a href="#浅拷贝简介" class="headerlink" title="浅拷贝简介"></a>浅拷贝简介</h3><p>浅拷贝会创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。如果属性是基本数据类型，拷贝的就是值；如果属性是引用数据类型，拷贝的就是内存地址。<br>基本数据类型是值传递，所以修改一个对象的值不会影响另一个对象。<br>引用数据类型是引用传递，浅拷贝只是把内存地址赋值给了新对象，它们指向同一内存空间。所以改变其中一个也会影响另一个。</p>
+<h3 id="浅拷贝实现"><a href="#浅拷贝实现" class="headerlink" title="浅拷贝实现"></a>浅拷贝实现</h3><p>类需要实现Cloneable接口，并重写clone()方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Subject &#123;</span><br><span class="line">    private String name;</span><br><span class="line"></span><br><span class="line">    public Subject(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;[Shallow Copy: &quot; + this.hashCode() + &quot;,name: &quot; + name + &quot;]&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Student implements Cloneable &#123;</span><br><span class="line">    &#x2F;&#x2F;引用数据类型</span><br><span class="line">    private Subject subject;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;基本数据类型</span><br><span class="line">    private String name;</span><br><span class="line">    private int age;</span><br><span class="line"></span><br><span class="line">    public Subject getSubject() &#123;</span><br><span class="line">        return subject;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setSubject(Subject subject) &#123;</span><br><span class="line">        this.subject &#x3D; subject;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getAge() &#123;</span><br><span class="line">        return age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setAge(int age) &#123;</span><br><span class="line">        this.age &#x3D; age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 重写clone()方法</span><br><span class="line">     * @return Object</span><br><span class="line">     *&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() &#123;</span><br><span class="line">        &#x2F;&#x2F;浅拷贝</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;直接调用父类的clone()方法</span><br><span class="line">            return super.clone();</span><br><span class="line">        &#125; catch (CloneNotSupportedException e) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;[Student: &quot; + this.hashCode() + &quot;,subject:&quot; + subject + &quot;,name:&quot; + name + &quot;,age:&quot; + age + &quot;]&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ShallowCopy &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Subject subject1 &#x3D; new Subject(&quot;math&quot;);</span><br><span class="line"></span><br><span class="line">        Student student1 &#x3D; new Student();</span><br><span class="line">        student1.setSubject(subject1);</span><br><span class="line">        student1.setName(&quot;hj&quot;);</span><br><span class="line">        student1.setAge(22);</span><br><span class="line">        System.out.println(student1.toString());</span><br><span class="line"></span><br><span class="line">        Student student2 &#x3D; (Student) student1.clone();</span><br><span class="line">        System.out.println(student2.toString());</span><br><span class="line"></span><br><span class="line">        student2.setName(&quot;cjm&quot;);</span><br><span class="line">        student2.setAge(23);</span><br><span class="line">        System.out.println(student1.toString());</span><br><span class="line">        System.out.println(student2.toString());</span><br><span class="line"></span><br><span class="line">        Subject subject2 &#x3D; student2.getSubject();</span><br><span class="line">        subject2.setName(&quot;hyh&quot;);</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;student1: &quot; + student1.toString());</span><br><span class="line">        System.out.println(&quot;student2: &quot; + student2.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[Student: 1555009629,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 149928006,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 1555009629,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 149928006,subject:[Shallow Copy: 41359092,name: math],name:cjm,age:23]</span><br><span class="line">student1: [Student: 1555009629,subject:[Shallow Copy: 41359092,name: hyh],name:hj,age:22]</span><br><span class="line">student2: [Student: 149928006,subject:[Shallow Copy: 41359092,name: hyh],name:cjm,age:23]</span><br></pre></td></tr></table></figure>
+<p>结果中可以看出，通过student1.clone()拷贝对象后得到的student2和student1是两个不同的对象。student1和student2的基本数据类型修改互不影响，而引用数据类型subject的修改则受影响。</p>
+<h3 id="深拷贝简介"><a href="#深拷贝简介" class="headerlink" title="深拷贝简介"></a>深拷贝简介</h3><p>深拷贝在拷贝引用数据类型成员变量时，为引用数据类型的成员变量另开辟一个独立的内存空间，实现真正内容上的拷贝。<br>对于引用数据类型，比如数组或者类对象。深拷贝会新建一个对象空间，然后拷贝里面的内容，所以它们指向了不同的内存空间。改变其中一个，不会影响另一个。<br>对于有多层对象的，每个对象都需要实现Cloneable并重写clone()方法，进而实现对象的串行层层拷贝。</p>
+<h3 id="深拷贝实现"><a href="#深拷贝实现" class="headerlink" title="深拷贝实现"></a>深拷贝实现</h3><p>Student的引用数据类型成员变量Subject需要实现Cloneable接口并重写clone()方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Subject implements Cloneable &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Student implements Cloneable &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() &#123;</span><br><span class="line">        &#x2F;&#x2F;深拷贝</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;调用父类的clone()方法</span><br><span class="line">            Student student &#x3D; (Student) super.clone();</span><br><span class="line">            student.subject &#x3D; (Subject) subject.clone();</span><br><span class="line">            return student;</span><br><span class="line">        &#125; catch (CloneNotSupportedException e) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试结果-1"><a href="#测试结果-1" class="headerlink" title="测试结果"></a>测试结果</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">student1: [Student: 1555009629,subject:[Subject: 41359092,name: math],name:hj,age:22]</span><br><span class="line">student2: [Student: 149928006,subject:[Subject: 713338599,name: hyh],name:cjm,age:23]</span><br></pre></td></tr></table></figure>
+<p>结果中可以看出，深拷贝不管是修改基本数据类型还是引用数据类型成员变量时都不会相互影响。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>深浅拷贝</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>evening</title>
+    <url>/2021/08/25/evening/</url>
+    <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
+<p>农历七月十八</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>郁</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>bitmap</title>
     <url>/2020/11/16/bitmap/</url>
     <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>在一个结构中，用一个比特位来描述一个数据的状态，这种结构就称为位图。0表示数据不存在，1表示数据存在。位图实际上是哈希表的一种变形。<br>在数据存储方面，位图的应用非常广泛。比如说现在要存储20亿个不重复的数据，int类型为4个字节，就需要80亿个字节来存储。1GB的内存表示的是10亿个字节，此时就需要8GB的内存来存放这些数据，而我们普通的电脑内存一般都是4G的内存，这显然是存放不下的。但是如果能用一个比特位来存放一个整型数据，则只需要0.5GB的内存。这大大节省了内存空间。</p>
@@ -60,67 +134,6 @@
       </tags>
   </entry>
   <entry>
-    <title>copy constructor</title>
-    <url>/2021/04/04/copy/</url>
-    <content><![CDATA[<h3 id="浅拷贝简介"><a href="#浅拷贝简介" class="headerlink" title="浅拷贝简介"></a>浅拷贝简介</h3><p>浅拷贝会创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。如果属性是基本数据类型，拷贝的就是值；如果属性是引用数据类型，拷贝的就是内存地址。<br>基本数据类型是值传递，所以修改一个对象的值不会影响另一个对象。<br>引用数据类型是引用传递，浅拷贝只是把内存地址赋值给了新对象，它们指向同一内存空间。所以改变其中一个也会影响另一个。</p>
-<h3 id="浅拷贝实现"><a href="#浅拷贝实现" class="headerlink" title="浅拷贝实现"></a>浅拷贝实现</h3><p>类需要实现Cloneable接口，并重写clone()方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Subject &#123;</span><br><span class="line">    private String name;</span><br><span class="line"></span><br><span class="line">    public Subject(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;[Shallow Copy: &quot; + this.hashCode() + &quot;,name: &quot; + name + &quot;]&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Student implements Cloneable &#123;</span><br><span class="line">    &#x2F;&#x2F;引用数据类型</span><br><span class="line">    private Subject subject;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;基本数据类型</span><br><span class="line">    private String name;</span><br><span class="line">    private int age;</span><br><span class="line"></span><br><span class="line">    public Subject getSubject() &#123;</span><br><span class="line">        return subject;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setSubject(Subject subject) &#123;</span><br><span class="line">        this.subject &#x3D; subject;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getAge() &#123;</span><br><span class="line">        return age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setAge(int age) &#123;</span><br><span class="line">        this.age &#x3D; age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 重写clone()方法</span><br><span class="line">     * @return Object</span><br><span class="line">     *&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() &#123;</span><br><span class="line">        &#x2F;&#x2F;浅拷贝</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;直接调用父类的clone()方法</span><br><span class="line">            return super.clone();</span><br><span class="line">        &#125; catch (CloneNotSupportedException e) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;[Student: &quot; + this.hashCode() + &quot;,subject:&quot; + subject + &quot;,name:&quot; + name + &quot;,age:&quot; + age + &quot;]&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ShallowCopy &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Subject subject1 &#x3D; new Subject(&quot;math&quot;);</span><br><span class="line"></span><br><span class="line">        Student student1 &#x3D; new Student();</span><br><span class="line">        student1.setSubject(subject1);</span><br><span class="line">        student1.setName(&quot;hj&quot;);</span><br><span class="line">        student1.setAge(22);</span><br><span class="line">        System.out.println(student1.toString());</span><br><span class="line"></span><br><span class="line">        Student student2 &#x3D; (Student) student1.clone();</span><br><span class="line">        System.out.println(student2.toString());</span><br><span class="line"></span><br><span class="line">        student2.setName(&quot;cjm&quot;);</span><br><span class="line">        student2.setAge(23);</span><br><span class="line">        System.out.println(student1.toString());</span><br><span class="line">        System.out.println(student2.toString());</span><br><span class="line"></span><br><span class="line">        Subject subject2 &#x3D; student2.getSubject();</span><br><span class="line">        subject2.setName(&quot;hyh&quot;);</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;student1: &quot; + student1.toString());</span><br><span class="line">        System.out.println(&quot;student2: &quot; + student2.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[Student: 1555009629,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 149928006,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 1555009629,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 149928006,subject:[Shallow Copy: 41359092,name: math],name:cjm,age:23]</span><br><span class="line">student1: [Student: 1555009629,subject:[Shallow Copy: 41359092,name: hyh],name:hj,age:22]</span><br><span class="line">student2: [Student: 149928006,subject:[Shallow Copy: 41359092,name: hyh],name:cjm,age:23]</span><br></pre></td></tr></table></figure>
-<p>结果中可以看出，通过student1.clone()拷贝对象后得到的student2和student1是两个不同的对象。student1和student2的基本数据类型修改互不影响，而引用数据类型subject的修改则受影响。</p>
-<h3 id="深拷贝简介"><a href="#深拷贝简介" class="headerlink" title="深拷贝简介"></a>深拷贝简介</h3><p>深拷贝在拷贝引用数据类型成员变量时，为引用数据类型的成员变量另开辟一个独立的内存空间，实现真正内容上的拷贝。<br>对于引用数据类型，比如数组或者类对象。深拷贝会新建一个对象空间，然后拷贝里面的内容，所以它们指向了不同的内存空间。改变其中一个，不会影响另一个。<br>对于有多层对象的，每个对象都需要实现Cloneable并重写clone()方法，进而实现对象的串行层层拷贝。</p>
-<h3 id="深拷贝实现"><a href="#深拷贝实现" class="headerlink" title="深拷贝实现"></a>深拷贝实现</h3><p>Student的引用数据类型成员变量Subject需要实现Cloneable接口并重写clone()方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Subject implements Cloneable &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Student implements Cloneable &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() &#123;</span><br><span class="line">        &#x2F;&#x2F;深拷贝</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;调用父类的clone()方法</span><br><span class="line">            Student student &#x3D; (Student) super.clone();</span><br><span class="line">            student.subject &#x3D; (Subject) subject.clone();</span><br><span class="line">            return student;</span><br><span class="line">        &#125; catch (CloneNotSupportedException e) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="测试结果-1"><a href="#测试结果-1" class="headerlink" title="测试结果"></a>测试结果</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">student1: [Student: 1555009629,subject:[Subject: 41359092,name: math],name:hj,age:22]</span><br><span class="line">student2: [Student: 149928006,subject:[Subject: 713338599,name: hyh],name:cjm,age:23]</span><br></pre></td></tr></table></figure>
-<p>结果中可以看出，深拷贝不管是修改基本数据类型还是引用数据类型成员变量时都不会相互影响。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>深浅拷贝</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Three ways to create Java Multithread</title>
-    <url>/2020/09/23/concurrency/</url>
-    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
-<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>多线程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>diffchain</title>
-    <url>/2020/11/16/difftimechain/</url>
-    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
-
-]]></content>
-      <categories>
-        <category>数据结构</category>
-      </categories>
-      <tags>
-        <tag>差分时间链</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>firstblog</title>
     <url>/2020/09/20/firstblog/</url>
     <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
@@ -143,19 +156,6 @@
       </tags>
   </entry>
   <entry>
-    <title>evening</title>
-    <url>/2021/08/25/evening/</url>
-    <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
-<p>农历七月十八</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>郁</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>spring</title>
     <url>/2021/03/24/hurt/</url>
     <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
@@ -167,19 +167,6 @@
       </categories>
       <tags>
         <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>markdown</title>
-    <url>/2021/04/15/markdown/</url>
-    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
-<p>格式如下图：</p>
-<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
-      <categories>
-        <category>markdown</category>
-      </categories>
-      <tags>
-        <tag>markdown</tag>
       </tags>
   </entry>
   <entry>
@@ -208,24 +195,6 @@
       </tags>
   </entry>
   <entry>
-    <title>memory</title>
-    <url>/2021/03/21/memory/</url>
-    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
-<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
-<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
-<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
-<img src="/2021/03/21/memory/memory.jpg" class="">
-
-<p>辛丑牛年农历二月初十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>旅行</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>md5+salt</title>
     <url>/2020/10/10/md5-salt/</url>
     <content><![CDATA[<p>传统的md5算法通过产生一个128位（16字节）的散列值（hash value），用于确保信息的安全性。但随着技术的发展，md5无法防止碰撞（collision）且可以被加以破解。<br>salt的出现可以一定程度上解决这个问题。</p>
@@ -251,6 +220,316 @@
       </categories>
       <tags>
         <tag>密码学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>markdown</title>
+    <url>/2021/04/15/markdown/</url>
+    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
+<p>格式如下图：</p>
+<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
+      <categories>
+        <category>markdown</category>
+      </categories>
+      <tags>
+        <tag>markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>memory</title>
+    <url>/2021/03/21/memory/</url>
+    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
+<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
+<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
+<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
+<img src="/2021/03/21/memory/memory.jpg" class="">
+
+<p>辛丑牛年农历二月初十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>旅行</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mpc</title>
+    <url>/2021/08/26/mpc/</url>
+    <content><![CDATA[<h1 id="SmartBid"><a href="#SmartBid" class="headerlink" title="SmartBid"></a>SmartBid</h1><h2 id="Getting-started"><a href="#Getting-started" class="headerlink" title="Getting started"></a>Getting started</h2><h3 id="Requirements"><a href="#Requirements" class="headerlink" title="Requirements"></a>Requirements</h3><p>Work with Hyperledger Fabric v. 1.1.1-mpc (WARNING you need to install 1.1.1-mpc as described below)</p>
+<p>Follow <a href="https://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html">https://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html</a> and <a href="https://github.com/hyperledger/fabric-sdk-node">https://github.com/hyperledger/fabric-sdk-node</a>. In particular:</p>
+<ul>
+<li><p><code>go</code> <a href="https://golang.org/">https://golang.org/</a> - most recent version. On Ubuntu DO NOT INSTALL USING <code>apt-get</code>. It will NOT work (outdated version). You may use the <code>snap</code> version but you might have the following issue: <a href="https://github.com/golang/go/issues/24674#issuecomment-379919460">https://github.com/golang/go/issues/24674#issuecomment-379919460</a>. Instead, it is better to manually install it in your home directory:</p>
+<pre><code>  mkdir ~/opt
+  cd ~/opt
+  wget https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz
+  tar xvzf go1.10.3.linux-amd64.tar.gz</code></pre>
+<p>  and add the following lines to <code>~/.zshrc</code> or <code>~/.bashrc</code></p>
+<pre><code>  export GOROOT=$HOME/opt/go
+  export PATH=$PATH:$GOROOT/bin</code></pre>
+</li>
+</ul>
+<ul>
+<li><code>docker</code> <a href="https://www.docker.com/products/overview">https://www.docker.com/products/overview</a>- v1.13 or higher</li>
+<li><code>docker compose</code> <a href="https://docs.docker.com/compose/overview/">https://docs.docker.com/compose/overview/</a> - v1.8 or higher (<code>sudo pip install docker-compose</code>)</li>
+<li><code>node.js</code>, <code>npm</code> <a href="https://nodejs.org/en/download/">https://nodejs.org/en/download/</a><ul>
+<li>node runtime version and 8.4.0 or higher (NodeJS &gt; 8 is not supported by <code>fabric-node-sdk</code>, and we need NodeJS &gt;= 8 for async/await)</li>
+<li>npm v3.10.10</li>
+</ul>
+</li>
+<li>on MacOS: need <code>gnu-tar</code> and <code>coreutils</code>: with Homebrew: <code>brew install gnu-tar --with-default-names</code>, <code>brew install coreutils</code> (needs to change path)</li>
+</ul>
+<p>In addition:</p>
+<ul>
+<li><code>gulp</code> - install via <code>npm install -g gulp</code></li>
+<li><code>yarn</code> - install via <code>npm install -g yarn</code> / <code>brew install yarn</code> / … -&gt; npm might be used but it seems to be too unreliable</li>
+<li><code>tmux</code> &amp; <code>tmuxinator</code> - if you want to use them</li>
+</ul>
+<p><em>Warning</em>: Not using the indicated versions might lead to errors very hard to debug.</p>
+<p>The <code>$GOPATH</code> must be set.</p>
+<p>For <code>carbuy-go</code>: (this dependencies are OPTIONAL but highly recommended; they are required to locally compile the chaincode, outside the Docker container <code>fabric-ccenv-mpc</code>)</p>
+<ul>
+<li><p><code>swig</code> - We need a recent version of <code>swig</code>. The default version of swig in Ubuntu 16.04 has a bug: <a href="https://github.com/swig/swig/issues/619">https://github.com/swig/swig/issues/619</a>. Tested with 3.0.12. For Ubuntu, inside <code>swig</code> source folder (downloaded from <a href="http://www.swig.org/download.html">http://www.swig.org/download.html</a>):</p>
+<pre><code>  sudo apt-get install libpcre3 libpcre3-dev
+  ./configure
+  make
+  sudo make install</code></pre>
+</li>
+<li><p><code>emp-tookit</code> from the <code>carbuy</code> branch from <code>https://github.com/fabrice102/</code></p>
+<ul>
+<li><p>on Ubuntu:<br>go the the folder you want to install it:</p>
+<pre><code>wget https://raw.githubusercontent.com/fabrice102/emp-readme/carbuy/scripts/setup_new_machine.sh -O emp_install.sh &amp;&amp; bash emp_install.sh</code></pre>
+<p>and then follows instruction “on both” below</p>
+</li>
+<li><p>on macOS:<br>go the the folder you want to install it:</p>
+<ul>
+<li><p><code>git clone -b carbuy https://github.com/fabrice102/emp-readme.git</code></p>
+</li>
+<li><p>install pre-requisites using HomeBrew</p>
+</li>
+<li><p>add <code>export OPENSSL_ROOT_DIR=/usr/local/opt/openssl</code> to an init script (e.g., <code>~/.zshrc</code> if <code>zsh</code> is used) and run it</p>
+</li>
+<li><p>run</p>
+<pre><code>  bash emp-readme/scripts/install_emp-tool.sh
+  bash emp-readme/scripts/install_emp-ot.sh
+  bash emp-readme/scripts/install_emp-m2pc.sh
+  bash emp-readme/scripts/install_emp-sh2pc.sh</code></pre>
+</li>
+<li><p><em>warning</em>: the flag <code>-DUSE_RANDOM_DEVICE=yes</code> for <code>cmake</code> is required to not use <code>rdrand</code> on systems not supporting <code>rdrand</code></p>
+</li>
+<li><p>you can run <code>cmake</code> manually with the flags:</p>
+<pre><code>  -DCMAKE_INSTALL_PREFIX=$HOME/usr  # for a local install
+  -DCMAKE_BUILD_TYPE=DEBUG # for a debug version</code></pre>
+<p>in the latter case, as we cannot use <code>cmake</code> within <code>carbuy-go</code>, you need to set up correctly <code>LD_LIBRARY_PATH</code> before doing anything on <code>carbuy-go</code>.<br>To avoid breaking <code>rpath</code> mechanisms, it is not recommended to change <code>LD_LIBRARY_PATH</code>, <code>LIBRARY_PATH</code>, or <code>DYLD_LIBRARY_PATH</code> for all the system.</p>
+</li>
+</ul>
+</li>
+<li><p>on both, add to <code>~/.zshrc</code>, <code>~/.bashrc</code>, or a similar file:</p>
+<pre><code>export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/include/emp-tool:/usr/local/include/emp-sh2pc:/usr/local/include/emp-ot</code></pre>
+</li>
+</ul>
+</li>
+<li><p><code>dep</code> <a href="https://github.com/golang/dep">https://github.com/golang/dep</a></p>
+</li>
+</ul>
+<p>We assume that:</p>
+<ul>
+<li>The environment variable <code>$CARBUYDIR</code> points to an existing directory (e.g., <code>~/projects/carbuy</code>)</li>
+<li>This repository <code>carbuy-client</code> is cloned in <code>$CARBUYDIR/carbuy-client</code>.</li>
+<li>The repository <code>carbuy-go</code> is cloned in <code>$GOPATH/src/carbuy</code>.</li>
+</ul>
+<p>In other words:</p>
+<pre><code>cd $CARBUYDIR
+git clone [url carbuy-client] carbuy-client
+
+cd $GOPATH/src
+git clone [url carbuy-go] carbuy</code></pre>
+<h3 id="Compilation-installation-of-dependencies"><a href="#Compilation-installation-of-dependencies" class="headerlink" title="Compilation / installation of dependencies"></a>Compilation / installation of dependencies</h3><p><em>Important</em>: These steps might need to be done again after an update.</p>
+<h4 id="Fabric-v1-1-1-mpc"><a href="#Fabric-v1-1-1-mpc" class="headerlink" title="Fabric v1.1.1-mpc"></a>Fabric v1.1.1-mpc</h4><pre><code>mkdir -p $GOPATH/src/github.com/hyperledger
+cd $GOPATH/src/github.com/hyperledger
+git clone -b mpc_e2e https://github.com/fabrice102/fabric   # only the first time - if the folder &quot;fabric&quot; does not already exists, else check you are on the remote and mpc_e2e branch (cd fabric; git status)
+cd fabric
+git pull
+make docker</code></pre>
+<h4 id="carbuy-client"><a href="#carbuy-client" class="headerlink" title="carbuy-client"></a>carbuy-client</h4><pre><code>cd $CARBUYDIR/carbuy-client
+git submodule update --init
+cd fabric-sdk-node
+yarn
+gulp ca
+cd ..
+yarn
+
+cd $CARBUYDIR/carbuy-client/fabric
+./bootstrap.sh
+
+cd $CARBUYDIR/carbuy-client/fabric/fabric-ccenv-carbuy
+docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.1-mpc .</code></pre>
+<h4 id="carbuy-go"><a href="#carbuy-go" class="headerlink" title="carbuy-go"></a>carbuy-go</h4><p>This step is only required if you want to locally compile the chaincode.</p>
+<pre><code>cd $GOPATH/src/carbuy
+dep ensure</code></pre>
+<h3 id="1-Running-the-fabric"><a href="#1-Running-the-fabric" class="headerlink" title="1. Running the fabric"></a>1. Running the fabric</h3><p>Run</p>
+<pre><code>cd &quot;$CARBUYDIR/carbuy-client/fabric/network&quot;
+./byfn.sh -m generate
+./byfn.sh -m up</code></pre>
+<p>At the end, you should see</p>
+<pre><code>===================== Anchor peers for org &quot;Org1MSP&quot; on &quot;mychannel&quot; is updated successfully =====================
+
+========= All GOOD, BYFN execution completed ===========
+
+
+ _____   _   _   ____
+| ____| | \ | | |  _ \
+|  _|   |  \| | | | | |
+| |___  | |\  | | |_| |
+|_____| |_| \_| |____/</code></pre>
+<p>To stop the fabric:</p>
+<pre><code>cd &quot;$CARBUYDIR/carbuy-client/fabric/network&quot;
+./byfn.sh -m down</code></pre>
+<p>In this case, the ledger is destroyed.</p>
+<h3 id="2-Deploying-the-carbuy-application"><a href="#2-Deploying-the-carbuy-application" class="headerlink" title="2. Deploying the carbuy application"></a>2. Deploying the carbuy application</h3><p>Now you need to deploy the chaincode:</p>
+<pre><code>cd $CARBUYDIR/carbuy-client
+node deploy</code></pre>
+<p>Each deploy generates a fresh <code>chaincodeID</code> which is stored in <code>chaincodeID.txt</code>.<br>Therefore only the last deployed chaincode is actually used (except if you change <code>chaincodeID.txt</code>).<br>Furthermore, each deployment starts from a fresh empty ledger that way.</p>
+<p><em>Note</em>: <code>node deploy</code> is equivalent to <code>node deploy.js</code>.</p>
+<h3 id="3-Populate-the-database"><a href="#3-Populate-the-database" class="headerlink" title="3. Populate the database"></a>3. Populate the database</h3><p>You can create initial entries into the database by using the <code>populate.sh</code> script:</p>
+<pre><code>cd $CARBUYDIR/carbuy-client
+./scripts/populate.sh</code></pre>
+<p>Other smaller populate scripts are available (look for <code>populate*.sh</code>).</p>
+<h3 id="4-Accessing-the-smartbid-application-using-command-line-OPTIONAL"><a href="#4-Accessing-the-smartbid-application-using-command-line-OPTIONAL" class="headerlink" title="4. Accessing the smartbid application using command line (OPTIONAL)"></a>4. Accessing the smartbid application using command line (OPTIONAL)</h3><p>Now, you can run the <code>invoke</code> (or <code>query</code> if you don’t need the transaction to be recorded) command with different parameters. The command gets the name of the function that is executed (e.g. createItem, etc.) and a structure that includes all of the variables for the command.</p>
+<p>For example:</p>
+<pre><code>cd $CARBUYDIR/carbuy-client
+
+node invoke org0 createItem &#39;&#123;
+    &quot;id&quot;:              &quot;715987522&quot;,
+    &quot;sellerID&quot;:        &quot;org0&quot;,
+    &quot;name&quot;:            &quot;House, White Plains&quot;,
+    &quot;category&quot;:        &quot;Real Estate&quot;,
+    &quot;description&quot;:     &quot;&quot;,
+    &quot;auctionDateTime&quot;: 1494648000,
+    &quot;startPrice&quot;:      10000,
+    &quot;reservePrice&quot;:    &#39;$(node encrypt org0 30000)&#39;,
+    &quot;soldPrice&quot;:       0,
+    &quot;owner&quot;:           &quot;&quot;,
+    &quot;status&quot;:          &quot;available&quot;
+&#125;&#39;
+
+node invoke org2 makeBid &#39;&#123;
+    &quot;sellerID&quot;:        &quot;org0&quot;,
+    &quot;itemID&quot;:          &quot;715987522&quot;,
+    &quot;buyerID&quot;:         &quot;org2&quot;,
+    &quot;price&quot;:           &#39;$(node encrypt org2 15000)&#39;,
+    &quot;bidDateTime&quot;:     1493152448,
+    &quot;valid&quot;:           true
+&#125;&#39;
+
+node invoke org1 createItem &#39;&#123;
+    &quot;id&quot;:              &quot;715987524&quot;,
+    &quot;sellerID&quot;:        &quot;org1&quot;,
+    &quot;name&quot;:            &quot;House, Yorktown&quot;,
+    &quot;category&quot;:        &quot;Real Estate&quot;,
+    &quot;description&quot;:     &quot;&quot;,
+    &quot;auctionDateTime&quot;: 1494648000,
+    &quot;startPrice&quot;:      10000,
+    &quot;reservePrice&quot;:    &#39;$(node encrypt org1 25000)&#39;,
+    &quot;soldPrice&quot;:       0,
+    &quot;owner&quot;:           &quot;&quot;,
+    &quot;status&quot;:          &quot;available&quot;
+&#125;&#39;
+
+node query org2 getMyItemsWithBids org2</code></pre>
+<p>The first argument is a comma-separated list of orgs to be contacted. The following arguments correspond to the invoke function of the chaincode and its arguments.</p>
+<p>The reserve price is confidential. Therefore, an encryption of the price is saved on the chaincode and not the plaintextValue.</p>
+<p><code>node encrypt</code> enables to encrypt data for a given organization.</p>
+<h3 id="5-Running-the-web-server-OPTIONAL"><a href="#5-Running-the-web-server-OPTIONAL" class="headerlink" title="5. Running the web server (OPTIONAL)"></a>5. Running the web server (OPTIONAL)</h3><p>The web server provides a nicer interface than the command line.<br>To run it:</p>
+<pre><code>cd $CARBUYDIR/carbuy-client
+node app</code></pre>
+<p>When developing for the web server, it is convenient to restart it whenever needed.<br>For that, you can use <code>nodemon</code>. To install it:</p>
+<pre><code>cd $CARBUYDIR/carbuy-client
+npm install -g nodemon</code></pre>
+<p>To run the web server using <code>nodemon</code>:</p>
+<pre><code>nodemon -e &#39;*&#39; app.js</code></pre>
+<h3 id="Running-everything-above-automatically"><a href="#Running-everything-above-automatically" class="headerlink" title="Running everything above automatically"></a>Running everything above automatically</h3><p>Just run</p>
+<pre><code>$CARBUYDIR/carbuy-client/scripts/start.sh</code></pre>
+<p><em>TIP</em>: You can add the option <code>--populate</code> to <code>$CARBUYDIR/carbuy-client/scripts/start.sh</code>  to automatically populate after deploy.</p>
+<p><em>TIP</em>: If you are in a hurry and want only a small set of data, you can just use <code>$CARBUYDIR/carbuy-client/scripts/populateQuick.sh</code> or <code>$CARBUYDIR/carbuy-client/scripts/populateMin.sh</code>.</p>
+<p><em>TIP</em>: You can add the option <code>--no-app</code> to <code>$CARBUYDIR/carbuy-client/scripts/start.sh</code> to not launch the server. You can then run <code>$CARBUYDIR/carbuy-client/scripts/simpleTest.sh</code> to run a simple test auction.</p>
+<h3 id="6-Stopping-everything"><a href="#6-Stopping-everything" class="headerlink" title="6. Stopping everything"></a>6. Stopping everything</h3><pre><code>$CARBUYDIR/carbuy-client/scripts/stop.sh</code></pre>
+<h3 id="Updating"><a href="#Updating" class="headerlink" title="Updating"></a>Updating</h3><p>If you want to update all repos and compile what needs to be compiled, you can use</p>
+<pre><code>$CARBUYDIR/carbuy-client/scripts/update.sh</code></pre>
+<h2 id="Organization"><a href="#Organization" class="headerlink" title="Organization"></a>Organization</h2><ul>
+<li><code>fabric/</code>: files used to run the fabric orderer, peers, …</li>
+<li><code>static/</code>: static files of the web server</li>
+<li><code>data/</code>: fake database for the web server, used to store e.g., picture of users and cars: picture of with <code>id</code> from org0 <code>org0ID</code> is stored in <code>data/&lt;org0ID&gt;/&lt;id&gt;.png</code></li>
+<li><code>lib/</code>: templates, plugins, and other tools for the web server and <code>deploy.js</code>, …</li>
+<li><code>scripts/</code>: various scripts to make life easier</li>
+<li><code>test/</code>: mocha test files (to be run with <code>npm test</code>)</li>
+<li><code>config.json</code>: configuration file for everything</li>
+<li><code>manifest.js</code>: configuration file for the web server</li>
+<li><code>deploy.js</code>, <code>invoke.js</code>, <code>query.js</code>: see above</li>
+<li><code>chaincodeID.txt</code>: file created by <code>deploy.js</code> containing the chaincode ID of the last deployed chaincode</li>
+</ul>
+<h2 id="Unit-testing"><a href="#Unit-testing" class="headerlink" title="Unit testing"></a>Unit testing</h2><p>For the JS part, we are using <code>mocha</code>.<br>To run the tests:</p>
+<pre><code>cd $CARBUYDIR/carbuy-client
+npm test</code></pre>
+<h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><h3 id="Peers"><a href="#Peers" class="headerlink" title="Peers"></a>Peers</h3><p>WARNING: This section is completely out of date.</p>
+<p>Following the tutorial above, you get three peers: <code>org0</code>, <code>org1</code>, and <code>org2</code>.<br>However, the chaincode is oblivious to this and can work with any number of peers for most function calls, except when holding an auction which can only be done between three peers.</p>
+<p>When the chaincode is deployed, the <code>init</code> function should be given the list of peer IDs.<br>This is automatically done by <code>deploy.js</code>.</p>
+<p><em>Warning</em>: Peer name should only contains alphanumerical characters, <code>-</code> and <code>_</code>.</p>
+<h3 id="Data-model-structures-stored-on-the-blockchain"><a href="#Data-model-structures-stored-on-the-blockchain" class="headerlink" title="Data model / structures stored on the blockchain"></a>Data model / structures stored on the blockchain</h3><p>The data model is defined explicitly in the chaincode (<code>carbuy-go</code>), and must be kept in synch manually.<br>More precisely, the structures are defined at the top of <code>seller.go</code>, <code>buyer.go</code>, and <code>encrypted.go</code>, in the folder <code>$GOPATH/src/carbuy/chaincode/</code>.</p>
+<p>Comments indicate under which key the structures are stored on the blockchain.</p>
+<h3 id="Invoke-queries"><a href="#Invoke-queries" class="headerlink" title="Invoke queries"></a>Invoke queries</h3><p>There are five functions which can be invoked: <code>createItem</code>, <code>getMyItemsWithBids</code>, <code>getOtherItemsWithBids</code>, <code>makeBid</code>, <code>holdAuction</code>. Each of these functions gets <code>(stub, args)</code>, where <code>args</code> includes all of the input parameters.</p>
+<p>The invoke queries are called in <code>$GOPATH/src/carbuy/chaincode/main.go</code>, function <code>Invoke</code>.</p>
+<h2 id="Workarounds-and-dirty-details"><a href="#Workarounds-and-dirty-details" class="headerlink" title="Workarounds and dirty details"></a>Workarounds and dirty details</h2><h3 id="carbuy-client-1"><a href="#carbuy-client-1" class="headerlink" title="carbuy-client"></a>carbuy-client</h3><h4 id="Npm-packages"><a href="#Npm-packages" class="headerlink" title="Npm packages"></a>Npm packages</h4><p>We use the following workarounds in <code>package.json</code>:</p>
+<ul>
+<li>The npm package <code>node-hashtable</code> does not compile on macos Sierra. We instead use <a href="https://github.com/fabrice102/node-hashtable">https://github.com/fabrice102/node-hashtable</a>.</li>
+<li>The npm package <code>grpc</code> seems to be manually installed at least on macos Sierra.</li>
+<li>The npm package <code>winston</code> seems to be a dependency of fabric-client which has to be manually installed <code>node_modules/fabric-client/lib/utils.js:25:15</code>.</li>
+</ul>
+<h4 id="Events"><a href="#Events" class="headerlink" title="Events"></a>Events</h4><p>We only look at the events from the <code>org0</code> peer. This should never be an issue at least in our setting.</p>
+<h3 id="carbuy-go-1"><a href="#carbuy-go-1" class="headerlink" title="carbuy-go"></a>carbuy-go</h3><h4 id="Vendor-and-package-versions"><a href="#Vendor-and-package-versions" class="headerlink" title="Vendor and package versions"></a>Vendor and package versions</h4><p>We use <code>golang dep</code> to simplify dependencies management.</p>
+<p>However, for speed, we do not vendor anything in the chaincode. Instead <code>fabric-ccenv-carbuy</code> contains already everything that is requires.<br>Thus, no need for compilation each time and installation is faster.</p>
+<h4 id="SWIG"><a href="#SWIG" class="headerlink" title="SWIG"></a>SWIG</h4><p>We need <code>swig</code>. For that we need two changes:</p>
+<ul>
+<li>Patch <code>node_modules/fabric-client/lib/packager/Golang.js</code> to support <code>swig</code>; concretely, we use <code>fabric-sdk-node</code> as a submodule, from branch <code>swig-support</code> from <a href="https://github.com/fabrice102/fabric-sdk-node.git">https://github.com/fabrice102/fabric-sdk-node.git</a>.</li>
+<li>Use of <code>CORE_CHAINCODE_BUILDER</code> and <code>$CARBUYDIR/carbuy-client/fabric/fabric-ccenv-carbuy</code>, cf above. We need a recent version of <code>swig</code>, because the default version of swig in Ubuntu 16.04 has a bug: <a href="https://github.com/swig/swig/issues/619">https://github.com/swig/swig/issues/619</a>.</li>
+</ul>
+<h2 id="Other-remarks"><a href="#Other-remarks" class="headerlink" title="Other remarks"></a>Other remarks</h2><p>We use <a href="https://github.com/hyperledger/fabric/blob/master/docs/source/asset_setup.rst">https://github.com/hyperledger/fabric/blob/master/docs/source/asset_setup.rst</a> as a base, with various changes.<br>In particular <code>peer0</code>, <code>peer1</code>, and <code>peer2</code> have been renamed <code>org0</code>, <code>org1</code>, and <code>org2</code>.<br>Furthermore the network id has been changed from <code>peer0</code> to <code>carbuy</code>.</p>
+<p>The web server uses <code>hapijs</code> <a href="https://hapijs.com/">https://hapijs.com/</a>.<br>The pages use <code>bootstrap</code> <a href="https://getbootstrap.com/">https://getbootstrap.com/</a>.</p>
+<p><em>IMPORTANT</em>: Keys must be changed on production. They are stored both in <code>$CARBUYDIR/carbuy-client/keys/</code> and in <code>$GOPATH/src/carbuy/helper/server/config/config.go</code>.</p>
+<h2 id="Troubleshooting"><a href="#Troubleshooting" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h2><h3 id="Error-GRPC-client-got-an-error-response-from-the-peer-Error-Error-executing-chaincode-Failed-to-execute-transaction-when-invoking"><a href="#Error-GRPC-client-got-an-error-response-from-the-peer-Error-Error-executing-chaincode-Failed-to-execute-transaction-when-invoking" class="headerlink" title="Error GRPC client got an error response from the peer. Error: Error executing chaincode: Failed to execute transaction when invoking"></a>Error <code>GRPC client got an error response from the peer. Error: Error executing chaincode: Failed to execute transaction</code> when invoking</h3><p>To debug this error, look at the logs of the chaincode</p>
+<pre><code>docker logs carbuy-[peer]-[chaincodeid]-....</code></pre>
+<p>Use autocompletion to make your life easier.</p>
+<h3 id="Issues-with-npm-or-weird-JS-issues"><a href="#Issues-with-npm-or-weird-JS-issues" class="headerlink" title="Issues with npm or weird JS issues"></a>Issues with <code>npm</code> or weird JS issues</h3><p>Use <code>yarn</code> as <code>npm</code> often creates weird issues.</p>
+<p>If you insist on using <code>npm</code>, here are some comments.</p>
+<p>Might be useful to remove <code>node_modules</code> and <code>package-lock.json</code> and run <code>npm install</code> again.<br>True also inside <code>fabric-sdk-node</code>. (See requirements at the beginning.)</p>
+<p>If problems with versions, might be useful to remove <code>package-lock.json</code> too.</p>
+<p>See <a href="https://github.com/npm/npm/issues/16839">https://github.com/npm/npm/issues/16839</a></p>
+<h3 id="Issues-with-installation-of-chaincode"><a href="#Issues-with-installation-of-chaincode" class="headerlink" title="Issues with installation of chaincode"></a>Issues with installation of chaincode</h3><p>Check that you gave the latest <code>fabric-ccenv-carbuy</code> Docker image.<br>Otherwise run:</p>
+<pre><code>cd $CARBUYDIR/carbuy-client/fabric/fabric-ccenv-carbuy
+docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></pre>
+<h3 id="Other-random-errors"><a href="#Other-random-errors" class="headerlink" title="Other random errors"></a>Other random errors</h3><p>In some cases just rebooting the machine solves some errors.</p>
+<h3 id="Chaincode-dead-lock"><a href="#Chaincode-dead-lock" class="headerlink" title="Chaincode dead lock"></a>Chaincode dead lock</h3><p>To debug send signal QUIT to process 1 in the docker container of the chaincode and look at the logs.<br><a href="https://stackoverflow.com/a/28699595/2945326">https://stackoverflow.com/a/28699595/2945326</a></p>
+<h3 id="Errors-on-the-chaincode"><a href="#Errors-on-the-chaincode" class="headerlink" title="Errors on the chaincode"></a>Errors on the chaincode</h3><p>Debugging can be eased by changing PRINT_LINE define on top of <code>$GOPATH/src/carbuy/chaincode/mpc/mpc.cpp</code>.</p>
+<h3 id="Acknowledgement"><a href="#Acknowledgement" class="headerlink" title="Acknowledgement"></a>Acknowledgement</h3><p>Thanks to Research fellow, Algorand Foundation for his guidance and help.</p>
+]]></content>
+      <tags>
+        <tag>安全多方计算</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>rain</title>
+    <url>/2021/03/26/rain/</url>
+    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
+<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
+<p>辛丑年农历二月十四</p>
+<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
+<p>辛丑年农历二月十五</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>如晴似雨</tag>
       </tags>
   </entry>
   <entry>
@@ -292,22 +571,6 @@
       </categories>
       <tags>
         <tag>shiro</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>rain</title>
-    <url>/2021/03/26/rain/</url>
-    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
-<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
-<p>辛丑年农历二月十四</p>
-<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
-<p>辛丑年农历二月十五</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>如晴似雨</tag>
       </tags>
   </entry>
   <entry>
