@@ -98,26 +98,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Three ways to create Java Multithread</title>
-    <url>/2020/09/23/concurrency/</url>
-    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
-<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>多线程</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>copy constructor</title>
     <url>/2021/04/04/copy/</url>
     <content><![CDATA[<h3 id="浅拷贝简介"><a href="#浅拷贝简介" class="headerlink" title="浅拷贝简介"></a>浅拷贝简介</h3><p>浅拷贝会创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。如果属性是基本数据类型，拷贝的就是值；如果属性是引用数据类型，拷贝的就是内存地址。<br>基本数据类型是值传递，所以修改一个对象的值不会影响另一个对象。<br>引用数据类型是引用传递，浅拷贝只是把内存地址赋值给了新对象，它们指向同一内存空间。所以改变其中一个也会影响另一个。</p>
@@ -143,6 +123,83 @@
       </tags>
   </entry>
   <entry>
+    <title>Three ways to create Java Multithread</title>
+    <url>/2020/09/23/concurrency/</url>
+    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
+<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>多线程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>double-pointer</title>
+    <url>/2021/09/27/double-pointer/</url>
+    <content><![CDATA[<h3 id="977-有序数组的平方"><a href="#977-有序数组的平方" class="headerlink" title="977 有序数组的平方"></a>977 有序数组的平方</h3><p>给你一个按非递减顺序排序的整数数组nums，返回每个数字的平方组成的新数组，要求也按非递减顺序排序。</p>
+<p>tips<br>1 &lt;= nums.length &lt;= 10^4<br>-10^4 &lt;= nums[i] &lt;= 10^4<br>nums已按非递减顺序排序<br>请你设计时间复杂度为 O(n) 的算法解决本问题</p>
+<p><strong>代码</strong><br>思路：考虑一般排序算法，将数组平方后进行排序则时间复杂度为o(n^2),快速排序时间复杂度也为o(nlogn)，都达不到时间复杂度o(n)的要求。</p>
+<p>分析一：整数数组已经按非递减排序，考虑三种情况</p>
+<ul>
+<li>数组全为负数，平方后非递增排列</li>
+<li>数组全为正数，平方后非递减排列</li>
+<li>一般情况，有负数有正数。只需找到负数与正数的分界线，双指针分别向左向右平方后比较，将较小的平方后的数放入新数组，类似于归并排序。</li>
+</ul>
+<p>分析二：考虑到数组最有可能成V字形排列，直接双指针法，全负全正数也适用。2个指针分别指向数组的0位置和length-1位置，平方后选出最大的数放入新数组的末尾，直到2个指针i&lt;=j，排序完成。</p>
+<p>实现一</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int[] sortedSquares(int[] nums) &#123;</span><br><span class="line">        &#x2F;&#x2F; 如果全是负数，平方后非递增；如果全是正数，平方后非递减；</span><br><span class="line">        &#x2F;&#x2F; 考虑一般情况，有负数有正数，找出正数和负数的分界线pos，</span><br><span class="line">        &#x2F;&#x2F; num[0--pos]为负数，num[pos+1--length-1]为正数。</span><br><span class="line">        &#x2F;&#x2F; 双指针法，指向pos和pos+1，类似归并排序，移动指针并比较大小</span><br><span class="line">        int pos &#x3D; -1;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; nums.length; i++) &#123;</span><br><span class="line">            if (nums[i] &lt; 0) &#123;</span><br><span class="line">                pos &#x3D; i;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        int[] answer &#x3D; new int[nums.length];</span><br><span class="line">        int index &#x3D; 0, i &#x3D; pos, j &#x3D; pos + 1;</span><br><span class="line">        &#x2F;&#x2F; 双指针循环结束条件</span><br><span class="line">        while (i &gt;&#x3D; 0 || j &lt; nums.length) &#123;</span><br><span class="line">            &#x2F;&#x2F; 全是正数时</span><br><span class="line">            if (i &lt; 0) &#123;</span><br><span class="line">                answer[index] &#x3D; nums[j] * nums[j];</span><br><span class="line">                j++;</span><br><span class="line">            &#125; else if (j &#x3D;&#x3D; nums.length) &#123;</span><br><span class="line">                &#x2F;&#x2F; 全是负数时</span><br><span class="line">                answer[index] &#x3D; nums[i] * nums[i];</span><br><span class="line">                i--;</span><br><span class="line">            &#125; else if (nums[i]*nums[i] &lt; nums[j]*nums[j]) &#123;</span><br><span class="line">                &#x2F;&#x2F; 有正有负时</span><br><span class="line">                answer[index] &#x3D; nums[i]*nums[i];</span><br><span class="line">                i--;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                answer[index] &#x3D; nums[j]*nums[j];</span><br><span class="line">                j++;</span><br><span class="line">            &#125;</span><br><span class="line">            index++;</span><br><span class="line">        &#125;</span><br><span class="line">        return answer;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现二</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int[] sortedSquares(int[] nums) &#123;</span><br><span class="line">        int[] answer &#x3D; new int[nums.length];</span><br><span class="line">        &#x2F;&#x2F; 双指针法，两个指针分别指向数组的第一个元素和最后一个元素</span><br><span class="line">        &#x2F;&#x2F; 非递减意味着平方后有三种情况：降序，升序，呈V字形</span><br><span class="line">        &#x2F;&#x2F; 双指针从头从尾分别向中间移动，每次选取最大的平方后的数，再放入新数组的末尾</span><br><span class="line">        for (int i &#x3D; 0, j &#x3D; nums.length - 1, pos &#x3D; nums.length - 1; i &lt;&#x3D; j ;) &#123;</span><br><span class="line">            if (nums[i]*nums[i] &gt; nums[j]*nums[j]) &#123;</span><br><span class="line">                answer[pos] &#x3D; nums[i]*nums[i];</span><br><span class="line">                i++;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                answer[pos] &#x3D; nums[j]*nums[j];</span><br><span class="line">                j--;</span><br><span class="line">            &#125;</span><br><span class="line">            pos--;</span><br><span class="line">        &#125;</span><br><span class="line">        return answer;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="189-旋转数组"><a href="#189-旋转数组" class="headerlink" title="189 旋转数组"></a>189 旋转数组</h3><p>给定一个数组，将数组中的元素向右移动 k 个位置，其中 k 是非负数。<br>尽可能想出更多的解决方案，至少有三种不同的方法可以解决这个问题。<br>使用空间复杂度为 O(1) 的原地算法解决这个问题</p>
+<p>tips<br>1 &lt;= nums.length &lt;= 2 * 10^4<br>-2^31 &lt;= nums[i] &lt;= 2^31 - 1<br>0 &lt;= k &lt;= 10^5</p>
+<p><strong>代码</strong><br>分析一：常规解<br>向右移动k个位置，只需一个大小为k的数组暂存最后k个数<br>将数组从后往前依次后移k位，最后将暂存的k个数放入数组<br>考虑k大于数组长度的情况，例如：[1,3]后移5位等价于后移一位，后移2位等价于没移动  k = k % nums.length;</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">k &#x3D; k % nums.length;</span><br><span class="line">int[] temp &#x3D; new int[k];</span><br><span class="line">int index &#x3D; 0;</span><br><span class="line">&#x2F;&#x2F; 将后k个数暂存数组temp</span><br><span class="line">for (int i &#x3D; nums.length - k; i &lt; nums.length; i++) &#123;</span><br><span class="line">    temp[index] &#x3D; nums[i];</span><br><span class="line">    index++;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; 前length-k个数从右往左依次右移k位</span><br><span class="line">for (int i &#x3D; nums.length - k - 1; i &gt;&#x3D; 0; i--) &#123;</span><br><span class="line">    nums[i+k] &#x3D; nums[i];</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; 暂存的k个数依次放入数组nums</span><br><span class="line">for (int i &#x3D; 0; i &lt; k; i++) &#123;</span><br><span class="line">    nums[i] &#x3D; temp[i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>分析二：原地算法，空间复杂度为o（1）<br>此为翻转法，例如nums={1，2，3，4，5，6，7}，k=3<br>先将数组翻转一次，nums={7，6，5，4，3，2，1}<br>再将前k个数翻转一次，nums={5，6，7，4，3，2，1}，<br>最后将后length-k个数翻转一次即可得到答案，nums={5,6,7,1,2,3,4}<br>此方法空间复杂度为o（1）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 翻转数组的函数</span><br><span class="line">    public static void reserve(int[] nums, int start, int end) &#123;</span><br><span class="line">        while (start &lt; end) &#123;</span><br><span class="line">            int temp &#x3D; nums[start];</span><br><span class="line">            nums[start] &#x3D; nums[end];</span><br><span class="line">            nums[end] &#x3D; temp;</span><br><span class="line">            start++;</span><br><span class="line">            end--;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">reserve(nums, 0, nums.length - 1);</span><br><span class="line">reserve(nums, 0, k - 1);</span><br><span class="line">reserve(nums, k, nums.length - 1);</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="283-移动零"><a href="#283-移动零" class="headerlink" title="283 移动零"></a>283 移动零</h3><p>给定一个数组nums，编写一个函数将所有0移动到数组的末尾，同时保持非零元素的相对顺序。<br>必须在原数组上操作，不能拷贝额外的数组。<br>尽量减少操作次数。<br>输入: [0,1,0,3,12]<br>输出: [1,3,12,0,0]</p>
+<p><strong>代码</strong><br>分析一：暴力法<br>额外生成一个数组，遍历原数组，遇到0放入新数组末尾，遇到非0放入新数组头部<br>时间复杂度与空间复杂度都为o（n）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int[] moveZeros(int[] nums) &#123;</span><br><span class="line">        int[] copy &#x3D; new int[nums.length];</span><br><span class="line">        int left &#x3D; 0, right &#x3D; nums.length - 1;</span><br><span class="line">        for (int num : nums) &#123;</span><br><span class="line">            if (num &#x3D;&#x3D; 0) &#123;</span><br><span class="line">                copy[right] &#x3D; num;</span><br><span class="line">                right--;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                copy[left] &#x3D; num;</span><br><span class="line">                left++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return copy;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>分析二：双指针<br>双指针从前往后遍历数组，左指针指向处理好的序列的尾部，右指针指向未处理序列的头部。<br>右指针向右移动，指向非零元素时与左指针交换。左、右指针初始化为零。<br>每次交换要么是自己与自己交换，要么是左指针的零与右指针的非零交换<br>时间复杂度o（n），空间复杂度o（1）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void moveZero(int[] nums) &#123;</span><br><span class="line">        int left &#x3D; 0, right &#x3D; 0;</span><br><span class="line">        while (right &lt; nums.length) &#123;</span><br><span class="line">            if (nums[right] !&#x3D; 0) &#123;</span><br><span class="line">                int temp &#x3D; nums[left];</span><br><span class="line">                nums[left] &#x3D; nums[right];</span><br><span class="line">                nums[right] &#x3D; temp;</span><br><span class="line">                left++;</span><br><span class="line">            &#125;</span><br><span class="line">            right++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="167-两数之和-输入有序数组"><a href="#167-两数之和-输入有序数组" class="headerlink" title="167 两数之和||-输入有序数组"></a>167 两数之和||-输入有序数组</h3><p>给定一个已按照非递减顺序排列的整数数组numbers，请你从数组中找出两个数满足相加之和等于目标数target。<br>函数应该以长度为2的整数数组的形式返回这两个数的下标值。numbers的下标从1开始计数，<br>所以答案数组应当满足1 &lt;= answer[0] &lt; answer[1] &lt;= numbers.length。<br>你可以假设每个输入只对应唯一的答案，而且你不可以重复使用相同的元素。<br>输入：numbers = [2,7,11,15], target = 9<br>输出：[1,2]<br>解释：2 与 7 之和等于目标数 9 。因此 index1 = 1, index2 = 2 。<br>tips<br>2 &lt;= numbers.length &lt;= 3 * 104<br>-1000 &lt;= numbers[i] &lt;= 1000<br>numbers 按 非递减顺序 排列<br>-1000 &lt;= target &lt;= 1000<br>仅存在一个有效答案</p>
+<p><strong>代码</strong><br>分析一：暴力法，时间复杂度o（n^2），不可取<br>分析二：双指针，左指针指向数组头部，右指针指向数组末尾。<br>思想：逐渐缩小搜索空间<br>如果头尾相加值大于target，右指针–，小于则左指针++</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int[] toSum(int[] numbers, int target) &#123;</span><br><span class="line">        int left &#x3D; 0, right &#x3D; numbers.length - 1;</span><br><span class="line">        while (left &lt; right) &#123;</span><br><span class="line">            if ((numbers[left] + numbers[right]) &#x3D;&#x3D; target) &#123;</span><br><span class="line">               return new int[] &#123;left + 1, right + 1&#125;;</span><br><span class="line">            &#125; else if ((numbers[left] + numbers[right]) &gt; target) &#123;</span><br><span class="line">                right--;</span><br><span class="line">            &#125; else if ((numbers[left] + numbers[right]) &lt; target) &#123;</span><br><span class="line">                left++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return new int[] &#123;-1, -1&#125;;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="344-反转字符串"><a href="#344-反转字符串" class="headerlink" title="344 反转字符串"></a>344 反转字符串</h3><p>编写一个函数，其作用是将输入的字符串反转过来。输入字符串以字符数组 s 的形式给出。<br>不要给另外的数组分配额外的空间，你必须原地修改输入数组、使用 O(1) 的额外空间解决这一问题。<br>输入：s = [“h”,”e”,”l”,”l”,”o”]<br>输出：[“o”,”l”,”l”,”e”,”h”]<br>tips<br>1 &lt;= s.length &lt;= 105<br>s[i] 都是 ASCII 码表中的可打印字符</p>
+<p><strong>代码</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static void reverseString(char[] s) &#123;</span><br><span class="line">        &#x2F;&#x2F; 分析：本题是典型的双指针解法</span><br><span class="line">        &#x2F;&#x2F; 形式一</span><br><span class="line">        int left &#x3D; 0, right &#x3D; s.length - 1;</span><br><span class="line">        while (left &lt; right) &#123;</span><br><span class="line">            char temp &#x3D; s[left];</span><br><span class="line">            s[left] &#x3D; s[right];</span><br><span class="line">            s[right] &#x3D; temp;</span><br><span class="line">            left++;</span><br><span class="line">            right--;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="557-反转字符串中的单词"><a href="#557-反转字符串中的单词" class="headerlink" title="557 反转字符串中的单词 |||"></a>557 反转字符串中的单词 |||</h3><p>给定一个字符串，你需要反转字符串中每个单词的字符顺序，同时仍保留空格和单词的初始顺序。<br>输入：”Let’s take LeetCode contest”<br>输出：”s’teL ekat edoCteeL tsetnoc”<br>tips<br>在字符串中，每个单词由单个空格分隔，并且字符串中不会有任何额外的空格。</p>
+<p><strong>代码</strong><br>分析：首先以空格切分字符串，然后将切分后的字符串数组的每个单词依次反转，最后由一个StringBuilder append。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static String reverseWords(String s) &#123;</span><br><span class="line">        &#x2F;&#x2F; 以空格进行切分</span><br><span class="line">        String[] strings &#x3D; s.split(&quot; &quot;);</span><br><span class="line">        StringBuilder sb &#x3D; new StringBuilder();</span><br><span class="line"></span><br><span class="line">        for (String string : strings) &#123;</span><br><span class="line">            &#x2F;&#x2F; 翻转每个单词</span><br><span class="line">            &#x2F;&#x2F; 字符串转换为字符数组</span><br><span class="line">            &#x2F;&#x2F; 形式二</span><br><span class="line">            &#x2F;&#x2F; 字符串转换为字符数组string.toCharArray()</span><br><span class="line">            &#x2F;&#x2F; 字符数组转换为字符串String.valueOf(chars)</span><br><span class="line">            char[] chars &#x3D; string.toCharArray();</span><br><span class="line">            int n &#x3D; chars.length;</span><br><span class="line">            for (int i &#x3D; 0; i &lt; n &#x2F; 2; i++) &#123;</span><br><span class="line">                char temp &#x3D; chars[i];</span><br><span class="line">                chars[i] &#x3D; chars[n-i-1];</span><br><span class="line">                chars[n-i-1] &#x3D; temp;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F; 添加翻转后的单词</span><br><span class="line">            sb.append(chars);</span><br><span class="line">            sb.append(&quot; &quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        return sb.toString().trim();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Algorithm</category>
+      </categories>
+      <tags>
+        <tag>双指针</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>diffchain</title>
     <url>/2020/11/16/difftimechain/</url>
     <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
@@ -159,11 +216,6 @@
       </tags>
   </entry>
   <entry>
-    <title>double-pointer</title>
-    <url>/2021/09/27/double-pointer/</url>
-    <content><![CDATA[]]></content>
-  </entry>
-  <entry>
     <title>evening</title>
     <url>/2021/08/25/evening/</url>
     <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
@@ -177,25 +229,47 @@
       </tags>
   </entry>
   <entry>
-    <title>firstblog</title>
-    <url>/2020/09/20/firstblog/</url>
-    <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
-<h3 id="启程出发"><a href="#启程出发" class="headerlink" title="启程出发"></a>启程出发</h3><p>收拾戎装，准备出发。第一次体验了磁悬浮与飞机的我不得不感叹中国科技发展之迅速。知识的力量是无穷的，希望我国在芯片领域也能更进一步。</p>
-<img src="/2020/09/20/firstblog/plane.jpg" class="">
+    <title>java_basic</title>
+    <url>/2021/09/11/java-basic/</url>
+    <content><![CDATA[<h5 id="Java语言特点"><a href="#Java语言特点" class="headerlink" title="Java语言特点"></a>Java语言特点</h5><ul>
+<li>面向对象（封装、继承、多态）</li>
+<li>平台无关性（java虚拟机）</li>
+</ul>
+<h5 id="Java主要关键字"><a href="#Java主要关键字" class="headerlink" title="Java主要关键字"></a>Java主要关键字</h5><p>权限：private、protected、public<br>类、方法、修饰符：abstract、class、extends、final、implements、interface、native、new、static、synchronized、transient、volatile</p>
+<h5 id="break、continue、return？"><a href="#break、continue、return？" class="headerlink" title="break、continue、return？"></a>break、continue、return？</h5><ul>
+<li>break：跳出整个循环，执行循环后面的语句。</li>
+<li>continue：跳出当前的这一次循环，继续下一次循环。</li>
+<li>return：结束方法执行，用于没有返回值的方法。</li>
+<li>return value：返回一个特定值，用于有返回值的方法。</li>
+</ul>
+<h5 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h5><ul>
+<li>基本数据类型：byte、short、int、long; float、double; char; boolean.</li>
+<li>引用数据类型：类、接口类型、数组类型、枚举类型、注解类型、字符串类型；例如String</li>
+</ul>
+<h5 id="Java泛型"><a href="#Java泛型" class="headerlink" title="Java泛型"></a>Java泛型</h5><p>泛型通过在编译时检测到更多错误来增加代码的稳定性。<br>简而言之，<strong>泛型使类型（类和接口）在定义类、接口和方法时成为参数</strong>。与在方法声明中使用的更熟悉的形式参数非常相似，类型参数为您提供了一种对不同输入重复使用相同代码的方法。区别在于形式参数的输入是值，而类型参数的输入是类型。</p>
+<p>泛型一般有三种使用方式：<strong>泛型类</strong>、<strong>泛型接口</strong>、<strong>泛型方法</strong>。<br>1.<strong>泛型类</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Box&lt;T&gt; &#123;</span><br><span class="line">    &#x2F;&#x2F; T stands for &quot;Type&quot;</span><br><span class="line">    private T t;</span><br><span class="line">    public void set(T t) &#123; this.t &#x3D; t; &#125;</span><br><span class="line">    public T get() &#123; return t; &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F; 实例化泛型类</span><br><span class="line">Box&lt;String&gt; box &#x3D; new Box&lt;&gt;();</span><br></pre></td></tr></table></figure>
 
-<h3 id="中蓝公寓"><a href="#中蓝公寓" class="headerlink" title="中蓝公寓"></a>中蓝公寓</h3><p>北京工业大学的研究生基本都住在中蓝公寓，不过中蓝公寓离校内还有一段距离，一般大家都是骑车上课。寝室是四人间，上下铺。厕所和澡堂都是公共的，不过令人疑惑的澡堂周六是不开放的。</p>
-<img src="/2020/09/20/firstblog/navigation.jpg" class="">
+<p>2.<strong>泛型接口</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface Box&lt;T&gt; &#123;</span><br><span class="line">    public T method();</span><br><span class="line">&#125;</span><br><span class="line">实现泛型接口，并指定类型</span><br><span class="line">class BoxImpl implements Box&lt;String&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public String method() &#123;</span><br><span class="line">    return &quot;hj&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>我所在的公寓是蓝悦园，在宿舍的阳台上放眼望去满是高大而豪华的建筑。其实我更想看的是充满历史又能反应北京特色的胡同儿。期待国庆能去转转。</p>
-<img src="/2020/09/20/firstblog/scene.jpg" class="">
+<p>3.<strong>泛型方法</strong><br>泛型方法是引入自己的类型参数的方法。这类似于声明泛型类型，但类型参数的范围仅限于声明它的方法。允许使用静态和非静态泛型方法，以及泛型类构造函数。泛型方法的语法包括一个类型参数列表，在尖括号内，它出现在方法的返回类型之前。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static &lt;K, V&gt; boolean compare(Pair&lt;K, V&gt; p1, Pair&lt;K, V&gt; p2) &#123;</span><br><span class="line">        return p1.getKey().equals(p2.getKey()) &amp;&amp; p1.getValue().equals(p2.getValue());</span><br><span class="line">    &#125;</span><br><span class="line">&#x2F;&#x2F; 使用泛型方法</span><br><span class="line">Pair&lt;Integer, String&gt; p1 &#x3D; new Pair&lt;&gt;(1, &quot;apple&quot;);</span><br><span class="line">Pair&lt;Integer, String&gt; p2 &#x3D; new Pair&lt;&gt;(2, &quot;pear&quot;);</span><br><span class="line">boolean same &#x3D; Util.compare(p1, p2);</span><br></pre></td></tr></table></figure>
 
-<h3 id="校内一角"><a href="#校内一角" class="headerlink" title="校内一角"></a>校内一角</h3><p>在这个举办过奥运会的城市，最不缺的就是运动的气息。工大各色各样的运动场馆似乎都有，其中羽毛球场馆还是08年奥运会羽毛球比赛场地。许多人都说研究生的生活充满了枯燥与压力，或许运动就是最好的良药。确实，我非常赞同这个观点，毕竟身体才是革命的本钱。</p>
-<img src="/2020/09/20/firstblog/basketball.jpg" class="">]]></content>
+<p>E - Element (used extensively by the Java Collections Framework)<br>K - Key<br>N - Number<br>T - Type<br>V - Value</p>
+<h5 id="和equals（）的区别"><a href="#和equals（）的区别" class="headerlink" title="==和equals（）的区别"></a>==和equals（）的区别</h5><p>基本数据类型，==比较的值；引用数据类型，==比较的是对象的内存地址。<br>但是因为Java只有值传递，==比较的都是值，不同的是引用数据类型的值是内存地址。<br>equals不能用来判断基本数据类型的变量，只能用来判断两个对象是否相等。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean equals（Object obj）&#123;</span><br><span class="line">    return （this &#x3D;&#x3D; obj）;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>equals()方法的2种使用情况：</p>
+<ul>
+<li>类没有覆盖equals（）方法：比较类的2个对象时，等价于通过“==”比较。</li>
+<li>类覆盖了equals（）方法：比较2个对象的属性是否相等，若属性相等，则返回true。</li>
+</ul>
+]]></content>
       <categories>
-        <category>生活</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>出行</tag>
+        <tag>基础知识</tag>
       </tags>
   </entry>
   <entry>
@@ -210,28 +284,6 @@
       </categories>
       <tags>
         <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>java_basic</title>
-    <url>/2021/09/11/java-basic/</url>
-    <content><![CDATA[<h5 id="Java语言特点"><a href="#Java语言特点" class="headerlink" title="Java语言特点"></a>Java语言特点</h5><ul>
-<li>面向对象（封装、继承、多态）</li>
-<li>平台无关性（java虚拟机）</li>
-</ul>
-<h5 id="Java主要关键字"><a href="#Java主要关键字" class="headerlink" title="Java主要关键字"></a>Java主要关键字</h5><p>||类别|关键字|||||<br>|:—:|:—:|:—:|<br>|权限|private|protected|public||||<br>|类、方法、修饰符|abstract|class|extends|final|implements|interface|<br>|native|new|static|synchronized|transient|volatile|||</p>
-<h5 id="break、continue、return？"><a href="#break、continue、return？" class="headerlink" title="break、continue、return？"></a>break、continue、return？</h5><ul>
-<li>break：跳出整个循环，执行循环后面的语句。</li>
-<li>continue：跳出当前的这一次循环，继续下一次循环。</li>
-<li>return：结束方法执行，用于没有返回值的方法。</li>
-<li>return value：返回一个特定值，用于有返回值的方法。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>基础知识</tag>
       </tags>
   </entry>
   <entry>
@@ -257,6 +309,28 @@
       </categories>
       <tags>
         <tag>关键字</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>firstblog</title>
+    <url>/2020/09/20/firstblog/</url>
+    <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
+<h3 id="启程出发"><a href="#启程出发" class="headerlink" title="启程出发"></a>启程出发</h3><p>收拾戎装，准备出发。第一次体验了磁悬浮与飞机的我不得不感叹中国科技发展之迅速。知识的力量是无穷的，希望我国在芯片领域也能更进一步。</p>
+<img src="/2020/09/20/firstblog/plane.jpg" class="">
+
+<h3 id="中蓝公寓"><a href="#中蓝公寓" class="headerlink" title="中蓝公寓"></a>中蓝公寓</h3><p>北京工业大学的研究生基本都住在中蓝公寓，不过中蓝公寓离校内还有一段距离，一般大家都是骑车上课。寝室是四人间，上下铺。厕所和澡堂都是公共的，不过令人疑惑的澡堂周六是不开放的。</p>
+<img src="/2020/09/20/firstblog/navigation.jpg" class="">
+
+<p>我所在的公寓是蓝悦园，在宿舍的阳台上放眼望去满是高大而豪华的建筑。其实我更想看的是充满历史又能反应北京特色的胡同儿。期待国庆能去转转。</p>
+<img src="/2020/09/20/firstblog/scene.jpg" class="">
+
+<h3 id="校内一角"><a href="#校内一角" class="headerlink" title="校内一角"></a>校内一角</h3><p>在这个举办过奥运会的城市，最不缺的就是运动的气息。工大各色各样的运动场馆似乎都有，其中羽毛球场馆还是08年奥运会羽毛球比赛场地。许多人都说研究生的生活充满了枯燥与压力，或许运动就是最好的良药。确实，我非常赞同这个观点，毕竟身体才是革命的本钱。</p>
+<img src="/2020/09/20/firstblog/basketball.jpg" class="">]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>出行</tag>
       </tags>
   </entry>
   <entry>
@@ -313,6 +387,53 @@
       </tags>
   </entry>
   <entry>
+    <title>markdown</title>
+    <url>/2021/04/15/markdown/</url>
+    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
+<p>格式如下图：</p>
+<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
+      <categories>
+        <category>markdown</category>
+      </categories>
+      <tags>
+        <tag>markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>memory</title>
+    <url>/2021/03/21/memory/</url>
+    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
+<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
+<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
+<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
+<img src="/2021/03/21/memory/memory.jpg" class="">
+
+<p>辛丑牛年农历二月初十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>旅行</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>rain</title>
+    <url>/2021/03/26/rain/</url>
+    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
+<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
+<p>辛丑年农历二月十四</p>
+<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
+<p>辛丑年农历二月十五</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>如晴似雨</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>md5+salt</title>
     <url>/2020/10/10/md5-salt/</url>
     <content><![CDATA[<p>传统的md5算法通过产生一个128位（16字节）的散列值（hash value），用于确保信息的安全性。但随着技术的发展，md5无法防止碰撞（collision）且可以被加以破解。<br>salt的出现可以一定程度上解决这个问题。</p>
@@ -341,34 +462,33 @@
       </tags>
   </entry>
   <entry>
-    <title>memory</title>
-    <url>/2021/03/21/memory/</url>
-    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
-<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
-<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
-<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
-<img src="/2021/03/21/memory/memory.jpg" class="">
+    <title>umlarrow</title>
+    <url>/2021/03/31/umlarrow/</url>
+    <content><![CDATA[<h3 id="泛化（继承）"><a href="#泛化（继承）" class="headerlink" title="泛化（继承）"></a>泛化（继承）</h3><p>泛化是一种一般与特殊、一般与具体关系的描述，具体建立在一般之上并对其进行扩展。<br><strong>实线空心三角箭头表示</strong></p>
+<img src="/2021/03/31/umlarrow/generate.png" class="">
 
-<p>辛丑牛年农历二月初十</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>实现是类与接口之间关系的描述，类是接口所有特征和行为的具体实现。<br><strong>虚线空心三角箭头表示</strong></p>
+<img src="/2021/03/31/umlarrow/implement.png" class="">
+
+<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><p>依赖是一种使用关系，即一个类的实现需要另一个类的帮助。通常一个类的方法参数中需要传入另一个类的对象，即表示依赖这个类。<br><strong>虚线箭头</strong></p>
+<img src="/2021/03/31/umlarrow/rely.png" class="">
+
+<h3 id="关联"><a href="#关联" class="headerlink" title="关联"></a>关联</h3><p>关联表示类与类之间的联接，一个类知道另一个类的方法和属性，这种关系比依赖更强。一般一个类作为另一个类的全局变量，即表示关联这个类。<br><strong>实线箭头</strong></p>
+<img src="/2021/03/31/umlarrow/relevance.png" class="">
+
+
+<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><p>聚合是关联的一种特例，是更强的关联。聚合是整体和个体之间的关系，即<strong>has-a</strong>的关系。关联关系中两个类是处于相同的层次,而聚合关系中两个类是处于不同的层次，一个表示整体, 一个表示个体。</p>
+<img src="/2021/03/31/umlarrow/juhe.png" class="">
+
+<h3 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h3><p>组合也是关联的一种特例。组合是整体与部分的关系，即<strong>contains-a</strong>的关系，比聚合更强。</p>
+<img src="/2021/03/31/umlarrow/union.png" class="">
+
 ]]></content>
       <categories>
-        <category>生活</category>
+        <category>UML</category>
       </categories>
       <tags>
-        <tag>旅行</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>markdown</title>
-    <url>/2021/04/15/markdown/</url>
-    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
-<p>格式如下图：</p>
-<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
-      <categories>
-        <category>markdown</category>
-      </categories>
-      <tags>
-        <tag>markdown</tag>
+        <tag>箭头含义</tag>
       </tags>
   </entry>
   <entry>
@@ -635,22 +755,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>rain</title>
-    <url>/2021/03/26/rain/</url>
-    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
-<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
-<p>辛丑年农历二月十四</p>
-<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
-<p>辛丑年农历二月十五</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>如晴似雨</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>shiro</title>
     <url>/2020/10/08/shiro-base/</url>
     <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Apache shiro是一个强大的且容易使用的Java安全框架，执行身份验证（认证）、授权、加密和会话管理。<br>Shiro有三个核心概念，<strong>Subject，SecurityManager，Realms</strong>。<br><strong>shiro顶层图</strong></p>
@@ -689,36 +793,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>shiro</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>umlarrow</title>
-    <url>/2021/03/31/umlarrow/</url>
-    <content><![CDATA[<h3 id="泛化（继承）"><a href="#泛化（继承）" class="headerlink" title="泛化（继承）"></a>泛化（继承）</h3><p>泛化是一种一般与特殊、一般与具体关系的描述，具体建立在一般之上并对其进行扩展。<br><strong>实线空心三角箭头表示</strong></p>
-<img src="/2021/03/31/umlarrow/generate.png" class="">
-
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>实现是类与接口之间关系的描述，类是接口所有特征和行为的具体实现。<br><strong>虚线空心三角箭头表示</strong></p>
-<img src="/2021/03/31/umlarrow/implement.png" class="">
-
-<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><p>依赖是一种使用关系，即一个类的实现需要另一个类的帮助。通常一个类的方法参数中需要传入另一个类的对象，即表示依赖这个类。<br><strong>虚线箭头</strong></p>
-<img src="/2021/03/31/umlarrow/rely.png" class="">
-
-<h3 id="关联"><a href="#关联" class="headerlink" title="关联"></a>关联</h3><p>关联表示类与类之间的联接，一个类知道另一个类的方法和属性，这种关系比依赖更强。一般一个类作为另一个类的全局变量，即表示关联这个类。<br><strong>实线箭头</strong></p>
-<img src="/2021/03/31/umlarrow/relevance.png" class="">
-
-
-<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><p>聚合是关联的一种特例，是更强的关联。聚合是整体和个体之间的关系，即<strong>has-a</strong>的关系。关联关系中两个类是处于相同的层次,而聚合关系中两个类是处于不同的层次，一个表示整体, 一个表示个体。</p>
-<img src="/2021/03/31/umlarrow/juhe.png" class="">
-
-<h3 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h3><p>组合也是关联的一种特例。组合是整体与部分的关系，即<strong>contains-a</strong>的关系，比聚合更强。</p>
-<img src="/2021/03/31/umlarrow/union.png" class="">
-
-]]></content>
-      <categories>
-        <category>UML</category>
-      </categories>
-      <tags>
-        <tag>箭头含义</tag>
       </tags>
   </entry>
 </search>
