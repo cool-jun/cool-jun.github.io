@@ -39,6 +39,26 @@
       </tags>
   </entry>
   <entry>
+    <title>Three ways to create Java Multithread</title>
+    <url>/2020/09/23/concurrency/</url>
+    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
+<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>多线程</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>bitmap</title>
     <url>/2020/11/16/bitmap/</url>
     <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>在一个结构中，用一个比特位来描述一个数据的状态，这种结构就称为位图。0表示数据不存在，1表示数据存在。位图实际上是哈希表的一种变形。<br>在数据存储方面，位图的应用非常广泛。比如说现在要存储20亿个不重复的数据，int类型为4个字节，就需要80亿个字节来存储。1GB的内存表示的是10亿个字节，此时就需要8GB的内存来存放这些数据，而我们普通的电脑内存一般都是4G的内存，这显然是存放不下的。但是如果能用一个比特位来存放一个整型数据，则只需要0.5GB的内存。这大大节省了内存空间。</p>
@@ -95,26 +115,6 @@
       </categories>
       <tags>
         <tag>位图</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Three ways to create Java Multithread</title>
-    <url>/2020/09/23/concurrency/</url>
-    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
-<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>多线程</tag>
       </tags>
   </entry>
   <entry>
@@ -229,6 +229,19 @@
       </tags>
   </entry>
   <entry>
+    <title>human</title>
+    <url>/2021/10/25/human/</url>
+    <content><![CDATA[<p><strong>人性经的起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
+<p>农历九月二十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>firstblog</title>
     <url>/2020/09/20/firstblog/</url>
     <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
@@ -251,37 +264,6 @@
       </tags>
   </entry>
   <entry>
-    <title>hurt_cjm</title>
-    <url>/2021/10/20/hurt-cjm/</url>
-    <content><![CDATA[<p>今天是十月二十日，北京的最低温度已经降到了0度，常温在12度上下。这个季节本应是秋高气爽，结果却是凛冽寒风。就像我的心情一样，不知为何今天极度难受，心里总是空落落的，就像一个多年好友突然离你而去。</p>
-<p>前几天知道了一个网红在一些网友的怂恿下喝农药自杀了，人心不足蛇吞象啊！人性究竟是怎样的，一个人能否禁得起考验，在爱情、友情、亲情面前，对于自己问题，自己却没有百分之百的勇气说yes！也不知道自己到底怎么了！就像迪迦奥特曼里面的台词一样。</p>
-<p><strong>我感觉我们正失去一些美好的东西，善良温柔体贴，这些属于我们人类美好的本质，好像正慢慢淡化！</strong><br><strong>其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了</strong><br><strong>人类的欲望，比奇结拉的根还要深</strong><br><strong>即使艾博隆细胞已经完全消失，可是人类心理的黑暗面世不会消失的</strong><br>但尽管这样，<strong>人们之所以敬仰你，是因为你拥有每一个人都拥有的东西，勇气与爱的力量</strong>。是的，每个人心里都有黑暗面，但是也有光明的一面！现在，我已经能够相信了，只要努力到最后不轻言放弃，我相信人类，一定能够创造出光明的未来，也能创造出美好的生命。只要珍惜重要的东西，我相信一定能够办到！**珍惜重要的东西、保护重要的东西，平平淡淡的努力活完短短的一声。</p>
-<p>这几天时刻想起考研的那段时光，那段生命里最美好的时光，最难忘也是最无脸面对的时光。2年前的那段日子多么令人难忘、开心、幸福。想到这里，自己哭了，生命里最重要的回忆再也回不去了。那些事与人也要分别了。理工考研的时光多么令人难忘啊！但因为自己内心的错误，却再也回不去了。计算机学院“妓院”的梗清晰的在耳边回放，多么令人难忘与怀念。但“你不再是那个天台上清纯的男生了”，“你到北京后好像变坏了”。来北京读研的这条路不知是好是坏，科研也没啥成果，提不起干劲，生活更是一团糟。这几天，不知为何自己内心这么难受，寝食难安。理工考研的时光是我最难以忘怀的，点点滴滴，历历在目。我会永远记得的！未来，也会用一生去珍惜与弥补的。</p>
-<p>年少轻狂的岁月，沉淀下来的是那些再也回不到的过去。而总让人感叹的，<strong>则是未曾珍惜而失去的那些</strong>。但这些，恰恰也是生活让你去体会的。因为年少轻狂的岁月，一生也只有一次。当你紧握双手，里面什么也没有；当你打开双手，世界就在你手中。</p>
-<p>所谓成长，不过是用时间慢慢擦亮你的眼睛。少时看重的，年长后却视若鸿毛；少时看轻的，年长后却视若泰山。成长之路，亦是渐渐放下执念，内心归于平静的旅程，也许，我们永远都不会知道自己能走到何方，遇见何人，最后会变成什么样的人。但请一定要记住，能让自己登高的，永远不会是别人的肩膀。人生的道路刚刚启程，<strong>懂得珍惜、保护、敢于承担责任，顺顺利利的活完短短的一生</strong>。</p>
-<p>农历九月十五</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>human</title>
-    <url>/2021/10/25/human/</url>
-    <content><![CDATA[<p><strong>人性经的起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
-<p>农历九月二十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>spring</title>
     <url>/2021/03/24/hurt/</url>
     <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
@@ -296,35 +278,15 @@
       </tags>
   </entry>
   <entry>
-    <title>abstract,final,static,this,super</title>
-    <url>/2021/04/07/keyword/</url>
-    <content><![CDATA[<h3 id="abstract"><a href="#abstract" class="headerlink" title="abstract"></a>abstract</h3><p><strong>abstract</strong>关键字修饰类和方法。</p>
-<p>abstract修饰的类称为抽象类，例如：abstract class xxx{}<br>它可以声明引用但不能创建对象。<br>abstract修饰的方法称为抽象方法，例如：abstract void xxx();<br>它只有声明而没有实现。</p>
-<p>注意：含有抽象方法的类一定是抽象类，但抽象类中也可以有具体方法；抽象方法必须要在其子类中实现，除非子类也是抽象类。</p>
-<p><strong>abstract关键字不能与final、private或static修饰类放在一起</strong><br>abstract修饰的类必须被继承，修饰的方法应该被重写。<br>final修饰的类、属性和方法不能被改变，因此修饰的方法不能被重写。<br>private只能修饰内部类，修饰的属性和方法只能在类内部调用，重写的方法不能访问被private修饰的方法和属性。<br>static修饰的方法是静态的，可以被类直接调用。但abstract修饰的方法是抽象的，没有实现不能被直接调用，需要通过类继承或接口实现来重写抽象方法方可被调用。</p>
-<h3 id="final"><a href="#final" class="headerlink" title="final"></a>final</h3><p><strong>final</strong>关键字是最终的、不可修改的，用来修饰类，方法和属性（或变量）。<br>final修饰的类不能被继承，类中的方法也都被隐式的指定为final。<br>final修饰的方法不能被继承类重写。<br>final修饰的属性(或变量)，其值不能被改变。(即常量)<br>finally是异常处理语句，表示总是执行。<br>finalize()是Object中的方法，在垃圾回收器将要回收对象所占内存之前被调用。</p>
-<h3 id="static"><a href="#static" class="headerlink" title="static"></a>static</h3><p><strong>static</strong>关键字可以修饰属性、方法、代码块和类。<br>static修饰的类是静态内部类。非静态内部类在编译完成之后会隐含地保存着一个引用，该引用是指向创建它的外部类，但是静态内部类却没有。所以静态内部类不能访问外部类的非静态成员（变量和方法）。<br>static修饰成员变量和成员方法，它属于类。一般建议通过类名来调用静态成员。类名.静态变量名、对象.静态方法名()。<br>注意：不能在方法体中定义静态变量。<br>static修饰的代码块叫做静态代码块，经常用来初始化静态变量，在类加载时执行，只执行一次。（静态代码块–》非静态代码块–》构造方法）</p>
-<p>一般public、static与final一起用来定义公开静态变量。</p>
-<h3 id="this"><a href="#this" class="headerlink" title="this"></a>this</h3><p><strong>this</strong>关键字表示引用类的当前实例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class What &#123;</span><br><span class="line">  void manage() &#123;</span><br><span class="line">  this.report();  &#x2F;&#x2F;调用类What的当前实例的方法</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  void report() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="super"><a href="#super" class="headerlink" title="super"></a>super</h3><p><strong>super</strong>关键字表示从子类访问父类的变量和方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Father &#123;</span><br><span class="line">  protected int n;</span><br><span class="line"></span><br><span class="line">  protected print() &#123;</span><br><span class="line">    System.out.println(n);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Son extends Father &#123;</span><br><span class="line">  void show() &#123;</span><br><span class="line">    super.n &#x3D; 10;</span><br><span class="line">    super.print();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>this、super不能用在static方法中<br>this代表对本类对象的引用，指向本类对象；super代表对父类对象的引用，指向父类对象。this和super属于对象范畴，静态方法属于类范畴。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>关键字</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>last_communication</title>
-    <url>/2021/10/25/last-communication/</url>
-    <content><![CDATA[<p>今天已经是10月25号了，来北京也一年多了。这一年经历了太多事，令人难忘、怀念、伤心与后悔的事。今天中午的聊天或许是最后一次了吧，你的笑脸多么令人难，合适真的太重要了。唉，或许这就是命吧！尽管你是如此的任性、无理取闹，但我知道你内心单纯善良，说实话，你是我遇见过的最单纯可爱却又任性取闹的女孩。真的是对你又爱又狠。但这一切都已经过去了。希望你这一辈子都过的好，幸福快乐，身体健康，工作顺利。best wishes！cjm。</p>
-<p>农历九月二十</p>
+    <title>hurt_cjm</title>
+    <url>/2021/10/20/hurt-cjm/</url>
+    <content><![CDATA[<p>今天是十月二十日，北京的最低温度已经降到了0度，常温在12度上下。这个季节本应是秋高气爽，结果却是凛冽寒风。就像我的心情一样，不知为何今天极度难受，心里总是空落落的，就像一个多年好友突然离你而去。</p>
+<p>前几天知道了一个网红在一些网友的怂恿下喝农药自杀了，人心不足蛇吞象啊！人性究竟是怎样的，一个人能否禁得起考验，在爱情、友情、亲情面前，对于自己问题，自己却没有百分之百的勇气说yes！也不知道自己到底怎么了！就像迪迦奥特曼里面的台词一样。</p>
+<p><strong>我感觉我们正失去一些美好的东西，善良温柔体贴，这些属于我们人类美好的本质，好像正慢慢淡化！</strong><br><strong>其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了</strong><br><strong>人类的欲望，比奇结拉的根还要深</strong><br><strong>即使艾博隆细胞已经完全消失，可是人类心理的黑暗面世不会消失的</strong><br>但尽管这样，<strong>人们之所以敬仰你，是因为你拥有每一个人都拥有的东西，勇气与爱的力量</strong>。是的，每个人心里都有黑暗面，但是也有光明的一面！现在，我已经能够相信了，只要努力到最后不轻言放弃，我相信人类，一定能够创造出光明的未来，也能创造出美好的生命。只要珍惜重要的东西，我相信一定能够办到！**珍惜重要的东西、保护重要的东西，平平淡淡的努力活完短短的一声。</p>
+<p>这几天时刻想起考研的那段时光，那段生命里最美好的时光，最难忘也是最无脸面对的时光。2年前的那段日子多么令人难忘、开心、幸福。想到这里，自己哭了，生命里最重要的回忆再也回不去了。那些事与人也要分别了。理工考研的时光多么令人难忘啊！但因为自己内心的错误，却再也回不去了。计算机学院“妓院”的梗清晰的在耳边回放，多么令人难忘与怀念。但“你不再是那个天台上清纯的男生了”，“你到北京后好像变坏了”。来北京读研的这条路不知是好是坏，科研也没啥成果，提不起干劲，生活更是一团糟。这几天，不知为何自己内心这么难受，寝食难安。理工考研的时光是我最难以忘怀的，点点滴滴，历历在目。我会永远记得的！未来，也会用一生去珍惜与弥补的。</p>
+<p>年少轻狂的岁月，沉淀下来的是那些再也回不到的过去。而总让人感叹的，<strong>则是未曾珍惜而失去的那些</strong>。但这些，恰恰也是生活让你去体会的。因为年少轻狂的岁月，一生也只有一次。当你紧握双手，里面什么也没有；当你打开双手，世界就在你手中。</p>
+<p>所谓成长，不过是用时间慢慢擦亮你的眼睛。少时看重的，年长后却视若鸿毛；少时看轻的，年长后却视若泰山。成长之路，亦是渐渐放下执念，内心归于平静的旅程，也许，我们永远都不会知道自己能走到何方，遇见何人，最后会变成什么样的人。但请一定要记住，能让自己登高的，永远不会是别人的肩膀。人生的道路刚刚启程，<strong>懂得珍惜、保护、敢于承担责任，顺顺利利的活完短短的一生</strong>。</p>
+<p>农历九月十五</p>
 ]]></content>
       <categories>
         <category>生活</category>
@@ -387,6 +349,19 @@
       </tags>
   </entry>
   <entry>
+    <title>last_communication</title>
+    <url>/2021/10/25/last-communication/</url>
+    <content><![CDATA[<p>今天已经是10月25号了，来北京也一年多了。这一年经历了太多事，令人难忘、怀念、伤心与后悔的事。今天中午的聊天或许是最后一次了吧，你的笑脸多么令人难，合适真的太重要了。唉，或许这就是命吧！尽管你是如此的任性、无理取闹，但我知道你内心单纯善良，说实话，你是我遇见过的最单纯可爱却又任性取闹的女孩。真的是对你又爱又狠。但这一切都已经过去了。希望你这一辈子都过的好，幸福快乐，身体健康，工作顺利。best wishes！cjm。</p>
+<p>农历九月二十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>markdown</title>
     <url>/2021/04/15/markdown/</url>
     <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
@@ -400,31 +375,28 @@
       </tags>
   </entry>
   <entry>
-    <title>md5+salt</title>
-    <url>/2020/10/10/md5-salt/</url>
-    <content><![CDATA[<p>传统的md5算法通过产生一个128位（16字节）的散列值（hash value），用于确保信息的安全性。但随着技术的发展，md5无法防止碰撞（collision）且可以被加以破解。<br>salt的出现可以一定程度上解决这个问题。</p>
-<h3 id="md5-salt实现原理"><a href="#md5-salt实现原理" class="headerlink" title="md5+salt实现原理"></a>md5+salt实现原理</h3><p><strong>注册</strong><br>1、用户提供用户名和密码<br>2、系统提供一个salt，salt+密码进行散列生成一个hash<br>3、系统将hash和salt分别存放到数据库中</p>
-<p><strong>登录</strong><br>1、用户填写用户名和密码<br>2、系统通过用户名找到对应的hash和salt<br>3、系统将密码和salt进行散列生成new_hash<br>4、比较hash与new_hash，相等则表示密码正确，反之密码错误。</p>
-<p><strong>流程图如下</strong></p>
-<img src="/2020/10/10/md5-salt/md5.png" class="">
+    <title>abstract,final,static,this,super</title>
+    <url>/2021/04/07/keyword/</url>
+    <content><![CDATA[<h3 id="abstract"><a href="#abstract" class="headerlink" title="abstract"></a>abstract</h3><p><strong>abstract</strong>关键字修饰类和方法。</p>
+<p>abstract修饰的类称为抽象类，例如：abstract class xxx{}<br>它可以声明引用但不能创建对象。<br>abstract修饰的方法称为抽象方法，例如：abstract void xxx();<br>它只有声明而没有实现。</p>
+<p>注意：含有抽象方法的类一定是抽象类，但抽象类中也可以有具体方法；抽象方法必须要在其子类中实现，除非子类也是抽象类。</p>
+<p><strong>abstract关键字不能与final、private或static修饰类放在一起</strong><br>abstract修饰的类必须被继承，修饰的方法应该被重写。<br>final修饰的类、属性和方法不能被改变，因此修饰的方法不能被重写。<br>private只能修饰内部类，修饰的属性和方法只能在类内部调用，重写的方法不能访问被private修饰的方法和属性。<br>static修饰的方法是静态的，可以被类直接调用。但abstract修饰的方法是抽象的，没有实现不能被直接调用，需要通过类继承或接口实现来重写抽象方法方可被调用。</p>
+<h3 id="final"><a href="#final" class="headerlink" title="final"></a>final</h3><p><strong>final</strong>关键字是最终的、不可修改的，用来修饰类，方法和属性（或变量）。<br>final修饰的类不能被继承，类中的方法也都被隐式的指定为final。<br>final修饰的方法不能被继承类重写。<br>final修饰的属性(或变量)，其值不能被改变。(即常量)<br>finally是异常处理语句，表示总是执行。<br>finalize()是Object中的方法，在垃圾回收器将要回收对象所占内存之前被调用。</p>
+<h3 id="static"><a href="#static" class="headerlink" title="static"></a>static</h3><p><strong>static</strong>关键字可以修饰属性、方法、代码块和类。<br>static修饰的类是静态内部类。非静态内部类在编译完成之后会隐含地保存着一个引用，该引用是指向创建它的外部类，但是静态内部类却没有。所以静态内部类不能访问外部类的非静态成员（变量和方法）。<br>static修饰成员变量和成员方法，它属于类。一般建议通过类名来调用静态成员。类名.静态变量名、对象.静态方法名()。<br>注意：不能在方法体中定义静态变量。<br>static修饰的代码块叫做静态代码块，经常用来初始化静态变量，在类加载时执行，只执行一次。（静态代码块–》非静态代码块–》构造方法）</p>
+<p>一般public、static与final一起用来定义公开静态变量。</p>
+<h3 id="this"><a href="#this" class="headerlink" title="this"></a>this</h3><p><strong>this</strong>关键字表示引用类的当前实例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class What &#123;</span><br><span class="line">  void manage() &#123;</span><br><span class="line">  this.report();  &#x2F;&#x2F;调用类What的当前实例的方法</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  void report() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h4 id="md5-salt"><a href="#md5-salt" class="headerlink" title="md5+salt"></a>md5+salt</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;md5</span><br><span class="line">  Md5Hash md5Hash &#x3D; new Md5Hash(&quot;123456&quot;);</span><br><span class="line">  System.out.println(md5Hash.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;md5+salt</span><br><span class="line">  Md5Hash md5HashSalt &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;);</span><br><span class="line">  System.out.println(md5HashSalt.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  e10adc3949ba59abbe56e057f20f883e</span><br><span class="line">  5f9dcb70720b6f58a2b219015fad5c30</span><br></pre></td></tr></table></figure>
+<h3 id="super"><a href="#super" class="headerlink" title="super"></a>super</h3><p><strong>super</strong>关键字表示从子类访问父类的变量和方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Father &#123;</span><br><span class="line">  protected int n;</span><br><span class="line"></span><br><span class="line">  protected print() &#123;</span><br><span class="line">    System.out.println(n);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Son extends Father &#123;</span><br><span class="line">  void show() &#123;</span><br><span class="line">    super.n &#x3D; 10;</span><br><span class="line">    super.print();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h4 id="md5-salt-hash散列"><a href="#md5-salt-hash散列" class="headerlink" title="md5+salt+hash散列"></a>md5+salt+hash散列</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;md5+salt+hash散列</span><br><span class="line">  Md5Hash md5Hash1 &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;, 1024);</span><br><span class="line">  System.out.println(md5Hash1.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  14b9f6ecccb925f15cf92c44ff9326ce</span><br></pre></td></tr></table></figure>
-
-<h3 id="shiro实现md5-salt"><a href="#shiro实现md5-salt" class="headerlink" title="shiro实现md5+salt"></a>shiro实现md5+salt</h3><p><strong>自定义realm</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 自定义realm  md5+salt+hash散列</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CustomMd5Realm extends AuthorizingRealm &#123;</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException &#123;</span><br><span class="line">        &#x2F;&#x2F;获取身份信息</span><br><span class="line">        String principal &#x3D; (String) token.getPrincipal();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;根据用户名查询数据库</span><br><span class="line">        if (&quot;hj&quot;.equals(principal)) &#123;</span><br><span class="line">            &#x2F;&#x2F;参数1：用户名  参数2：md5+salt之后的密码 参数3：注册时的salt  参数4：realm名字</span><br><span class="line">            return new SimpleAuthenticationInfo(principal, &quot;14b9f6ecccb925f15cf92c44ff9326ce&quot;,</span><br><span class="line">                    ByteSource.Util.bytes(&quot;x0*7ps&quot;), this.getName());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>测试验证</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestCustomMd5Authenticator &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        DefaultSecurityManager defaultSecurityManager &#x3D; new DefaultSecurityManager();</span><br><span class="line"></span><br><span class="line">        CustomMd5Realm realm &#x3D; new CustomMd5Realm();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;realm使用hash凭证匹配器</span><br><span class="line">        HashedCredentialsMatcher credentialsMatcher &#x3D; new HashedCredentialsMatcher();</span><br><span class="line">        &#x2F;&#x2F;设置算法为md5</span><br><span class="line">        credentialsMatcher.setHashAlgorithmName(&quot;md5&quot;);</span><br><span class="line">        &#x2F;&#x2F;设置散列次数为1024</span><br><span class="line">        credentialsMatcher.setHashIterations(1024);</span><br><span class="line"></span><br><span class="line">        realm.setCredentialsMatcher(credentialsMatcher);</span><br><span class="line">        defaultSecurityManager.setRealm(realm);</span><br><span class="line"></span><br><span class="line">        SecurityUtils.setSecurityManager(defaultSecurityManager);</span><br><span class="line"></span><br><span class="line">        Subject subject &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">        UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hj&quot;, &quot;123456&quot;);</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">            System.out.println(&quot;login success&quot;);</span><br><span class="line">        &#125; catch (UnknownAccountException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;username error&quot;);</span><br><span class="line">        &#125; catch (IncorrectCredentialsException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;password error&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
+<p>this、super不能用在static方法中<br>this代表对本类对象的引用，指向本类对象；super代表对父类对象的引用，指向父类对象。this和super属于对象范畴，静态方法属于类范畴。</p>
 ]]></content>
       <categories>
-        <category>技术栈</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>密码学</tag>
+        <tag>关键字</tag>
       </tags>
   </entry>
   <entry>
@@ -443,21 +415,6 @@
       </categories>
       <tags>
         <tag>旅行</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>new_day</title>
-    <url>/2021/10/24/new-day/</url>
-    <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
-<p>下午呆坐在实验室的我静静的听着歌，一首记忆发光让我想起了18年，三年了，《我的青春遇见你》这部电视剧又在脑海里回忆。直接看了最后一集，羡慕陈也与李招娣的爱情。一路走来，嫁给爱情是多么美好啊！不知不觉自己竟然流泪了，是啊，就像招娣拒绝贾方舟所说的，这座城市很大，坐在车里看外面的世界，灯红酒绿的，给人很美好的感觉。但你下车之后，漫步在雨中，发现这才是我的生活。是啊，生活中大多数人是陈也，不是贾方舟。那时的街道没有车水马龙，也没有太多的钢筋水泥，我们的生活却充实有趣。</p>
-<p>不要在怀念过去的人和事物中浪费掉你现在的生活。定个三年之约，那时的我们一定会是与众不同的。</p>
-<p>农历九月十九</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -724,19 +681,46 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>rain</title>
-    <url>/2021/03/26/rain/</url>
-    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
-<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
-<p>辛丑年农历二月十四</p>
-<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
-<p>辛丑年农历二月十五</p>
+    <title>md5+salt</title>
+    <url>/2020/10/10/md5-salt/</url>
+    <content><![CDATA[<p>传统的md5算法通过产生一个128位（16字节）的散列值（hash value），用于确保信息的安全性。但随着技术的发展，md5无法防止碰撞（collision）且可以被加以破解。<br>salt的出现可以一定程度上解决这个问题。</p>
+<h3 id="md5-salt实现原理"><a href="#md5-salt实现原理" class="headerlink" title="md5+salt实现原理"></a>md5+salt实现原理</h3><p><strong>注册</strong><br>1、用户提供用户名和密码<br>2、系统提供一个salt，salt+密码进行散列生成一个hash<br>3、系统将hash和salt分别存放到数据库中</p>
+<p><strong>登录</strong><br>1、用户填写用户名和密码<br>2、系统通过用户名找到对应的hash和salt<br>3、系统将密码和salt进行散列生成new_hash<br>4、比较hash与new_hash，相等则表示密码正确，反之密码错误。</p>
+<p><strong>流程图如下</strong></p>
+<img src="/2020/10/10/md5-salt/md5.png" class="">
+
+<h4 id="md5-salt"><a href="#md5-salt" class="headerlink" title="md5+salt"></a>md5+salt</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;md5</span><br><span class="line">  Md5Hash md5Hash &#x3D; new Md5Hash(&quot;123456&quot;);</span><br><span class="line">  System.out.println(md5Hash.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;md5+salt</span><br><span class="line">  Md5Hash md5HashSalt &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;);</span><br><span class="line">  System.out.println(md5HashSalt.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  e10adc3949ba59abbe56e057f20f883e</span><br><span class="line">  5f9dcb70720b6f58a2b219015fad5c30</span><br></pre></td></tr></table></figure>
+
+<h4 id="md5-salt-hash散列"><a href="#md5-salt-hash散列" class="headerlink" title="md5+salt+hash散列"></a>md5+salt+hash散列</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;md5+salt+hash散列</span><br><span class="line">  Md5Hash md5Hash1 &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;, 1024);</span><br><span class="line">  System.out.println(md5Hash1.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  14b9f6ecccb925f15cf92c44ff9326ce</span><br></pre></td></tr></table></figure>
+
+<h3 id="shiro实现md5-salt"><a href="#shiro实现md5-salt" class="headerlink" title="shiro实现md5+salt"></a>shiro实现md5+salt</h3><p><strong>自定义realm</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 自定义realm  md5+salt+hash散列</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CustomMd5Realm extends AuthorizingRealm &#123;</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException &#123;</span><br><span class="line">        &#x2F;&#x2F;获取身份信息</span><br><span class="line">        String principal &#x3D; (String) token.getPrincipal();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;根据用户名查询数据库</span><br><span class="line">        if (&quot;hj&quot;.equals(principal)) &#123;</span><br><span class="line">            &#x2F;&#x2F;参数1：用户名  参数2：md5+salt之后的密码 参数3：注册时的salt  参数4：realm名字</span><br><span class="line">            return new SimpleAuthenticationInfo(principal, &quot;14b9f6ecccb925f15cf92c44ff9326ce&quot;,</span><br><span class="line">                    ByteSource.Util.bytes(&quot;x0*7ps&quot;), this.getName());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>测试验证</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestCustomMd5Authenticator &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        DefaultSecurityManager defaultSecurityManager &#x3D; new DefaultSecurityManager();</span><br><span class="line"></span><br><span class="line">        CustomMd5Realm realm &#x3D; new CustomMd5Realm();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;realm使用hash凭证匹配器</span><br><span class="line">        HashedCredentialsMatcher credentialsMatcher &#x3D; new HashedCredentialsMatcher();</span><br><span class="line">        &#x2F;&#x2F;设置算法为md5</span><br><span class="line">        credentialsMatcher.setHashAlgorithmName(&quot;md5&quot;);</span><br><span class="line">        &#x2F;&#x2F;设置散列次数为1024</span><br><span class="line">        credentialsMatcher.setHashIterations(1024);</span><br><span class="line"></span><br><span class="line">        realm.setCredentialsMatcher(credentialsMatcher);</span><br><span class="line">        defaultSecurityManager.setRealm(realm);</span><br><span class="line"></span><br><span class="line">        SecurityUtils.setSecurityManager(defaultSecurityManager);</span><br><span class="line"></span><br><span class="line">        Subject subject &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">        UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hj&quot;, &quot;123456&quot;);</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">            System.out.println(&quot;login success&quot;);</span><br><span class="line">        &#125; catch (UnknownAccountException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;username error&quot;);</span><br><span class="line">        &#125; catch (IncorrectCredentialsException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;password error&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+]]></content>
+      <categories>
+        <category>技术栈</category>
+      </categories>
+      <tags>
+        <tag>密码学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>new_day</title>
+    <url>/2021/10/24/new-day/</url>
+    <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
+<p>下午呆坐在实验室的我静静的听着歌，一首记忆发光让我想起了18年，三年了，《我的青春遇见你》这部电视剧又在脑海里回忆。直接看了最后一集，羡慕陈也与李招娣的爱情。一路走来，嫁给爱情是多么美好啊！不知不觉自己竟然流泪了，是啊，就像招娣拒绝贾方舟所说的，这座城市很大，坐在车里看外面的世界，灯红酒绿的，给人很美好的感觉。但你下车之后，漫步在雨中，发现这才是我的生活。是啊，生活中大多数人是陈也，不是贾方舟。那时的街道没有车水马龙，也没有太多的钢筋水泥，我们的生活却充实有趣。</p>
+<p>不要在怀念过去的人和事物中浪费掉你现在的生活。定个三年之约，那时的我们一定会是与众不同的。</p>
+<p>农历九月十九</p>
 ]]></content>
       <categories>
         <category>生活</category>
       </categories>
       <tags>
-        <tag>如晴似雨</tag>
+        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -808,6 +792,22 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>箭头含义</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>rain</title>
+    <url>/2021/03/26/rain/</url>
+    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
+<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
+<p>辛丑年农历二月十四</p>
+<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
+<p>辛丑年农历二月十五</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>如晴似雨</tag>
       </tags>
   </entry>
 </search>
