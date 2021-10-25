@@ -98,22 +98,6 @@
       </tags>
   </entry>
   <entry>
-    <title>diffchain</title>
-    <url>/2020/11/16/difftimechain/</url>
-    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
-
-]]></content>
-      <categories>
-        <category>数据结构</category>
-      </categories>
-      <tags>
-        <tag>差分时间链</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Three ways to create Java Multithread</title>
     <url>/2020/09/23/concurrency/</url>
     <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
@@ -131,6 +115,47 @@
       </categories>
       <tags>
         <tag>多线程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>copy constructor</title>
+    <url>/2021/04/04/copy/</url>
+    <content><![CDATA[<h3 id="浅拷贝简介"><a href="#浅拷贝简介" class="headerlink" title="浅拷贝简介"></a>浅拷贝简介</h3><p>浅拷贝会创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。如果属性是基本数据类型，拷贝的就是值；如果属性是引用数据类型，拷贝的就是内存地址。<br>基本数据类型是值传递，所以修改一个对象的值不会影响另一个对象。<br>引用数据类型是引用传递，浅拷贝只是把内存地址赋值给了新对象，它们指向同一内存空间。所以改变其中一个也会影响另一个。</p>
+<h3 id="浅拷贝实现"><a href="#浅拷贝实现" class="headerlink" title="浅拷贝实现"></a>浅拷贝实现</h3><p>类需要实现Cloneable接口，并重写clone()方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Subject &#123;</span><br><span class="line">    private String name;</span><br><span class="line"></span><br><span class="line">    public Subject(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;[Shallow Copy: &quot; + this.hashCode() + &quot;,name: &quot; + name + &quot;]&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Student implements Cloneable &#123;</span><br><span class="line">    &#x2F;&#x2F;引用数据类型</span><br><span class="line">    private Subject subject;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;基本数据类型</span><br><span class="line">    private String name;</span><br><span class="line">    private int age;</span><br><span class="line"></span><br><span class="line">    public Subject getSubject() &#123;</span><br><span class="line">        return subject;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setSubject(Subject subject) &#123;</span><br><span class="line">        this.subject &#x3D; subject;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getAge() &#123;</span><br><span class="line">        return age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setAge(int age) &#123;</span><br><span class="line">        this.age &#x3D; age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 重写clone()方法</span><br><span class="line">     * @return Object</span><br><span class="line">     *&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() &#123;</span><br><span class="line">        &#x2F;&#x2F;浅拷贝</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;直接调用父类的clone()方法</span><br><span class="line">            return super.clone();</span><br><span class="line">        &#125; catch (CloneNotSupportedException e) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;[Student: &quot; + this.hashCode() + &quot;,subject:&quot; + subject + &quot;,name:&quot; + name + &quot;,age:&quot; + age + &quot;]&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ShallowCopy &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Subject subject1 &#x3D; new Subject(&quot;math&quot;);</span><br><span class="line"></span><br><span class="line">        Student student1 &#x3D; new Student();</span><br><span class="line">        student1.setSubject(subject1);</span><br><span class="line">        student1.setName(&quot;hj&quot;);</span><br><span class="line">        student1.setAge(22);</span><br><span class="line">        System.out.println(student1.toString());</span><br><span class="line"></span><br><span class="line">        Student student2 &#x3D; (Student) student1.clone();</span><br><span class="line">        System.out.println(student2.toString());</span><br><span class="line"></span><br><span class="line">        student2.setName(&quot;cjm&quot;);</span><br><span class="line">        student2.setAge(23);</span><br><span class="line">        System.out.println(student1.toString());</span><br><span class="line">        System.out.println(student2.toString());</span><br><span class="line"></span><br><span class="line">        Subject subject2 &#x3D; student2.getSubject();</span><br><span class="line">        subject2.setName(&quot;hyh&quot;);</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;student1: &quot; + student1.toString());</span><br><span class="line">        System.out.println(&quot;student2: &quot; + student2.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[Student: 1555009629,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 149928006,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 1555009629,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 149928006,subject:[Shallow Copy: 41359092,name: math],name:cjm,age:23]</span><br><span class="line">student1: [Student: 1555009629,subject:[Shallow Copy: 41359092,name: hyh],name:hj,age:22]</span><br><span class="line">student2: [Student: 149928006,subject:[Shallow Copy: 41359092,name: hyh],name:cjm,age:23]</span><br></pre></td></tr></table></figure>
+<p>结果中可以看出，通过student1.clone()拷贝对象后得到的student2和student1是两个不同的对象。student1和student2的基本数据类型修改互不影响，而引用数据类型subject的修改则受影响。</p>
+<h3 id="深拷贝简介"><a href="#深拷贝简介" class="headerlink" title="深拷贝简介"></a>深拷贝简介</h3><p>深拷贝在拷贝引用数据类型成员变量时，为引用数据类型的成员变量另开辟一个独立的内存空间，实现真正内容上的拷贝。<br>对于引用数据类型，比如数组或者类对象。深拷贝会新建一个对象空间，然后拷贝里面的内容，所以它们指向了不同的内存空间。改变其中一个，不会影响另一个。<br>对于有多层对象的，每个对象都需要实现Cloneable并重写clone()方法，进而实现对象的串行层层拷贝。</p>
+<h3 id="深拷贝实现"><a href="#深拷贝实现" class="headerlink" title="深拷贝实现"></a>深拷贝实现</h3><p>Student的引用数据类型成员变量Subject需要实现Cloneable接口并重写clone()方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Subject implements Cloneable &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Student implements Cloneable &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() &#123;</span><br><span class="line">        &#x2F;&#x2F;深拷贝</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;调用父类的clone()方法</span><br><span class="line">            Student student &#x3D; (Student) super.clone();</span><br><span class="line">            student.subject &#x3D; (Subject) subject.clone();</span><br><span class="line">            return student;</span><br><span class="line">        &#125; catch (CloneNotSupportedException e) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试结果-1"><a href="#测试结果-1" class="headerlink" title="测试结果"></a>测试结果</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">student1: [Student: 1555009629,subject:[Subject: 41359092,name: math],name:hj,age:22]</span><br><span class="line">student2: [Student: 149928006,subject:[Subject: 713338599,name: hyh],name:cjm,age:23]</span><br></pre></td></tr></table></figure>
+<p>结果中可以看出，深拷贝不管是修改基本数据类型还是引用数据类型成员变量时都不会相互影响。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>深浅拷贝</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>diffchain</title>
+    <url>/2020/11/16/difftimechain/</url>
+    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
+
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>差分时间链</tag>
       </tags>
   </entry>
   <entry>
@@ -191,44 +216,6 @@
       </tags>
   </entry>
   <entry>
-    <title>copy constructor</title>
-    <url>/2021/04/04/copy/</url>
-    <content><![CDATA[<h3 id="浅拷贝简介"><a href="#浅拷贝简介" class="headerlink" title="浅拷贝简介"></a>浅拷贝简介</h3><p>浅拷贝会创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。如果属性是基本数据类型，拷贝的就是值；如果属性是引用数据类型，拷贝的就是内存地址。<br>基本数据类型是值传递，所以修改一个对象的值不会影响另一个对象。<br>引用数据类型是引用传递，浅拷贝只是把内存地址赋值给了新对象，它们指向同一内存空间。所以改变其中一个也会影响另一个。</p>
-<h3 id="浅拷贝实现"><a href="#浅拷贝实现" class="headerlink" title="浅拷贝实现"></a>浅拷贝实现</h3><p>类需要实现Cloneable接口，并重写clone()方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Subject &#123;</span><br><span class="line">    private String name;</span><br><span class="line"></span><br><span class="line">    public Subject(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;[Shallow Copy: &quot; + this.hashCode() + &quot;,name: &quot; + name + &quot;]&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Student implements Cloneable &#123;</span><br><span class="line">    &#x2F;&#x2F;引用数据类型</span><br><span class="line">    private Subject subject;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;基本数据类型</span><br><span class="line">    private String name;</span><br><span class="line">    private int age;</span><br><span class="line"></span><br><span class="line">    public Subject getSubject() &#123;</span><br><span class="line">        return subject;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setSubject(Subject subject) &#123;</span><br><span class="line">        this.subject &#x3D; subject;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getAge() &#123;</span><br><span class="line">        return age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setAge(int age) &#123;</span><br><span class="line">        this.age &#x3D; age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 重写clone()方法</span><br><span class="line">     * @return Object</span><br><span class="line">     *&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() &#123;</span><br><span class="line">        &#x2F;&#x2F;浅拷贝</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;直接调用父类的clone()方法</span><br><span class="line">            return super.clone();</span><br><span class="line">        &#125; catch (CloneNotSupportedException e) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;[Student: &quot; + this.hashCode() + &quot;,subject:&quot; + subject + &quot;,name:&quot; + name + &quot;,age:&quot; + age + &quot;]&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ShallowCopy &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Subject subject1 &#x3D; new Subject(&quot;math&quot;);</span><br><span class="line"></span><br><span class="line">        Student student1 &#x3D; new Student();</span><br><span class="line">        student1.setSubject(subject1);</span><br><span class="line">        student1.setName(&quot;hj&quot;);</span><br><span class="line">        student1.setAge(22);</span><br><span class="line">        System.out.println(student1.toString());</span><br><span class="line"></span><br><span class="line">        Student student2 &#x3D; (Student) student1.clone();</span><br><span class="line">        System.out.println(student2.toString());</span><br><span class="line"></span><br><span class="line">        student2.setName(&quot;cjm&quot;);</span><br><span class="line">        student2.setAge(23);</span><br><span class="line">        System.out.println(student1.toString());</span><br><span class="line">        System.out.println(student2.toString());</span><br><span class="line"></span><br><span class="line">        Subject subject2 &#x3D; student2.getSubject();</span><br><span class="line">        subject2.setName(&quot;hyh&quot;);</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;student1: &quot; + student1.toString());</span><br><span class="line">        System.out.println(&quot;student2: &quot; + student2.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[Student: 1555009629,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 149928006,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 1555009629,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 149928006,subject:[Shallow Copy: 41359092,name: math],name:cjm,age:23]</span><br><span class="line">student1: [Student: 1555009629,subject:[Shallow Copy: 41359092,name: hyh],name:hj,age:22]</span><br><span class="line">student2: [Student: 149928006,subject:[Shallow Copy: 41359092,name: hyh],name:cjm,age:23]</span><br></pre></td></tr></table></figure>
-<p>结果中可以看出，通过student1.clone()拷贝对象后得到的student2和student1是两个不同的对象。student1和student2的基本数据类型修改互不影响，而引用数据类型subject的修改则受影响。</p>
-<h3 id="深拷贝简介"><a href="#深拷贝简介" class="headerlink" title="深拷贝简介"></a>深拷贝简介</h3><p>深拷贝在拷贝引用数据类型成员变量时，为引用数据类型的成员变量另开辟一个独立的内存空间，实现真正内容上的拷贝。<br>对于引用数据类型，比如数组或者类对象。深拷贝会新建一个对象空间，然后拷贝里面的内容，所以它们指向了不同的内存空间。改变其中一个，不会影响另一个。<br>对于有多层对象的，每个对象都需要实现Cloneable并重写clone()方法，进而实现对象的串行层层拷贝。</p>
-<h3 id="深拷贝实现"><a href="#深拷贝实现" class="headerlink" title="深拷贝实现"></a>深拷贝实现</h3><p>Student的引用数据类型成员变量Subject需要实现Cloneable接口并重写clone()方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Subject implements Cloneable &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Student implements Cloneable &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() &#123;</span><br><span class="line">        &#x2F;&#x2F;深拷贝</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;调用父类的clone()方法</span><br><span class="line">            Student student &#x3D; (Student) super.clone();</span><br><span class="line">            student.subject &#x3D; (Subject) subject.clone();</span><br><span class="line">            return student;</span><br><span class="line">        &#125; catch (CloneNotSupportedException e) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="测试结果-1"><a href="#测试结果-1" class="headerlink" title="测试结果"></a>测试结果</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">student1: [Student: 1555009629,subject:[Subject: 41359092,name: math],name:hj,age:22]</span><br><span class="line">student2: [Student: 149928006,subject:[Subject: 713338599,name: hyh],name:cjm,age:23]</span><br></pre></td></tr></table></figure>
-<p>结果中可以看出，深拷贝不管是修改基本数据类型还是引用数据类型成员变量时都不会相互影响。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>深浅拷贝</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>evening</title>
-    <url>/2021/08/25/evening/</url>
-    <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
-<p>农历七月十八</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>郁</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>firstblog</title>
     <url>/2020/09/20/firstblog/</url>
     <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
@@ -248,6 +235,19 @@
       </categories>
       <tags>
         <tag>出行</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>evening</title>
+    <url>/2021/08/25/evening/</url>
+    <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
+<p>农历七月十八</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>郁</tag>
       </tags>
   </entry>
   <entry>
@@ -305,6 +305,19 @@
       </categories>
       <tags>
         <tag>关键字</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>last_communication</title>
+    <url>/2021/10/25/last-communication/</url>
+    <content><![CDATA[<p>今天已经是10月25号了，来北京也一年多了。这一年经历了太多事，令人难忘、怀念、伤心与后悔的事。今天中午的聊天或许是最后一次了吧，你的笑脸多么令人难，合适真的太重要了。唉，或许这就是命吧！尽管你是如此的任性、无理取闹，但我知道你内心单纯善良，说实话，你是我遇见过的最单纯可爱却又任性取闹的女孩。真的是对你又爱又狠。但这一切都已经过去了。希望你这一辈子都过的好，幸福快乐，身体健康，工作顺利。best wishes！cjm。</p>
+<p>农历九月二十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -417,21 +430,6 @@
       </categories>
       <tags>
         <tag>密码学</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>new_day</title>
-    <url>/2021/10/24/new-day/</url>
-    <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
-<p>下午呆坐在实验室的我静静的听着歌，一首记忆发光让我想起了18年，三年了，《我的青春遇见你》这部电视剧又在脑海里回忆。直接看了最后一集，羡慕陈也与李招娣的爱情。一路走来，嫁给爱情是多么美好啊！不知不觉自己竟然流泪了，是啊，就像招娣拒绝贾方舟所说的，这座城市很大，坐在车里看外面的世界，灯红酒绿的，给人很美好的感觉。但你下车之后，漫步在雨中，发现这才是我的生活。是啊，生活中大多数人是陈也，不是贾方舟。那时的街道没有车水马龙，也没有太多的钢筋水泥，我们的生活却充实有趣。</p>
-<p>不要在怀念过去的人和事物中浪费掉你现在的生活。定个三年之约，那是的大家一定会是与众不同的。</p>
-<p>农历九月十九</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -698,6 +696,21 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
+    <title>new_day</title>
+    <url>/2021/10/24/new-day/</url>
+    <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
+<p>下午呆坐在实验室的我静静的听着歌，一首记忆发光让我想起了18年，三年了，《我的青春遇见你》这部电视剧又在脑海里回忆。直接看了最后一集，羡慕陈也与李招娣的爱情。一路走来，嫁给爱情是多么美好啊！不知不觉自己竟然流泪了，是啊，就像招娣拒绝贾方舟所说的，这座城市很大，坐在车里看外面的世界，灯红酒绿的，给人很美好的感觉。但你下车之后，漫步在雨中，发现这才是我的生活。是啊，生活中大多数人是陈也，不是贾方舟。那时的街道没有车水马龙，也没有太多的钢筋水泥，我们的生活却充实有趣。</p>
+<p>不要在怀念过去的人和事物中浪费掉你现在的生活。定个三年之约，那是的大家一定会是与众不同的。</p>
+<p>农历九月十九</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>rain</title>
     <url>/2021/03/26/rain/</url>
     <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
@@ -711,6 +724,36 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>如晴似雨</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>umlarrow</title>
+    <url>/2021/03/31/umlarrow/</url>
+    <content><![CDATA[<h3 id="泛化（继承）"><a href="#泛化（继承）" class="headerlink" title="泛化（继承）"></a>泛化（继承）</h3><p>泛化是一种一般与特殊、一般与具体关系的描述，具体建立在一般之上并对其进行扩展。<br><strong>实线空心三角箭头表示</strong></p>
+<img src="/2021/03/31/umlarrow/generate.png" class="">
+
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>实现是类与接口之间关系的描述，类是接口所有特征和行为的具体实现。<br><strong>虚线空心三角箭头表示</strong></p>
+<img src="/2021/03/31/umlarrow/implement.png" class="">
+
+<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><p>依赖是一种使用关系，即一个类的实现需要另一个类的帮助。通常一个类的方法参数中需要传入另一个类的对象，即表示依赖这个类。<br><strong>虚线箭头</strong></p>
+<img src="/2021/03/31/umlarrow/rely.png" class="">
+
+<h3 id="关联"><a href="#关联" class="headerlink" title="关联"></a>关联</h3><p>关联表示类与类之间的联接，一个类知道另一个类的方法和属性，这种关系比依赖更强。一般一个类作为另一个类的全局变量，即表示关联这个类。<br><strong>实线箭头</strong></p>
+<img src="/2021/03/31/umlarrow/relevance.png" class="">
+
+
+<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><p>聚合是关联的一种特例，是更强的关联。聚合是整体和个体之间的关系，即<strong>has-a</strong>的关系。关联关系中两个类是处于相同的层次,而聚合关系中两个类是处于不同的层次，一个表示整体, 一个表示个体。</p>
+<img src="/2021/03/31/umlarrow/juhe.png" class="">
+
+<h3 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h3><p>组合也是关联的一种特例。组合是整体与部分的关系，即<strong>contains-a</strong>的关系，比聚合更强。</p>
+<img src="/2021/03/31/umlarrow/union.png" class="">
+
+]]></content>
+      <categories>
+        <category>UML</category>
+      </categories>
+      <tags>
+        <tag>箭头含义</tag>
       </tags>
   </entry>
   <entry>
@@ -752,36 +795,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>shiro</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>umlarrow</title>
-    <url>/2021/03/31/umlarrow/</url>
-    <content><![CDATA[<h3 id="泛化（继承）"><a href="#泛化（继承）" class="headerlink" title="泛化（继承）"></a>泛化（继承）</h3><p>泛化是一种一般与特殊、一般与具体关系的描述，具体建立在一般之上并对其进行扩展。<br><strong>实线空心三角箭头表示</strong></p>
-<img src="/2021/03/31/umlarrow/generate.png" class="">
-
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>实现是类与接口之间关系的描述，类是接口所有特征和行为的具体实现。<br><strong>虚线空心三角箭头表示</strong></p>
-<img src="/2021/03/31/umlarrow/implement.png" class="">
-
-<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><p>依赖是一种使用关系，即一个类的实现需要另一个类的帮助。通常一个类的方法参数中需要传入另一个类的对象，即表示依赖这个类。<br><strong>虚线箭头</strong></p>
-<img src="/2021/03/31/umlarrow/rely.png" class="">
-
-<h3 id="关联"><a href="#关联" class="headerlink" title="关联"></a>关联</h3><p>关联表示类与类之间的联接，一个类知道另一个类的方法和属性，这种关系比依赖更强。一般一个类作为另一个类的全局变量，即表示关联这个类。<br><strong>实线箭头</strong></p>
-<img src="/2021/03/31/umlarrow/relevance.png" class="">
-
-
-<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><p>聚合是关联的一种特例，是更强的关联。聚合是整体和个体之间的关系，即<strong>has-a</strong>的关系。关联关系中两个类是处于相同的层次,而聚合关系中两个类是处于不同的层次，一个表示整体, 一个表示个体。</p>
-<img src="/2021/03/31/umlarrow/juhe.png" class="">
-
-<h3 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h3><p>组合也是关联的一种特例。组合是整体与部分的关系，即<strong>contains-a</strong>的关系，比聚合更强。</p>
-<img src="/2021/03/31/umlarrow/union.png" class="">
-
-]]></content>
-      <categories>
-        <category>UML</category>
-      </categories>
-      <tags>
-        <tag>箭头含义</tag>
       </tags>
   </entry>
 </search>
