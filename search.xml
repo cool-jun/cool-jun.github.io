@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>1031_java</title>
-    <url>/2021/10/31/1031-java/</url>
-    <content><![CDATA[<h3 id="1-Java创建对象的方法"><a href="#1-Java创建对象的方法" class="headerlink" title="1 Java创建对象的方法"></a>1 Java创建对象的方法</h3><p>new<br>反射 newInstance()<br>clone()<br>反序列化</p>
-<h3 id="2-Java动态代理、应用"><a href="#2-Java动态代理、应用" class="headerlink" title="2 Java动态代理、应用"></a>2 Java动态代理、应用</h3>]]></content>
+    <title>11_10_Java</title>
+    <url>/2021/11/10/11-10-Java/</url>
+    <content><![CDATA[<h3 id="递归和迭代的区别"><a href="#递归和迭代的区别" class="headerlink" title="递归和迭代的区别"></a>递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中, 问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远变近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
+<p>以斐波那契数列为例。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>递归容易产生“栈溢出”问题（stack overflow）<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
+]]></content>
       <categories>
         <category>future</category>
       </categories>
@@ -30,6 +36,58 @@
       </categories>
       <tags>
         <tag>basic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>1031_java</title>
+    <url>/2021/10/31/1031-java/</url>
+    <content><![CDATA[<h3 id="1-Java创建对象的方法"><a href="#1-Java创建对象的方法" class="headerlink" title="1 Java创建对象的方法"></a>1 Java创建对象的方法</h3><p>new<br>反射 newInstance()<br>clone()<br>反序列化</p>
+<h3 id="2-Java动态代理、应用"><a href="#2-Java动态代理、应用" class="headerlink" title="2 Java动态代理、应用"></a>2 Java动态代理、应用</h3><p>静态代理：创建一个接口，被代理的类实现该接口。之后创建一个代理类，也实现这个接口。在代理类中持有一个被代理对象的引用，然后在代理类方法中调用该对象的方法。<br><strong>实现</strong><br>编写一个接口UserService，以及它的一个实现类UserServiceImpl</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface UserService &#123;</span><br><span class="line">    void hello();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class UserServiceImpl implements UserService &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void hello() &#123;</span><br><span class="line">        System.out.println(&quot;hello hj!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在想对UserServiceImpl类增加一些功能，这时可通过静态代理。编写一个代理类 UserServiceProxy并实现UserService接口。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 代理类</span><br><span class="line">public class UserServiceProxy implements UserService &#123;</span><br><span class="line">    private UserService target;  &#x2F;&#x2F; 被代理的对象</span><br><span class="line"></span><br><span class="line">    public UserServiceProxy(UserService target) &#123;</span><br><span class="line">        this.target &#x3D; target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void hello() &#123;</span><br><span class="line">        System.out.println(&quot;invoke before!&quot;);</span><br><span class="line">        target.hello();</span><br><span class="line">        System.out.println(&quot;invoke after!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class TestProxy &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        UserService userService &#x3D; new UserServiceImpl();</span><br><span class="line">        UserService proxy &#x3D; new UserServiceProxy(userService);</span><br><span class="line">        proxy.hello();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>缺点：代理只能为一个类服务，如果需要代理的类很多，那么就需要编写大量的代理类。代码冗余、维护性差。</p>
+<p><strong>动态代理</strong>：让代理类动态的生成，在运行时创建代理类。<br>1 通过实现接口的方式—-&gt;JDK动态代理<br>2 通过继承类的方式——&gt;CGLIB动态代理</p>
+<p>** JDK动态代理 **<br>主要涉及 java.lang.reflect.Proxy 类 和 java.lang.reflect.InvocationHandler 接口。</p>
+<p>编写一个处理器 LogHandler 类，提供日志增强功能，并实现 InvocationHandler 接口；<br>在 LogHandler 中维护一个目标对象，这个对象是被代理的对象；<br>在 invoke 方法中编写方法调用的处理逻辑。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LogHandler implements InvocationHandler &#123;</span><br><span class="line">    Object target;  &#x2F;&#x2F; 被代理的对象，实际的方法执行者</span><br><span class="line"></span><br><span class="line">    public LogHandler(Object target) &#123;</span><br><span class="line">        this.target &#x3D; target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</span><br><span class="line">        System.out.printf(&quot;log start time [%s]%n&quot;, new Date());</span><br><span class="line">        Object result &#x3D; method.invoke(target, args);  &#x2F;&#x2F; 调用target的method方法</span><br><span class="line">        System.out.printf(&quot;log end time [%s]%n&quot;, new Date());</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态代理</span><br><span class="line">        &#x2F;&#x2F; 创建被代理的对象，UserService接口的实现类</span><br><span class="line">        UserServiceImpl userServiceImpl &#x3D; new UserServiceImpl();</span><br><span class="line">        &#x2F;&#x2F; 获取对应的ClassLoader</span><br><span class="line">        ClassLoader classLoader &#x3D; userServiceImpl.getClass().getClassLoader();</span><br><span class="line">        &#x2F;&#x2F; 获取所有接口的Class，这里的UserServiceImpl类只实现了一个接口UserService</span><br><span class="line">        Class[] interfaces &#x3D; userServiceImpl.getClass().getInterfaces();</span><br><span class="line">        &#x2F;&#x2F; 创建一个将传递给代理类的 处理器，处理所有代理对象上的方法调用</span><br><span class="line">        InvocationHandler logHandler &#x3D; new LogHandler(userServiceImpl);</span><br><span class="line">        &#x2F;**</span><br><span class="line">         * 根据上面的信息，创建代理对象的过程如下：</span><br><span class="line">         * JDK会根据传入的参数动态地在内存中创建和.class文件等同的字节码</span><br><span class="line">         * 根据相应的字节码转换成对应的class</span><br><span class="line">         * 调用newInstance()方法创建代理实例</span><br><span class="line">         *&#x2F;</span><br><span class="line">        UserService proxy &#x3D; (UserService) Proxy.newProxyInstance(classLoader, interfaces, logHandler);</span><br><span class="line">        &#x2F;&#x2F; 调用代理的方法</span><br><span class="line">        proxy.hello();</span><br></pre></td></tr></table></figure>
+
+<p><strong>InvocationHandler</strong>接口</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">处理代理实例上的方法调用并返回结果。</span><br><span class="line">当在与其关联的代理实例上调用方法时，将在调用处理程序上调用此方法。</span><br><span class="line">public interface InvocationHandler &#123;</span><br><span class="line">    public Object invoke(Object proxy, Method method, Object[] args)</span><br><span class="line">        throws Throwable;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Proxy</strong>类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">返回指定接口的代理类的实例，该接口将方法调用分派到指定的调用处理程序。</span><br><span class="line">public static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces, InvocationHandler h) throws IllegalArgumentException</span><br><span class="line">loader – 定义代理类的类加载器</span><br><span class="line">interface - 代理类要实现的接口列表</span><br><span class="line">h – 将方法调用分派到的调用处理程序</span><br><span class="line"></span><br><span class="line">当且仅当使用 getProxyClass 方法或 newProxyInstance 方法将指定的类动态生成为代理类时，才返回 true。</span><br><span class="line">public static boolean isProxyClass(Class&lt;?&gt; cl) &#123;&#125;</span><br><span class="line"></span><br><span class="line">返回给定类加载器和接口数组的代理类的 java.lang.Class 对象。代理类将由指定的类加载器定义，并将实现所有提供的接口。如果任何给定的接口是非公共的，则代理类将是非公共的。如果类加载器已经定义了相同接口排列的代理类，则返回现有的代理类；否则，这些接口的代理类将动态生成并由类加载器定义。</span><br><span class="line">private static Class&lt;?&gt; getProxyClass(ClassLoader loader, Class&lt;?&gt;... interfaces)</span><br><span class="line"></span><br><span class="line">返回指定代理实例的调用处理程序。</span><br><span class="line">public static InvocationHandler getInvocationHandler(Object proxy) throws IllegalArgumentException</span><br></pre></td></tr></table></figure>
+
+<p>JDK动态代理 VS CGLIB动态代理</p>
+<p>JDK动态代理：基于Java反射机制实现，必须要实现了接口的业务类才能用这种办法生成代理对象。<br>优势：最小化依赖关系，减少依赖意味着简化开发和维护，JDK 本身的支持，可能比 CGLIB 更加可靠。<br>平滑进行 JDK 版本升级，而字节码类库通常需要进行更新以保证在新版 Java 上能够使用。<br>代码实现简单。</p>
+<p>CGLIB动态代理：基于ASM机制实现，通过生成业务类的子类作为代理类。<br>优势：无需实现接口，达到代理类无侵入<br>只操作我们关心的类，而不必为其他相关类增加工作量。<br>高性能</p>
+]]></content>
+      <categories>
+        <category>future</category>
+      </categories>
+      <tags>
+        <tag>basic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Three ways to create Java Multithread</title>
+    <url>/2020/09/23/concurrency/</url>
+    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
+<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>多线程</tag>
       </tags>
   </entry>
   <entry>
@@ -130,26 +188,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Three ways to create Java Multithread</title>
-    <url>/2020/09/23/concurrency/</url>
-    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
-<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>多线程</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>copy constructor</title>
     <url>/2021/04/04/copy/</url>
     <content><![CDATA[<h3 id="浅拷贝简介"><a href="#浅拷贝简介" class="headerlink" title="浅拷贝简介"></a>浅拷贝简介</h3><p>浅拷贝会创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。如果属性是基本数据类型，拷贝的就是值；如果属性是引用数据类型，拷贝的就是内存地址。<br>基本数据类型是值传递，所以修改一个对象的值不会影响另一个对象。<br>引用数据类型是引用传递，浅拷贝只是把内存地址赋值给了新对象，它们指向同一内存空间。所以改变其中一个也会影响另一个。</p>
@@ -172,22 +210,6 @@
       </categories>
       <tags>
         <tag>深浅拷贝</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>diffchain</title>
-    <url>/2020/11/16/difftimechain/</url>
-    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
-
-]]></content>
-      <categories>
-        <category>数据结构</category>
-      </categories>
-      <tags>
-        <tag>差分时间链</tag>
       </tags>
   </entry>
   <entry>
@@ -248,6 +270,49 @@
       </tags>
   </entry>
   <entry>
+    <title>human</title>
+    <url>/2021/10/25/human/</url>
+    <content><![CDATA[<p><strong>人性经的起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
+<p>农历九月二十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>spring</title>
+    <url>/2021/03/24/hurt/</url>
+    <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
+<pre><code>        你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</code></pre>
+<p>辛丑牛年农历二月十二</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>diffchain</title>
+    <url>/2020/11/16/difftimechain/</url>
+    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
+
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>差分时间链</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>evening</title>
     <url>/2021/08/25/evening/</url>
     <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
@@ -280,33 +345,6 @@
       </categories>
       <tags>
         <tag>出行</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>human</title>
-    <url>/2021/10/25/human/</url>
-    <content><![CDATA[<p><strong>人性经的起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
-<p>农历九月二十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>spring</title>
-    <url>/2021/03/24/hurt/</url>
-    <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
-<pre><code>        你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</code></pre>
-<p>辛丑牛年农历二月十二</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -433,19 +471,6 @@
       </tags>
   </entry>
   <entry>
-    <title>markdown</title>
-    <url>/2021/04/15/markdown/</url>
-    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
-<p>格式如下图：</p>
-<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
-      <categories>
-        <category>markdown</category>
-      </categories>
-      <tags>
-        <tag>markdown</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>md5+salt</title>
     <url>/2020/10/10/md5-salt/</url>
     <content><![CDATA[<p>传统的md5算法通过产生一个128位（16字节）的散列值（hash value），用于确保信息的安全性。但随着技术的发展，md5无法防止碰撞（collision）且可以被加以破解。<br>salt的出现可以一定程度上解决这个问题。</p>
@@ -471,6 +496,19 @@
       </categories>
       <tags>
         <tag>密码学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>markdown</title>
+    <url>/2021/04/15/markdown/</url>
+    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
+<p>格式如下图：</p>
+<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
+      <categories>
+        <category>markdown</category>
+      </categories>
+      <tags>
+        <tag>markdown</tag>
       </tags>
   </entry>
   <entry>
@@ -755,6 +793,19 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
+    <title>nightmare</title>
+    <url>/2021/11/02/nightmare/</url>
+    <content><![CDATA[<p>今天已经是11月2号了，昨晚的噩梦令我心惊胆战，后怕。不知何时这已经从美梦变成了噩梦了。害怕、恐惧。但又觉得值得怀念。唉！往前看，做好当下的事情。理工的记忆永留在心里吧！论文、工作，未来才是most important。加油吧！</p>
+<p>农历九月二十八日</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>new_day</title>
     <url>/2021/10/24/new-day/</url>
     <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
@@ -774,19 +825,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
     <url>/2021/11/04/nightmare-again/</url>
     <content><![CDATA[<p>一连几天的噩梦让人浑身不舒服，为什么会做噩梦呢？难道11月是噩梦的开端？<br>当然不是，一天天的太累了，读研真的好难啊！各种压力纷涌而至，躲不掉也必须要解决。时间飞逝，希望赶快毕业，找份好工作。</p>
 <p>农历九月三十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>nightmare</title>
-    <url>/2021/11/02/nightmare/</url>
-    <content><![CDATA[<p>今天已经是11月2号了，昨晚的噩梦令我心惊胆战，后怕。不知何时这已经从美梦变成了噩梦了。害怕、恐惧。但又觉得值得怀念。唉！往前看，做好当下的事情。理工的记忆永留在心里吧！论文、工作，未来才是most important。加油吧！</p>
-<p>农历九月二十八日</p>
 ]]></content>
       <categories>
         <category>生活</category>
