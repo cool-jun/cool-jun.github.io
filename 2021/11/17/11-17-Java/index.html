@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1 ArrayList和LinkedListArrayList：List接口的可调整大小的数组实现。除了实现 List 接口之外，该类还提供了操作内部用于存储列表的数组大小的方法。（这个类大致相当于 Vector，只是它是不同步的。）。它提供恒定时间的位置访问，而且速度非常快。它不必为List中的每个元素分配一个节点对象，当它必须同时移动多个元素时，它可以利用System.arraycopy。将A">
+<meta property="og:type" content="article">
+<meta property="og:title" content="11_17_Java">
+<meta property="og:url" content="http://example.com/2021/11/17/11-17-Java/index.html">
+<meta property="og:site_name" content="cool-jun的博客">
+<meta property="og:description" content="1 ArrayList和LinkedListArrayList：List接口的可调整大小的数组实现。除了实现 List 接口之外，该类还提供了操作内部用于存储列表的数组大小的方法。（这个类大致相当于 Vector，只是它是不同步的。）。它提供恒定时间的位置访问，而且速度非常快。它不必为List中的每个元素分配一个节点对象，当它必须同时移动多个元素时，它可以利用System.arraycopy。将A">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-11-17T13:11:02.000Z">
+<meta property="article:modified_time" content="2021-11-18T13:20:49.745Z">
+<meta property="article:author" content="He Jun">
+<meta property="article:tag" content="basic">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/11/17/11-17-Java/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>11_17_Java | cool-jun的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">cool-jun的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">record my life</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/17/11-17-Java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          11_17_Java
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-17 21:11:02" itemprop="dateCreated datePublished" datetime="2021-11-17T21:11:02+08:00">2021-11-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-11-18 21:20:49" itemprop="dateModified" datetime="2021-11-18T21:20:49+08:00">2021-11-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/future/" itemprop="url" rel="index"><span itemprop="name">future</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/11/17/11-17-Java/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/17/11-17-Java/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1-ArrayList和LinkedList"><a href="#1-ArrayList和LinkedList" class="headerlink" title="1 ArrayList和LinkedList"></a>1 ArrayList和LinkedList</h3><p>ArrayList：List接口的可调整大小的数组实现。除了实现 List 接口之外，该类还提供了操作内部用于存储列表的数组大小的方法。（这个类大致相当于 Vector，只是它是不同步的。）。它提供恒定时间的位置访问，而且速度非常快。它不必为List中的每个元素分配一个节点对象，当它必须同时移动多个元素时，它可以利用System.arraycopy。将ArrayList视为没有同步开销的Vector。</p>
+<p>LinkedList：List 和 Deque 接口的双向链表实现。实现所有可选的列表操作，并允许所有元素（包括空值）。索引到列表中的操作将从开头或结尾遍历列表，以更接近指定索引的为准。</p>
+<p>如果您经常将元素添加到List的开头或遍历List以从其内部删除元素，则应考虑使用LinkedList。这些操作需要LinkedList中的常量时间和ArrayList中的线性时间。但是你在性能上付出了很大的代价。位置访问需要LinkedList中的线性时间和ArrayList中的常量时间。此外，LinkedList的常数因子要差得多。ArrayList通常更快。ArrayList有一个调整参数——初始容量，它指的是ArrayList在必须增长之前可以容纳的元素数量。LinkedList没有调整参数。</p>
+<h3 id="2-ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？"><a href="#2-ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？" class="headerlink" title="2 ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？"></a>2 ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？</h3><p>RandomAccess：List实现使用的标记接口来指示它们支持快速（通常是恒定时间）随机访问。此接口的主要目的是允许通用算法改变其行为，以在应用于随机或顺序访问列表时提供良好的性能。<br>实现 RandomAccess 接口的 List 集合采用一般的 for 循环遍历，而未实现此接口则采用迭代器，即ArrayList 一般采用 for 循环遍历，LinkedList 一般采用迭代器遍历。ArrayList 用 for 循环遍历比 iterator 迭代器遍历快，LinkedList 用 iterator 迭代器遍历比 for 循环遍历快。应该考虑到 List 集合的不同子类采用不同的遍历方式，能够提高性能。</p>
+<h3 id="3-ArrayList扩容分析"><a href="#3-ArrayList扩容分析" class="headerlink" title="3 ArrayList扩容分析"></a>3 ArrayList扩容分析</h3><p>private static final int DEFAULT_CAPACITY = 10;   // 默认初始容量<br>private static final Object[] EMPTY_ELEMENTDATA = {};  // 用于空实例的共享空数组实例。<br>private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};  // 用于默认大小的空实例的共享空数组实例。我们将其与 EMPTY_ELEMENTDATA 区分开来，以了解添加第一个元素时要膨胀多少<br>transient Object[] elementData;  // ArrayList 的元素存储在其中的数组缓冲区。 ArrayList的容量就是这个数组缓冲区的长度。<br>添加第一个元素时，任何带有 elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA 的空 ArrayList 都将扩展为 DEFAULT_CAPACITY。<br>private int size;  // ArrayList 的大小（它包含的元素数）。<br><strong>构造方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public ArrayList(int initialCapacity) &#123;</span><br><span class="line">        if (initialCapacity &gt; 0) &#123;</span><br><span class="line">            this.elementData &#x3D; new Object[initialCapacity];</span><br><span class="line">        &#125; else if (initialCapacity &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            this.elementData &#x3D; EMPTY_ELEMENTDATA;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</span><br><span class="line">                                               initialCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ArrayList() &#123;</span><br><span class="line">        this.elementData &#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA;</span><br><span class="line">    &#125;</span><br><span class="line">当调用add方法添加第一个元素时，会进行扩容至大小为DEFAULT_CAPACITY&#x3D;10</span><br><span class="line">无参构造方法会将 elementData 初始化一个空数组，插入元素时，扩容将会按默认值重新初始化数组。而有参的构造方法则会将 elementData 初始化为参数值大小（&gt;&#x3D; 0）的数组。</span><br></pre></td></tr></table></figure>
+
+<p><strong>add方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        ensureCapacityInternal(size + 1);  &#x2F;&#x2F; Increments modCount!!</span><br><span class="line">        elementData[size++] &#x3D; e;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>ensureCapacity、ensureExplicitCapacity方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">如有必要，增加此 ArrayList 实例的容量，以确保它至少可以容纳由最小容量参数指定的元素数。</span><br><span class="line">public void ensureCapacity(int minCapacity) &#123;</span><br><span class="line">        int minExpand &#x3D; (elementData !&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA)</span><br><span class="line">            &#x2F;&#x2F; any size if not default element table</span><br><span class="line">            ? 0</span><br><span class="line">            &#x2F;&#x2F; larger than default for default empty table. It&#39;s already</span><br><span class="line">            &#x2F;&#x2F; supposed to be at default size.</span><br><span class="line">            : DEFAULT_CAPACITY;</span><br><span class="line"></span><br><span class="line">        if (minCapacity &gt; minExpand) &#123;</span><br><span class="line">            ensureExplicitCapacity(minCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">private void ensureExplicitCapacity(int minCapacity) &#123;</span><br><span class="line">        modCount++;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; overflow-conscious code</span><br><span class="line">        if (minCapacity - elementData.length &gt; 0)</span><br><span class="line">            grow(minCapacity);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>grow方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">增加容量以确保它至少可以容纳由最小容量参数指定的元素数量。</span><br><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">        &#x2F;&#x2F; overflow-conscious code</span><br><span class="line">        int oldCapacity &#x3D; elementData.length;</span><br><span class="line">        &#x2F;&#x2F; 扩容大小是原来的1.5倍</span><br><span class="line">        int newCapacity &#x3D; oldCapacity + (oldCapacity &gt;&gt; 1);</span><br><span class="line">        if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">            newCapacity &#x3D; minCapacity;</span><br><span class="line">        if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">            newCapacity &#x3D; hugeCapacity(minCapacity);</span><br><span class="line">        &#x2F;&#x2F; minCapacity is usually close to size, so this is a win:</span><br><span class="line">        elementData &#x3D; Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>总结</strong></p>
+<ol>
+<li>当使用 add 方法的时候首先调用 ensureCapacityInternal 方法，传入 size+1 ，检查是否需要扩充elementData 数组的容量;</li>
+<li>newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1)，如果还不够，newCapacity = minCapacity;然后判断 minCapacity 是否大于 MAX_ARRAY_SIZE(Integer.MAX_VALUE - 8) ，如果大于，就取 Integer.MAX_VALUE；</li>
+<li>扩容的主要方法：void grow(int minCapacity)</li>
+<li>ArrayList 中 copy 数组的核心就是 System.arraycopy 方法，将 original 数组的所有数据复制到 copy 数组中。</li>
+</ol>
+<h3 id="4-Array和ArrayList的区别？什么时候用Array？"><a href="#4-Array和ArrayList的区别？什么时候用Array？" class="headerlink" title="4 Array和ArrayList的区别？什么时候用Array？"></a>4 Array和ArrayList的区别？什么时候用Array？</h3><p>Array 类提供静态方法来动态创建和访问 Java 数组。<br>Array 不可实例化。public final class Array {}</p>
+<p>Array可以包含基本类型和对象类型，ArrayList只能包含对象类型。<br>Array空间大小是固定的，空间不够时也不能再次申请；ArrayList空间是动态增长的，如果空间不够，可以进行扩容。</p>
+<p>一个列表的大小已经指定，大部分情况下是存储和遍历它们，Array更合适。<br>遍历基本数据类型，ArrayList如果确实要存放基本数据类型的数据，那只能存放基本数据类型对应的包装类的数据。在数据的存取时可能会涉及到java基本数据类型的自动装箱、自动拆箱。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>Donate here.</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.png" alt="He Jun 微信支付">
+        <p>微信支付</p>
+      </div>
+      
+      <div style="display: inline-block;">
+        <img src="/images/alipay.png" alt="He Jun 支付宝">
+        <p>支付宝</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/basic/" rel="tag"># basic</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/15/11-15-Java/" rel="prev" title="11_15_Java">
+      <i class="fa fa-chevron-left"></i> 11_15_Java
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-ArrayList%E5%92%8CLinkedList"><span class="nav-number">1.</span> <span class="nav-text">1 ArrayList和LinkedList</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-ArrayList%E5%AE%9E%E7%8E%B0RandomAccess%E6%8E%A5%E5%8F%A3%E6%9C%89%E4%BD%95%E4%BD%9C%E7%94%A8%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88LinkedList%E6%B2%A1%E6%9C%89%E5%AE%9E%E7%8E%B0%E6%AD%A4%E6%8E%A5%E5%8F%A3%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">2 ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-ArrayList%E6%89%A9%E5%AE%B9%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">3 ArrayList扩容分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Array%E5%92%8CArrayList%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E7%94%A8Array%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">4 Array和ArrayList的区别？什么时候用Array？</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="He Jun"
+      src="/images/header.jpg">
+  <p class="site-author-name" itemprop="name">He Jun</p>
+  <div class="site-description" itemprop="description">Like Sunday，Like Rain</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/cool-jun" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;cool-jun" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:15697404219@163.com" title="E-Mail → mailto:15697404219@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+  <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async="async"></script>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">He Jun</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'yC6HMe8HT9vQsskxW96mK1nE-gzGzoHsz',
+      appKey     : 'k5q8VxTAtwXdTUJ0eRFXyESY',
+      placeholder: "老铁，不想说2句吗？",
+      avatar     : 'wavatar',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
