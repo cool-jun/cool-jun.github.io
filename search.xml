@@ -21,63 +21,6 @@
       </tags>
   </entry>
   <entry>
-    <title>11_10_Java</title>
-    <url>/2021/11/10/11-10-Java/</url>
-    <content><![CDATA[<h3 id="1-递归和迭代的区别"><a href="#1-递归和迭代的区别" class="headerlink" title="1 递归和迭代的区别"></a>1 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中, 问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远变近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
-<p>以斐波那契数列为例。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>递归容易产生“栈溢出”问题（stack overflow）<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
-<h3 id="2-Java中String为什么是final"><a href="#2-Java中String为什么是final" class="headerlink" title="2 Java中String为什么是final"></a>2 Java中String为什么是final</h3><p>字符串是常量；它们的值在创建后无法更改。<br>StringBuffer支持可变字符串。<br>因为 String 对象是不可变的，所以它们可以共享。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
-<p>安全性：String 被许多的 Java 类(库)用来当做参数，例如：网络连接地址 URL、文件路径 path、还有反射机制所需要 的 String 参数等, 假若 String 不是固定不变的，将会引起各种安全隐患；<br>允许 String 对象缓存 HashCode：Java 中 String 对象的哈希码被频繁地使用,比如在 HashMap 等容器中。字符串不变性保证了 hash 码的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是 Java 堆内存中一个特殊的存储区域, 当创建一个 String 对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
-<h3 id="3-String-str2-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str2-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str2 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str2 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">        String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">        String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">        String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">        System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">        System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">        System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">        System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
-<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量； 它们的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。 此类提供与 StringBuffer 兼容的 API，但不保证同步。 此类旨在用作 StringBuffer 的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。 在可能的情况下，建议优先使用此类而不是 StringBuffer，因为在大多数实现下它会更快。StringBuilder 上的主要操作是 append 和 insert 方法，它们被重载以接受任何类型的数据。 每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。 append 方法总是在构建器的末尾添加这些字符； insert 方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。 字符串缓冲区类似于字符串，但可以修改。 在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
-]]></content>
-      <categories>
-        <category>future</category>
-      </categories>
-      <tags>
-        <tag>basic</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>11_14_Java</title>
-    <url>/2021/11/14/11-14-Java/</url>
-    <content><![CDATA[<h3 id="1-Error和Exception的区别"><a href="#1-Error和Exception的区别" class="headerlink" title="1 Error和Exception的区别"></a>1 Error和Exception的区别</h3><p>Error：一般指与虚拟机相关的问题，如：系统崩溃、虚拟机错误、内存空间不足、栈溢出等。错误导致应用程序中断，仅靠程序本身无法恢复的预防。</p>
-<p>Exception：可分为运行时异常与受检查异常<br>运行时异常：空指针异常、指定的类找不到、数组越界、方法传递参数错误、数据类型转换错误。可以编译通过，一运行就停止了，程序不会自己处理。</p>
-<p>受检查异常：要么用 try … catch… 捕获，要么用 throws 声明抛出，交给父类处理。</p>
-<p>常见的异常类有：NullPointerException、SQLException、IndexOutOfBoundsException、FileNotFoundException、IOException、ClassCastException、IllegalArgumentException。</p>
-<h3 id="2-throw和throws的区别"><a href="#2-throw和throws的区别" class="headerlink" title="2 throw和throws的区别"></a>2 throw和throws的区别</h3><p>throw：在方法体内部，表示抛出异常，由方法体内部的语句处理；throw是具体向外抛出异常的动作，所以它抛出的是一个异常实例。</p>
-<p>throws：在方法声明后面，表示如果抛出异常，由该方法的调用者来进行异常的处理；表示出现异常的可能性，并不一定会发生这种异常。</p>
-<h3 id="3-Java-IO-Stream"><a href="#3-Java-IO-Stream" class="headerlink" title="3 Java IO Stream"></a>3 Java IO Stream</h3><p>功能：输入流、输出流<br>类型：字节流、字符流</p>
-<p>字节流：InputStream/OutputStream是字节流的抽象类，这两个抽象类派生了若干子类，不同的子类分别处理不同的操作。</p>
-<img src="/2021/11/14/11-14-Java/byte.png" class="">
-
-<p>字符流：Reader/Writer是字符流的抽象类，这两个抽象类派生了若干子类，不同的子类分别处理不同的操作。</p>
-<img src="/2021/11/14/11-14-Java/char.png" class="">
-
-<p>字节流与字符流的区别：字节流按8位传输，以字节为单位输入输出数据；字符流按16位传输，以字符为单位输入输出数据。<br>但不管是文件读写还是网络发送接收，信息的最小存储单元都是字节。</p>
-<h3 id="4-BIO-NIO-AIO"><a href="#4-BIO-NIO-AIO" class="headerlink" title="4 BIO NIO AIO"></a>4 BIO NIO AIO</h3><p>BIO：传统的 java.io 包，它是基于流模型实现的，交互的方式是<strong>同步、阻塞</strong>。模式简单使用方便，但并发处理能力低。数据的读取写入必须阻塞在某个线程内等待其完成。在活动连接数不是特别高（小于单机1000）的情况下，这种模型是比较不错的，可以让每一个连接专注于自己的 I/O 并且编程模型简单，也不用过多考虑系统的过载、限流等问题。线程池本身就是一个天然的漏斗，可以缓冲一些系统处理不了的连接或请求。但是，当面对十万甚至百万级连接的时候，传统的 BIO 模型是无能为力的。</p>
-<p>NIO：New IO（同步非阻塞 IO），是传统 IO 的升级，客户端和服务器端通过 Channel（通道）通讯，实现了多路复用。NIO 是一种<strong>同步非阻塞</strong>的 I/O 模型，在 Java1.4 中引入，对应为 java.nio 包，提供了Channel ,Selector，Buffer 等抽象。NIO 中的 N 可以理解为 Non-blocking，不单纯是 New。它支持面向缓冲的，基于通道的 I/O 操作方法。NIO 提供了与传统BIO模型中的 Socket和ServerSocket相对应的 SocketChannel和ServerSocketChannel 两种不同的套接字通道实现，两种通道都支持阻塞和非阻塞两种模式。阻塞模式使用就像传统中的支持一样，比较简单，但是性能和可靠性都不好；非阻塞模式正好与之相反。对于低负载、低并发的应用程序，可以使用同步阻塞 I/O 来提升开发速率和更好的维护性；对于高负载、高并发的（网络）应用，应使用NIO的非阻塞模式来开发。</p>
-<p>AIO：Asynchronous IO 是 NIO 的升级，也叫NIO2，jdk1.7引入，实现了<strong>异步非堵塞</strong>IO ，异步 IO 的操作基于事件和回调机制。也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。AIO 是异步 IO 的缩写，虽然 NIO 在网络操作中，提供了非阻塞的用法，但是 NIO 的 IO 行为还是同步的。对于 NIO 来说，我们的业务线程是在 IO 操作准备好时，得到通知，接着就由这个线程自行进行 IO 操作，IO操作本身是同步的。</p>
-<p>总结：IO面向流，NIO面向缓冲区；<br>IO的各种流是阻塞的，NIO是非阻塞模式；<br>同步：发送一个请求，等待返回，再发送下一个请求。同步可以避免出现死锁，脏读的发生；<br>异步：发送一个请求，不等待返回，随时可以再发送下一个请求，可以提高效率，保证并发。</p>
-<p>阻塞/非阻塞：等待I/O完成的方式，阻塞要求用户程序停止执行，直到IO完成，而非阻塞在IO完成之前还可以继续执行。</p>
-<p>同步/异步：获知IO完成的方式，同步需要时刻关心IO是否完成，异步无需主动关心，在IO完成时它会收到通知。</p>
-]]></content>
-      <categories>
-        <category>future</category>
-      </categories>
-      <tags>
-        <tag>basic</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>1031_java</title>
     <url>/2021/10/31/1031-java/</url>
     <content><![CDATA[<h3 id="1-Java创建对象的方法"><a href="#1-Java创建对象的方法" class="headerlink" title="1 Java创建对象的方法"></a>1 Java创建对象的方法</h3><p>new<br>反射 newInstance()<br>clone()<br>反序列化</p>
@@ -102,6 +45,32 @@
 <p>JDK动态代理：基于Java反射机制实现，必须要实现了接口的业务类才能用这种办法生成代理对象。<br>优势：最小化依赖关系，减少依赖意味着简化开发和维护，JDK 本身的支持，可能比 CGLIB 更加可靠。<br>平滑进行 JDK 版本升级，而字节码类库通常需要进行更新以保证在新版 Java 上能够使用。<br>代码实现简单。</p>
 <p>CGLIB动态代理：基于ASM机制实现，通过生成业务类的子类作为代理类。<br>优势：无需实现接口，达到代理类无侵入<br>只操作我们关心的类，而不必为其他相关类增加工作量。<br>高性能</p>
 <p>应用<br>Spring AOP<br>权限认证<br>日志以及事务管理</p>
+]]></content>
+      <categories>
+        <category>future</category>
+      </categories>
+      <tags>
+        <tag>basic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>11_10_Java</title>
+    <url>/2021/11/10/11-10-Java/</url>
+    <content><![CDATA[<h3 id="1-递归和迭代的区别"><a href="#1-递归和迭代的区别" class="headerlink" title="1 递归和迭代的区别"></a>1 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中, 问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远变近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
+<p>以斐波那契数列为例。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>递归容易产生“栈溢出”问题（stack overflow）<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
+<h3 id="2-Java中String为什么是final"><a href="#2-Java中String为什么是final" class="headerlink" title="2 Java中String为什么是final"></a>2 Java中String为什么是final</h3><p>字符串是常量；它们的值在创建后无法更改。<br>StringBuffer支持可变字符串。<br>因为 String 对象是不可变的，所以它们可以共享。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
+<p>安全性：String 被许多的 Java 类(库)用来当做参数，例如：网络连接地址 URL、文件路径 path、还有反射机制所需要 的 String 参数等, 假若 String 不是固定不变的，将会引起各种安全隐患；<br>允许 String 对象缓存 HashCode：Java 中 String 对象的哈希码被频繁地使用,比如在 HashMap 等容器中。字符串不变性保证了 hash 码的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是 Java 堆内存中一个特殊的存储区域, 当创建一个 String 对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
+<h3 id="3-String-str2-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str2-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str2 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str2 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">        String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">        String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">        String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">        System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">        System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">        System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">        System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
+<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量； 它们的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。 此类提供与 StringBuffer 兼容的 API，但不保证同步。 此类旨在用作 StringBuffer 的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。 在可能的情况下，建议优先使用此类而不是 StringBuffer，因为在大多数实现下它会更快。StringBuilder 上的主要操作是 append 和 insert 方法，它们被重载以接受任何类型的数据。 每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。 append 方法总是在构建器的末尾添加这些字符； insert 方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。 字符串缓冲区类似于字符串，但可以修改。 在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
 ]]></content>
       <categories>
         <category>future</category>
@@ -185,6 +154,37 @@
       </tags>
   </entry>
   <entry>
+    <title>11_14_Java</title>
+    <url>/2021/11/14/11-14-Java/</url>
+    <content><![CDATA[<h3 id="1-Error和Exception的区别"><a href="#1-Error和Exception的区别" class="headerlink" title="1 Error和Exception的区别"></a>1 Error和Exception的区别</h3><p>Error：一般指与虚拟机相关的问题，如：系统崩溃、虚拟机错误、内存空间不足、栈溢出等。错误导致应用程序中断，仅靠程序本身无法恢复的预防。</p>
+<p>Exception：可分为运行时异常与受检查异常<br>运行时异常：空指针异常、指定的类找不到、数组越界、方法传递参数错误、数据类型转换错误。可以编译通过，一运行就停止了，程序不会自己处理。</p>
+<p>受检查异常：要么用 try … catch… 捕获，要么用 throws 声明抛出，交给父类处理。</p>
+<p>常见的异常类有：NullPointerException、SQLException、IndexOutOfBoundsException、FileNotFoundException、IOException、ClassCastException、IllegalArgumentException。</p>
+<h3 id="2-throw和throws的区别"><a href="#2-throw和throws的区别" class="headerlink" title="2 throw和throws的区别"></a>2 throw和throws的区别</h3><p>throw：在方法体内部，表示抛出异常，由方法体内部的语句处理；throw是具体向外抛出异常的动作，所以它抛出的是一个异常实例。</p>
+<p>throws：在方法声明后面，表示如果抛出异常，由该方法的调用者来进行异常的处理；表示出现异常的可能性，并不一定会发生这种异常。</p>
+<h3 id="3-Java-IO-Stream"><a href="#3-Java-IO-Stream" class="headerlink" title="3 Java IO Stream"></a>3 Java IO Stream</h3><p>功能：输入流、输出流<br>类型：字节流、字符流</p>
+<p>字节流：InputStream/OutputStream是字节流的抽象类，这两个抽象类派生了若干子类，不同的子类分别处理不同的操作。</p>
+<img src="/2021/11/14/11-14-Java/byte.png" class="">
+
+<p>字符流：Reader/Writer是字符流的抽象类，这两个抽象类派生了若干子类，不同的子类分别处理不同的操作。</p>
+<img src="/2021/11/14/11-14-Java/char.png" class="">
+
+<p>字节流与字符流的区别：字节流按8位传输，以字节为单位输入输出数据；字符流按16位传输，以字符为单位输入输出数据。<br>但不管是文件读写还是网络发送接收，信息的最小存储单元都是字节。</p>
+<h3 id="4-BIO-NIO-AIO"><a href="#4-BIO-NIO-AIO" class="headerlink" title="4 BIO NIO AIO"></a>4 BIO NIO AIO</h3><p>BIO：传统的 java.io 包，它是基于流模型实现的，交互的方式是<strong>同步、阻塞</strong>。模式简单使用方便，但并发处理能力低。数据的读取写入必须阻塞在某个线程内等待其完成。在活动连接数不是特别高（小于单机1000）的情况下，这种模型是比较不错的，可以让每一个连接专注于自己的 I/O 并且编程模型简单，也不用过多考虑系统的过载、限流等问题。线程池本身就是一个天然的漏斗，可以缓冲一些系统处理不了的连接或请求。但是，当面对十万甚至百万级连接的时候，传统的 BIO 模型是无能为力的。</p>
+<p>NIO：New IO（同步非阻塞 IO），是传统 IO 的升级，客户端和服务器端通过 Channel（通道）通讯，实现了多路复用。NIO 是一种<strong>同步非阻塞</strong>的 I/O 模型，在 Java1.4 中引入，对应为 java.nio 包，提供了Channel ,Selector，Buffer 等抽象。NIO 中的 N 可以理解为 Non-blocking，不单纯是 New。它支持面向缓冲的，基于通道的 I/O 操作方法。NIO 提供了与传统BIO模型中的 Socket和ServerSocket相对应的 SocketChannel和ServerSocketChannel 两种不同的套接字通道实现，两种通道都支持阻塞和非阻塞两种模式。阻塞模式使用就像传统中的支持一样，比较简单，但是性能和可靠性都不好；非阻塞模式正好与之相反。对于低负载、低并发的应用程序，可以使用同步阻塞 I/O 来提升开发速率和更好的维护性；对于高负载、高并发的（网络）应用，应使用NIO的非阻塞模式来开发。</p>
+<p>AIO：Asynchronous IO 是 NIO 的升级，也叫NIO2，jdk1.7引入，实现了<strong>异步非堵塞</strong>IO ，异步 IO 的操作基于事件和回调机制。也就是应用操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。AIO 是异步 IO 的缩写，虽然 NIO 在网络操作中，提供了非阻塞的用法，但是 NIO 的 IO 行为还是同步的。对于 NIO 来说，我们的业务线程是在 IO 操作准备好时，得到通知，接着就由这个线程自行进行 IO 操作，IO操作本身是同步的。</p>
+<p>总结：IO面向流，NIO面向缓冲区；<br>IO的各种流是阻塞的，NIO是非阻塞模式；<br>同步：发送一个请求，等待返回，再发送下一个请求。同步可以避免出现死锁，脏读的发生；<br>异步：发送一个请求，不等待返回，随时可以再发送下一个请求，可以提高效率，保证并发。</p>
+<p>阻塞/非阻塞：等待I/O完成的方式，阻塞要求用户程序停止执行，直到IO完成，而非阻塞在IO完成之前还可以继续执行。</p>
+<p>同步/异步：获知IO完成的方式，同步需要时刻关心IO是否完成，异步无需主动关心，在IO完成时它会收到通知。</p>
+]]></content>
+      <categories>
+        <category>future</category>
+      </categories>
+      <tags>
+        <tag>basic</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>11_19_Java</title>
     <url>/2021/11/19/11-19-Java/</url>
     <content><![CDATA[<h3 id="1-HashMap的底层实现原理？"><a href="#1-HashMap的底层实现原理？" class="headerlink" title="1 HashMap的底层实现原理？"></a>1 HashMap的底层实现原理？</h3><p>JDK1.7：entry数组+链表<br>JDK1.8：node数组+链表+红黑树。当链表上的元素个数超过8个并且数组长度&gt;=64时自动转化成红黑树，节点变成树节点，以提高搜索效率和插入效率至 O(logN)。<br>Entry 和 Node 都包含 key、value、hash、next 属性。</p>
@@ -208,48 +208,6 @@
 <h3 id="4-HashMap的size为什么必须是2的整数次幂"><a href="#4-HashMap的size为什么必须是2的整数次幂" class="headerlink" title="4 HashMap的size为什么必须是2的整数次幂"></a>4 HashMap的size为什么必须是2的整数次幂</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">static final int hash(Object key) &#123;</span><br><span class="line">        int h;</span><br><span class="line">        return (key &#x3D;&#x3D; null) ? 0 : (h &#x3D; key.hashCode()) ^ (h &gt;&gt;&gt; 16);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">int n;</span><br><span class="line">        if (tab &#x3D;&#x3D; null || (n &#x3D; tab.length) &#x3D;&#x3D; 0)</span><br><span class="line">            return;</span><br><span class="line">        int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
 <p>1、能够保证 HashMap 的底层数组长度为 2 的 n 次幂。当 length 为 2 的 n 次幂时，h &amp; (length - 1)就相当于对 length 取模，而且速度比直接取模快得多，这是 HashMap 在速度上的一个优化。而且每次扩容时都是翻倍。<br>2、如果 length 为 2 的次幂，则 length - 1 转化为二进制必定是 11111……的形式，在与 h 的二进制进行&amp;操作时效率会非常的快，而且不浪费空间。这些都是1的二进制码跟hash值进行‘&amp;’操作后，就可以确保每一个位置发生hash冲突的概率是相同的。<br>如果 length 不是 2 的次幂，比如：length 为 15，则 length - 1<br>为 14，对应的二进制为 1110，在与 h 进行&amp;操作，最后一位都为0 ，而 0001，0011，0101，1001，1011，0111，1101 这几个位置永远都不能存放元素了，空间浪费相当大，更糟的是这种情况中，数组可以使用的位置比数组长度小了很多，这意味着进一步增加了碰撞的概率，减慢了查询的效率，这样就会造成空间的浪费。</p>
 <p>HashMap 的 get 函数的返回值不能判断一个 key 是否包含在 map 中，因为 get 返回 null 有可能是不包含该key，也有可能该 key 对应的 value 为 null。因为 HashMap 中允许 key 为 null，也允许 value 为 null。</p>
-]]></content>
-      <categories>
-        <category>future</category>
-      </categories>
-      <tags>
-        <tag>basic</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>11_22_Java</title>
-    <url>/2021/11/22/11-22-Java/</url>
-    <content><![CDATA[<h3 id="1-ThreadLocal"><a href="#1-ThreadLocal" class="headerlink" title="1 ThreadLocal"></a>1 ThreadLocal</h3><p>此类提供thread-local变量。<br>ThreadLocal 提供 get 和 set 方法，为每一个使用这个变量的线程都保存一份独立初始化的变量副本。只要线程处于活动状态并且可以访问 ThreadLocal 实例，每个线程都持有对其线程局部变量副本的隐式引用；线程消失后，它的所有线程本地实例副本都将进行垃圾回收。<br>ThreadLocal保证了各个线程的数据互不干扰。<br>每个线程中都有一个ThreadLocalMap数据结构，当执行set方法时，其值是保存在当前线程的threadLocals变量中，当执行set方法中，是从当前线程的threadLocals变量获取。<br>ThreadLocalMap 是一种定制的哈希映射，仅适用于维护线程本地值。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">返回thread-local变量的当前线程副本中的值。</span><br><span class="line">如果该变量对于当前线程没有值，则首先将其初始化为调用 initialValue 方法返回的值。</span><br><span class="line">public T get() &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null) &#123;</span><br><span class="line">            ThreadLocalMap.Entry e &#x3D; map.getEntry(this);</span><br><span class="line">            if (e !&#x3D; null) &#123;</span><br><span class="line">                @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">                T result &#x3D; (T)e.value;</span><br><span class="line">                return result;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return setInitialValue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">将thread-local变量的当前线程副本设置为指定值。</span><br><span class="line">public void set(T value) &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null)</span><br><span class="line">            map.set(this, value);</span><br><span class="line">        else</span><br><span class="line">            createMap(t, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">删除thread-local变量的当前线程值。</span><br><span class="line">public void remove() &#123;</span><br><span class="line">         ThreadLocalMap m &#x3D; getMap(Thread.currentThread());</span><br><span class="line">         if (m !&#x3D; null)</span><br><span class="line">             m.remove(this);</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-ThreadLocal使用场景"><a href="#2-ThreadLocal使用场景" class="headerlink" title="2 ThreadLocal使用场景"></a>2 ThreadLocal使用场景</h3><p>Spring实现事务隔离<br>Spring采用Threadlocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。</p>
-<h3 id="3-synchronized"><a href="#3-synchronized" class="headerlink" title="3 synchronized"></a>3 synchronized</h3><p>Synchronized同步方法可以支持使用一种简单的策略来防止线程干扰和内存一致性错误：如果一个对象对多个线程可见，则对该对象变量的所有读取或写入都是通过同步方法完成的。它是一种基本的同步锁。<br>synchronized底层是借助操作系统的Mutex Lock(互斥锁)来实现的线程同步。</p>
-<p>Synchronized的作用就是Java中解决并发问题的一种最常用最简单的方法，它可以确保同一个时刻最多只有一个线程执行同步代码，从而保证多线程环境下并发安全的效果。如果有一段代码被Synchronized所修饰，那么这段代码就会以原子的方式执行，当多个线程在执行这段代码的时候，它们是互斥的，不会相互干扰，不会同时执行。</p>
-<p>Synchronized工作机制就是在多线程环境中使用一把锁，在第一个线程去执行的时候去获取这把锁，一旦获取就独占这把锁直到执行完毕或者在一定条件下释放这把锁，但在这把锁释放之前其他的线程只能阻塞等待。</p>
-<p>JVM 基于进入和退出Monitor对象来实现方法同步 和 代码块同步。</p>
-<p>synchronized同步代码块的实现使用的是 monitorenter 和 monitorexit 指令，其中 monitorenter 指令指向同步代码块的开始位置，monitorexit 指令则指向同步代码块的结束位置。</p>
-<p>当执行 monitorenter 指令时，线程试图获取锁也就是获取 监视器锁（monitor）的持有权。monitor 对象存在于每个 Java 对象的对象头中，synchronized 锁便是通过这种方式获取锁的，也是为什么 Java 中任意对象可以作为锁的原因。当计数器为 0 则可以成功获取，获取后将锁计数器设为 1。相应的在执行 monitorexit 指令后，将锁计数器设为 0，表明锁被释放。如果获取对象锁失败，那当前线程就要阻塞，直到锁被另外一个线程释放为止。</p>
-<p>synchronized 修饰的方法用 ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。</p>
-<h3 id="4-synchronized使用"><a href="#4-synchronized使用" class="headerlink" title="4 synchronized使用"></a>4 synchronized使用</h3><p>修饰实例方法：给当前实例对象加锁，进入同步代码前要获得当前实例对象的锁；</p>
-<p>修饰静态方法：给当前类对象加锁，进入同步代码前要获得当前类对象的锁。访问静态 synchronized 方法占用的锁是当前类的锁，而访问非静态 synchronized方法占用的锁是当前实例对象锁；</p>
-<p>修饰代码块：对给定对象加锁，进入同步代码前要获得给定对象的锁。和 synchronized方法一样，synchronized(this) 代码块也是锁定当前对象的。synchronized 关键字加到 static 静态方法和<br>synchronized(class) 代码块上都是是给 Class 类上锁。synchronized 关键字加到非 static 静态方法上是给实例对象上锁。</p>
-<p>双重校验锁实现单例模式</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    private volatile static SingletonDemo uniqueInstance;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line">    public static SingletonDemo getUniqueInstance() &#123;</span><br><span class="line">        &#x2F;&#x2F; 先判断对象是否已经实例化，没有实例化过才进⼊加锁代码</span><br><span class="line">        if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            &#x2F;&#x2F; 类对象加锁</span><br><span class="line">            synchronized (SingletonDemo.class) &#123;</span><br><span class="line">                if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    uniqueInstance &#x3D; new SingletonDemo();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>代码执行顺序：</p>
-<ol>
-<li>为 uniqueInstance 分配内存空间</li>
-<li>初始化 uniqueInstance</li>
-<li>将 uniqueInstance 指向分配的内存地址<br>但是由于 JVM 具有指令重排的特性，执行顺序有可能变成 1 -&gt; 3 -&gt; 2。指令重排在单线程环境下不会出现问题，但是在多线程环境下会导致一个线程获得还没有初始化的实例。<br>volatile常用于<strong>保持内存可见性</strong>和<strong>防止指令重排序</strong>。</li>
-</ol>
-<h3 id="5-JDK1-6之后synchronized关键字所做的优化"><a href="#5-JDK1-6之后synchronized关键字所做的优化" class="headerlink" title="5 JDK1.6之后synchronized关键字所做的优化"></a>5 JDK1.6之后synchronized关键字所做的优化</h3><p>JDK1.6对锁的实现引入了大量的优化，如自旋锁、适应性自旋锁、锁消除、锁粗化、偏向锁、轻量级锁等技术来减少锁操作的开销。</p>
-<p>优化后synchronized锁的分类：无锁状态、偏向锁状态、轻量级锁状态、重量级锁状态。锁可以升级，但是不能降级，即无锁状态 –&gt; 偏向锁状态 –&gt; 轻量级锁状态 –&gt; 重量级锁状态。这种策略是为了提高获得锁和释放锁的效率。</p>
-<p><strong>偏向锁</strong><br>偏向于第一个获得它的线程，如果在接下来的执行中，该锁没有被其他线程获取，那么持有偏向锁的线程就不需要进行同步。偏向锁是针对于一个线程而言的。<br>但是对于锁竞争比较激烈的场景，偏向锁就失效了，因为极有可能每次申请锁的线程都是不相同的，因此这种场景下不应该使用偏向锁。需要注意的是，偏向锁失败后，并不会立即膨胀为重量级锁，而是先升级为轻量级锁。</p>
-<p><strong>轻量级锁</strong><br>当出现有两个线程来竞争锁的话，那么偏向锁就失效了，此时锁就会膨胀，升级为轻量级锁。<br>在没有多线程竞争的前提下，减少传统的重量级锁使用操作系统互斥量产生的性能消耗，因为使用轻量级锁时，不需要申请互斥量。另外，轻量级锁的加锁和解锁都用到了<br>CAS 操作。<br>“对于绝大部分锁，在整个同步周期内都是不存在竞争的”。如果没有竞争，轻量级锁使用 CAS 操作避免了使用互斥操作的开销。但如果存在锁竞争，除了互斥量开销<br>外，还会额外发生 CAS 操作，因此在有锁竞争的情况下，轻量级锁比传统的重量级锁更慢！如果锁竞争激烈，那么轻量级将很快膨胀为重量级锁！</p>
-<p><strong>自旋锁</strong><br>轻量级锁失败后，虚拟机为了避免线程真实地在操作系统层面挂起，还会进行一项称为自旋锁的优化手段。<br>一般线程持有锁的时间都不是太久，所以仅仅为了这一点时间去挂起线程/恢复线程是得不偿失的。<br>思想：让一个线程在请求一个共享数据的锁时执行忙循环（自旋）一段时间，如果在这段时间内能获得锁，就可以避免进入阻塞状态。<br>自旋等待不能完全替代阻塞，因为它还是要占用处理器时间。如果锁被占用的时间短，那么效果当然就很好了。反之，自旋等待的时间必须要有限度。如果自旋超过了限定次数任然没有获得锁，就应该挂起线程。</p>
-<p><strong>自适应自旋锁</strong><br>自旋的时间不再固定了，而是由前一次在同一个锁上的自旋时间以及锁的拥有者的状态来决定。</p>
-<p><strong>重量级锁</strong><br>阻塞所有等待竞争的线程，防止CPU空转。</p>
-<p><strong>锁消除</strong><br>虚拟机的JIT在运行时如果检测到一些要求同步的代码上不可能发生共享数据竞争，则会去掉这些锁。</p>
-<p><strong>锁粗化</strong><br>减少不必要的紧连在一起的 lock，unlock 操作，将多个连续的锁扩展成一个范围更大的锁。</p>
 ]]></content>
       <categories>
         <category>future</category>
@@ -295,16 +253,46 @@
       </tags>
   </entry>
   <entry>
-    <title>another_again</title>
-    <url>/2021/11/11/another-again/</url>
-    <content><![CDATA[<p>最近一段时间真是太忙了，导师一周开三次会议。选举、打疫苗，开题这些事情充实着我的生活。晚上也没有做噩梦了，心里希望如此。</p>
-<p>昨天晚上又做了一个梦，记忆犹新。梦见了熟悉的人和熟悉的物。cjm，how can I forgot you。马上就要国考考试了，祝国考上岸，工作顺利。best wishes。</p>
+    <title>11_22_Java</title>
+    <url>/2021/11/22/11-22-Java/</url>
+    <content><![CDATA[<h3 id="1-ThreadLocal"><a href="#1-ThreadLocal" class="headerlink" title="1 ThreadLocal"></a>1 ThreadLocal</h3><p>此类提供thread-local变量。<br>ThreadLocal 提供 get 和 set 方法，为每一个使用这个变量的线程都保存一份独立初始化的变量副本。只要线程处于活动状态并且可以访问 ThreadLocal 实例，每个线程都持有对其线程局部变量副本的隐式引用；线程消失后，它的所有线程本地实例副本都将进行垃圾回收。<br>ThreadLocal保证了各个线程的数据互不干扰。<br>每个线程中都有一个ThreadLocalMap数据结构，当执行set方法时，其值是保存在当前线程的threadLocals变量中，当执行set方法时，是从当前线程的threadLocals变量获取。<br>ThreadLocalMap 是一种定制的哈希映射，仅适用于维护线程本地值。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">返回thread-local变量的当前线程副本中的值。</span><br><span class="line">如果该变量对于当前线程没有值，则首先将其初始化为调用 initialValue 方法返回的值。</span><br><span class="line">public T get() &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null) &#123;</span><br><span class="line">            ThreadLocalMap.Entry e &#x3D; map.getEntry(this);</span><br><span class="line">            if (e !&#x3D; null) &#123;</span><br><span class="line">                @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">                T result &#x3D; (T)e.value;</span><br><span class="line">                return result;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return setInitialValue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">将thread-local变量的当前线程副本设置为指定值。</span><br><span class="line">public void set(T value) &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null)</span><br><span class="line">            map.set(this, value);</span><br><span class="line">        else</span><br><span class="line">            createMap(t, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">删除thread-local变量的当前线程值。</span><br><span class="line">public void remove() &#123;</span><br><span class="line">         ThreadLocalMap m &#x3D; getMap(Thread.currentThread());</span><br><span class="line">         if (m !&#x3D; null)</span><br><span class="line">             m.remove(this);</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-ThreadLocal使用场景"><a href="#2-ThreadLocal使用场景" class="headerlink" title="2 ThreadLocal使用场景"></a>2 ThreadLocal使用场景</h3><p>Spring实现事务隔离<br>Spring采用Threadlocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。</p>
+<h3 id="3-synchronized"><a href="#3-synchronized" class="headerlink" title="3 synchronized"></a>3 synchronized</h3><p>Synchronized同步方法可以支持使用一种简单的策略来防止线程干扰和内存一致性错误：如果一个对象对多个线程可见，则对该对象变量的所有读取或写入都是通过同步方法完成的。它是一种基本的同步锁。<br>synchronized底层是借助操作系统的Mutex Lock(互斥锁)来实现的线程同步。</p>
+<p>Synchronized的作用就是解决Java并发问题的一种最常用最简单的方法，它可以确保同一个时刻最多只有一个线程执行同步代码，从而保证多线程环境下并发安全的效果。如果有一段代码被Synchronized所修饰，那么这段代码就会以原子的方式执行，当多个线程在执行这段代码的时候，它们是互斥的，不会相互干扰，不会同时执行。</p>
+<p>Synchronized工作机制就是在多线程环境中使用一把锁，在第一个线程去执行的时候去获取这把锁，一旦获取就独占这把锁直到执行完毕或者在一定条件下释放这把锁，但在这把锁释放之前其他的线程只能阻塞等待。</p>
+<p>JVM 基于进入和退出Monitor对象来实现方法同步 和 代码块同步。</p>
+<p>synchronized同步代码块的实现使用的是 monitorenter 和 monitorexit 指令，其中 monitorenter 指令指向同步代码块的开始位置，monitorexit 指令则指向同步代码块的结束位置。</p>
+<p>当执行 monitorenter 指令时，线程试图获取锁也就是获取 监视器锁（monitor）的持有权。monitor 对象存在于每个 Java 对象的对象头中，synchronized 锁便是通过这种方式获取锁的，也是为什么 Java 中任意对象可以作为锁的原因。当计数器为 0 则可以成功获取，获取后将锁计数器设为 1。相应的在执行 monitorexit 指令后，将锁计数器设为 0，表明锁被释放。如果获取对象锁失败，那当前线程就要阻塞，直到锁被另外一个线程释放为止。</p>
+<p>synchronized 修饰的方法用 ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。</p>
+<h3 id="4-synchronized使用"><a href="#4-synchronized使用" class="headerlink" title="4 synchronized使用"></a>4 synchronized使用</h3><p>修饰实例方法：给当前实例对象加锁，进入同步代码前要获得当前实例对象的锁；</p>
+<p>修饰静态方法：给当前类对象加锁，进入同步代码前要获得当前类对象的锁。访问静态 synchronized 方法占用的锁是当前类的锁，而访问非静态 synchronized方法占用的锁是当前实例对象锁；</p>
+<p>修饰代码块：对给定对象加锁，进入同步代码前要获得给定对象的锁。和 synchronized方法一样，synchronized(this) 代码块也是锁定当前对象的。synchronized 关键字加到 static 静态方法和<br>synchronized(class) 代码块上都是是给 Class 类上锁。synchronized 关键字加到非 static 静态方法上是给实例对象上锁。</p>
+<p>双重校验锁实现单例模式</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    private volatile static SingletonDemo uniqueInstance;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line">    public static SingletonDemo getUniqueInstance() &#123;</span><br><span class="line">        &#x2F;&#x2F; 先判断对象是否已经实例化，没有实例化过才进⼊加锁代码</span><br><span class="line">        if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            &#x2F;&#x2F; 类对象加锁</span><br><span class="line">            synchronized (SingletonDemo.class) &#123;</span><br><span class="line">                if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    uniqueInstance &#x3D; new SingletonDemo();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码执行顺序：</p>
+<ol>
+<li>为 uniqueInstance 分配内存空间</li>
+<li>初始化 uniqueInstance</li>
+<li>将 uniqueInstance 指向分配的内存地址</li>
+</ol>
+<p>但是由于 JVM 具有指令重排的特性，执行顺序有可能变成 1 -&gt; 3 -&gt; 2。指令重排在单线程环境下不会出现问题，但是在多线程环境下会导致一个线程获得还没有初始化的实例。<br>volatile常用于<strong>保持内存可见性</strong>和<strong>防止指令重排序</strong>。</p>
+<h3 id="5-JDK1-6之后synchronized关键字所做的优化"><a href="#5-JDK1-6之后synchronized关键字所做的优化" class="headerlink" title="5 JDK1.6之后synchronized关键字所做的优化"></a>5 JDK1.6之后synchronized关键字所做的优化</h3><p>JDK1.6对锁的实现引入了大量的优化，如自旋锁、适应性自旋锁、锁消除、锁粗化、偏向锁、轻量级锁等技术来减少锁操作的开销。</p>
+<p>优化后synchronized锁的分类：无锁状态、偏向锁状态、轻量级锁状态、重量级锁状态。锁可以升级，但是不能降级，即无锁状态 –&gt; 偏向锁状态 –&gt; 轻量级锁状态 –&gt; 重量级锁状态。这种策略是为了提高获得锁和释放锁的效率。</p>
+<p><strong>偏向锁</strong><br>偏向于第一个获得它的线程，如果在接下来的执行中，该锁没有被其他线程获取，那么持有偏向锁的线程就不需要进行同步。偏向锁是针对于一个线程而言的。<br>但是对于锁竞争比较激烈的场景，偏向锁就失效了，因为极有可能每次申请锁的线程都是不相同的，因此这种场景下不应该使用偏向锁。需要注意的是，偏向锁失败后，并不会立即膨胀为重量级锁，而是先升级为轻量级锁。</p>
+<p><strong>轻量级锁</strong><br>当出现有两个线程来竞争锁的话，那么偏向锁就失效了，此时锁就会膨胀，升级为轻量级锁。<br>在没有多线程竞争的前提下，减少传统的重量级锁使用操作系统互斥量产生的性能消耗，因为使用轻量级锁时，不需要申请互斥量。另外，轻量级锁的加锁和解锁都用到了CAS操作。<br>“对于绝大部分锁，在整个同步周期内都是不存在竞争的”。如果没有竞争，轻量级锁使用 CAS 操作避免了使用互斥操作的开销。但如果存在锁竞争，除了互斥量开销外，还会额外发生 CAS 操作，因此在有锁竞争的情况下，轻量级锁比传统的重量级锁更慢！如果锁竞争激烈，那么轻量级将很快膨胀为重量级锁！</p>
+<p><strong>自旋锁</strong><br>轻量级锁失败后，虚拟机为了避免线程真实地在操作系统层面挂起，还会进行一项称为自旋锁的优化手段。<br>一般线程持有锁的时间都不是太久，所以仅仅为了这一点时间去挂起线程/恢复线程是得不偿失的。<br>思想：让一个线程在请求一个共享数据的锁时执行忙循环（自旋）一段时间，如果在这段时间内能获得锁，就可以避免进入阻塞状态。<br>自旋等待不能完全替代阻塞，因为它还是要占用处理器时间。如果锁被占用的时间短，那么效果当然就很好了。反之，自旋等待的时间必须要有限度。如果自旋超过了限定次数任然没有获得锁，就应该挂起线程。</p>
+<p><strong>自适应自旋锁</strong><br>自旋的时间不再固定了，而是由前一次在同一个锁上的自旋时间以及锁的拥有者的状态来决定。</p>
+<p><strong>重量级锁</strong><br>阻塞所有等待竞争的线程，防止CPU空转。</p>
+<p><strong>锁消除</strong><br>虚拟机的JIT在运行时如果检测到一些要求同步的代码上不可能发生共享数据竞争，则会去掉这些锁。</p>
+<p><strong>锁粗化</strong><br>减少不必要的紧连在一起的 lock，unlock 操作，将多个连续的锁扩展成一个范围更大的锁。</p>
 ]]></content>
       <categories>
-        <category>失活</category>
+        <category>future</category>
       </categories>
       <tags>
-        <tag>日志</tag>
+        <tag>basic</tag>
       </tags>
   </entry>
   <entry>
@@ -330,6 +318,19 @@
       </categories>
       <tags>
         <tag>basic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>another_again</title>
+    <url>/2021/11/11/another-again/</url>
+    <content><![CDATA[<p>最近一段时间真是太忙了，导师一周开三次会议。选举、打疫苗，开题这些事情充实着我的生活。晚上也没有做噩梦了，心里希望如此。</p>
+<p>昨天晚上又做了一个梦，记忆犹新。梦见了熟悉的人和熟悉的物。cjm，how can I forgot you。马上就要国考考试了，祝国考上岸，工作顺利。best wishes。</p>
+]]></content>
+      <categories>
+        <category>失活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -368,6 +369,51 @@
       </categories>
       <tags>
         <tag>二分查找</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Three ways to create Java Multithread</title>
+    <url>/2020/09/23/concurrency/</url>
+    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
+<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>多线程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>copy constructor</title>
+    <url>/2021/04/04/copy/</url>
+    <content><![CDATA[<h3 id="浅拷贝简介"><a href="#浅拷贝简介" class="headerlink" title="浅拷贝简介"></a>浅拷贝简介</h3><p>浅拷贝会创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。如果属性是基本数据类型，拷贝的就是值；如果属性是引用数据类型，拷贝的就是内存地址。<br>基本数据类型是值传递，所以修改一个对象的值不会影响另一个对象。<br>引用数据类型是引用传递，浅拷贝只是把内存地址赋值给了新对象，它们指向同一内存空间。所以改变其中一个也会影响另一个。</p>
+<h3 id="浅拷贝实现"><a href="#浅拷贝实现" class="headerlink" title="浅拷贝实现"></a>浅拷贝实现</h3><p>类需要实现Cloneable接口，并重写clone()方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Subject &#123;</span><br><span class="line">    private String name;</span><br><span class="line"></span><br><span class="line">    public Subject(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;[Shallow Copy: &quot; + this.hashCode() + &quot;,name: &quot; + name + &quot;]&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Student implements Cloneable &#123;</span><br><span class="line">    &#x2F;&#x2F;引用数据类型</span><br><span class="line">    private Subject subject;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;基本数据类型</span><br><span class="line">    private String name;</span><br><span class="line">    private int age;</span><br><span class="line"></span><br><span class="line">    public Subject getSubject() &#123;</span><br><span class="line">        return subject;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setSubject(Subject subject) &#123;</span><br><span class="line">        this.subject &#x3D; subject;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getAge() &#123;</span><br><span class="line">        return age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setAge(int age) &#123;</span><br><span class="line">        this.age &#x3D; age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 重写clone()方法</span><br><span class="line">     * @return Object</span><br><span class="line">     *&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() &#123;</span><br><span class="line">        &#x2F;&#x2F;浅拷贝</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;直接调用父类的clone()方法</span><br><span class="line">            return super.clone();</span><br><span class="line">        &#125; catch (CloneNotSupportedException e) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;[Student: &quot; + this.hashCode() + &quot;,subject:&quot; + subject + &quot;,name:&quot; + name + &quot;,age:&quot; + age + &quot;]&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ShallowCopy &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Subject subject1 &#x3D; new Subject(&quot;math&quot;);</span><br><span class="line"></span><br><span class="line">        Student student1 &#x3D; new Student();</span><br><span class="line">        student1.setSubject(subject1);</span><br><span class="line">        student1.setName(&quot;hj&quot;);</span><br><span class="line">        student1.setAge(22);</span><br><span class="line">        System.out.println(student1.toString());</span><br><span class="line"></span><br><span class="line">        Student student2 &#x3D; (Student) student1.clone();</span><br><span class="line">        System.out.println(student2.toString());</span><br><span class="line"></span><br><span class="line">        student2.setName(&quot;cjm&quot;);</span><br><span class="line">        student2.setAge(23);</span><br><span class="line">        System.out.println(student1.toString());</span><br><span class="line">        System.out.println(student2.toString());</span><br><span class="line"></span><br><span class="line">        Subject subject2 &#x3D; student2.getSubject();</span><br><span class="line">        subject2.setName(&quot;hyh&quot;);</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;student1: &quot; + student1.toString());</span><br><span class="line">        System.out.println(&quot;student2: &quot; + student2.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[Student: 1555009629,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 149928006,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 1555009629,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 149928006,subject:[Shallow Copy: 41359092,name: math],name:cjm,age:23]</span><br><span class="line">student1: [Student: 1555009629,subject:[Shallow Copy: 41359092,name: hyh],name:hj,age:22]</span><br><span class="line">student2: [Student: 149928006,subject:[Shallow Copy: 41359092,name: hyh],name:cjm,age:23]</span><br></pre></td></tr></table></figure>
+<p>结果中可以看出，通过student1.clone()拷贝对象后得到的student2和student1是两个不同的对象。student1和student2的基本数据类型修改互不影响，而引用数据类型subject的修改则受影响。</p>
+<h3 id="深拷贝简介"><a href="#深拷贝简介" class="headerlink" title="深拷贝简介"></a>深拷贝简介</h3><p>深拷贝在拷贝引用数据类型成员变量时，为引用数据类型的成员变量另开辟一个独立的内存空间，实现真正内容上的拷贝。<br>对于引用数据类型，比如数组或者类对象。深拷贝会新建一个对象空间，然后拷贝里面的内容，所以它们指向了不同的内存空间。改变其中一个，不会影响另一个。<br>对于有多层对象的，每个对象都需要实现Cloneable并重写clone()方法，进而实现对象的串行层层拷贝。</p>
+<h3 id="深拷贝实现"><a href="#深拷贝实现" class="headerlink" title="深拷贝实现"></a>深拷贝实现</h3><p>Student的引用数据类型成员变量Subject需要实现Cloneable接口并重写clone()方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Subject implements Cloneable &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Student implements Cloneable &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() &#123;</span><br><span class="line">        &#x2F;&#x2F;深拷贝</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;调用父类的clone()方法</span><br><span class="line">            Student student &#x3D; (Student) super.clone();</span><br><span class="line">            student.subject &#x3D; (Subject) subject.clone();</span><br><span class="line">            return student;</span><br><span class="line">        &#125; catch (CloneNotSupportedException e) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试结果-1"><a href="#测试结果-1" class="headerlink" title="测试结果"></a>测试结果</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">student1: [Student: 1555009629,subject:[Subject: 41359092,name: math],name:hj,age:22]</span><br><span class="line">student2: [Student: 149928006,subject:[Subject: 713338599,name: hyh],name:cjm,age:23]</span><br></pre></td></tr></table></figure>
+<p>结果中可以看出，深拷贝不管是修改基本数据类型还是引用数据类型成员变量时都不会相互影响。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>深浅拷贝</tag>
       </tags>
   </entry>
   <entry>
@@ -430,48 +476,19 @@
       </tags>
   </entry>
   <entry>
-    <title>Three ways to create Java Multithread</title>
-    <url>/2020/09/23/concurrency/</url>
-    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
-<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    <title>diffchain</title>
+    <url>/2020/11/16/difftimechain/</url>
+    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
 
-<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
-        <category>Java</category>
+        <category>数据结构</category>
       </categories>
       <tags>
-        <tag>多线程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>copy constructor</title>
-    <url>/2021/04/04/copy/</url>
-    <content><![CDATA[<h3 id="浅拷贝简介"><a href="#浅拷贝简介" class="headerlink" title="浅拷贝简介"></a>浅拷贝简介</h3><p>浅拷贝会创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。如果属性是基本数据类型，拷贝的就是值；如果属性是引用数据类型，拷贝的就是内存地址。<br>基本数据类型是值传递，所以修改一个对象的值不会影响另一个对象。<br>引用数据类型是引用传递，浅拷贝只是把内存地址赋值给了新对象，它们指向同一内存空间。所以改变其中一个也会影响另一个。</p>
-<h3 id="浅拷贝实现"><a href="#浅拷贝实现" class="headerlink" title="浅拷贝实现"></a>浅拷贝实现</h3><p>类需要实现Cloneable接口，并重写clone()方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Subject &#123;</span><br><span class="line">    private String name;</span><br><span class="line"></span><br><span class="line">    public Subject(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;[Shallow Copy: &quot; + this.hashCode() + &quot;,name: &quot; + name + &quot;]&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Student implements Cloneable &#123;</span><br><span class="line">    &#x2F;&#x2F;引用数据类型</span><br><span class="line">    private Subject subject;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;基本数据类型</span><br><span class="line">    private String name;</span><br><span class="line">    private int age;</span><br><span class="line"></span><br><span class="line">    public Subject getSubject() &#123;</span><br><span class="line">        return subject;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setSubject(Subject subject) &#123;</span><br><span class="line">        this.subject &#x3D; subject;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name) &#123;</span><br><span class="line">        this.name &#x3D; name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int getAge() &#123;</span><br><span class="line">        return age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setAge(int age) &#123;</span><br><span class="line">        this.age &#x3D; age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;**</span><br><span class="line">     * 重写clone()方法</span><br><span class="line">     * @return Object</span><br><span class="line">     *&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() &#123;</span><br><span class="line">        &#x2F;&#x2F;浅拷贝</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;直接调用父类的clone()方法</span><br><span class="line">            return super.clone();</span><br><span class="line">        &#125; catch (CloneNotSupportedException e) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString() &#123;</span><br><span class="line">        return &quot;[Student: &quot; + this.hashCode() + &quot;,subject:&quot; + subject + &quot;,name:&quot; + name + &quot;,age:&quot; + age + &quot;]&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class ShallowCopy &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        Subject subject1 &#x3D; new Subject(&quot;math&quot;);</span><br><span class="line"></span><br><span class="line">        Student student1 &#x3D; new Student();</span><br><span class="line">        student1.setSubject(subject1);</span><br><span class="line">        student1.setName(&quot;hj&quot;);</span><br><span class="line">        student1.setAge(22);</span><br><span class="line">        System.out.println(student1.toString());</span><br><span class="line"></span><br><span class="line">        Student student2 &#x3D; (Student) student1.clone();</span><br><span class="line">        System.out.println(student2.toString());</span><br><span class="line"></span><br><span class="line">        student2.setName(&quot;cjm&quot;);</span><br><span class="line">        student2.setAge(23);</span><br><span class="line">        System.out.println(student1.toString());</span><br><span class="line">        System.out.println(student2.toString());</span><br><span class="line"></span><br><span class="line">        Subject subject2 &#x3D; student2.getSubject();</span><br><span class="line">        subject2.setName(&quot;hyh&quot;);</span><br><span class="line"></span><br><span class="line">        System.out.println(&quot;student1: &quot; + student1.toString());</span><br><span class="line">        System.out.println(&quot;student2: &quot; + student2.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[Student: 1555009629,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 149928006,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 1555009629,subject:[Shallow Copy: 41359092,name: math],name:hj,age:22]</span><br><span class="line">[Student: 149928006,subject:[Shallow Copy: 41359092,name: math],name:cjm,age:23]</span><br><span class="line">student1: [Student: 1555009629,subject:[Shallow Copy: 41359092,name: hyh],name:hj,age:22]</span><br><span class="line">student2: [Student: 149928006,subject:[Shallow Copy: 41359092,name: hyh],name:cjm,age:23]</span><br></pre></td></tr></table></figure>
-<p>结果中可以看出，通过student1.clone()拷贝对象后得到的student2和student1是两个不同的对象。student1和student2的基本数据类型修改互不影响，而引用数据类型subject的修改则受影响。</p>
-<h3 id="深拷贝简介"><a href="#深拷贝简介" class="headerlink" title="深拷贝简介"></a>深拷贝简介</h3><p>深拷贝在拷贝引用数据类型成员变量时，为引用数据类型的成员变量另开辟一个独立的内存空间，实现真正内容上的拷贝。<br>对于引用数据类型，比如数组或者类对象。深拷贝会新建一个对象空间，然后拷贝里面的内容，所以它们指向了不同的内存空间。改变其中一个，不会影响另一个。<br>对于有多层对象的，每个对象都需要实现Cloneable并重写clone()方法，进而实现对象的串行层层拷贝。</p>
-<h3 id="深拷贝实现"><a href="#深拷贝实现" class="headerlink" title="深拷贝实现"></a>深拷贝实现</h3><p>Student的引用数据类型成员变量Subject需要实现Cloneable接口并重写clone()方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Subject implements Cloneable &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() throws CloneNotSupportedException &#123;</span><br><span class="line">        return super.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class Student implements Cloneable &#123;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected Object clone() &#123;</span><br><span class="line">        &#x2F;&#x2F;深拷贝</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;调用父类的clone()方法</span><br><span class="line">            Student student &#x3D; (Student) super.clone();</span><br><span class="line">            student.subject &#x3D; (Subject) subject.clone();</span><br><span class="line">            return student;</span><br><span class="line">        &#125; catch (CloneNotSupportedException e) &#123;</span><br><span class="line">            return null;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="测试结果-1"><a href="#测试结果-1" class="headerlink" title="测试结果"></a>测试结果</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">student1: [Student: 1555009629,subject:[Subject: 41359092,name: math],name:hj,age:22]</span><br><span class="line">student2: [Student: 149928006,subject:[Subject: 713338599,name: hyh],name:cjm,age:23]</span><br></pre></td></tr></table></figure>
-<p>结果中可以看出，深拷贝不管是修改基本数据类型还是引用数据类型成员变量时都不会相互影响。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>深浅拷贝</tag>
+        <tag>差分时间链</tag>
       </tags>
   </entry>
   <entry>
@@ -532,22 +549,6 @@
       </tags>
   </entry>
   <entry>
-    <title>diffchain</title>
-    <url>/2020/11/16/difftimechain/</url>
-    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
-
-]]></content>
-      <categories>
-        <category>数据结构</category>
-      </categories>
-      <tags>
-        <tag>差分时间链</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>evening</title>
     <url>/2021/08/25/evening/</url>
     <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
@@ -561,28 +562,9 @@
       </tags>
   </entry>
   <entry>
-    <title>human</title>
-    <url>/2021/10/25/human/</url>
-    <content><![CDATA[<p><strong>人性经的起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
-<p>农历九月二十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hurt_cjm</title>
-    <url>/2021/10/20/hurt-cjm/</url>
-    <content><![CDATA[<p>今天是十月二十日，北京的最低温度已经降到了0度，常温在12度上下。这个季节本应是秋高气爽，结果却是凛冽寒风。就像我的心情一样，不知为何今天极度难受，心里总是空落落的，就像一个多年好友突然离你而去。</p>
-<p>前几天知道了一个网红在一些网友的怂恿下喝农药自杀了，人心不足蛇吞象啊！人性究竟是怎样的，一个人能否禁得起考验，在爱情、友情、亲情面前，对于自己问题，自己却没有百分之百的勇气说yes！也不知道自己到底怎么了！就像迪迦奥特曼里面的台词一样。</p>
-<p><strong>我感觉我们正失去一些美好的东西，善良温柔体贴，这些属于我们人类美好的本质，好像正慢慢淡化！</strong><br><strong>其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了</strong><br><strong>人类的欲望，比奇结拉的根还要深</strong><br><strong>即使艾博隆细胞已经完全消失，可是人类心理的黑暗面世不会消失的</strong><br>但尽管这样，<strong>人们之所以敬仰你，是因为你拥有每一个人都拥有的东西，勇气与爱的力量</strong>。是的，每个人心里都有黑暗面，但是也有光明的一面！现在，我已经能够相信了，只要努力到最后不轻言放弃，我相信人类，一定能够创造出光明的未来，也能创造出美好的生命。只要珍惜重要的东西，我相信一定能够办到！**珍惜重要的东西、保护重要的东西，平平淡淡的努力活完短短的一声。</p>
-<p>这几天时刻想起考研的那段时光，那段生命里最美好的时光，最难忘也是最无脸面对的时光。2年前的那段日子多么令人难忘、开心、幸福。想到这里，自己哭了，生命里最重要的回忆再也回不去了。那些事与人也要分别了。理工考研的时光多么令人难忘啊！但因为自己内心的错误，却再也回不去了。计算机学院“妓院”的梗清晰的在耳边回放，多么令人难忘与怀念。但“你不再是那个天台上清纯的男生了”，“你到北京后好像变坏了”。来北京读研的这条路不知是好是坏，科研也没啥成果，提不起干劲，生活更是一团糟。这几天，不知为何自己内心这么难受，寝食难安。理工考研的时光是我最难以忘怀的，点点滴滴，历历在目。我会永远记得的！未来，也会用一生去珍惜与弥补的。</p>
-<p>年少轻狂的岁月，沉淀下来的是那些再也回不到的过去。而总让人感叹的，<strong>则是未曾珍惜而失去的那些</strong>。但这些，恰恰也是生活让你去体会的。因为年少轻狂的岁月，一生也只有一次。当你紧握双手，里面什么也没有；当你打开双手，世界就在你手中。</p>
-<p>所谓成长，不过是用时间慢慢擦亮你的眼睛。少时看重的，年长后却视若鸿毛；少时看轻的，年长后却视若泰山。成长之路，亦是渐渐放下执念，内心归于平静的旅程，也许，我们永远都不会知道自己能走到何方，遇见何人，最后会变成什么样的人。但请一定要记住，能让自己登高的，永远不会是别人的肩膀。人生的道路刚刚启程，<strong>懂得珍惜、保护、敢于承担责任，顺顺利利的活完短短的一生</strong>。</p>
-<p>农历九月十五</p>
+    <title>dream</title>
+    <url>/2021/11/23/dream/</url>
+    <content><![CDATA[<p>昨天晚上又做了个奇怪的梦，已经好几天没有梦见过了。梦里一切是那么熟悉却又感到陌生。<br>早上起来脑海里还记忆犹新，仿佛就是前一刻，但又觉得已过数年。</p>
 ]]></content>
       <categories>
         <category>生活</category>
@@ -614,11 +596,15 @@
       </tags>
   </entry>
   <entry>
-    <title>spring</title>
-    <url>/2021/03/24/hurt/</url>
-    <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
-<pre><code>        你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</code></pre>
-<p>辛丑牛年农历二月十二</p>
+    <title>hurt_cjm</title>
+    <url>/2021/10/20/hurt-cjm/</url>
+    <content><![CDATA[<p>今天是十月二十日，北京的最低温度已经降到了0度，常温在12度上下。这个季节本应是秋高气爽，结果却是凛冽寒风。就像我的心情一样，不知为何今天极度难受，心里总是空落落的，就像一个多年好友突然离你而去。</p>
+<p>前几天知道了一个网红在一些网友的怂恿下喝农药自杀了，人心不足蛇吞象啊！人性究竟是怎样的，一个人能否禁得起考验，在爱情、友情、亲情面前，对于自己问题，自己却没有百分之百的勇气说yes！也不知道自己到底怎么了！就像迪迦奥特曼里面的台词一样。</p>
+<p><strong>我感觉我们正失去一些美好的东西，善良温柔体贴，这些属于我们人类美好的本质，好像正慢慢淡化！</strong><br><strong>其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了</strong><br><strong>人类的欲望，比奇结拉的根还要深</strong><br><strong>即使艾博隆细胞已经完全消失，可是人类心理的黑暗面世不会消失的</strong><br>但尽管这样，<strong>人们之所以敬仰你，是因为你拥有每一个人都拥有的东西，勇气与爱的力量</strong>。是的，每个人心里都有黑暗面，但是也有光明的一面！现在，我已经能够相信了，只要努力到最后不轻言放弃，我相信人类，一定能够创造出光明的未来，也能创造出美好的生命。只要珍惜重要的东西，我相信一定能够办到！**珍惜重要的东西、保护重要的东西，平平淡淡的努力活完短短的一声。</p>
+<p>这几天时刻想起考研的那段时光，那段生命里最美好的时光，最难忘也是最无脸面对的时光。2年前的那段日子多么令人难忘、开心、幸福。想到这里，自己哭了，生命里最重要的回忆再也回不去了。那些事与人也要分别了。理工考研的时光多么令人难忘啊！但因为自己内心的错误，却再也回不去了。计算机学院“妓院”的梗清晰的在耳边回放，多么令人难忘与怀念。但“你不再是那个天台上清纯的男生了”，“你到北京后好像变坏了”。来北京读研的这条路不知是好是坏，科研也没啥成果，提不起干劲，生活更是一团糟。这几天，不知为何自己内心这么难受，寝食难安。理工考研的时光是我最难以忘怀的，点点滴滴，历历在目。我会永远记得的！未来，也会用一生去珍惜与弥补的。</p>
+<p>年少轻狂的岁月，沉淀下来的是那些再也回不到的过去。而总让人感叹的，<strong>则是未曾珍惜而失去的那些</strong>。但这些，恰恰也是生活让你去体会的。因为年少轻狂的岁月，一生也只有一次。当你紧握双手，里面什么也没有；当你打开双手，世界就在你手中。</p>
+<p>所谓成长，不过是用时间慢慢擦亮你的眼睛。少时看重的，年长后却视若鸿毛；少时看轻的，年长后却视若泰山。成长之路，亦是渐渐放下执念，内心归于平静的旅程，也许，我们永远都不会知道自己能走到何方，遇见何人，最后会变成什么样的人。但请一定要记住，能让自己登高的，永远不会是别人的肩膀。人生的道路刚刚启程，<strong>懂得珍惜、保护、敢于承担责任，顺顺利利的活完短短的一生</strong>。</p>
+<p>农历九月十五</p>
 ]]></content>
       <categories>
         <category>生活</category>
@@ -653,6 +639,33 @@
       </tags>
   </entry>
   <entry>
+    <title>spring</title>
+    <url>/2021/03/24/hurt/</url>
+    <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
+<pre><code>        你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</code></pre>
+<p>辛丑牛年农历二月十二</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>human</title>
+    <url>/2021/10/25/human/</url>
+    <content><![CDATA[<p><strong>人性经的起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
+<p>农历九月二十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>last_nightmare</title>
     <url>/2021/11/05/last-nightmare/</url>
     <content><![CDATA[<p>今天起了个大早，因为要去投票。选举投票是一项光荣而神圣的事情。</p>
@@ -677,19 +690,6 @@
       </categories>
       <tags>
         <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>markdown</title>
-    <url>/2021/04/15/markdown/</url>
-    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
-<p>格式如下图：</p>
-<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
-      <categories>
-        <category>markdown</category>
-      </categories>
-      <tags>
-        <tag>markdown</tag>
       </tags>
   </entry>
   <entry>
@@ -746,6 +746,47 @@
       </tags>
   </entry>
   <entry>
+    <title>markdown</title>
+    <url>/2021/04/15/markdown/</url>
+    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
+<p>格式如下图：</p>
+<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
+      <categories>
+        <category>markdown</category>
+      </categories>
+      <tags>
+        <tag>markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>md5+salt</title>
+    <url>/2020/10/10/md5-salt/</url>
+    <content><![CDATA[<p>传统的md5算法通过产生一个128位（16字节）的散列值（hash value），用于确保信息的安全性。但随着技术的发展，md5无法防止碰撞（collision）且可以被加以破解。<br>salt的出现可以一定程度上解决这个问题。</p>
+<h3 id="md5-salt实现原理"><a href="#md5-salt实现原理" class="headerlink" title="md5+salt实现原理"></a>md5+salt实现原理</h3><p><strong>注册</strong><br>1、用户提供用户名和密码<br>2、系统提供一个salt，salt+密码进行散列生成一个hash<br>3、系统将hash和salt分别存放到数据库中</p>
+<p><strong>登录</strong><br>1、用户填写用户名和密码<br>2、系统通过用户名找到对应的hash和salt<br>3、系统将密码和salt进行散列生成new_hash<br>4、比较hash与new_hash，相等则表示密码正确，反之密码错误。</p>
+<p><strong>流程图如下</strong></p>
+<img src="/2020/10/10/md5-salt/md5.png" class="">
+
+<h4 id="md5-salt"><a href="#md5-salt" class="headerlink" title="md5+salt"></a>md5+salt</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;md5</span><br><span class="line">  Md5Hash md5Hash &#x3D; new Md5Hash(&quot;123456&quot;);</span><br><span class="line">  System.out.println(md5Hash.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;md5+salt</span><br><span class="line">  Md5Hash md5HashSalt &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;);</span><br><span class="line">  System.out.println(md5HashSalt.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  e10adc3949ba59abbe56e057f20f883e</span><br><span class="line">  5f9dcb70720b6f58a2b219015fad5c30</span><br></pre></td></tr></table></figure>
+
+<h4 id="md5-salt-hash散列"><a href="#md5-salt-hash散列" class="headerlink" title="md5+salt+hash散列"></a>md5+salt+hash散列</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;md5+salt+hash散列</span><br><span class="line">  Md5Hash md5Hash1 &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;, 1024);</span><br><span class="line">  System.out.println(md5Hash1.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  14b9f6ecccb925f15cf92c44ff9326ce</span><br></pre></td></tr></table></figure>
+
+<h3 id="shiro实现md5-salt"><a href="#shiro实现md5-salt" class="headerlink" title="shiro实现md5+salt"></a>shiro实现md5+salt</h3><p><strong>自定义realm</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 自定义realm  md5+salt+hash散列</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CustomMd5Realm extends AuthorizingRealm &#123;</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException &#123;</span><br><span class="line">        &#x2F;&#x2F;获取身份信息</span><br><span class="line">        String principal &#x3D; (String) token.getPrincipal();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;根据用户名查询数据库</span><br><span class="line">        if (&quot;hj&quot;.equals(principal)) &#123;</span><br><span class="line">            &#x2F;&#x2F;参数1：用户名  参数2：md5+salt之后的密码 参数3：注册时的salt  参数4：realm名字</span><br><span class="line">            return new SimpleAuthenticationInfo(principal, &quot;14b9f6ecccb925f15cf92c44ff9326ce&quot;,</span><br><span class="line">                    ByteSource.Util.bytes(&quot;x0*7ps&quot;), this.getName());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>测试验证</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestCustomMd5Authenticator &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        DefaultSecurityManager defaultSecurityManager &#x3D; new DefaultSecurityManager();</span><br><span class="line"></span><br><span class="line">        CustomMd5Realm realm &#x3D; new CustomMd5Realm();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;realm使用hash凭证匹配器</span><br><span class="line">        HashedCredentialsMatcher credentialsMatcher &#x3D; new HashedCredentialsMatcher();</span><br><span class="line">        &#x2F;&#x2F;设置算法为md5</span><br><span class="line">        credentialsMatcher.setHashAlgorithmName(&quot;md5&quot;);</span><br><span class="line">        &#x2F;&#x2F;设置散列次数为1024</span><br><span class="line">        credentialsMatcher.setHashIterations(1024);</span><br><span class="line"></span><br><span class="line">        realm.setCredentialsMatcher(credentialsMatcher);</span><br><span class="line">        defaultSecurityManager.setRealm(realm);</span><br><span class="line"></span><br><span class="line">        SecurityUtils.setSecurityManager(defaultSecurityManager);</span><br><span class="line"></span><br><span class="line">        Subject subject &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">        UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hj&quot;, &quot;123456&quot;);</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">            System.out.println(&quot;login success&quot;);</span><br><span class="line">        &#125; catch (UnknownAccountException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;username error&quot;);</span><br><span class="line">        &#125; catch (IncorrectCredentialsException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;password error&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+]]></content>
+      <categories>
+        <category>技术栈</category>
+      </categories>
+      <tags>
+        <tag>密码学</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>memory</title>
     <url>/2021/03/21/memory/</url>
     <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
@@ -761,6 +802,19 @@
       </categories>
       <tags>
         <tag>旅行</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>nightmare_again</title>
+    <url>/2021/11/04/nightmare-again/</url>
+    <content><![CDATA[<p>一连几天的噩梦让人浑身不舒服，为什么会做噩梦呢？难道11月是噩梦的开端？<br>当然不是，一天天的太累了，读研真的好难啊！各种压力纷涌而至，躲不掉也必须要解决。时间飞逝，希望赶快毕业，找份好工作。</p>
+<p>农历九月三十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -1042,47 +1096,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>nightmare_again</title>
-    <url>/2021/11/04/nightmare-again/</url>
-    <content><![CDATA[<p>一连几天的噩梦让人浑身不舒服，为什么会做噩梦呢？难道11月是噩梦的开端？<br>当然不是，一天天的太累了，读研真的好难啊！各种压力纷涌而至，躲不掉也必须要解决。时间飞逝，希望赶快毕业，找份好工作。</p>
-<p>农历九月三十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>md5+salt</title>
-    <url>/2020/10/10/md5-salt/</url>
-    <content><![CDATA[<p>传统的md5算法通过产生一个128位（16字节）的散列值（hash value），用于确保信息的安全性。但随着技术的发展，md5无法防止碰撞（collision）且可以被加以破解。<br>salt的出现可以一定程度上解决这个问题。</p>
-<h3 id="md5-salt实现原理"><a href="#md5-salt实现原理" class="headerlink" title="md5+salt实现原理"></a>md5+salt实现原理</h3><p><strong>注册</strong><br>1、用户提供用户名和密码<br>2、系统提供一个salt，salt+密码进行散列生成一个hash<br>3、系统将hash和salt分别存放到数据库中</p>
-<p><strong>登录</strong><br>1、用户填写用户名和密码<br>2、系统通过用户名找到对应的hash和salt<br>3、系统将密码和salt进行散列生成new_hash<br>4、比较hash与new_hash，相等则表示密码正确，反之密码错误。</p>
-<p><strong>流程图如下</strong></p>
-<img src="/2020/10/10/md5-salt/md5.png" class="">
-
-<h4 id="md5-salt"><a href="#md5-salt" class="headerlink" title="md5+salt"></a>md5+salt</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;md5</span><br><span class="line">  Md5Hash md5Hash &#x3D; new Md5Hash(&quot;123456&quot;);</span><br><span class="line">  System.out.println(md5Hash.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;md5+salt</span><br><span class="line">  Md5Hash md5HashSalt &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;);</span><br><span class="line">  System.out.println(md5HashSalt.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  e10adc3949ba59abbe56e057f20f883e</span><br><span class="line">  5f9dcb70720b6f58a2b219015fad5c30</span><br></pre></td></tr></table></figure>
-
-<h4 id="md5-salt-hash散列"><a href="#md5-salt-hash散列" class="headerlink" title="md5+salt+hash散列"></a>md5+salt+hash散列</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;md5+salt+hash散列</span><br><span class="line">  Md5Hash md5Hash1 &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;, 1024);</span><br><span class="line">  System.out.println(md5Hash1.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  14b9f6ecccb925f15cf92c44ff9326ce</span><br></pre></td></tr></table></figure>
-
-<h3 id="shiro实现md5-salt"><a href="#shiro实现md5-salt" class="headerlink" title="shiro实现md5+salt"></a>shiro实现md5+salt</h3><p><strong>自定义realm</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 自定义realm  md5+salt+hash散列</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CustomMd5Realm extends AuthorizingRealm &#123;</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException &#123;</span><br><span class="line">        &#x2F;&#x2F;获取身份信息</span><br><span class="line">        String principal &#x3D; (String) token.getPrincipal();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;根据用户名查询数据库</span><br><span class="line">        if (&quot;hj&quot;.equals(principal)) &#123;</span><br><span class="line">            &#x2F;&#x2F;参数1：用户名  参数2：md5+salt之后的密码 参数3：注册时的salt  参数4：realm名字</span><br><span class="line">            return new SimpleAuthenticationInfo(principal, &quot;14b9f6ecccb925f15cf92c44ff9326ce&quot;,</span><br><span class="line">                    ByteSource.Util.bytes(&quot;x0*7ps&quot;), this.getName());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>测试验证</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestCustomMd5Authenticator &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        DefaultSecurityManager defaultSecurityManager &#x3D; new DefaultSecurityManager();</span><br><span class="line"></span><br><span class="line">        CustomMd5Realm realm &#x3D; new CustomMd5Realm();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;realm使用hash凭证匹配器</span><br><span class="line">        HashedCredentialsMatcher credentialsMatcher &#x3D; new HashedCredentialsMatcher();</span><br><span class="line">        &#x2F;&#x2F;设置算法为md5</span><br><span class="line">        credentialsMatcher.setHashAlgorithmName(&quot;md5&quot;);</span><br><span class="line">        &#x2F;&#x2F;设置散列次数为1024</span><br><span class="line">        credentialsMatcher.setHashIterations(1024);</span><br><span class="line"></span><br><span class="line">        realm.setCredentialsMatcher(credentialsMatcher);</span><br><span class="line">        defaultSecurityManager.setRealm(realm);</span><br><span class="line"></span><br><span class="line">        SecurityUtils.setSecurityManager(defaultSecurityManager);</span><br><span class="line"></span><br><span class="line">        Subject subject &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">        UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hj&quot;, &quot;123456&quot;);</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">            System.out.println(&quot;login success&quot;);</span><br><span class="line">        &#125; catch (UnknownAccountException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;username error&quot;);</span><br><span class="line">        &#125; catch (IncorrectCredentialsException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;password error&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-]]></content>
-      <categories>
-        <category>技术栈</category>
-      </categories>
-      <tags>
-        <tag>密码学</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>nightmare</title>
     <url>/2021/11/02/nightmare/</url>
     <content><![CDATA[<p>今天已经是11月2号了，昨晚的噩梦令我心惊胆战，后怕。不知何时这已经从美梦变成了噩梦了。害怕、恐惧。但又觉得值得怀念。唉！往前看，做好当下的事情。理工的记忆永留在心里吧！论文、工作，未来才是most important。加油吧！</p>
@@ -1109,6 +1122,20 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
+    <title>oct_day</title>
+    <url>/2021/10/30/oct-day/</url>
+    <content><![CDATA[<p>十月的北京可谓是诈寒还暖，十月的倒数第二天竟然有二十多度，比起国庆之后的最低气温，现在不可谓不舒适。后天就是十一月了，日子总是这么轻飘飘的就过去了，明天三年之约也来了。多么令人期待了，等待了数个三年之后，炎帝迎来了他的三年之约。十一月总是给人美好，十一月的自己也要更加自律了，毕竟毕业不是儿戏啊！而且实习经验也没有的自己更要抓紧时间了。</p>
+<p>今天又看了一下罗翔的圆圈正义，心中思绪万千！难过、伤心、后悔、害怕与恐惧。</p>
+<p>农历九月二十五日</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>rain</title>
     <url>/2021/03/26/rain/</url>
     <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
@@ -1122,20 +1149,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>如晴似雨</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>oct_day</title>
-    <url>/2021/10/30/oct-day/</url>
-    <content><![CDATA[<p>十月的北京可谓是诈寒还暖，十月的倒数第二天竟然有二十多度，比起国庆之后的最低气温，现在不可谓不舒适。后天就是十一月了，日子总是这么轻飘飘的就过去了，明天三年之约也来了。多么令人期待了，等待了数个三年之后，炎帝迎来了他的三年之约。十一月总是给人美好，十一月的自己也要更加自律了，毕竟毕业不是儿戏啊！而且实习经验也没有的自己更要抓紧时间了。</p>
-<p>今天又看了一下罗翔的圆圈正义，心中思绪万千！难过、伤心、后悔、害怕与恐惧。</p>
-<p>农历九月二十五日</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
