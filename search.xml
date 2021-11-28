@@ -217,6 +217,42 @@
       </tags>
   </entry>
   <entry>
+    <title>11_20_Java</title>
+    <url>/2021/11/20/11-20-Java/</url>
+    <content><![CDATA[<h3 id="1-HashMap多线程死循环问题"><a href="#1-HashMap多线程死循环问题" class="headerlink" title="1 HashMap多线程死循环问题"></a>1 HashMap多线程死循环问题</h3><p>当多线程同时 put 时，如果同时触发了 rehash 操作，会导致 HashMap 的链表中出现循环节点，使得后面 get 的时候，会死循环。</p>
+<p>resize方法：<br>条件：size &gt; capacity * loadFactor<br>创建一个新的Entry空数组，长度是原数组的2倍。<br>rehash：遍历原Entry数组，把所有的Entry重新Hash到新数组。为什么要重新Hash呢？因为长度扩大以后，Hash的规则也随之改变。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-HashMap与Hashtable"><a href="#2-HashMap与Hashtable" class="headerlink" title="2 HashMap与Hashtable"></a>2 HashMap与Hashtable</h3><p>Hashtable：这个类实现了一个哈希表，它将键映射到值。任何非空对象都可以用作键或值。<br>HashMap 的 key 和 value 都允许为 null，而 Hashtable 的 key 和 value 都不允许为 null。<br>HashMap 遇到key 为 null 的时候，调用 putForNullKey 方法进行处理，但对 value 没有处理；Hashtable 遇到 null，直接返回 NullPointerException。<br>Hashtable是线程安全的，HashMap是非线程安全的。<br>HashMap继承了AbstractMap，Hashtable继承Dictionary抽象类，两者均实现Map接口。</p>
+<p>Java中Hashtable、Collections.synchronizedMap、以及 ConcurrentHashMap 可以实现线程安全的Map。<br>Hashtable 是直接在方法上加 synchronized 关键字，锁住整个数组，粒度比较大；即每次锁住整张表让线程独占，致使效率低下；<br>Collections.synchronizedMap 是使用 Collections 集合工具的内部类，通过传入 Map 封装出一个 SynchronizedMap 对象，内部定义了一个对象锁，方法内通过对象锁实现；<br>ConcurrentHashMap使用分段锁，降低了锁粒度，让并发度大大提高。</p>
+<h3 id="2-ConcurrentHashMap"><a href="#2-ConcurrentHashMap" class="headerlink" title="2 ConcurrentHashMap"></a>2 ConcurrentHashMap</h3><p>ConcurrentHashMap：一个哈希表，支持检索的完全并发性和更新的高预期并发性。该类遵循与Hashtable相同的功能规范，包括与Hashtable的每个方法对应的方法版本。但是，即使所有操作都是线程安全的，检索操作也不需要锁定，并且不支持以防止所有访问的方式锁定整个表。 在依赖其线程安全但不依赖于其同步细节的程序中，此类与 Hashtable 完全可互操作。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bin数组。第一次插入时延迟初始化。大小始终是 2 的幂。由迭代器直接访问。</span><br><span class="line">transient volatile Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
+
+<p>ConcurrentHashMap在对象中保存了一个Segment数组，即将整个Hash表划分为多个Segment；而每个Segment元素类似于一个Hashtable。这样，在执行 put操作时会先根据hash算法定位到元素属于哪个Segment，然后对该Segment加锁即可。</p>
+<p><strong>实现原理</strong><br>1.7 数组+链表。（segment+分段锁）。容器中有多把锁，每一把锁锁一段数据，这样在多线程访问不同段的数据时，就不会存在锁竞争了，这样便可以有效地提高并发效率。”分段锁”思想。<br>ConcurrentHashMap内部使用段(Segment)来表示这些不同的部分，每个段其实就是一个小的Hashtable，它们有自己的锁。每个segment使用单独的ReentrantLock（分段锁）。如果操作涉及不同segment，则可以并发执行，如果是同一个segment则会进行锁的竞争和等待。<br>ConcurrentHashMap定位一个元素的过程需要进行两次Hash操作。第一次Hash定位到Segment，第二次Hash定位到元素所在的链表的头部。</p>
+<p>1.8 数组+链表（红黑树）。CAS 和 synchronized 结合实现锁粒度的降低。1.7版本锁的粒度是基于Segment的，包含多个HashEntry，而1.8锁的粒度就是HashEntry。<br>1.8版本的数据结构变得更加简单，使得操作也更加清晰流畅，因为已经使用synchronized来进行同步，所以不需要分段锁的概念，也就不需要Segment这种数据结构了，由于粒度的降低，实现的复杂度也增加了。1.8使用红黑树来优化链表。</p>
+<p>CAS全称Compare and Swap，即比较并替换。CAS本质上很简单，一般至少有3个参数：一个变量v，旧值A，新值B。当且仅当变量v当前的值和旧值A相同时，才会将v的值更新为B。</p>
+<h3 id="3-LinkedHashMap"><a href="#3-LinkedHashMap" class="headerlink" title="3 LinkedHashMap"></a>3 LinkedHashMap</h3><p>Map接口的哈希表和链表实现，迭代顺序可预测。<br>此实现与 HashMap 的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LinkedHashMap&lt;K,V&gt;</span><br><span class="line">    extends HashMap&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;</span><br><span class="line">普通LinkedHashMap条目的HashMap.Node子类。</span><br><span class="line">static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; &#123;</span><br><span class="line">        Entry&lt;K,V&gt; before, after;</span><br><span class="line">        Entry(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            super(hash, key, value, next);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">双向链表的头部（最年长的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; head;</span><br><span class="line">双向链表的尾部（最年轻的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br><span class="line">此链接哈希映射的迭代排序方法：访问顺序为true，插入顺序为false。</span><br><span class="line">final boolean accessOrder;</span><br></pre></td></tr></table></figure>
+<p>双向链表<br>key和value都允许为空<br>key重复会覆盖<br>有序的<br>LinkedHashMap是非线程安全的</p>
+<p>LinkedHashMap中的Entry增加了 before 和 after两个指针，用于维护双向链表。before、after用于维护Entry插入的先后顺序的。正是因为before、after的存在,LinkedHashMap才形成了双向链表。<br>LinkedHashMap可以认为是散列表与链表（HashMap+LinkedList）的结合,它继承了HashMap,也用LinkedList维护插入/访问元素的先后顺序。从性能上而言，因为额外维护了链表的关系，性能上要略差于HashMap。</p>
+<p>TreeMap 是按照 Key 的自然顺序或者 Comprator 的顺序进行排序，内部是通过红黑树来实现。所以要么 key 所属的类实现 Comparable 接口，或者自定义一个实现了 Comparator 接口的比较器，传给 TreeMap 用户 key 的比较。</p>
+<h3 id="4-HashSet"><a href="#4-HashSet" class="headerlink" title="4 HashSet"></a>4 HashSet</h3><p>这个类实现了 Set 接口，由一个哈希表（实际上是一个 HashMap 实例）支持。 它不保证集合的迭代顺序；此类允许空元素。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class HashSet&lt;E&gt;</span><br><span class="line">    extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements Set&lt;E&gt;, Cloneable, java.io.Serializable</span><br><span class="line">private transient HashMap&lt;E,Object&gt; map;</span><br><span class="line">构造一个新的空集； 后备 HashMap 实例具有默认初始容量 (16) 和负载因子 (0.75)。</span><br><span class="line">public HashSet() &#123;</span><br><span class="line">        map &#x3D; new HashMap&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>为什么元素不能重复</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        return map.put(e, PRESENT)&#x3D;&#x3D;null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>元素值作为的是 map 的 key，map 的 value 则是 PRESENT 变量，这个变量只作为放入 map 时的一个占位符存在。HashMap 的 key 是不能重复的，HashSet 的元素作为 map 的 key，当然也不能重复了。</p>
+<h3 id="5-Iterator"><a href="#5-Iterator" class="headerlink" title="5 Iterator"></a>5 Iterator</h3><p>集合上的迭代器。 迭代器取代了 Java 集合框架中的枚举。 迭代器在两个方面不同于枚举：<br>迭代器允许调用者在具有明确定义语义的迭代期间从底层集合中删除元素。<br>方法名称已得到改进。</p>
+<p>ListIterator<br>public interface ListIterator<E> extends Iterator<E><br>列表的迭代器，允许程序员沿任一方向遍历列表，在迭代期间修改列表，并获取迭代器在列表中的当前位置。ListIterator 没有当前元素；它的光标位置始终位于调用 previous() 返回的元素和调用 next() 返回的元素之间。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>basic</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>11_21_Java</title>
     <url>/2021/11/21/11-21-Java/</url>
     <content><![CDATA[<h3 id="1-进程与线程"><a href="#1-进程与线程" class="headerlink" title="1 进程与线程"></a>1 进程与线程</h3><p>Processes：一个进程有一个自包含的执行环境。一个进程通常有一套完整的、私有的基本运行时资源；特别是，每个进程都有自己的内存空间。Java虚拟机的大多数实现都作为单个进程运行。Java应用程序可以使用ProcessBuilder对象创建其他进程。</p>
@@ -233,42 +269,6 @@
 <h3 id="7-线程安全的体现"><a href="#7-线程安全的体现" class="headerlink" title="7 线程安全的体现"></a>7 线程安全的体现</h3><p>原子性：提供互斥访问，同一时刻只能有一个线程对数据进行操作，（atomic，synchronized）；<br>可见性：一个线程对主内存的修改可以及时地被其他线程看到，（synchronized、volatile）；<br>有序性：一个线程观察其他线程的指令执行顺序，由于指令重排序，该观察结果一般杂乱无序，（happensbefore原则）。</p>
 <h3 id="8-线程同步的方法"><a href="#8-线程同步的方法" class="headerlink" title="8 线程同步的方法"></a>8 线程同步的方法</h3><p>1 使用 Synchronized 关键字；<br>2 wait 和 notify方法；<br>3 使用特殊域变量 volatile 实现线程同步；<br>4 使用可重入锁实现线程同步；<br>5 使用阻塞队列实现线程同步；<br>6 使用信号量 Semaphore。</p>
 <h3 id="9-Thread的interrupt方法原理"><a href="#9-Thread的interrupt方法原理" class="headerlink" title="9 Thread的interrupt方法原理"></a>9 Thread的interrupt方法原理</h3><p>interrupt是Thread类的实例方法，它的主要作用是给目标线程发送一个通知，有人希望你退出啦，同时会将目标线程的中断标志设置为true，也就是已经有人打断过该线程了。至于目标线程如何处理，完全取决于目标线程自身。<br>interrupt方法中断线程可以分为两种情况，第一种是打断正在运行的线程。<br>第二种情况是，打断正在休眠的线程，比如目标线程调用了sleep方法而处于阻塞状态，这时候如果打断它，就会抛出InterruptedException异常。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>basic</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>11_23_Java</title>
-    <url>/2021/11/23/11-23-Java/</url>
-    <content><![CDATA[<h3 id="1-synchronized-与-ReentrantLock"><a href="#1-synchronized-与-ReentrantLock" class="headerlink" title="1 synchronized 与 ReentrantLock"></a>1 synchronized 与 ReentrantLock</h3><p>synchronized是Java中的关键字，ReentrantLock是一个类。<br>ReentrantLock 提供了比 synchronized 更多更灵活的特性：等待可中断、可实现公平锁、锁绑定多个条件。<br>synchronized 依赖于 JVM， ReenTrantLock 依赖于 API。<br>JDK1.6 为synchronized 关键字进行了很多优化，但是这些优化都是在虚拟机层面实现的，并没有直接暴露给我们。<br>ReenTrantLock 是API层面实现的（需要 lock() 和 unlock 方法配合 try/finally 语句块来完成）。<br>很明显Synchronized的使用比较方便简洁，并且由编译器去保证加锁和释放锁，而ReenTrantLock需要手动声明来加锁和释放锁，为了避免忘记释放锁造成死锁，所以最好在finally中声明释放锁。<br>ReenTrantLock的实现是一种自旋锁，通过循环调用CAS操作来实现加锁。它的性能比较好也是因为避免了使线程进入内核态的阻塞状态。想尽办法避免线程进入内核的阻塞状态是我们去分析和理解锁设计的关键钥匙。</p>
-<h3 id="2-synchronized-与-volatile"><a href="#2-synchronized-与-volatile" class="headerlink" title="2 synchronized 与 volatile"></a>2 synchronized 与 volatile</h3><p>synchronized 锁定当前变量，只有当前线程可以访问该变量，其他线程被阻塞。<br>volatile 本质是在告诉 JVM当前变量在寄存器中的值是不确定的，需要从主存中读取。保证了不同线程对该变量操作的内存可见性；禁止指令重排序。<br>synchronized 可以作用于变量、方法、对象；volatile 只能作用于变量。<br>volatile 不会造成线程的阻塞；synchronized 可能会造成线程的阻塞。<br>volatile 标记的变量不会被编译器优化；synchronized 标记的变量可以被编译器优化。</p>
-<h3 id="3-ReentrantReadWriteLock"><a href="#3-ReentrantReadWriteLock" class="headerlink" title="3 ReentrantReadWriteLock"></a>3 ReentrantReadWriteLock</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;** Inner class providing readlock *&#x2F;</span><br><span class="line">private final ReentrantReadWriteLock.ReadLock readerLock;</span><br><span class="line">&#x2F;** Inner class providing writelock *&#x2F;</span><br><span class="line">private final ReentrantReadWriteLock.WriteLock writerLock;</span><br></pre></td></tr></table></figure>
-<p>ReentrantReadWriteLock 允许多个读线程同时访问，但是不允许写线程和读线程、写线程和写线程同时访问。<br>ReentrantReadWriteLock维护了两个锁：ReadLock，WriteLock。<br>ReentrantReadWriteLock可以保证多个线程同时读，所以在读操作远大于写操作的时候，读写锁就非常有用了。</p>
-<p>在写线程持有的所有写锁都被释放之前，不允许非可重入读者。<br>重入还允许从写锁降级到读锁，通过获取写锁，然后是读锁，然后释放写锁。<br>读锁和写锁都支持锁获取过程中的中断。</p>
-<h3 id="4-悲观锁与乐观锁"><a href="#4-悲观锁与乐观锁" class="headerlink" title="4 悲观锁与乐观锁"></a>4 悲观锁与乐观锁</h3><p><strong>悲观锁</strong><br>当你要对数据进行操作时，为了避免同时被其他人修改，最好的办法就是直接对该数据进行加锁。这样别人想拿这个数据就会阻塞直到它拿到锁。<br>悲观锁分为共享锁和排他锁。</p>
-<p>共享锁又称为读锁，简称 S 锁。共享锁就是多个事务对于同一数据可以共享一把锁，都能访问到数据，但是只能读不能修改。</p>
-<p>排他锁又称为写锁，简称 X 锁。排他锁就是不能与其他锁并存，如果一个事务获取了一个数据行的排他锁，其他事务就不能再获取该数据行的锁（包括共享锁和排他锁）。获取排他锁的事务可以对数据行读取和修改。</p>
-<p>传统的关系型数据库使用这种锁机制，比如行锁、表锁、读锁、写锁等，都是在操作之前先上锁。<br>Java 中 synchronized 和 ReentrantLock 等独占锁也是悲观锁思想的实现。</p>
-<p><strong>乐观锁</strong><br>当你要对数据进行操作时，假设不会被其他人修改，所以不用上锁。但是在更新的时候会判断一下在此期间别人有没有去更新这个数据。乐观锁适用于读多写少的场景，这样可以提高程序的吞吐量。<br>数据库提供的类似于 write_condition 机制，其实都是提供的乐观锁。<br>Java 中java.util.concurrent.atomic 包下面的原子变量类就是使用了乐观锁的一种实现方式 CAS 来实现的。</p>
-<h3 id="5-乐观锁两种实现方式"><a href="#5-乐观锁两种实现方式" class="headerlink" title="5 乐观锁两种实现方式"></a>5 乐观锁两种实现方式</h3><p><strong>版本号机制</strong><br>在数据中加上一个version字段，表示数据被修改的次数。当数据被修改时，version值加一。当线程A要更新数据时，在读取数据的同时也会读取version值，在提交更新时，刚读取到的version值与当前数据库中的version值相等时才更新，否则重试，直到更新成功。</p>
-<p><strong>CAS</strong><br>compare and swap（比较与交换），是一种有名的无锁算法。在不使用锁的情况下实现多线程之间的变量同步，也就是在没有线程被阻塞的情况下实现变量的同步，所以也叫非阻塞同步。<br>CAS算法涉及三个操作数：<br>需要读写的内存值 V<br>进行比较的值 A<br>拟写入的新值 B<br>V与B进行比较，当且仅当 V 的值等于 A 时，CAS 通过原子方式用新值 B 来更新 V 的值，否则不会执行任何操作。</p>
-<p><strong>缺点</strong><br>ABA问题<br>如果一个变量V初次读取的时候是A值，并且在准备赋值的时候检查到它仍然是A值，那我们就能说明它的值没有被其他线程修改过了吗？很明显是不能的，因为在这段时间它的值可能被改为其它值，然后又改回A，但CAS操作就会误认为它从来没有被修改过。<br>JDK 1.5 AtomicStampedReference 类中的 compareAndSet 方法就是首先检查当前引用是否等于预期引用，并且当前标志是否等于预期标志，如果全部相等，则以原子方式将该引用和该标志的值设置为给定的更新值。</p>
-<p>循环时间长开销大<br>自旋CAS（也就是不成功就一直循环执行直到成功）如果长时间不成功，会给CPU带来非常大的执行开销。</p>
-<p>只能保证一个共享变量的原子操作<br>CAS只对单个共享变量有效，当操作涉及多个共享变量时 CAS 无效。<br>但是从 JDK 1.5开始，提供了AtomicReference类来保证引用对象之间的原子性，你可以把多个变量放在一个对象里来进行 CAS 操作。所以我们可以使用锁或者利用AtomicReference类把多个共享变量合并成一个共享变量来操作。</p>
-<p>CAS适用于写比较少的情况下（多读场景，冲突一般较少），synchronized适用于写比较多的情况下（多写场景，冲突一般较多）。</p>
-<h3 id="6-atomic原理"><a href="#6-atomic原理" class="headerlink" title="6 atomic原理"></a>6 atomic原理</h3><p>java.util.concurrent.atomic包中类的基本特性就是在多线程环境下，当有多个线程同时对单个（包括基本类型及引用类型）变量进行操作时，具有排他性，即当多个线程同时对该变量的值进行更新时，仅有一个线程能成功，而未成功的线程可以向自旋锁一样，继续尝试，直到执行成功。</p>
-<h3 id="7-AQS"><a href="#7-AQS" class="headerlink" title="7 AQS"></a>7 AQS</h3><p>AbstractQueuedSynchronizer（抽象排队同步器）：提供一个框架，用于实现依赖先进先出 (FIFO) 等待队列的阻塞锁和相关同步器（信号量、事件等）。如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是用 CLH 队列锁实现的，将暂时获取不到锁的线程加入到队列中。</p>
-<p>private volatile int state;<br>AQS 使用一个 int 成员变量 (state) 来表示同步状态，通过内置的 FIFO 队列来完成获取资源线程的排队工作。AQS使用 CAS 对该同步状态进行原子操作实现对其值的修改。</p>
-<p>AQS对资源的共享方式：<br>Exclusive（独占）：只有一个线程能执行，如 ReentrantLock。又可分为公平锁和非公平锁。<br>公平锁：按照线程在队列中的排队顺序，先到者先拿到锁。<br>非公平锁：当线程要获取锁时，先通过两次 CAS 操作去抢锁，如果没抢到，当前线程再加入到队列中等待唤醒。<br>Share（共享）：多个线程可同时执行，如Semaphore/CountDownLatch、Semaphore、CountDownLatCh、CyclicBarrier、ReadWriteLock。</p>
-<h3 id="8-AQS的几个模板方法"><a href="#8-AQS的几个模板方法" class="headerlink" title="8 AQS的几个模板方法"></a>8 AQS的几个模板方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">如果与当前（调用）线程独占同步，则返回 true。</span><br><span class="line">protected boolean isHeldExclusively() &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试以独占模式获取。该方法应该查询对象的状态是否允许以独占模式获取它，如果允许则获取它。</span><br><span class="line">protected boolean tryAcquire(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试设置状态以反映独占模式下的释放</span><br><span class="line">protected boolean tryRelease(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试以共享模式获取。该方法应该查询对象的状态是否允许在共享模式下获取它，如果允许则获取它。</span><br><span class="line">protected int tryAcquireShared(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试设置状态以反映共享模式下的释放。此方法始终由执行释放的线程调用。</span><br><span class="line">protected boolean tryReleaseShared(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="9-信号量Semaphore"><a href="#9-信号量Semaphore" class="headerlink" title="9 信号量Semaphore"></a>9 信号量Semaphore</h3><p>synchronized 和 ReentrantLock 都是一次只允许一个线程访问某个资源，Semaphore (信号量)可以指定多个线程同时访问某个资源。<br>计数信号量。从概念上讲，信号量维护一组许可。如有必要，每个获取块直到许可可用，然后获取它。每个版本都会增加一个许可，可能会释放一个阻塞的收单方。但是，没有使用实际的许可对象；信号量只是计算可用的数量并相应地采取行动。<br>信号量通常用于限制可以访问某些（物理或逻辑）资源的线程数。</p>
-<h3 id="10-CountDownLatch-与-CyclicBarrier"><a href="#10-CountDownLatch-与-CyclicBarrier" class="headerlink" title="10 CountDownLatch 与 CyclicBarrier"></a>10 CountDownLatch 与 CyclicBarrier</h3><p>CountDownLatch：一种同步辅助，允许一个或多个线程等待，直到在其他线程中执行的一组操作完成。<br>CountDownLatch 使用给定的计数进行初始化。 由于调用了 countDown 方法，await 方法会阻塞，直到当前计数达到零，然后释放所有等待线程，并且任何后续的 await 调用都会立即返回。 这是一种一次性现象——无法重置计数。 如果您需要重置计数的版本，请考虑使用 CyclicBarrier。</p>
-<p>CyclicBarrier：一种同步辅助工具，它允许一组线程全部等待彼此到达公共屏障点。  CyclicBarriers 在涉及固定大小的线程组的程序中很有用，这些线程必须偶尔相互等待。 屏障被称为循环的，因为它可以在等待线程被释放后重新使用。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -312,6 +312,42 @@
 <p><strong>重量级锁</strong><br>阻塞所有等待竞争的线程，防止CPU空转。</p>
 <p><strong>锁消除</strong><br>虚拟机的JIT在运行时如果检测到一些要求同步的代码上不可能发生共享数据竞争，则会去掉这些锁。</p>
 <p><strong>锁粗化</strong><br>减少不必要的紧连在一起的 lock，unlock 操作，将多个连续的锁扩展成一个范围更大的锁。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>basic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>11_23_Java</title>
+    <url>/2021/11/23/11-23-Java/</url>
+    <content><![CDATA[<h3 id="1-synchronized-与-ReentrantLock"><a href="#1-synchronized-与-ReentrantLock" class="headerlink" title="1 synchronized 与 ReentrantLock"></a>1 synchronized 与 ReentrantLock</h3><p>synchronized是Java中的关键字，ReentrantLock是一个类。<br>ReentrantLock 提供了比 synchronized 更多更灵活的特性：等待可中断、可实现公平锁、锁绑定多个条件。<br>synchronized 依赖于 JVM， ReenTrantLock 依赖于 API。<br>JDK1.6 为synchronized 关键字进行了很多优化，但是这些优化都是在虚拟机层面实现的，并没有直接暴露给我们。<br>ReenTrantLock 是API层面实现的（需要 lock() 和 unlock 方法配合 try/finally 语句块来完成）。<br>很明显Synchronized的使用比较方便简洁，并且由编译器去保证加锁和释放锁，而ReenTrantLock需要手动声明来加锁和释放锁，为了避免忘记释放锁造成死锁，所以最好在finally中声明释放锁。<br>ReenTrantLock的实现是一种自旋锁，通过循环调用CAS操作来实现加锁。它的性能比较好也是因为避免了使线程进入内核态的阻塞状态。想尽办法避免线程进入内核的阻塞状态是我们去分析和理解锁设计的关键钥匙。</p>
+<h3 id="2-synchronized-与-volatile"><a href="#2-synchronized-与-volatile" class="headerlink" title="2 synchronized 与 volatile"></a>2 synchronized 与 volatile</h3><p>synchronized 锁定当前变量，只有当前线程可以访问该变量，其他线程被阻塞。<br>volatile 本质是在告诉 JVM当前变量在寄存器中的值是不确定的，需要从主存中读取。保证了不同线程对该变量操作的内存可见性；禁止指令重排序。<br>synchronized 可以作用于变量、方法、对象；volatile 只能作用于变量。<br>volatile 不会造成线程的阻塞；synchronized 可能会造成线程的阻塞。<br>volatile 标记的变量不会被编译器优化；synchronized 标记的变量可以被编译器优化。</p>
+<h3 id="3-ReentrantReadWriteLock"><a href="#3-ReentrantReadWriteLock" class="headerlink" title="3 ReentrantReadWriteLock"></a>3 ReentrantReadWriteLock</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;** Inner class providing readlock *&#x2F;</span><br><span class="line">private final ReentrantReadWriteLock.ReadLock readerLock;</span><br><span class="line">&#x2F;** Inner class providing writelock *&#x2F;</span><br><span class="line">private final ReentrantReadWriteLock.WriteLock writerLock;</span><br></pre></td></tr></table></figure>
+<p>ReentrantReadWriteLock 允许多个读线程同时访问，但是不允许写线程和读线程、写线程和写线程同时访问。<br>ReentrantReadWriteLock维护了两个锁：ReadLock，WriteLock。<br>ReentrantReadWriteLock可以保证多个线程同时读，所以在读操作远大于写操作的时候，读写锁就非常有用了。</p>
+<p>在写线程持有的所有写锁都被释放之前，不允许非可重入读者。<br>重入还允许从写锁降级到读锁，通过获取写锁，然后是读锁，然后释放写锁。<br>读锁和写锁都支持锁获取过程中的中断。</p>
+<h3 id="4-悲观锁与乐观锁"><a href="#4-悲观锁与乐观锁" class="headerlink" title="4 悲观锁与乐观锁"></a>4 悲观锁与乐观锁</h3><p><strong>悲观锁</strong><br>当你要对数据进行操作时，为了避免同时被其他人修改，最好的办法就是直接对该数据进行加锁。这样别人想拿这个数据就会阻塞直到它拿到锁。<br>悲观锁分为共享锁和排他锁。</p>
+<p>共享锁又称为读锁，简称 S 锁。共享锁就是多个事务对于同一数据可以共享一把锁，都能访问到数据，但是只能读不能修改。</p>
+<p>排他锁又称为写锁，简称 X 锁。排他锁就是不能与其他锁并存，如果一个事务获取了一个数据行的排他锁，其他事务就不能再获取该数据行的锁（包括共享锁和排他锁）。获取排他锁的事务可以对数据行读取和修改。</p>
+<p>传统的关系型数据库使用这种锁机制，比如行锁、表锁、读锁、写锁等，都是在操作之前先上锁。<br>Java 中 synchronized 和 ReentrantLock 等独占锁也是悲观锁思想的实现。</p>
+<p><strong>乐观锁</strong><br>当你要对数据进行操作时，假设不会被其他人修改，所以不用上锁。但是在更新的时候会判断一下在此期间别人有没有去更新这个数据。乐观锁适用于读多写少的场景，这样可以提高程序的吞吐量。<br>数据库提供的类似于 write_condition 机制，其实都是提供的乐观锁。<br>Java 中java.util.concurrent.atomic 包下面的原子变量类就是使用了乐观锁的一种实现方式 CAS 来实现的。</p>
+<h3 id="5-乐观锁两种实现方式"><a href="#5-乐观锁两种实现方式" class="headerlink" title="5 乐观锁两种实现方式"></a>5 乐观锁两种实现方式</h3><p><strong>版本号机制</strong><br>在数据中加上一个version字段，表示数据被修改的次数。当数据被修改时，version值加一。当线程A要更新数据时，在读取数据的同时也会读取version值，在提交更新时，刚读取到的version值与当前数据库中的version值相等时才更新，否则重试，直到更新成功。</p>
+<p><strong>CAS</strong><br>compare and swap（比较与交换），是一种有名的无锁算法。在不使用锁的情况下实现多线程之间的变量同步，也就是在没有线程被阻塞的情况下实现变量的同步，所以也叫非阻塞同步。<br>CAS算法涉及三个操作数：<br>需要读写的内存值 V<br>进行比较的值 A<br>拟写入的新值 B<br>V与B进行比较，当且仅当 V 的值等于 A 时，CAS 通过原子方式用新值 B 来更新 V 的值，否则不会执行任何操作。</p>
+<p><strong>缺点</strong><br>ABA问题<br>如果一个变量V初次读取的时候是A值，并且在准备赋值的时候检查到它仍然是A值，那我们就能说明它的值没有被其他线程修改过了吗？很明显是不能的，因为在这段时间它的值可能被改为其它值，然后又改回A，但CAS操作就会误认为它从来没有被修改过。<br>JDK 1.5 AtomicStampedReference 类中的 compareAndSet 方法就是首先检查当前引用是否等于预期引用，并且当前标志是否等于预期标志，如果全部相等，则以原子方式将该引用和该标志的值设置为给定的更新值。</p>
+<p>循环时间长开销大<br>自旋CAS（也就是不成功就一直循环执行直到成功）如果长时间不成功，会给CPU带来非常大的执行开销。</p>
+<p>只能保证一个共享变量的原子操作<br>CAS只对单个共享变量有效，当操作涉及多个共享变量时 CAS 无效。<br>但是从 JDK 1.5开始，提供了AtomicReference类来保证引用对象之间的原子性，你可以把多个变量放在一个对象里来进行 CAS 操作。所以我们可以使用锁或者利用AtomicReference类把多个共享变量合并成一个共享变量来操作。</p>
+<p>CAS适用于写比较少的情况下（多读场景，冲突一般较少），synchronized适用于写比较多的情况下（多写场景，冲突一般较多）。</p>
+<h3 id="6-atomic原理"><a href="#6-atomic原理" class="headerlink" title="6 atomic原理"></a>6 atomic原理</h3><p>java.util.concurrent.atomic包中类的基本特性就是在多线程环境下，当有多个线程同时对单个（包括基本类型及引用类型）变量进行操作时，具有排他性，即当多个线程同时对该变量的值进行更新时，仅有一个线程能成功，而未成功的线程可以向自旋锁一样，继续尝试，直到执行成功。</p>
+<h3 id="7-AQS"><a href="#7-AQS" class="headerlink" title="7 AQS"></a>7 AQS</h3><p>AbstractQueuedSynchronizer（抽象排队同步器）：提供一个框架，用于实现依赖先进先出 (FIFO) 等待队列的阻塞锁和相关同步器（信号量、事件等）。如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是用 CLH 队列锁实现的，将暂时获取不到锁的线程加入到队列中。</p>
+<p>private volatile int state;<br>AQS 使用一个 int 成员变量 (state) 来表示同步状态，通过内置的 FIFO 队列来完成获取资源线程的排队工作。AQS使用 CAS 对该同步状态进行原子操作实现对其值的修改。</p>
+<p>AQS对资源的共享方式：<br>Exclusive（独占）：只有一个线程能执行，如 ReentrantLock。又可分为公平锁和非公平锁。<br>公平锁：按照线程在队列中的排队顺序，先到者先拿到锁。<br>非公平锁：当线程要获取锁时，先通过两次 CAS 操作去抢锁，如果没抢到，当前线程再加入到队列中等待唤醒。<br>Share（共享）：多个线程可同时执行，如Semaphore/CountDownLatch、Semaphore、CountDownLatCh、CyclicBarrier、ReadWriteLock。</p>
+<h3 id="8-AQS的几个模板方法"><a href="#8-AQS的几个模板方法" class="headerlink" title="8 AQS的几个模板方法"></a>8 AQS的几个模板方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">如果与当前（调用）线程独占同步，则返回 true。</span><br><span class="line">protected boolean isHeldExclusively() &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试以独占模式获取。该方法应该查询对象的状态是否允许以独占模式获取它，如果允许则获取它。</span><br><span class="line">protected boolean tryAcquire(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试设置状态以反映独占模式下的释放</span><br><span class="line">protected boolean tryRelease(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试以共享模式获取。该方法应该查询对象的状态是否允许在共享模式下获取它，如果允许则获取它。</span><br><span class="line">protected int tryAcquireShared(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试设置状态以反映共享模式下的释放。此方法始终由执行释放的线程调用。</span><br><span class="line">protected boolean tryReleaseShared(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="9-信号量Semaphore"><a href="#9-信号量Semaphore" class="headerlink" title="9 信号量Semaphore"></a>9 信号量Semaphore</h3><p>synchronized 和 ReentrantLock 都是一次只允许一个线程访问某个资源，Semaphore (信号量)可以指定多个线程同时访问某个资源。<br>计数信号量。从概念上讲，信号量维护一组许可。如有必要，每个获取块直到许可可用，然后获取它。每个版本都会增加一个许可，可能会释放一个阻塞的收单方。但是，没有使用实际的许可对象；信号量只是计算可用的数量并相应地采取行动。<br>信号量通常用于限制可以访问某些（物理或逻辑）资源的线程数。</p>
+<h3 id="10-CountDownLatch-与-CyclicBarrier"><a href="#10-CountDownLatch-与-CyclicBarrier" class="headerlink" title="10 CountDownLatch 与 CyclicBarrier"></a>10 CountDownLatch 与 CyclicBarrier</h3><p>CountDownLatch：一种同步辅助，允许一个或多个线程等待，直到在其他线程中执行的一组操作完成。<br>CountDownLatch 使用给定的计数进行初始化。 由于调用了 countDown 方法，await 方法会阻塞，直到当前计数达到零，然后释放所有等待线程，并且任何后续的 await 调用都会立即返回。 这是一种一次性现象——无法重置计数。 如果您需要重置计数的版本，请考虑使用 CyclicBarrier。</p>
+<p>CyclicBarrier：一种同步辅助工具，它允许一组线程全部等待彼此到达公共屏障点。  CyclicBarriers 在涉及固定大小的线程组的程序中很有用，这些线程必须偶尔相互等待。 屏障被称为循环的，因为它可以在等待线程被释放后重新使用。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -368,42 +404,6 @@
       </tags>
   </entry>
   <entry>
-    <title>11_20_Java</title>
-    <url>/2021/11/20/11-20-Java/</url>
-    <content><![CDATA[<h3 id="1-HashMap多线程死循环问题"><a href="#1-HashMap多线程死循环问题" class="headerlink" title="1 HashMap多线程死循环问题"></a>1 HashMap多线程死循环问题</h3><p>当多线程同时 put 时，如果同时触发了 rehash 操作，会导致 HashMap 的链表中出现循环节点，使得后面 get 的时候，会死循环。</p>
-<p>resize方法：<br>条件：size &gt; capacity * loadFactor<br>创建一个新的Entry空数组，长度是原数组的2倍。<br>rehash：遍历原Entry数组，把所有的Entry重新Hash到新数组。为什么要重新Hash呢？因为长度扩大以后，Hash的规则也随之改变。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-HashMap与Hashtable"><a href="#2-HashMap与Hashtable" class="headerlink" title="2 HashMap与Hashtable"></a>2 HashMap与Hashtable</h3><p>Hashtable：这个类实现了一个哈希表，它将键映射到值。任何非空对象都可以用作键或值。<br>HashMap 的 key 和 value 都允许为 null，而 Hashtable 的 key 和 value 都不允许为 null。<br>HashMap 遇到key 为 null 的时候，调用 putForNullKey 方法进行处理，但对 value 没有处理；Hashtable 遇到 null，直接返回 NullPointerException。<br>Hashtable是线程安全的，HashMap是非线程安全的。<br>HashMap继承了AbstractMap，Hashtable继承Dictionary抽象类，两者均实现Map接口。</p>
-<p>Java中Hashtable、Collections.synchronizedMap、以及 ConcurrentHashMap 可以实现线程安全的Map。<br>Hashtable 是直接在方法上加 synchronized 关键字，锁住整个数组，粒度比较大；即每次锁住整张表让线程独占，致使效率低下；<br>Collections.synchronizedMap 是使用 Collections 集合工具的内部类，通过传入 Map 封装出一个 SynchronizedMap 对象，内部定义了一个对象锁，方法内通过对象锁实现；<br>ConcurrentHashMap使用分段锁，降低了锁粒度，让并发度大大提高。</p>
-<h3 id="2-ConcurrentHashMap"><a href="#2-ConcurrentHashMap" class="headerlink" title="2 ConcurrentHashMap"></a>2 ConcurrentHashMap</h3><p>ConcurrentHashMap：一个哈希表，支持检索的完全并发性和更新的高预期并发性。该类遵循与Hashtable相同的功能规范，包括与Hashtable的每个方法对应的方法版本。但是，即使所有操作都是线程安全的，检索操作也不需要锁定，并且不支持以防止所有访问的方式锁定整个表。 在依赖其线程安全但不依赖于其同步细节的程序中，此类与 Hashtable 完全可互操作。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bin数组。第一次插入时延迟初始化。大小始终是 2 的幂。由迭代器直接访问。</span><br><span class="line">transient volatile Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
-
-<p>ConcurrentHashMap在对象中保存了一个Segment数组，即将整个Hash表划分为多个Segment；而每个Segment元素类似于一个Hashtable。这样，在执行 put操作时会先根据hash算法定位到元素属于哪个Segment，然后对该Segment加锁即可。</p>
-<p><strong>实现原理</strong><br>1.7 数组+链表。（segment+分段锁）。容器中有多把锁，每一把锁锁一段数据，这样在多线程访问不同段的数据时，就不会存在锁竞争了，这样便可以有效地提高并发效率。”分段锁”思想。<br>ConcurrentHashMap内部使用段(Segment)来表示这些不同的部分，每个段其实就是一个小的Hashtable，它们有自己的锁。每个segment使用单独的ReentrantLock（分段锁）。如果操作涉及不同segment，则可以并发执行，如果是同一个segment则会进行锁的竞争和等待。<br>ConcurrentHashMap定位一个元素的过程需要进行两次Hash操作。第一次Hash定位到Segment，第二次Hash定位到元素所在的链表的头部。</p>
-<p>1.8 数组+链表（红黑树）。CAS 和 synchronized 结合实现锁粒度的降低。1.7版本锁的粒度是基于Segment的，包含多个HashEntry，而1.8锁的粒度就是HashEntry。<br>1.8版本的数据结构变得更加简单，使得操作也更加清晰流畅，因为已经使用synchronized来进行同步，所以不需要分段锁的概念，也就不需要Segment这种数据结构了，由于粒度的降低，实现的复杂度也增加了。1.8使用红黑树来优化链表。</p>
-<p>CAS全称Compare and Swap，即比较并替换。CAS本质上很简单，一般至少有3个参数：一个变量v，旧值A，新值B。当且仅当变量v当前的值和旧值A相同时，才会将v的值更新为B。</p>
-<h3 id="3-LinkedHashMap"><a href="#3-LinkedHashMap" class="headerlink" title="3 LinkedHashMap"></a>3 LinkedHashMap</h3><p>Map接口的哈希表和链表实现，迭代顺序可预测。<br>此实现与 HashMap 的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LinkedHashMap&lt;K,V&gt;</span><br><span class="line">    extends HashMap&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;</span><br><span class="line">普通LinkedHashMap条目的HashMap.Node子类。</span><br><span class="line">static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; &#123;</span><br><span class="line">        Entry&lt;K,V&gt; before, after;</span><br><span class="line">        Entry(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            super(hash, key, value, next);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">双向链表的头部（最年长的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; head;</span><br><span class="line">双向链表的尾部（最年轻的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br><span class="line">此链接哈希映射的迭代排序方法：访问顺序为true，插入顺序为false。</span><br><span class="line">final boolean accessOrder;</span><br></pre></td></tr></table></figure>
-<p>双向链表<br>key和value都允许为空<br>key重复会覆盖<br>有序的<br>LinkedHashMap是非线程安全的</p>
-<p>LinkedHashMap中的Entry增加了 before 和 after两个指针，用于维护双向链表。before、after用于维护Entry插入的先后顺序的。正是因为before、after的存在,LinkedHashMap才形成了双向链表。<br>LinkedHashMap可以认为是散列表与链表（HashMap+LinkedList）的结合,它继承了HashMap,也用LinkedList维护插入/访问元素的先后顺序。从性能上而言，因为额外维护了链表的关系，性能上要略差于HashMap。</p>
-<p>TreeMap 是按照 Key 的自然顺序或者 Comprator 的顺序进行排序，内部是通过红黑树来实现。所以要么 key 所属的类实现 Comparable 接口，或者自定义一个实现了 Comparator 接口的比较器，传给 TreeMap 用户 key 的比较。</p>
-<h3 id="4-HashSet"><a href="#4-HashSet" class="headerlink" title="4 HashSet"></a>4 HashSet</h3><p>这个类实现了 Set 接口，由一个哈希表（实际上是一个 HashMap 实例）支持。 它不保证集合的迭代顺序；此类允许空元素。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class HashSet&lt;E&gt;</span><br><span class="line">    extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements Set&lt;E&gt;, Cloneable, java.io.Serializable</span><br><span class="line">private transient HashMap&lt;E,Object&gt; map;</span><br><span class="line">构造一个新的空集； 后备 HashMap 实例具有默认初始容量 (16) 和负载因子 (0.75)。</span><br><span class="line">public HashSet() &#123;</span><br><span class="line">        map &#x3D; new HashMap&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p><strong>为什么元素不能重复</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        return map.put(e, PRESENT)&#x3D;&#x3D;null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>元素值作为的是 map 的 key，map 的 value 则是 PRESENT 变量，这个变量只作为放入 map 时的一个占位符存在。HashMap 的 key 是不能重复的，HashSet 的元素作为 map 的 key，当然也不能重复了。</p>
-<h3 id="5-Iterator"><a href="#5-Iterator" class="headerlink" title="5 Iterator"></a>5 Iterator</h3><p>集合上的迭代器。 迭代器取代了 Java 集合框架中的枚举。 迭代器在两个方面不同于枚举：<br>迭代器允许调用者在具有明确定义语义的迭代期间从底层集合中删除元素。<br>方法名称已得到改进。</p>
-<p>ListIterator<br>public interface ListIterator<E> extends Iterator<E><br>列表的迭代器，允许程序员沿任一方向遍历列表，在迭代期间修改列表，并获取迭代器在列表中的当前位置。ListIterator 没有当前元素；它的光标位置始终位于调用 previous() 返回的元素和调用 next() 返回的元素之间。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>basic</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>11_26_Redis</title>
     <url>/2021/11/26/11-26-Redis/</url>
     <content><![CDATA[<h3 id="1-Redis"><a href="#1-Redis" class="headerlink" title="1 Redis"></a>1 Redis</h3><p>Redis（Remote Dictionary Server )，即远程字典服务，是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库。</p>
@@ -430,6 +430,37 @@
       </tags>
   </entry>
   <entry>
+    <title>11_27_Java</title>
+    <url>/2021/11/27/11-27-Java/</url>
+    <content><![CDATA[<h3 id="1-JVM主要组成部分及其作用"><a href="#1-JVM主要组成部分及其作用" class="headerlink" title="1 JVM主要组成部分及其作用"></a>1 JVM主要组成部分及其作用</h3><p>1 类加载器（ClassLoader）<br>2 运行时数据区（Runtime Data Area)<br>3 执行引擎（Execution Engine）<br>4 本地库接口（Native Interface）</p>
+<p>首先通过类加载器（ClassLoader）会把 Java 代码转换成字节码，运行时数据区（Runtime Data Area）会把字节码加载到内存中，而字节码文件只是 JVM 的一套指令集规范，并不能直接交给底层操作系统去执行，因此需要特定的命令解析器执行引擎（Execution Engine），将字节码翻译成底层系统指令，再交由 CPU 去执行，而这个过程中需要调用其他语言的本地库接口（Native Interface）来实现整个程序的功能。</p>
+<h3 id="2-运行时数据区"><a href="#2-运行时数据区" class="headerlink" title="2 运行时数据区"></a>2 运行时数据区</h3>]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>11_27_Mysql</title>
+    <url>/2021/11/27/11-27-Mysql/</url>
+    <content><![CDATA[<h3 id="1-mysql架构"><a href="#1-mysql架构" class="headerlink" title="1 mysql架构"></a>1 mysql架构</h3><img src="/2021/11/27/11-27-Mysql/mysql.png" class="">
+<p>MySQL可以分为 Server 层和存储引擎两部分。<br>Server 层包括：连接器、查询缓存、分析器、优化器、执⾏器等，涵盖了 MySQL 大多数核心服务功能，以及所有的内置函数（如：日期、时间、数学和加密函数等），所有跨存储引擎的功能都在这一层实现，例如：存储过程、触发器、视图等等。<br>存储引擎层：负责数据的存储和提取。其架构是插件式的，支持 InnoDB、MyISAM 等多个存储引擎。默认的是InnoDB，但是在建表时可以通过 engine = MyISAM 来指定存储引擎。不同存储引擎的表数据存取方式不同，支持的功能也不同。</p>
+<h3 id="2-一条sql语句的执行过程"><a href="#2-一条sql语句的执行过程" class="headerlink" title="2 一条sql语句的执行过程"></a>2 一条sql语句的执行过程</h3><p>1 连接数据库。<br>2 查询缓存。MySQL拿到一个查询请求后，会先到查询缓存看看，之前是不是执行过这条语句。之前执行过的语句及其结果都会以key-value的形式，被直接缓存到内存中。其中，key 是查询语句，value 是查询结果。如果你的查询能够直接在缓存中找到（key），那么这个 value 就会直接返回给客户端。如果语句不在查询缓存中，就会继续后面的执行阶段。但是大多数情况下不建议使用查询缓存。MySQL8.0版本已经将查询缓存功能删除了。<br>3 分析器。进行sql语句的词法分析、语法分析。<br>4 优化器。优化器是在表里有多个索引的时候，决定使用哪个索引；或者在一个语句有多表关联（join）的时候，决定各个表的连接顺序。<br>5 执行器。</p>
+<h3 id="3-索引"><a href="#3-索引" class="headerlink" title="3 索引"></a>3 索引</h3><p>索引的出现是为了提高数据的查询效率，就像书的目录一样。<br>索引的实现通常使用B树及其变种B+树。MySQL中使用较多的索引有 Hash 索引、B+树索引等等。InnoDB存储引擎的默认索引实现为 B+ 树索引。<br>为表设置索引需要付出代价：一是增加了数据库的存储空间，二是在插入和修改数据时要花费较多的时间(因为索引也要随之变动)。<br>建立索引的原则：<br>在最频繁使用的、用以缩小查询范围的字段上建立索引；<br>在频繁使用的、需要排序的字段上建立索引。</p>
+<h3 id="4-索引分类"><a href="#4-索引分类" class="headerlink" title="4 索引分类"></a>4 索引分类</h3><p>数据结构角度：树索引、hash索引。<br>物理存储角度：聚簇索引 与 非聚簇索引。<br><strong>逻辑角度</strong>：普通索引、唯一索引、主键索引、联合索引、全文索引。<br>InnoDB 主键使用的是聚簇索引，MyISAM 不管是主键，还是二级索引使用的都是非聚簇索引。<br>聚簇索引是对磁盘上实际数据重新组织以按指定的一个或多个列的值排序的算法。特点是存储数据的顺序和索引顺序一致。一般情况下主键会默认创建聚簇索引，且一张表只允许存在一个聚簇索引。<br>聚簇索引的叶子节点就是数据节点，而非聚簇索引的叶子节点仍然是索引节点，只不过有指向对应数据的指针。<br>哈希索引：哈希索引能以 O(1) 时间进行查找，但是失去了有序性。无法用于排序与分组、只支持精确查找，无法用于部分查找和范围查找。<br>Mysql中InnoDB引擎有一个特殊的功能叫做自适应哈希索引，它会在内存中基于B+Tree索引的基础上创建一个哈希索引，这让B+Tree索引具备了一些哈希索引的优点。</p>
+<h3 id="5-为什么-InnoDB-存储引擎选用-B-树而不是-B-树？"><a href="#5-为什么-InnoDB-存储引擎选用-B-树而不是-B-树？" class="headerlink" title="5 为什么 InnoDB 存储引擎选用 B+ 树而不是 B 树？"></a>5 为什么 InnoDB 存储引擎选用 B+ 树而不是 B 树？</h3><p>主要考虑的是 IO 对性能的影响，B 树的每个节点都存储数据，而 B+ 树只有叶子节点才存储数据，所以查找相同数据量的情况下，B 树的高度大，IO 更频繁。</p>
+<h3 id="6-B-树"><a href="#6-B-树" class="headerlink" title="6 B+树"></a>6 B+树</h3><p>B+树是B树的一个升级版，相对于B树来说，B+树更充分的利用了节点的空间，让查询速度更加稳定，其速度完全接近于二分法查找。<br>B+树的非叶子节点不保存关键字记录的指针，只进行数据索引，这样使得B+树每个非叶子节点所能保存的关键字大大增加。<br>B+树叶子节点保存了父节点的所有关键字记录的指针，所有数据地址必须要到叶子节点才能获取到。所以每次数据查询的次数都一样。<br>B+树叶子节点的关键字从小到大有序排列（非递减）。<br>进行查找操作时，首先在根节点进行二分查找，找到某个 key 所在的指针，然后递归地在指针所指向的节点进行查找。直到查找到叶子节点，然后在叶子节点上进行二分查找，找出 key 所对应的数据。<br>插入、删除操作会破坏平衡树的平衡性，因此在插入删除操作之后，需要对树进行一个分裂、合并、旋转等操作来维护平衡性。</p>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>another_again</title>
     <url>/2021/11/11/another-again/</url>
     <content><![CDATA[<p>最近一段时间真是太忙了，导师一周开三次会议。选举、打疫苗，开题这些事情充实着我的生活。晚上也没有做噩梦了，心里希望如此。</p>
@@ -440,6 +471,44 @@
       </categories>
       <tags>
         <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>binary_search</title>
+    <url>/2021/09/19/binary-search/</url>
+    <content><![CDATA[<h3 id="704-二分查找"><a href="#704-二分查找" class="headerlink" title="704 二分查找"></a>704 二分查找</h3><p>给定一个n个元素有序的（升序）整型数组nums和一个目标值target，写一个函数搜索nums中的target，如果目标值存在返回下标，否则返回-1。<br>tips<br>你可以假设 nums 中的所有元素是不重复的。<br>n 将在 [1, 10000]之间。<br>nums 的每个元素都将在[-9999, 9999]之间。</p>
+<p><strong>代码</strong><br>思路：有序整型数组查找给定的target，标准的二分查找。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int search(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return -1;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>减少内存消耗</strong><br>变量只有在用到它的时候才定义和实例化<br>尽量避免使用static变量，类里面私有常量可以用final来代替<br>StringBuffer代替String进行字符串相加</p>
+<p><strong>小知识</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">System.out.println(8 &gt;&gt; 1);  &#x2F;&#x2F;4  右移1位相当于除以2</span><br><span class="line">System.out.println(32 &gt;&gt; 3); &#x2F;&#x2F; 4 右移3位相当于除以2^3</span><br><span class="line">System.out.println(8 &lt;&lt; 1);  &#x2F;&#x2F;16 左移1位相当于乘以2</span><br><span class="line">System.out.println(2 &lt;&lt; 3);  &#x2F;&#x2F;16 左移3位相当于乘以2^3</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="278-First-Bad-Version"><a href="#278-First-Bad-Version" class="headerlink" title="278 First Bad Version"></a>278 First Bad Version</h3><p>寻找左侧边界的二分查找<br>你是产品经理，目前正在带领一个团队开发新的产品。不幸的是，你的产品的最新版本没有通过质量检测。由于每个版本都是基于之前的版本开发的，所以错误的版本之后的所有版本都是错的。</p>
+<p>假设你有 n 个版本 [1, 2, …, n]，你想找出导致之后所有版本出错的第一个错误的版本。</p>
+<p>你可以通过调用 bool isBadVersion(version) 接口来判断版本号 version 是否在单元测试中出错。实现一个函数来查找第一个错误的版本。你应该尽量减少对调用 API 的次数。</p>
+<p>tips<br>1 &lt;= bad &lt;= n &lt;= 2^31 - 1</p>
+<p><strong>代码</strong><br>思路：因为每个版本都是基于之前的版本开发的，所以正确的版本之前的版本都是正确的，错误的版本之后的版本都是错误的。因此需要找到正确和错误版本的临界点，可以采用二分查找法，每查找一次都可以缩小范围（左边界或右边界），效率高。<br>实现一</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 二分搜索的演化版本</span><br><span class="line">    public int firstBadVersion(int n) &#123;</span><br><span class="line">        int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        &#x2F;&#x2F; 终止条件是low &#x3D;&#x3D; high</span><br><span class="line">        while (low &lt; high) &#123;</span><br><span class="line">            &#x2F;&#x2F; 防止溢出超时,low和high相加超过int表示的最大范围时就会溢出变为负数</span><br><span class="line">            &#x2F;&#x2F; int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            &#x2F;&#x2F; 错误的版本</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 可能这就是第一个错误的版本</span><br><span class="line">                high &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现二</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        int firstBadVersion &#x3D; n;  &#x2F;&#x2F; 假设n为第一个错误版本</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &gt;&gt; 1;  &#x2F;&#x2F; 防止溢出</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 错误版本，可能是第一个，也可能不是。继续往左边搜索，同时记录下错误版本位置</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">                firstBadVersion &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                &#x2F;&#x2F; 不是错误版本，往右边搜索</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return firstBadVersion;</span><br></pre></td></tr></table></figure>
+
+<h3 id="35-搜索插入位置"><a href="#35-搜索插入位置" class="headerlink" title="35 搜索插入位置"></a>35 搜索插入位置</h3><p>给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。<br>请必须使用时间复杂度为 O(log n) 的算法。</p>
+<p>tips<br>1 &lt;= nums.length &lt;= 10^4<br>-10^4 &lt;= nums[i] &lt;= 10^4<br>nums 为无重复元素的升序排列数组<br>-10^4 &lt;= target &lt;= 10^4</p>
+<p><strong>代码</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int searchInsert(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &gt; nums[middle]) &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;  &#x2F;&#x2F; 目标值未找到，返回应插入的位置</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="二分查找法详解"><a href="#二分查找法详解" class="headerlink" title="二分查找法详解"></a>二分查找法详解</h3><h4 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h4><p><strong>循环结束条件</strong><br>while（low&lt;=high）还是while（low&lt;high);<br>low&lt;=high意味着循环终止条件为low=high+1;<br>low&lt;high意味着循环终止条件为low==high,具体问题具体分析。</p>
+<p><strong>middle值</strong><br>low=middle or low=middle+1 or high=middle or high=middle-1 and so on</p>
+<p><strong>防止溢出</strong><br>初始化时middle=low+(high-low)/2</p>
+]]></content>
+      <categories>
+        <category>Algorithm</category>
+      </categories>
+      <tags>
+        <tag>二分查找</tag>
       </tags>
   </entry>
   <entry>
@@ -502,6 +571,11 @@
       </tags>
   </entry>
   <entry>
+    <title>clean</title>
+    <url>/2021/11/27/clean/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
     <title>Three ways to create Java Multithread</title>
     <url>/2020/09/23/concurrency/</url>
     <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
@@ -519,22 +593,6 @@
       </categories>
       <tags>
         <tag>多线程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>diffchain</title>
-    <url>/2020/11/16/difftimechain/</url>
-    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
-
-]]></content>
-      <categories>
-        <category>数据结构</category>
-      </categories>
-      <tags>
-        <tag>差分时间链</tag>
       </tags>
   </entry>
   <entry>
@@ -563,53 +621,19 @@
       </tags>
   </entry>
   <entry>
-    <title>binary_search</title>
-    <url>/2021/09/19/binary-search/</url>
-    <content><![CDATA[<h3 id="704-二分查找"><a href="#704-二分查找" class="headerlink" title="704 二分查找"></a>704 二分查找</h3><p>给定一个n个元素有序的（升序）整型数组nums和一个目标值target，写一个函数搜索nums中的target，如果目标值存在返回下标，否则返回-1。<br>tips<br>你可以假设 nums 中的所有元素是不重复的。<br>n 将在 [1, 10000]之间。<br>nums 的每个元素都将在[-9999, 9999]之间。</p>
-<p><strong>代码</strong><br>思路：有序整型数组查找给定的target，标准的二分查找。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int search(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return -1;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+    <title>diffchain</title>
+    <url>/2020/11/16/difftimechain/</url>
+    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><strong>减少内存消耗</strong><br>变量只有在用到它的时候才定义和实例化<br>尽量避免使用static变量，类里面私有常量可以用final来代替<br>StringBuffer代替String进行字符串相加</p>
-<p><strong>小知识</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">System.out.println(8 &gt;&gt; 1);  &#x2F;&#x2F;4  右移1位相当于除以2</span><br><span class="line">System.out.println(32 &gt;&gt; 3); &#x2F;&#x2F; 4 右移3位相当于除以2^3</span><br><span class="line">System.out.println(8 &lt;&lt; 1);  &#x2F;&#x2F;16 左移1位相当于乘以2</span><br><span class="line">System.out.println(2 &lt;&lt; 3);  &#x2F;&#x2F;16 左移3位相当于乘以2^3</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
 
-
-<h3 id="278-First-Bad-Version"><a href="#278-First-Bad-Version" class="headerlink" title="278 First Bad Version"></a>278 First Bad Version</h3><p>寻找左侧边界的二分查找<br>你是产品经理，目前正在带领一个团队开发新的产品。不幸的是，你的产品的最新版本没有通过质量检测。由于每个版本都是基于之前的版本开发的，所以错误的版本之后的所有版本都是错的。</p>
-<p>假设你有 n 个版本 [1, 2, …, n]，你想找出导致之后所有版本出错的第一个错误的版本。</p>
-<p>你可以通过调用 bool isBadVersion(version) 接口来判断版本号 version 是否在单元测试中出错。实现一个函数来查找第一个错误的版本。你应该尽量减少对调用 API 的次数。</p>
-<p>tips<br>1 &lt;= bad &lt;= n &lt;= 2^31 - 1</p>
-<p><strong>代码</strong><br>思路：因为每个版本都是基于之前的版本开发的，所以正确的版本之前的版本都是正确的，错误的版本之后的版本都是错误的。因此需要找到正确和错误版本的临界点，可以采用二分查找法，每查找一次都可以缩小范围（左边界或右边界），效率高。<br>实现一</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 二分搜索的演化版本</span><br><span class="line">    public int firstBadVersion(int n) &#123;</span><br><span class="line">        int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        &#x2F;&#x2F; 终止条件是low &#x3D;&#x3D; high</span><br><span class="line">        while (low &lt; high) &#123;</span><br><span class="line">            &#x2F;&#x2F; 防止溢出超时,low和high相加超过int表示的最大范围时就会溢出变为负数</span><br><span class="line">            &#x2F;&#x2F; int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            &#x2F;&#x2F; 错误的版本</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 可能这就是第一个错误的版本</span><br><span class="line">                high &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>实现二</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        int firstBadVersion &#x3D; n;  &#x2F;&#x2F; 假设n为第一个错误版本</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &gt;&gt; 1;  &#x2F;&#x2F; 防止溢出</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 错误版本，可能是第一个，也可能不是。继续往左边搜索，同时记录下错误版本位置</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">                firstBadVersion &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                &#x2F;&#x2F; 不是错误版本，往右边搜索</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return firstBadVersion;</span><br></pre></td></tr></table></figure>
-
-<h3 id="35-搜索插入位置"><a href="#35-搜索插入位置" class="headerlink" title="35 搜索插入位置"></a>35 搜索插入位置</h3><p>给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。<br>请必须使用时间复杂度为 O(log n) 的算法。</p>
-<p>tips<br>1 &lt;= nums.length &lt;= 10^4<br>-10^4 &lt;= nums[i] &lt;= 10^4<br>nums 为无重复元素的升序排列数组<br>-10^4 &lt;= target &lt;= 10^4</p>
-<p><strong>代码</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int searchInsert(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &gt; nums[middle]) &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;  &#x2F;&#x2F; 目标值未找到，返回应插入的位置</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="二分查找法详解"><a href="#二分查找法详解" class="headerlink" title="二分查找法详解"></a>二分查找法详解</h3><h4 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h4><p><strong>循环结束条件</strong><br>while（low&lt;=high）还是while（low&lt;high);<br>low&lt;=high意味着循环终止条件为low=high+1;<br>low&lt;high意味着循环终止条件为low==high,具体问题具体分析。</p>
-<p><strong>middle值</strong><br>low=middle or low=middle+1 or high=middle or high=middle-1 and so on</p>
-<p><strong>防止溢出</strong><br>初始化时middle=low+(high-low)/2</p>
 ]]></content>
       <categories>
-        <category>Algorithm</category>
+        <category>数据结构</category>
       </categories>
       <tags>
-        <tag>二分查找</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>dream</title>
-    <url>/2021/11/23/dream/</url>
-    <content><![CDATA[<p>昨天晚上又做了个奇怪的梦，已经好几天没有梦见过了。梦里一切是那么熟悉却又感到陌生。<br>早上起来脑海里还记忆犹新，仿佛就是前一刻，但又觉得已过数年。</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
+        <tag>差分时间链</tag>
       </tags>
   </entry>
   <entry>
@@ -670,6 +694,18 @@
       </tags>
   </entry>
   <entry>
+    <title>dream</title>
+    <url>/2021/11/23/dream/</url>
+    <content><![CDATA[<p>昨天晚上又做了个奇怪的梦，已经好几天没有梦见过了。梦里一切是那么熟悉却又感到陌生。<br>早上起来脑海里还记忆犹新，仿佛就是前一刻，但又觉得已过数年。</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>evening</title>
     <url>/2021/08/25/evening/</url>
     <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
@@ -705,6 +741,19 @@
       </tags>
   </entry>
   <entry>
+    <title>guokao</title>
+    <url>/2021/11/28/guokao/</url>
+    <content><![CDATA[<p>国考日，cjm，希望你今天发挥出自己的水平，成功上岸。我相信你会考上的！希望你未来工作顺利，身体健康，生活幸福美满，过上自己追求的生活。best wishes！愿你未来每一天都开开心心、快快乐乐的！我为你祈福。</p>
+<p>农历十月二十四</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>human</title>
     <url>/2021/10/25/human/</url>
     <content><![CDATA[<p><strong>人性经的起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
@@ -727,6 +776,20 @@
 <p>年少轻狂的岁月，沉淀下来的是那些再也回不到的过去。而总让人感叹的，<strong>则是未曾珍惜而失去的那些</strong>。但这些，恰恰也是生活让你去体会的。因为年少轻狂的岁月，一生也只有一次。当你紧握双手，里面什么也没有；当你打开双手，世界就在你手中。</p>
 <p>所谓成长，不过是用时间慢慢擦亮你的眼睛。少时看重的，年长后却视若鸿毛；少时看轻的，年长后却视若泰山。成长之路，亦是渐渐放下执念，内心归于平静的旅程，也许，我们永远都不会知道自己能走到何方，遇见何人，最后会变成什么样的人。但请一定要记住，能让自己登高的，永远不会是别人的肩膀。人生的道路刚刚启程，<strong>懂得珍惜、保护、敢于承担责任，顺顺利利的活完短短的一生</strong>。</p>
 <p>农历九月十五</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>spring</title>
+    <url>/2021/03/24/hurt/</url>
+    <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
+<pre><code>        你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</code></pre>
+<p>辛丑牛年农历二月十二</p>
 ]]></content>
       <categories>
         <category>生活</category>
@@ -761,11 +824,24 @@
       </tags>
   </entry>
   <entry>
-    <title>spring</title>
-    <url>/2021/03/24/hurt/</url>
-    <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。</p>
-<pre><code>        你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</code></pre>
-<p>辛丑牛年农历二月十二</p>
+    <title>last_communication</title>
+    <url>/2021/10/25/last-communication/</url>
+    <content><![CDATA[<p>今天已经是10月25号了，来北京也一年多了。这一年经历了太多事，令人难忘、怀念、伤心与后悔的事。今天中午的聊天或许是最后一次了吧，你的笑脸多么令人难忘，合适真的太重要了。唉，或许这就是命吧！尽管你是如此的任性、无理取闹，但我知道你内心单纯善良，说实话，你是我遇见过的最单纯可爱却又任性取闹的女孩。真的是对你又爱又狠。但这一切都已经过去了。希望你这一辈子都过的好，幸福快乐，身体健康，工作顺利。best wishes！cjm。</p>
+<p>农历九月二十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>last_nightmare</title>
+    <url>/2021/11/05/last-nightmare/</url>
+    <content><![CDATA[<p>今天起了个大早，因为要去投票。选举投票是一项光荣而神圣的事情。</p>
+<p>这几天不知道为什么老是做一些奇奇怪怪的梦，充满着可怕、恐惧、与各种不好的东西。还是得调整一下自己的状态，这令人害怕。</p>
+<p>农历十月初一</p>
 ]]></content>
       <categories>
         <category>生活</category>
@@ -841,30 +917,49 @@
       </tags>
   </entry>
   <entry>
-    <title>last_nightmare</title>
-    <url>/2021/11/05/last-nightmare/</url>
-    <content><![CDATA[<p>今天起了个大早，因为要去投票。选举投票是一项光荣而神圣的事情。</p>
-<p>这几天不知道为什么老是做一些奇奇怪怪的梦，充满着可怕、恐惧、与各种不好的东西。还是得调整一下自己的状态，这令人害怕。</p>
-<p>农历十月初一</p>
+    <title>md5+salt</title>
+    <url>/2020/10/10/md5-salt/</url>
+    <content><![CDATA[<p>传统的md5算法通过产生一个128位（16字节）的散列值（hash value），用于确保信息的安全性。但随着技术的发展，md5无法防止碰撞（collision）且可以被加以破解。<br>salt的出现可以一定程度上解决这个问题。</p>
+<h3 id="md5-salt实现原理"><a href="#md5-salt实现原理" class="headerlink" title="md5+salt实现原理"></a>md5+salt实现原理</h3><p><strong>注册</strong><br>1、用户提供用户名和密码<br>2、系统提供一个salt，salt+密码进行散列生成一个hash<br>3、系统将hash和salt分别存放到数据库中</p>
+<p><strong>登录</strong><br>1、用户填写用户名和密码<br>2、系统通过用户名找到对应的hash和salt<br>3、系统将密码和salt进行散列生成new_hash<br>4、比较hash与new_hash，相等则表示密码正确，反之密码错误。</p>
+<p><strong>流程图如下</strong></p>
+<img src="/2020/10/10/md5-salt/md5.png" class="">
+
+<h4 id="md5-salt"><a href="#md5-salt" class="headerlink" title="md5+salt"></a>md5+salt</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;md5</span><br><span class="line">  Md5Hash md5Hash &#x3D; new Md5Hash(&quot;123456&quot;);</span><br><span class="line">  System.out.println(md5Hash.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;md5+salt</span><br><span class="line">  Md5Hash md5HashSalt &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;);</span><br><span class="line">  System.out.println(md5HashSalt.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  e10adc3949ba59abbe56e057f20f883e</span><br><span class="line">  5f9dcb70720b6f58a2b219015fad5c30</span><br></pre></td></tr></table></figure>
+
+<h4 id="md5-salt-hash散列"><a href="#md5-salt-hash散列" class="headerlink" title="md5+salt+hash散列"></a>md5+salt+hash散列</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;md5+salt+hash散列</span><br><span class="line">  Md5Hash md5Hash1 &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;, 1024);</span><br><span class="line">  System.out.println(md5Hash1.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  14b9f6ecccb925f15cf92c44ff9326ce</span><br></pre></td></tr></table></figure>
+
+<h3 id="shiro实现md5-salt"><a href="#shiro实现md5-salt" class="headerlink" title="shiro实现md5+salt"></a>shiro实现md5+salt</h3><p><strong>自定义realm</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 自定义realm  md5+salt+hash散列</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CustomMd5Realm extends AuthorizingRealm &#123;</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException &#123;</span><br><span class="line">        &#x2F;&#x2F;获取身份信息</span><br><span class="line">        String principal &#x3D; (String) token.getPrincipal();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;根据用户名查询数据库</span><br><span class="line">        if (&quot;hj&quot;.equals(principal)) &#123;</span><br><span class="line">            &#x2F;&#x2F;参数1：用户名  参数2：md5+salt之后的密码 参数3：注册时的salt  参数4：realm名字</span><br><span class="line">            return new SimpleAuthenticationInfo(principal, &quot;14b9f6ecccb925f15cf92c44ff9326ce&quot;,</span><br><span class="line">                    ByteSource.Util.bytes(&quot;x0*7ps&quot;), this.getName());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>测试验证</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestCustomMd5Authenticator &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        DefaultSecurityManager defaultSecurityManager &#x3D; new DefaultSecurityManager();</span><br><span class="line"></span><br><span class="line">        CustomMd5Realm realm &#x3D; new CustomMd5Realm();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;realm使用hash凭证匹配器</span><br><span class="line">        HashedCredentialsMatcher credentialsMatcher &#x3D; new HashedCredentialsMatcher();</span><br><span class="line">        &#x2F;&#x2F;设置算法为md5</span><br><span class="line">        credentialsMatcher.setHashAlgorithmName(&quot;md5&quot;);</span><br><span class="line">        &#x2F;&#x2F;设置散列次数为1024</span><br><span class="line">        credentialsMatcher.setHashIterations(1024);</span><br><span class="line"></span><br><span class="line">        realm.setCredentialsMatcher(credentialsMatcher);</span><br><span class="line">        defaultSecurityManager.setRealm(realm);</span><br><span class="line"></span><br><span class="line">        SecurityUtils.setSecurityManager(defaultSecurityManager);</span><br><span class="line"></span><br><span class="line">        Subject subject &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">        UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hj&quot;, &quot;123456&quot;);</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">            System.out.println(&quot;login success&quot;);</span><br><span class="line">        &#125; catch (UnknownAccountException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;username error&quot;);</span><br><span class="line">        &#125; catch (IncorrectCredentialsException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;password error&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
 ]]></content>
       <categories>
-        <category>生活</category>
+        <category>技术栈</category>
       </categories>
       <tags>
-        <tag>日志</tag>
+        <tag>密码学</tag>
       </tags>
   </entry>
   <entry>
-    <title>last_communication</title>
-    <url>/2021/10/25/last-communication/</url>
-    <content><![CDATA[<p>今天已经是10月25号了，来北京也一年多了。这一年经历了太多事，令人难忘、怀念、伤心与后悔的事。今天中午的聊天或许是最后一次了吧，你的笑脸多么令人难忘，合适真的太重要了。唉，或许这就是命吧！尽管你是如此的任性、无理取闹，但我知道你内心单纯善良，说实话，你是我遇见过的最单纯可爱却又任性取闹的女孩。真的是对你又爱又狠。但这一切都已经过去了。希望你这一辈子都过的好，幸福快乐，身体健康，工作顺利。best wishes！cjm。</p>
-<p>农历九月二十</p>
+    <title>memory</title>
+    <url>/2021/03/21/memory/</url>
+    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
+<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
+<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
+<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
+<img src="/2021/03/21/memory/memory.jpg" class="">
+
+<p>辛丑牛年农历二月初十</p>
 ]]></content>
       <categories>
         <category>生活</category>
       </categories>
       <tags>
-        <tag>日志</tag>
+        <tag>旅行</tag>
       </tags>
   </entry>
   <entry>
@@ -1131,56 +1226,12 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>md5+salt</title>
-    <url>/2020/10/10/md5-salt/</url>
-    <content><![CDATA[<p>传统的md5算法通过产生一个128位（16字节）的散列值（hash value），用于确保信息的安全性。但随着技术的发展，md5无法防止碰撞（collision）且可以被加以破解。<br>salt的出现可以一定程度上解决这个问题。</p>
-<h3 id="md5-salt实现原理"><a href="#md5-salt实现原理" class="headerlink" title="md5+salt实现原理"></a>md5+salt实现原理</h3><p><strong>注册</strong><br>1、用户提供用户名和密码<br>2、系统提供一个salt，salt+密码进行散列生成一个hash<br>3、系统将hash和salt分别存放到数据库中</p>
-<p><strong>登录</strong><br>1、用户填写用户名和密码<br>2、系统通过用户名找到对应的hash和salt<br>3、系统将密码和salt进行散列生成new_hash<br>4、比较hash与new_hash，相等则表示密码正确，反之密码错误。</p>
-<p><strong>流程图如下</strong></p>
-<img src="/2020/10/10/md5-salt/md5.png" class="">
-
-<h4 id="md5-salt"><a href="#md5-salt" class="headerlink" title="md5+salt"></a>md5+salt</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;md5</span><br><span class="line">  Md5Hash md5Hash &#x3D; new Md5Hash(&quot;123456&quot;);</span><br><span class="line">  System.out.println(md5Hash.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;md5+salt</span><br><span class="line">  Md5Hash md5HashSalt &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;);</span><br><span class="line">  System.out.println(md5HashSalt.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  e10adc3949ba59abbe56e057f20f883e</span><br><span class="line">  5f9dcb70720b6f58a2b219015fad5c30</span><br></pre></td></tr></table></figure>
-
-<h4 id="md5-salt-hash散列"><a href="#md5-salt-hash散列" class="headerlink" title="md5+salt+hash散列"></a>md5+salt+hash散列</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;md5+salt+hash散列</span><br><span class="line">  Md5Hash md5Hash1 &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;, 1024);</span><br><span class="line">  System.out.println(md5Hash1.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  14b9f6ecccb925f15cf92c44ff9326ce</span><br></pre></td></tr></table></figure>
-
-<h3 id="shiro实现md5-salt"><a href="#shiro实现md5-salt" class="headerlink" title="shiro实现md5+salt"></a>shiro实现md5+salt</h3><p><strong>自定义realm</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 自定义realm  md5+salt+hash散列</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CustomMd5Realm extends AuthorizingRealm &#123;</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException &#123;</span><br><span class="line">        &#x2F;&#x2F;获取身份信息</span><br><span class="line">        String principal &#x3D; (String) token.getPrincipal();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;根据用户名查询数据库</span><br><span class="line">        if (&quot;hj&quot;.equals(principal)) &#123;</span><br><span class="line">            &#x2F;&#x2F;参数1：用户名  参数2：md5+salt之后的密码 参数3：注册时的salt  参数4：realm名字</span><br><span class="line">            return new SimpleAuthenticationInfo(principal, &quot;14b9f6ecccb925f15cf92c44ff9326ce&quot;,</span><br><span class="line">                    ByteSource.Util.bytes(&quot;x0*7ps&quot;), this.getName());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>测试验证</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestCustomMd5Authenticator &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        DefaultSecurityManager defaultSecurityManager &#x3D; new DefaultSecurityManager();</span><br><span class="line"></span><br><span class="line">        CustomMd5Realm realm &#x3D; new CustomMd5Realm();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;realm使用hash凭证匹配器</span><br><span class="line">        HashedCredentialsMatcher credentialsMatcher &#x3D; new HashedCredentialsMatcher();</span><br><span class="line">        &#x2F;&#x2F;设置算法为md5</span><br><span class="line">        credentialsMatcher.setHashAlgorithmName(&quot;md5&quot;);</span><br><span class="line">        &#x2F;&#x2F;设置散列次数为1024</span><br><span class="line">        credentialsMatcher.setHashIterations(1024);</span><br><span class="line"></span><br><span class="line">        realm.setCredentialsMatcher(credentialsMatcher);</span><br><span class="line">        defaultSecurityManager.setRealm(realm);</span><br><span class="line"></span><br><span class="line">        SecurityUtils.setSecurityManager(defaultSecurityManager);</span><br><span class="line"></span><br><span class="line">        Subject subject &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">        UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hj&quot;, &quot;123456&quot;);</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">            System.out.println(&quot;login success&quot;);</span><br><span class="line">        &#125; catch (UnknownAccountException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;username error&quot;);</span><br><span class="line">        &#125; catch (IncorrectCredentialsException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;password error&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-]]></content>
-      <categories>
-        <category>技术栈</category>
-      </categories>
-      <tags>
-        <tag>密码学</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>memory</title>
-    <url>/2021/03/21/memory/</url>
-    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
-<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
-<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
-<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
-<img src="/2021/03/21/memory/memory.jpg" class="">
-
-<p>辛丑牛年农历二月初十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>旅行</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>nightmare</title>
-    <url>/2021/11/02/nightmare/</url>
-    <content><![CDATA[<p>今天已经是11月2号了，昨晚的噩梦令我心惊胆战，后怕。不知何时这已经从美梦变成了噩梦了。害怕、恐惧。但又觉得值得怀念。唉！往前看，做好当下的事情。理工的记忆永留在心里吧！论文、工作，未来才是most important。加油吧！</p>
-<p>农历九月二十八日</p>
+    <title>new_day</title>
+    <url>/2021/10/24/new-day/</url>
+    <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
+<p>下午呆坐在实验室的我静静的听着歌，一首记忆发光让我想起了18年，三年了，《我的青春遇见你》这部电视剧又在脑海里回忆。直接看了最后一集，羡慕陈也与李招娣的爱情。一路走来，嫁给爱情是多么美好啊！不知不觉自己竟然流泪了，是啊，就像招娣拒绝贾方舟所说的，这座城市很大，坐在车里看外面的世界，灯红酒绿的，给人很美好的感觉。但你下车之后，漫步在雨中，发现这才是我的生活。是啊，生活中大多数人是陈也，不是贾方舟。那时的街道没有车水马龙，也没有太多的钢筋水泥，我们的生活却充实有趣。</p>
+<p>不要在怀念过去的人和事物中浪费掉你现在的生活。定个三年之约，那时的我们一定会是与众不同的。</p>
+<p>农历九月十九</p>
 ]]></content>
       <categories>
         <category>生活</category>
@@ -1194,6 +1245,19 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
     <url>/2021/11/04/nightmare-again/</url>
     <content><![CDATA[<p>一连几天的噩梦让人浑身不舒服，为什么会做噩梦呢？难道11月是噩梦的开端？<br>当然不是，一天天的太累了，读研真的好难啊！各种压力纷涌而至，躲不掉也必须要解决。时间飞逝，希望赶快毕业，找份好工作。</p>
 <p>农历九月三十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>nightmare</title>
+    <url>/2021/11/02/nightmare/</url>
+    <content><![CDATA[<p>今天已经是11月2号了，昨晚的噩梦令我心惊胆战，后怕。不知何时这已经从美梦变成了噩梦了。害怕、恐惧。但又觉得值得怀念。唉！往前看，做好当下的事情。理工的记忆永留在心里吧！论文、工作，未来才是most important。加油吧！</p>
+<p>农历九月二十八日</p>
 ]]></content>
       <categories>
         <category>生活</category>
@@ -1243,21 +1307,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>如晴似雨</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>new_day</title>
-    <url>/2021/10/24/new-day/</url>
-    <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
-<p>下午呆坐在实验室的我静静的听着歌，一首记忆发光让我想起了18年，三年了，《我的青春遇见你》这部电视剧又在脑海里回忆。直接看了最后一集，羡慕陈也与李招娣的爱情。一路走来，嫁给爱情是多么美好啊！不知不觉自己竟然流泪了，是啊，就像招娣拒绝贾方舟所说的，这座城市很大，坐在车里看外面的世界，灯红酒绿的，给人很美好的感觉。但你下车之后，漫步在雨中，发现这才是我的生活。是啊，生活中大多数人是陈也，不是贾方舟。那时的街道没有车水马龙，也没有太多的钢筋水泥，我们的生活却充实有趣。</p>
-<p>不要在怀念过去的人和事物中浪费掉你现在的生活。定个三年之约，那时的我们一定会是与众不同的。</p>
-<p>农历九月十九</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -1341,42 +1390,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>11_27_Java</title>
-    <url>/2021/11/27/11-27-Java/</url>
-    <content><![CDATA[<h3 id="1-JVM主要组成部分及其作用"><a href="#1-JVM主要组成部分及其作用" class="headerlink" title="1 JVM主要组成部分及其作用"></a>1 JVM主要组成部分及其作用</h3><p>1 类加载器（ClassLoader）<br>2 运行时数据区（Runtime Data Area)<br>3 执行引擎（Execution Engine）<br>4 本地库接口（Native Interface）</p>
-<p>首先通过类加载器（ClassLoader）会把 Java 代码转换成字节码，运行时数据区（Runtime Data Area）会把字节码加载到内存中，而字节码文件只是 JVM 的一套指令集规范，并不能直接交给底层操作系统去执行，因此需要特定的命令解析器执行引擎（Execution Engine），将字节码翻译成底层系统指令，再交由 CPU 去执行，而这个过程中需要调用其他语言的本地库接口（Native Interface）来实现整个程序的功能。</p>
-<h3 id="2-运行时数据区"><a href="#2-运行时数据区" class="headerlink" title="2 运行时数据区"></a>2 运行时数据区</h3>]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>clean</title>
-    <url>/2021/11/27/clean/</url>
-    <content><![CDATA[]]></content>
-  </entry>
-  <entry>
-    <title>11_27_Mysql</title>
-    <url>/2021/11/27/11-27-Mysql/</url>
-    <content><![CDATA[<h3 id="1-mysql架构"><a href="#1-mysql架构" class="headerlink" title="1 mysql架构"></a>1 mysql架构</h3><img src="/2021/11/27/11-27-Mysql/mysql.png" class="">
-<p>MySQL可以分为 Server 层和存储引擎两部分。<br>Server 层包括：连接器、查询缓存、分析器、优化器、执⾏器等，涵盖了 MySQL 大多数核心服务功能，以及所有的内置函数（如：日期、时间、数学和加密函数等），所有跨存储引擎的功能都在这一层实现，例如：存储过程、触发器、视图等等。<br>存储引擎层：负责数据的存储和提取。其架构是插件式的，支持 InnoDB、MyISAM 等多个存储引擎。默认的是InnoDB，但是在建表时可以通过 engine = MyISAM 来指定存储引擎。不同存储引擎的表数据存取方式不同，支持的功能也不同。</p>
-<h3 id="2-一条sql语句的执行过程"><a href="#2-一条sql语句的执行过程" class="headerlink" title="2 一条sql语句的执行过程"></a>2 一条sql语句的执行过程</h3><p>1 连接数据库。<br>2 查询缓存。MySQL拿到一个查询请求后，会先到查询缓存看看，之前是不是执行过这条语句。之前执行过的语句及其结果都会以key-value的形式，被直接缓存到内存中。其中，key 是查询语句，value 是查询结果。如果你的查询能够直接在缓存中找到（key），那么这个 value 就会直接返回给客户端。如果语句不在查询缓存中，就会继续后面的执行阶段。但是大多数情况下不建议使用查询缓存。MySQL8.0版本已经将查询缓存功能删除了。<br>3 分析器。进行sql语句的词法分析、语法分析。<br>4 优化器。优化器是在表里有多个索引的时候，决定使用哪个索引；或者在一个语句有多表关联（join）的时候，决定各个表的连接顺序。<br>5 执行器。</p>
-<h3 id="3-索引"><a href="#3-索引" class="headerlink" title="3 索引"></a>3 索引</h3><p>索引的出现是为了提高数据的查询效率，就像书的目录一样。<br>索引的实现通常使用B树及其变种B+树。MySQL中使用较多的索引有 Hash 索引、B+树索引等等。InnoDB存储引擎的默认索引实现为 B+ 树索引。<br>为表设置索引需要付出代价：一是增加了数据库的存储空间，二是在插入和修改数据时要花费较多的时间(因为索引也要随之变动)。<br>建立索引的原则：<br>在最频繁使用的、用以缩小查询范围的字段上建立索引；<br>在频繁使用的、需要排序的字段上建立索引。</p>
-<h3 id="4-索引分类"><a href="#4-索引分类" class="headerlink" title="4 索引分类"></a>4 索引分类</h3><p>数据结构角度：树索引、hash索引。<br>物理存储角度：聚簇索引 与 非聚簇索引。<br><strong>逻辑角度</strong>：普通索引、唯一索引、主键索引、联合索引、全文索引。<br>InnoDB 主键使用的是聚簇索引，MyISAM 不管是主键，还是二级索引使用的都是非聚簇索引。<br>聚簇索引是对磁盘上实际数据重新组织以按指定的一个或多个列的值排序的算法。特点是存储数据的顺序和索引顺序一致。一般情况下主键会默认创建聚簇索引，且一张表只允许存在一个聚簇索引。<br>聚簇索引的叶子节点就是数据节点，而非聚簇索引的叶子节点仍然是索引节点，只不过有指向对应数据的指针。<br>哈希索引：哈希索引能以 O(1) 时间进行查找，但是失去了有序性。无法用于排序与分组、只支持精确查找，无法用于部分查找和范围查找。<br>Mysql中InnoDB引擎有一个特殊的功能叫做自适应哈希索引，它会在内存中基于B+Tree索引的基础上创建一个哈希索引，这让B+Tree索引具备了一些哈希索引的优点。</p>
-<h3 id="5-为什么-InnoDB-存储引擎选用-B-树而不是-B-树？"><a href="#5-为什么-InnoDB-存储引擎选用-B-树而不是-B-树？" class="headerlink" title="5 为什么 InnoDB 存储引擎选用 B+ 树而不是 B 树？"></a>5 为什么 InnoDB 存储引擎选用 B+ 树而不是 B 树？</h3><p>主要考虑的是 IO 对性能的影响，B 树的每个节点都存储数据，而 B+ 树只有叶子节点才存储数据，所以查找相同数据量的情况下，B 树的高度大，IO 更频繁。</p>
-<h3 id="6-B-树"><a href="#6-B-树" class="headerlink" title="6 B+树"></a>6 B+树</h3><p>B+树是B树的一个升级版，相对于B树来说，B+树更充分的利用了节点的空间，让查询速度更加稳定，其速度完全接近于二分法查找。<br>B+树的非叶子节点不保存关键字记录的指针，只进行数据索引，这样使得B+树每个非叶子节点所能保存的关键字大大增加。<br>B+树叶子节点保存了父节点的所有关键字记录的指针，所有数据地址必须要到叶子节点才能获取到。所以每次数据查询的次数都一样。<br>B+树叶子节点的关键字从小到大有序排列（非递减）。<br>进行查找操作时，首先在根节点进行二分查找，找到某个 key 所在的指针，然后递归地在指针所指向的节点进行查找。直到查找到叶子节点，然后在叶子节点上进行二分查找，找出 key 所对应的数据。<br>插入、删除操作会破坏平衡树的平衡性，因此在插入删除操作之后，需要对树进行一个分裂、合并、旋转等操作来维护平衡性。</p>
-]]></content>
-      <categories>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
       </tags>
   </entry>
 </search>
