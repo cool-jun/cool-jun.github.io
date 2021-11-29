@@ -21,39 +21,6 @@
       </tags>
   </entry>
   <entry>
-    <title>1031_java</title>
-    <url>/2021/10/31/1031-java/</url>
-    <content><![CDATA[<h3 id="1-Java创建对象的方法"><a href="#1-Java创建对象的方法" class="headerlink" title="1 Java创建对象的方法"></a>1 Java创建对象的方法</h3><p>new<br>反射 newInstance()<br>clone()<br>反序列化</p>
-<h3 id="2-Java动态代理、应用"><a href="#2-Java动态代理、应用" class="headerlink" title="2 Java动态代理、应用"></a>2 Java动态代理、应用</h3><p>静态代理：创建一个接口，被代理的类实现该接口。之后创建一个代理类，也实现这个接口。在代理类中持有一个被代理对象的引用，然后在代理类方法中调用该对象的方法。<br><strong>实现</strong><br>编写一个接口UserService，以及它的一个实现类UserServiceImpl</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface UserService &#123;</span><br><span class="line">    void hello();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class UserServiceImpl implements UserService &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void hello() &#123;</span><br><span class="line">        System.out.println(&quot;hello hj!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>现在想对UserServiceImpl类增加一些功能，这时可通过静态代理。编写一个代理类 UserServiceProxy并实现UserService接口。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 代理类</span><br><span class="line">public class UserServiceProxy implements UserService &#123;</span><br><span class="line">    private UserService target;  &#x2F;&#x2F; 被代理的对象</span><br><span class="line"></span><br><span class="line">    public UserServiceProxy(UserService target) &#123;</span><br><span class="line">        this.target &#x3D; target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void hello() &#123;</span><br><span class="line">        System.out.println(&quot;invoke before!&quot;);</span><br><span class="line">        target.hello();</span><br><span class="line">        System.out.println(&quot;invoke after!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class TestProxy &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        UserService userService &#x3D; new UserServiceImpl();</span><br><span class="line">        UserService proxy &#x3D; new UserServiceProxy(userService);</span><br><span class="line">        proxy.hello();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>缺点：代理只能为一个类服务，如果需要代理的类很多，那么就需要编写大量的代理类。代码冗余、维护性差。</p>
-<p><strong>动态代理</strong>：让代理类动态的生成，在运行时创建代理类。<br>1 通过实现接口的方式—-&gt;JDK动态代理<br>2 通过继承类的方式——&gt;CGLIB动态代理</p>
-<p>** JDK动态代理 **<br>主要涉及 java.lang.reflect.Proxy 类 和 java.lang.reflect.InvocationHandler 接口。</p>
-<p>编写一个处理器 LogHandler 类，提供日志增强功能，并实现 InvocationHandler 接口；<br>在 LogHandler 中维护一个目标对象，这个对象是被代理的对象；<br>在 invoke 方法中编写方法调用的处理逻辑。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LogHandler implements InvocationHandler &#123;</span><br><span class="line">    Object target;  &#x2F;&#x2F; 被代理的对象，实际的方法执行者</span><br><span class="line"></span><br><span class="line">    public LogHandler(Object target) &#123;</span><br><span class="line">        this.target &#x3D; target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</span><br><span class="line">        System.out.printf(&quot;log start time [%s]%n&quot;, new Date());</span><br><span class="line">        Object result &#x3D; method.invoke(target, args);  &#x2F;&#x2F; 调用target的method方法</span><br><span class="line">        System.out.printf(&quot;log end time [%s]%n&quot;, new Date());</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态代理</span><br><span class="line">        &#x2F;&#x2F; 创建被代理的对象，UserService接口的实现类</span><br><span class="line">        UserServiceImpl userServiceImpl &#x3D; new UserServiceImpl();</span><br><span class="line">        &#x2F;&#x2F; 获取对应的ClassLoader</span><br><span class="line">        ClassLoader classLoader &#x3D; userServiceImpl.getClass().getClassLoader();</span><br><span class="line">        &#x2F;&#x2F; 获取所有接口的Class，这里的UserServiceImpl类只实现了一个接口UserService</span><br><span class="line">        Class[] interfaces &#x3D; userServiceImpl.getClass().getInterfaces();</span><br><span class="line">        &#x2F;&#x2F; 创建一个将传递给代理类的 处理器，处理所有代理对象上的方法调用</span><br><span class="line">        InvocationHandler logHandler &#x3D; new LogHandler(userServiceImpl);</span><br><span class="line">        &#x2F;**</span><br><span class="line">         * 根据上面的信息，创建代理对象的过程如下：</span><br><span class="line">         * JDK会根据传入的参数动态地在内存中创建和.class文件等同的字节码</span><br><span class="line">         * 根据相应的字节码转换成对应的class</span><br><span class="line">         * 调用newInstance()方法创建代理实例</span><br><span class="line">         *&#x2F;</span><br><span class="line">        UserService proxy &#x3D; (UserService) Proxy.newProxyInstance(classLoader, interfaces, logHandler);</span><br><span class="line">        &#x2F;&#x2F; 调用代理的方法</span><br><span class="line">        proxy.hello();</span><br></pre></td></tr></table></figure>
-
-<p><strong>InvocationHandler</strong>接口</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">处理代理实例上的方法调用并返回结果。</span><br><span class="line">当在与其关联的代理实例上调用方法时，将在调用处理程序上调用此方法。</span><br><span class="line">public interface InvocationHandler &#123;</span><br><span class="line">    public Object invoke(Object proxy, Method method, Object[] args)</span><br><span class="line">        throws Throwable;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>Proxy</strong>类</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">返回指定接口的代理类的实例，该接口将方法调用分派到指定的调用处理程序。</span><br><span class="line">public static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces, InvocationHandler h) throws IllegalArgumentException</span><br><span class="line">loader – 定义代理类的类加载器</span><br><span class="line">interface - 代理类要实现的接口列表</span><br><span class="line">h – 将方法调用分派到的调用处理程序</span><br><span class="line"></span><br><span class="line">当且仅当使用 getProxyClass 方法或 newProxyInstance 方法将指定的类动态生成为代理类时，才返回 true。</span><br><span class="line">public static boolean isProxyClass(Class&lt;?&gt; cl) &#123;&#125;</span><br><span class="line"></span><br><span class="line">返回给定类加载器和接口数组的代理类的 java.lang.Class 对象。代理类将由指定的类加载器定义，并将实现所有提供的接口。如果任何给定的接口是非公共的，则代理类将是非公共的。如果类加载器已经定义了相同接口排列的代理类，则返回现有的代理类；否则，这些接口的代理类将动态生成并由类加载器定义。</span><br><span class="line">private static Class&lt;?&gt; getProxyClass(ClassLoader loader, Class&lt;?&gt;... interfaces)</span><br><span class="line"></span><br><span class="line">返回指定代理实例的调用处理程序。</span><br><span class="line">public static InvocationHandler getInvocationHandler(Object proxy) throws IllegalArgumentException</span><br></pre></td></tr></table></figure>
-
-<p>JDK动态代理 VS CGLIB动态代理</p>
-<p>JDK动态代理：基于Java反射机制实现，必须要实现了接口的业务类才能用这种办法生成代理对象。<br>优势：最小化依赖关系，减少依赖意味着简化开发和维护，JDK 本身的支持，可能比 CGLIB 更加可靠。<br>平滑进行 JDK 版本升级，而字节码类库通常需要进行更新以保证在新版 Java 上能够使用。<br>代码实现简单。</p>
-<p>CGLIB动态代理：基于ASM机制实现，通过生成业务类的子类作为代理类。<br>优势：无需实现接口，达到代理类无侵入<br>只操作我们关心的类，而不必为其他相关类增加工作量。<br>高性能</p>
-<p>应用<br>Spring AOP<br>权限认证<br>日志以及事务管理</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>basic</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>11_10_Java</title>
     <url>/2021/11/10/11-10-Java/</url>
     <content><![CDATA[<h3 id="1-递归和迭代的区别"><a href="#1-递归和迭代的区别" class="headerlink" title="1 递归和迭代的区别"></a>1 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中, 问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远变近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
@@ -111,6 +78,39 @@
       </tags>
   </entry>
   <entry>
+    <title>1031_java</title>
+    <url>/2021/10/31/1031-java/</url>
+    <content><![CDATA[<h3 id="1-Java创建对象的方法"><a href="#1-Java创建对象的方法" class="headerlink" title="1 Java创建对象的方法"></a>1 Java创建对象的方法</h3><p>new<br>反射 newInstance()<br>clone()<br>反序列化</p>
+<h3 id="2-Java动态代理、应用"><a href="#2-Java动态代理、应用" class="headerlink" title="2 Java动态代理、应用"></a>2 Java动态代理、应用</h3><p>静态代理：创建一个接口，被代理的类实现该接口。之后创建一个代理类，也实现这个接口。在代理类中持有一个被代理对象的引用，然后在代理类方法中调用该对象的方法。<br><strong>实现</strong><br>编写一个接口UserService，以及它的一个实现类UserServiceImpl</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface UserService &#123;</span><br><span class="line">    void hello();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class UserServiceImpl implements UserService &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void hello() &#123;</span><br><span class="line">        System.out.println(&quot;hello hj!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在想对UserServiceImpl类增加一些功能，这时可通过静态代理。编写一个代理类 UserServiceProxy并实现UserService接口。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 代理类</span><br><span class="line">public class UserServiceProxy implements UserService &#123;</span><br><span class="line">    private UserService target;  &#x2F;&#x2F; 被代理的对象</span><br><span class="line"></span><br><span class="line">    public UserServiceProxy(UserService target) &#123;</span><br><span class="line">        this.target &#x3D; target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void hello() &#123;</span><br><span class="line">        System.out.println(&quot;invoke before!&quot;);</span><br><span class="line">        target.hello();</span><br><span class="line">        System.out.println(&quot;invoke after!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class TestProxy &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        UserService userService &#x3D; new UserServiceImpl();</span><br><span class="line">        UserService proxy &#x3D; new UserServiceProxy(userService);</span><br><span class="line">        proxy.hello();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>缺点：代理只能为一个类服务，如果需要代理的类很多，那么就需要编写大量的代理类。代码冗余、维护性差。</p>
+<p><strong>动态代理</strong>：让代理类动态的生成，在运行时创建代理类。<br>1 通过实现接口的方式—-&gt;JDK动态代理<br>2 通过继承类的方式——&gt;CGLIB动态代理</p>
+<p>** JDK动态代理 **<br>主要涉及 java.lang.reflect.Proxy 类 和 java.lang.reflect.InvocationHandler 接口。</p>
+<p>编写一个处理器 LogHandler 类，提供日志增强功能，并实现 InvocationHandler 接口；<br>在 LogHandler 中维护一个目标对象，这个对象是被代理的对象；<br>在 invoke 方法中编写方法调用的处理逻辑。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LogHandler implements InvocationHandler &#123;</span><br><span class="line">    Object target;  &#x2F;&#x2F; 被代理的对象，实际的方法执行者</span><br><span class="line"></span><br><span class="line">    public LogHandler(Object target) &#123;</span><br><span class="line">        this.target &#x3D; target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</span><br><span class="line">        System.out.printf(&quot;log start time [%s]%n&quot;, new Date());</span><br><span class="line">        Object result &#x3D; method.invoke(target, args);  &#x2F;&#x2F; 调用target的method方法</span><br><span class="line">        System.out.printf(&quot;log end time [%s]%n&quot;, new Date());</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 动态代理</span><br><span class="line">        &#x2F;&#x2F; 创建被代理的对象，UserService接口的实现类</span><br><span class="line">        UserServiceImpl userServiceImpl &#x3D; new UserServiceImpl();</span><br><span class="line">        &#x2F;&#x2F; 获取对应的ClassLoader</span><br><span class="line">        ClassLoader classLoader &#x3D; userServiceImpl.getClass().getClassLoader();</span><br><span class="line">        &#x2F;&#x2F; 获取所有接口的Class，这里的UserServiceImpl类只实现了一个接口UserService</span><br><span class="line">        Class[] interfaces &#x3D; userServiceImpl.getClass().getInterfaces();</span><br><span class="line">        &#x2F;&#x2F; 创建一个将传递给代理类的 处理器，处理所有代理对象上的方法调用</span><br><span class="line">        InvocationHandler logHandler &#x3D; new LogHandler(userServiceImpl);</span><br><span class="line">        &#x2F;**</span><br><span class="line">         * 根据上面的信息，创建代理对象的过程如下：</span><br><span class="line">         * JDK会根据传入的参数动态地在内存中创建和.class文件等同的字节码</span><br><span class="line">         * 根据相应的字节码转换成对应的class</span><br><span class="line">         * 调用newInstance()方法创建代理实例</span><br><span class="line">         *&#x2F;</span><br><span class="line">        UserService proxy &#x3D; (UserService) Proxy.newProxyInstance(classLoader, interfaces, logHandler);</span><br><span class="line">        &#x2F;&#x2F; 调用代理的方法</span><br><span class="line">        proxy.hello();</span><br></pre></td></tr></table></figure>
+
+<p><strong>InvocationHandler</strong>接口</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">处理代理实例上的方法调用并返回结果。</span><br><span class="line">当在与其关联的代理实例上调用方法时，将在调用处理程序上调用此方法。</span><br><span class="line">public interface InvocationHandler &#123;</span><br><span class="line">    public Object invoke(Object proxy, Method method, Object[] args)</span><br><span class="line">        throws Throwable;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Proxy</strong>类</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">返回指定接口的代理类的实例，该接口将方法调用分派到指定的调用处理程序。</span><br><span class="line">public static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces, InvocationHandler h) throws IllegalArgumentException</span><br><span class="line">loader – 定义代理类的类加载器</span><br><span class="line">interface - 代理类要实现的接口列表</span><br><span class="line">h – 将方法调用分派到的调用处理程序</span><br><span class="line"></span><br><span class="line">当且仅当使用 getProxyClass 方法或 newProxyInstance 方法将指定的类动态生成为代理类时，才返回 true。</span><br><span class="line">public static boolean isProxyClass(Class&lt;?&gt; cl) &#123;&#125;</span><br><span class="line"></span><br><span class="line">返回给定类加载器和接口数组的代理类的 java.lang.Class 对象。代理类将由指定的类加载器定义，并将实现所有提供的接口。如果任何给定的接口是非公共的，则代理类将是非公共的。如果类加载器已经定义了相同接口排列的代理类，则返回现有的代理类；否则，这些接口的代理类将动态生成并由类加载器定义。</span><br><span class="line">private static Class&lt;?&gt; getProxyClass(ClassLoader loader, Class&lt;?&gt;... interfaces)</span><br><span class="line"></span><br><span class="line">返回指定代理实例的调用处理程序。</span><br><span class="line">public static InvocationHandler getInvocationHandler(Object proxy) throws IllegalArgumentException</span><br></pre></td></tr></table></figure>
+
+<p>JDK动态代理 VS CGLIB动态代理</p>
+<p>JDK动态代理：基于Java反射机制实现，必须要实现了接口的业务类才能用这种办法生成代理对象。<br>优势：最小化依赖关系，减少依赖意味着简化开发和维护，JDK 本身的支持，可能比 CGLIB 更加可靠。<br>平滑进行 JDK 版本升级，而字节码类库通常需要进行更新以保证在新版 Java 上能够使用。<br>代码实现简单。</p>
+<p>CGLIB动态代理：基于ASM机制实现，通过生成业务类的子类作为代理类。<br>优势：无需实现接口，达到代理类无侵入<br>只操作我们关心的类，而不必为其他相关类增加工作量。<br>高性能</p>
+<p>应用<br>Spring AOP<br>权限认证<br>日志以及事务管理</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>basic</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>11_15_Java</title>
     <url>/2021/11/15/11-15-Java/</url>
     <content><![CDATA[<h3 id="1-Java-Collection"><a href="#1-Java-Collection" class="headerlink" title="1 Java Collection"></a>1 Java Collection</h3><p>集合（也称为容器）只是一个将多个元素组合成一个单元的对象。集合用于存储、检索、操作和交流聚合数据。<br>常见的集合层次结构如下图</p>
@@ -148,43 +148,6 @@
       </tags>
   </entry>
   <entry>
-    <title>11_17_Java</title>
-    <url>/2021/11/17/11-17-Java/</url>
-    <content><![CDATA[<h3 id="1-ArrayList和LinkedList"><a href="#1-ArrayList和LinkedList" class="headerlink" title="1 ArrayList和LinkedList"></a>1 ArrayList和LinkedList</h3><p>ArrayList：List接口的可调整大小的数组实现。除了实现 List 接口之外，该类还提供了操作内部用于存储列表的数组大小的方法。（这个类大致相当于 Vector，只是它是不同步的。）。它提供恒定时间的位置访问，而且速度非常快。它不必为List中的每个元素分配一个节点对象，当它必须同时移动多个元素时，它可以利用System.arraycopy。将ArrayList视为没有同步开销的Vector。</p>
-<p>LinkedList：List 和 Deque 接口的双向链表实现。实现所有可选的列表操作，并允许所有元素（包括空值）。索引到列表中的操作将从开头或结尾遍历列表，以更接近指定索引的为准。</p>
-<p>如果您经常将元素添加到List的开头或遍历List以从其内部删除元素，则应考虑使用LinkedList。这些操作需要LinkedList中的常量时间和ArrayList中的线性时间。但是你在性能上付出了很大的代价。位置访问需要LinkedList中的线性时间和ArrayList中的常量时间。此外，LinkedList的常数因子要差得多。ArrayList通常更快。ArrayList有一个调整参数——初始容量，它指的是ArrayList在必须增长之前可以容纳的元素数量。LinkedList没有调整参数。</p>
-<h3 id="2-ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？"><a href="#2-ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？" class="headerlink" title="2 ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？"></a>2 ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？</h3><p>RandomAccess：List实现使用的标记接口来指示它们支持快速（通常是恒定时间）随机访问。此接口的主要目的是允许通用算法改变其行为，以在应用于随机或顺序访问列表时提供良好的性能。<br>实现 RandomAccess 接口的 List 集合采用一般的 for 循环遍历，而未实现此接口则采用迭代器，即ArrayList 一般采用 for 循环遍历，LinkedList 一般采用迭代器遍历。ArrayList 用 for 循环遍历比 iterator 迭代器遍历快，LinkedList 用 iterator 迭代器遍历比 for 循环遍历快。应该考虑到 List 集合的不同子类采用不同的遍历方式，能够提高性能。</p>
-<h3 id="3-ArrayList扩容分析"><a href="#3-ArrayList扩容分析" class="headerlink" title="3 ArrayList扩容分析"></a>3 ArrayList扩容分析</h3><p>private static final int DEFAULT_CAPACITY = 10;   // 默认初始容量<br>private static final Object[] EMPTY_ELEMENTDATA = {};  // 用于空实例的共享空数组实例。<br>private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};  // 用于默认大小的空实例的共享空数组实例。我们将其与 EMPTY_ELEMENTDATA 区分开来，以了解添加第一个元素时要膨胀多少<br>transient Object[] elementData;  // ArrayList 的元素存储在其中的数组缓冲区。 ArrayList的容量就是这个数组缓冲区的长度。<br>添加第一个元素时，任何带有 elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA 的空 ArrayList 都将扩展为 DEFAULT_CAPACITY。<br>private int size;  // ArrayList 的大小（它包含的元素数）。<br><strong>构造方法</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ArrayList(int initialCapacity) &#123;</span><br><span class="line">        if (initialCapacity &gt; 0) &#123;</span><br><span class="line">            this.elementData &#x3D; new Object[initialCapacity];</span><br><span class="line">        &#125; else if (initialCapacity &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            this.elementData &#x3D; EMPTY_ELEMENTDATA;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</span><br><span class="line">                                               initialCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ArrayList() &#123;</span><br><span class="line">        this.elementData &#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA;</span><br><span class="line">    &#125;</span><br><span class="line">当调用add方法添加第一个元素时，会进行扩容至大小为DEFAULT_CAPACITY&#x3D;10</span><br><span class="line">无参构造方法会将 elementData 初始化一个空数组，插入元素时，扩容将会按默认值重新初始化数组。而有参的构造方法则会将 elementData 初始化为参数值大小（&gt;&#x3D; 0）的数组。</span><br></pre></td></tr></table></figure>
-
-<p><strong>add方法</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        ensureCapacityInternal(size + 1);  &#x2F;&#x2F; Increments modCount!!</span><br><span class="line">        elementData[size++] &#x3D; e;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>ensureCapacity、ensureExplicitCapacity方法</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">如有必要，增加此 ArrayList 实例的容量，以确保它至少可以容纳由最小容量参数指定的元素数。</span><br><span class="line">public void ensureCapacity(int minCapacity) &#123;</span><br><span class="line">        int minExpand &#x3D; (elementData !&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA)</span><br><span class="line">            &#x2F;&#x2F; any size if not default element table</span><br><span class="line">            ? 0</span><br><span class="line">            &#x2F;&#x2F; larger than default for default empty table. It&#39;s already</span><br><span class="line">            &#x2F;&#x2F; supposed to be at default size.</span><br><span class="line">            : DEFAULT_CAPACITY;</span><br><span class="line"></span><br><span class="line">        if (minCapacity &gt; minExpand) &#123;</span><br><span class="line">            ensureExplicitCapacity(minCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">private void ensureExplicitCapacity(int minCapacity) &#123;</span><br><span class="line">        modCount++;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; overflow-conscious code</span><br><span class="line">        if (minCapacity - elementData.length &gt; 0)</span><br><span class="line">            grow(minCapacity);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>grow方法</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">增加容量以确保它至少可以容纳由最小容量参数指定的元素数量。</span><br><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">        &#x2F;&#x2F; overflow-conscious code</span><br><span class="line">        int oldCapacity &#x3D; elementData.length;</span><br><span class="line">        &#x2F;&#x2F; 扩容大小是原来的1.5倍</span><br><span class="line">        int newCapacity &#x3D; oldCapacity + (oldCapacity &gt;&gt; 1);</span><br><span class="line">        if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">            newCapacity &#x3D; minCapacity;</span><br><span class="line">        if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">            newCapacity &#x3D; hugeCapacity(minCapacity);</span><br><span class="line">        &#x2F;&#x2F; minCapacity is usually close to size, so this is a win:</span><br><span class="line">        elementData &#x3D; Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>总结</strong></p>
-<ol>
-<li>当使用 add 方法的时候首先调用 ensureCapacityInternal 方法，传入 size+1 ，检查是否需要扩充elementData 数组的容量;</li>
-<li>newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1)，如果还不够，newCapacity = minCapacity;然后判断 minCapacity 是否大于 MAX_ARRAY_SIZE(Integer.MAX_VALUE - 8) ，如果大于，就取 Integer.MAX_VALUE；</li>
-<li>扩容的主要方法：void grow(int minCapacity)</li>
-<li>ArrayList 中 copy 数组的核心就是 System.arraycopy 方法，将 original 数组的所有数据复制到 copy 数组中。</li>
-</ol>
-<h3 id="4-Array和ArrayList的区别？什么时候用Array？"><a href="#4-Array和ArrayList的区别？什么时候用Array？" class="headerlink" title="4 Array和ArrayList的区别？什么时候用Array？"></a>4 Array和ArrayList的区别？什么时候用Array？</h3><p>Array 类提供静态方法来动态创建和访问 Java 数组。<br>Array 不可实例化。public final class Array {}</p>
-<p>Array可以包含基本类型和对象类型，ArrayList只能包含对象类型。<br>Array空间大小是固定的，空间不够时也不能再次申请；ArrayList空间是动态增长的，如果空间不够，可以进行扩容。</p>
-<p>一个列表的大小已经指定，大部分情况下是存储和遍历它们，Array更合适。<br>遍历基本数据类型，ArrayList如果确实要存放基本数据类型的数据，那只能存放基本数据类型对应的包装类的数据。在数据的存取时可能会涉及到java基本数据类型的自动装箱、自动拆箱。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>basic</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>11_19_Java</title>
     <url>/2021/11/19/11-19-Java/</url>
     <content><![CDATA[<h3 id="1-HashMap的底层实现原理？"><a href="#1-HashMap的底层实现原理？" class="headerlink" title="1 HashMap的底层实现原理？"></a>1 HashMap的底层实现原理？</h3><p>JDK1.7：entry数组+链表<br>JDK1.8：node数组+链表+红黑树。当链表上的元素个数超过8个并且数组长度&gt;=64时自动转化成红黑树，节点变成树节点，以提高搜索效率和插入效率至 O(logN)。<br>Entry 和 Node 都包含 key、value、hash、next 属性。</p>
@@ -208,67 +171,6 @@
 <h3 id="4-HashMap的size为什么必须是2的整数次幂"><a href="#4-HashMap的size为什么必须是2的整数次幂" class="headerlink" title="4 HashMap的size为什么必须是2的整数次幂"></a>4 HashMap的size为什么必须是2的整数次幂</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">static final int hash(Object key) &#123;</span><br><span class="line">        int h;</span><br><span class="line">        return (key &#x3D;&#x3D; null) ? 0 : (h &#x3D; key.hashCode()) ^ (h &gt;&gt;&gt; 16);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">int n;</span><br><span class="line">        if (tab &#x3D;&#x3D; null || (n &#x3D; tab.length) &#x3D;&#x3D; 0)</span><br><span class="line">            return;</span><br><span class="line">        int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
 <p>1、能够保证 HashMap 的底层数组长度为 2 的 n 次幂。当 length 为 2 的 n 次幂时，h &amp; (length - 1)就相当于对 length 取模，而且速度比直接取模快得多，这是 HashMap 在速度上的一个优化。而且每次扩容时都是翻倍。<br>2、如果 length 为 2 的次幂，则 length - 1 转化为二进制必定是 11111……的形式，在与 h 的二进制进行&amp;操作时效率会非常的快，而且不浪费空间。这些都是1的二进制码跟hash值进行‘&amp;’操作后，就可以确保每一个位置发生hash冲突的概率是相同的。<br>如果 length 不是 2 的次幂，比如：length 为 15，则 length - 1<br>为 14，对应的二进制为 1110，在与 h 进行&amp;操作，最后一位都为0 ，而 0001，0011，0101，1001，1011，0111，1101 这几个位置永远都不能存放元素了，空间浪费相当大，更糟的是这种情况中，数组可以使用的位置比数组长度小了很多，这意味着进一步增加了碰撞的概率，减慢了查询的效率，这样就会造成空间的浪费。</p>
 <p>HashMap 的 get 函数的返回值不能判断一个 key 是否包含在 map 中，因为 get 返回 null 有可能是不包含该key，也有可能该 key 对应的 value 为 null。因为 HashMap 中允许 key 为 null，也允许 value 为 null。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>basic</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>11_20_Java</title>
-    <url>/2021/11/20/11-20-Java/</url>
-    <content><![CDATA[<h3 id="1-HashMap多线程死循环问题"><a href="#1-HashMap多线程死循环问题" class="headerlink" title="1 HashMap多线程死循环问题"></a>1 HashMap多线程死循环问题</h3><p>当多线程同时 put 时，如果同时触发了 rehash 操作，会导致 HashMap 的链表中出现循环节点，使得后面 get 的时候，会死循环。</p>
-<p>resize方法：<br>条件：size &gt; capacity * loadFactor<br>创建一个新的Entry空数组，长度是原数组的2倍。<br>rehash：遍历原Entry数组，把所有的Entry重新Hash到新数组。为什么要重新Hash呢？因为长度扩大以后，Hash的规则也随之改变。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-HashMap与Hashtable"><a href="#2-HashMap与Hashtable" class="headerlink" title="2 HashMap与Hashtable"></a>2 HashMap与Hashtable</h3><p>Hashtable：这个类实现了一个哈希表，它将键映射到值。任何非空对象都可以用作键或值。<br>HashMap 的 key 和 value 都允许为 null，而 Hashtable 的 key 和 value 都不允许为 null。<br>HashMap 遇到key 为 null 的时候，调用 putForNullKey 方法进行处理，但对 value 没有处理；Hashtable 遇到 null，直接返回 NullPointerException。<br>Hashtable是线程安全的，HashMap是非线程安全的。<br>HashMap继承了AbstractMap，Hashtable继承Dictionary抽象类，两者均实现Map接口。</p>
-<p>Java中Hashtable、Collections.synchronizedMap、以及 ConcurrentHashMap 可以实现线程安全的Map。<br>Hashtable 是直接在方法上加 synchronized 关键字，锁住整个数组，粒度比较大；即每次锁住整张表让线程独占，致使效率低下；<br>Collections.synchronizedMap 是使用 Collections 集合工具的内部类，通过传入 Map 封装出一个 SynchronizedMap 对象，内部定义了一个对象锁，方法内通过对象锁实现；<br>ConcurrentHashMap使用分段锁，降低了锁粒度，让并发度大大提高。</p>
-<h3 id="2-ConcurrentHashMap"><a href="#2-ConcurrentHashMap" class="headerlink" title="2 ConcurrentHashMap"></a>2 ConcurrentHashMap</h3><p>ConcurrentHashMap：一个哈希表，支持检索的完全并发性和更新的高预期并发性。该类遵循与Hashtable相同的功能规范，包括与Hashtable的每个方法对应的方法版本。但是，即使所有操作都是线程安全的，检索操作也不需要锁定，并且不支持以防止所有访问的方式锁定整个表。 在依赖其线程安全但不依赖于其同步细节的程序中，此类与 Hashtable 完全可互操作。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bin数组。第一次插入时延迟初始化。大小始终是 2 的幂。由迭代器直接访问。</span><br><span class="line">transient volatile Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
-
-<p>ConcurrentHashMap在对象中保存了一个Segment数组，即将整个Hash表划分为多个Segment；而每个Segment元素类似于一个Hashtable。这样，在执行 put操作时会先根据hash算法定位到元素属于哪个Segment，然后对该Segment加锁即可。</p>
-<p><strong>实现原理</strong><br>1.7 数组+链表。（segment+分段锁）。容器中有多把锁，每一把锁锁一段数据，这样在多线程访问不同段的数据时，就不会存在锁竞争了，这样便可以有效地提高并发效率。”分段锁”思想。<br>ConcurrentHashMap内部使用段(Segment)来表示这些不同的部分，每个段其实就是一个小的Hashtable，它们有自己的锁。每个segment使用单独的ReentrantLock（分段锁）。如果操作涉及不同segment，则可以并发执行，如果是同一个segment则会进行锁的竞争和等待。<br>ConcurrentHashMap定位一个元素的过程需要进行两次Hash操作。第一次Hash定位到Segment，第二次Hash定位到元素所在的链表的头部。</p>
-<p>1.8 数组+链表（红黑树）。CAS 和 synchronized 结合实现锁粒度的降低。1.7版本锁的粒度是基于Segment的，包含多个HashEntry，而1.8锁的粒度就是HashEntry。<br>1.8版本的数据结构变得更加简单，使得操作也更加清晰流畅，因为已经使用synchronized来进行同步，所以不需要分段锁的概念，也就不需要Segment这种数据结构了，由于粒度的降低，实现的复杂度也增加了。1.8使用红黑树来优化链表。</p>
-<p>CAS全称Compare and Swap，即比较并替换。CAS本质上很简单，一般至少有3个参数：一个变量v，旧值A，新值B。当且仅当变量v当前的值和旧值A相同时，才会将v的值更新为B。</p>
-<h3 id="3-LinkedHashMap"><a href="#3-LinkedHashMap" class="headerlink" title="3 LinkedHashMap"></a>3 LinkedHashMap</h3><p>Map接口的哈希表和链表实现，迭代顺序可预测。<br>此实现与 HashMap 的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LinkedHashMap&lt;K,V&gt;</span><br><span class="line">    extends HashMap&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;</span><br><span class="line">普通LinkedHashMap条目的HashMap.Node子类。</span><br><span class="line">static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; &#123;</span><br><span class="line">        Entry&lt;K,V&gt; before, after;</span><br><span class="line">        Entry(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            super(hash, key, value, next);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">双向链表的头部（最年长的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; head;</span><br><span class="line">双向链表的尾部（最年轻的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br><span class="line">此链接哈希映射的迭代排序方法：访问顺序为true，插入顺序为false。</span><br><span class="line">final boolean accessOrder;</span><br></pre></td></tr></table></figure>
-<p>双向链表<br>key和value都允许为空<br>key重复会覆盖<br>有序的<br>LinkedHashMap是非线程安全的</p>
-<p>LinkedHashMap中的Entry增加了 before 和 after两个指针，用于维护双向链表。before、after用于维护Entry插入的先后顺序的。正是因为before、after的存在,LinkedHashMap才形成了双向链表。<br>LinkedHashMap可以认为是散列表与链表（HashMap+LinkedList）的结合,它继承了HashMap,也用LinkedList维护插入/访问元素的先后顺序。从性能上而言，因为额外维护了链表的关系，性能上要略差于HashMap。</p>
-<p>TreeMap 是按照 Key 的自然顺序或者 Comprator 的顺序进行排序，内部是通过红黑树来实现。所以要么 key 所属的类实现 Comparable 接口，或者自定义一个实现了 Comparator 接口的比较器，传给 TreeMap 用户 key 的比较。</p>
-<h3 id="4-HashSet"><a href="#4-HashSet" class="headerlink" title="4 HashSet"></a>4 HashSet</h3><p>这个类实现了 Set 接口，由一个哈希表（实际上是一个 HashMap 实例）支持。 它不保证集合的迭代顺序；此类允许空元素。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class HashSet&lt;E&gt;</span><br><span class="line">    extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements Set&lt;E&gt;, Cloneable, java.io.Serializable</span><br><span class="line">private transient HashMap&lt;E,Object&gt; map;</span><br><span class="line">构造一个新的空集； 后备 HashMap 实例具有默认初始容量 (16) 和负载因子 (0.75)。</span><br><span class="line">public HashSet() &#123;</span><br><span class="line">        map &#x3D; new HashMap&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p><strong>为什么元素不能重复</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        return map.put(e, PRESENT)&#x3D;&#x3D;null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>元素值作为的是 map 的 key，map 的 value 则是 PRESENT 变量，这个变量只作为放入 map 时的一个占位符存在。HashMap 的 key 是不能重复的，HashSet 的元素作为 map 的 key，当然也不能重复了。</p>
-<h3 id="5-Iterator"><a href="#5-Iterator" class="headerlink" title="5 Iterator"></a>5 Iterator</h3><p>集合上的迭代器。 迭代器取代了 Java 集合框架中的枚举。 迭代器在两个方面不同于枚举：<br>迭代器允许调用者在具有明确定义语义的迭代期间从底层集合中删除元素。<br>方法名称已得到改进。</p>
-<p>ListIterator<br>public interface ListIterator<E> extends Iterator<E><br>列表的迭代器，允许程序员沿任一方向遍历列表，在迭代期间修改列表，并获取迭代器在列表中的当前位置。ListIterator 没有当前元素；它的光标位置始终位于调用 previous() 返回的元素和调用 next() 返回的元素之间。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>basic</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>11_21_Java</title>
-    <url>/2021/11/21/11-21-Java/</url>
-    <content><![CDATA[<h3 id="1-进程与线程"><a href="#1-进程与线程" class="headerlink" title="1 进程与线程"></a>1 进程与线程</h3><p>Processes：一个进程有一个自包含的执行环境。一个进程通常有一套完整的、私有的基本运行时资源；特别是，每个进程都有自己的内存空间。Java虚拟机的大多数实现都作为单个进程运行。Java应用程序可以使用ProcessBuilder对象创建其他进程。</p>
-<p>Threads：线程有时被称为轻量级进程。进程和线程都提供了一个执行环境，但是创建一个新线程比创建一个新进程需要更少的资源。线程存在于一个进程中——每个进程至少有一个线程。线程共享进程的资源，包括内存和打开的文件。</p>
-<h3 id="2-创建线程的方式"><a href="#2-创建线程的方式" class="headerlink" title="2 创建线程的方式"></a>2 创建线程的方式</h3><p>通过继承Thread类，重写run方法创建线程。<br>通过实现Runnable接口的run方法来创建线程，启动线程需要通过Thread类。<br>通过实现Callable接口的call方法与FutureTask包装器来创建线程，有返回值。<br>通过线程池创建线程。</p>
-<h3 id="3-Runnable-与-Callable"><a href="#3-Runnable-与-Callable" class="headerlink" title="3 Runnable 与 Callable"></a>3 Runnable 与 Callable</h3><p>Runnable 接⼝中的 run() 方法的返回值是 void，它做的事情只是纯粹地去执行方法中的代码。<br>Callable 接⼝中的 call() 方法是有返回值的，是一个泛型，和 Future、FutureTask 配合可以用来获取异步执行的结果。</p>
-<h3 id="4-线程状态"><a href="#4-线程状态" class="headerlink" title="4 线程状态"></a>4 线程状态</h3><p>1 NEW：尚未启动的线程处于此状态。<br>2 RUNNABLE：在 Java 虚拟机中执行的线程处于这种状态。<br>3 BLOCKED：被阻塞等待监视器锁的线程处于这种状态。（synchronized同步块中阻塞）<br>4 WAITING：无限期等待另一个线程执行特定操作的线程处于此状态。（主动调用wait()、join()、park()方法后的状态）<br>5 TIMED_WAITING：等待另一个线程执行操作达指定等待时间的线程处于此状态。（Thead.sleep(long),wait(long),join(long),parkNanos (long),parkUntil）<br>6 TERMINATED：已退出的线程处于此状态。</p>
-<img src="/2021/11/21/11-21-Java/thread.png" class="">
-
-<h3 id="5-sleep-与wait"><a href="#5-sleep-与wait" class="headerlink" title="5 sleep()与wait()"></a>5 sleep()与wait()</h3><p>sleep()：使当前正在执行的线程休眠（暂时停止执行）指定的毫秒数加上指定的纳秒数，取决于系统计时器和调度程序的精度和准确性。该线程不会失去任何监视器的所有权。sleep为Thread中的方法，让出cpu，不会释放同步资源锁。<br>wait()：使当前线程等待，直到另一个线程为此对象调用notify() 方法或notifyAll() 方法，或者某个其他线程中断了当前线程，或者经过了一定的实时时间。wait为Object中的方法，让出cpu，释放同步资源锁。</p>
-<p>sleep() 方法可以在任何地方使用，而wait() 方法则只能在同步方法或同步块中使用。</p>
-<h3 id="6-run-与start"><a href="#6-run-与start" class="headerlink" title="6 run()与start()"></a>6 run()与start()</h3><p>通常，系统通过调用线程类的start()方法来启动一个线程、此时该线程处于就绪状态，即就是这个线程可以被JVM来调度执行。在调度过程中,JVM底层通过调用线程类的run()方法来完成实际的操作，当run()方法结束后，此线程就会终止。</p>
-<p>如果直接调用线程类的run()方法，此时run()方法仅仅被当做一个普通的函数调用，程序中仍然只有主线程这一个线程，无法达到启动多线程的目的。</p>
-<h3 id="7-线程安全的体现"><a href="#7-线程安全的体现" class="headerlink" title="7 线程安全的体现"></a>7 线程安全的体现</h3><p>原子性：提供互斥访问，同一时刻只能有一个线程对数据进行操作，（atomic，synchronized）；<br>可见性：一个线程对主内存的修改可以及时地被其他线程看到，（synchronized、volatile）；<br>有序性：一个线程观察其他线程的指令执行顺序，由于指令重排序，该观察结果一般杂乱无序，（happensbefore原则）。</p>
-<h3 id="8-线程同步的方法"><a href="#8-线程同步的方法" class="headerlink" title="8 线程同步的方法"></a>8 线程同步的方法</h3><p>1 使用 Synchronized 关键字；<br>2 wait 和 notify方法；<br>3 使用特殊域变量 volatile 实现线程同步；<br>4 使用可重入锁实现线程同步；<br>5 使用阻塞队列实现线程同步；<br>6 使用信号量 Semaphore。</p>
-<h3 id="9-Thread的interrupt方法原理"><a href="#9-Thread的interrupt方法原理" class="headerlink" title="9 Thread的interrupt方法原理"></a>9 Thread的interrupt方法原理</h3><p>interrupt是Thread类的实例方法，它的主要作用是给目标线程发送一个通知，有人希望你退出啦，同时会将目标线程的中断标志设置为true，也就是已经有人打断过该线程了。至于目标线程如何处理，完全取决于目标线程自身。<br>interrupt方法中断线程可以分为两种情况，第一种是打断正在运行的线程。<br>第二种情况是，打断正在休眠的线程，比如目标线程调用了sleep方法而处于阻塞状态，这时候如果打断它，就会抛出InterruptedException异常。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -321,19 +223,34 @@
       </tags>
   </entry>
   <entry>
-    <title>11_24_Java</title>
-    <url>/2021/11/24/11-24-Java/</url>
-    <content><![CDATA[<h3 id="1-线程池"><a href="#1-线程池" class="headerlink" title="1 线程池"></a>1 线程池</h3><p>线程池提供了一种限制和管理资源的方式。<br><strong>好处</strong><br>降低资源消耗：通过重复利用已创建的线程可以降低线程创建和销毁造成的消耗;<br>提高响应速度：当任务到达时，可以不需要等到线程创建就能立即执行;<br>提高线程的可管理性：线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。</p>
-<h3 id="2-创建线程池的参数"><a href="#2-创建线程池的参数" class="headerlink" title="2 创建线程池的参数"></a>2 创建线程池的参数</h3><p><strong>corePoolSize</strong>：核心池大小是保持活动状态的最小工作线程数（不允许超时等），除非设置了 allowCoreThreadTimeOut，在这种情况下，最小值为零。<br>当提交一个任务到线程池时，如果当前 poolSize &lt; corePoolSize 时，线程池会创建一个线程来执行任务，即使其他空闲的基本线程能够执行新任务，它也会创建线程，等到需要执行的任务数大于corePoolSize时就不再创建。如果调用了线程池的prestartAllCoreThreads() 方法，线程池会提前创建并启动所有基本线程。</p>
-<p><strong>maximumPoolSize</strong>：最大池大小。请注意，实际最大值受 CAPACITY 内部限制。<br>如果队列满了，并且已创建的线程数大于maximumPoolSize，则线程池会再创建新的线程执行任务。值得注意的是，如果使用了无界的任务队列这个参数就没什么效果。</p>
-<p><strong>keepAliveTime</strong>：等待工作的空闲线程的超时时间（以纳秒为单位）。当存在超过 corePoolSize 或允许 CoreThreadTimeOut 时，线程使用此超时。否则他们永远等待新的工作。</p>
-<p><strong>TimeUnit</strong>：表示给定粒度单位的持续时间，并提供实用方法来跨单位转换，并在这些单位中执行计时和延迟操作。</p>
-<p><strong>workQueue</strong>：用于保存任务和移交给工作线程的队列。</p>
-<p><strong>threadFactory</strong>：新线程的工厂。所有线程都是使用这个工厂创建的（通过方法 addWorker）。</p>
-<p>private volatile RejectedExecutionHandler handler;<br><strong>handle</strong>：在执行中饱和或关闭时调用的处理程序。队列和线程池都满了，说明线程池处于饱和状态，那么必须采取一种策略处理提交的新任务。这个策略默认情况下是AbortPolicy，表示无法处理新任务时抛出异常。<br>饱和策略：<br>AbortPolicy：直接抛出异常。<br>CallerRunsPolicy：只用调用者所在的线程来运行任务。<br>DiscardOldestPolicy：丢弃队列里最近的一个任务，并执行当前任务。<br>DiscardPolicy：不处理，丢弃掉。</p>
-<p>workQueue的选择（阻塞队列的选择）<br>ArrayBlockingQueue：基于数组的有界阻塞队列。此队列对元素 FIFO（先进先出）进行排序。队列的头部是在队列中停留时间最长的那个元素。队列的尾部是在队列中停留时间最短的那个元素。新元素插入队列尾部，队列检索操作获取队列头部元素。</p>
-<p>LinkedBlockingQueue：基于链表的可选有界阻塞队列。此队列对元素 FIFO（先进先出）进行排序。链接队列通常比基于数组的队列具有更高的吞吐量，但在大多数并发应用程序中的可预测性较差。静态工厂方法 Executors.newFixedThreadPool() 使用了这个队列。</p>
-<p>SynchronousQueue：一个阻塞队列，其中每个插入操作都必须等待另一个线程执行相应的移除操作，反之亦然。同步队列没有任何内部容量，甚至没有一个容量。您无法查看同步队列，因为元素仅在您尝试删除它时才存在；你不能插入一个元素（使用任何方法），除非另一个线程试图删除它；你不能迭代，因为没有什么可以迭代的。 队列的头部是第一个排队的插入线程试图添加到队列中的元素；如果没有这样的排队线程，则没有元素可用于删除，poll() 将返回 null。此队列不允许空元素。静态工厂方法 Executors.newCachedThreadPool()) 使用了这个队列。</p>
+    <title>11_17_Java</title>
+    <url>/2021/11/17/11-17-Java/</url>
+    <content><![CDATA[<h3 id="1-ArrayList和LinkedList"><a href="#1-ArrayList和LinkedList" class="headerlink" title="1 ArrayList和LinkedList"></a>1 ArrayList和LinkedList</h3><p>ArrayList：List接口的可调整大小的数组实现。除了实现 List 接口之外，该类还提供了操作内部用于存储列表的数组大小的方法。（这个类大致相当于 Vector，只是它是不同步的。）。它提供恒定时间的位置访问，而且速度非常快。它不必为List中的每个元素分配一个节点对象，当它必须同时移动多个元素时，它可以利用System.arraycopy。将ArrayList视为没有同步开销的Vector。</p>
+<p>LinkedList：List 和 Deque 接口的双向链表实现。实现所有可选的列表操作，并允许所有元素（包括空值）。索引到列表中的操作将从开头或结尾遍历列表，以更接近指定索引的为准。</p>
+<p>如果您经常将元素添加到List的开头或遍历List以从其内部删除元素，则应考虑使用LinkedList。这些操作需要LinkedList中的常量时间和ArrayList中的线性时间。但是你在性能上付出了很大的代价。位置访问需要LinkedList中的线性时间和ArrayList中的常量时间。此外，LinkedList的常数因子要差得多。ArrayList通常更快。ArrayList有一个调整参数——初始容量，它指的是ArrayList在必须增长之前可以容纳的元素数量。LinkedList没有调整参数。</p>
+<h3 id="2-ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？"><a href="#2-ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？" class="headerlink" title="2 ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？"></a>2 ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？</h3><p>RandomAccess：List实现使用的标记接口来指示它们支持快速（通常是恒定时间）随机访问。此接口的主要目的是允许通用算法改变其行为，以在应用于随机或顺序访问列表时提供良好的性能。<br>实现 RandomAccess 接口的 List 集合采用一般的 for 循环遍历，而未实现此接口则采用迭代器，即ArrayList 一般采用 for 循环遍历，LinkedList 一般采用迭代器遍历。ArrayList 用 for 循环遍历比 iterator 迭代器遍历快，LinkedList 用 iterator 迭代器遍历比 for 循环遍历快。应该考虑到 List 集合的不同子类采用不同的遍历方式，能够提高性能。</p>
+<h3 id="3-ArrayList扩容分析"><a href="#3-ArrayList扩容分析" class="headerlink" title="3 ArrayList扩容分析"></a>3 ArrayList扩容分析</h3><p>private static final int DEFAULT_CAPACITY = 10;   // 默认初始容量<br>private static final Object[] EMPTY_ELEMENTDATA = {};  // 用于空实例的共享空数组实例。<br>private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};  // 用于默认大小的空实例的共享空数组实例。我们将其与 EMPTY_ELEMENTDATA 区分开来，以了解添加第一个元素时要膨胀多少<br>transient Object[] elementData;  // ArrayList 的元素存储在其中的数组缓冲区。 ArrayList的容量就是这个数组缓冲区的长度。<br>添加第一个元素时，任何带有 elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA 的空 ArrayList 都将扩展为 DEFAULT_CAPACITY。<br>private int size;  // ArrayList 的大小（它包含的元素数）。<br><strong>构造方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ArrayList(int initialCapacity) &#123;</span><br><span class="line">        if (initialCapacity &gt; 0) &#123;</span><br><span class="line">            this.elementData &#x3D; new Object[initialCapacity];</span><br><span class="line">        &#125; else if (initialCapacity &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            this.elementData &#x3D; EMPTY_ELEMENTDATA;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</span><br><span class="line">                                               initialCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ArrayList() &#123;</span><br><span class="line">        this.elementData &#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA;</span><br><span class="line">    &#125;</span><br><span class="line">当调用add方法添加第一个元素时，会进行扩容至大小为DEFAULT_CAPACITY&#x3D;10</span><br><span class="line">无参构造方法会将 elementData 初始化一个空数组，插入元素时，扩容将会按默认值重新初始化数组。而有参的构造方法则会将 elementData 初始化为参数值大小（&gt;&#x3D; 0）的数组。</span><br></pre></td></tr></table></figure>
+
+<p><strong>add方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        ensureCapacityInternal(size + 1);  &#x2F;&#x2F; Increments modCount!!</span><br><span class="line">        elementData[size++] &#x3D; e;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>ensureCapacity、ensureExplicitCapacity方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">如有必要，增加此 ArrayList 实例的容量，以确保它至少可以容纳由最小容量参数指定的元素数。</span><br><span class="line">public void ensureCapacity(int minCapacity) &#123;</span><br><span class="line">        int minExpand &#x3D; (elementData !&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA)</span><br><span class="line">            &#x2F;&#x2F; any size if not default element table</span><br><span class="line">            ? 0</span><br><span class="line">            &#x2F;&#x2F; larger than default for default empty table. It&#39;s already</span><br><span class="line">            &#x2F;&#x2F; supposed to be at default size.</span><br><span class="line">            : DEFAULT_CAPACITY;</span><br><span class="line"></span><br><span class="line">        if (minCapacity &gt; minExpand) &#123;</span><br><span class="line">            ensureExplicitCapacity(minCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">private void ensureExplicitCapacity(int minCapacity) &#123;</span><br><span class="line">        modCount++;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; overflow-conscious code</span><br><span class="line">        if (minCapacity - elementData.length &gt; 0)</span><br><span class="line">            grow(minCapacity);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>grow方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">增加容量以确保它至少可以容纳由最小容量参数指定的元素数量。</span><br><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">        &#x2F;&#x2F; overflow-conscious code</span><br><span class="line">        int oldCapacity &#x3D; elementData.length;</span><br><span class="line">        &#x2F;&#x2F; 扩容大小是原来的1.5倍</span><br><span class="line">        int newCapacity &#x3D; oldCapacity + (oldCapacity &gt;&gt; 1);</span><br><span class="line">        if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">            newCapacity &#x3D; minCapacity;</span><br><span class="line">        if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">            newCapacity &#x3D; hugeCapacity(minCapacity);</span><br><span class="line">        &#x2F;&#x2F; minCapacity is usually close to size, so this is a win:</span><br><span class="line">        elementData &#x3D; Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>总结</strong></p>
+<ol>
+<li>当使用 add 方法的时候首先调用 ensureCapacityInternal 方法，传入 size+1 ，检查是否需要扩充elementData 数组的容量;</li>
+<li>newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1)，如果还不够，newCapacity = minCapacity;然后判断 minCapacity 是否大于 MAX_ARRAY_SIZE(Integer.MAX_VALUE - 8) ，如果大于，就取 Integer.MAX_VALUE；</li>
+<li>扩容的主要方法：void grow(int minCapacity)</li>
+<li>ArrayList 中 copy 数组的核心就是 System.arraycopy 方法，将 original 数组的所有数据复制到 copy 数组中。</li>
+</ol>
+<h3 id="4-Array和ArrayList的区别？什么时候用Array？"><a href="#4-Array和ArrayList的区别？什么时候用Array？" class="headerlink" title="4 Array和ArrayList的区别？什么时候用Array？"></a>4 Array和ArrayList的区别？什么时候用Array？</h3><p>Array 类提供静态方法来动态创建和访问 Java 数组。<br>Array 不可实例化。public final class Array {}</p>
+<p>Array可以包含基本类型和对象类型，ArrayList只能包含对象类型。<br>Array空间大小是固定的，空间不够时也不能再次申请；ArrayList空间是动态增长的，如果空间不够，可以进行扩容。</p>
+<p>一个列表的大小已经指定，大部分情况下是存储和遍历它们，Array更合适。<br>遍历基本数据类型，ArrayList如果确实要存放基本数据类型的数据，那只能存放基本数据类型对应的包装类的数据。在数据的存取时可能会涉及到java基本数据类型的自动装箱、自动拆箱。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -379,6 +296,89 @@
       </tags>
   </entry>
   <entry>
+    <title>11_20_Java</title>
+    <url>/2021/11/20/11-20-Java/</url>
+    <content><![CDATA[<h3 id="1-HashMap多线程死循环问题"><a href="#1-HashMap多线程死循环问题" class="headerlink" title="1 HashMap多线程死循环问题"></a>1 HashMap多线程死循环问题</h3><p>当多线程同时 put 时，如果同时触发了 rehash 操作，会导致 HashMap 的链表中出现循环节点，使得后面 get 的时候，会死循环。</p>
+<p>resize方法：<br>条件：size &gt; capacity * loadFactor<br>创建一个新的Entry空数组，长度是原数组的2倍。<br>rehash：遍历原Entry数组，把所有的Entry重新Hash到新数组。为什么要重新Hash呢？因为长度扩大以后，Hash的规则也随之改变。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-HashMap与Hashtable"><a href="#2-HashMap与Hashtable" class="headerlink" title="2 HashMap与Hashtable"></a>2 HashMap与Hashtable</h3><p>Hashtable：这个类实现了一个哈希表，它将键映射到值。任何非空对象都可以用作键或值。<br>HashMap 的 key 和 value 都允许为 null，而 Hashtable 的 key 和 value 都不允许为 null。<br>HashMap 遇到key 为 null 的时候，调用 putForNullKey 方法进行处理，但对 value 没有处理；Hashtable 遇到 null，直接返回 NullPointerException。<br>Hashtable是线程安全的，HashMap是非线程安全的。<br>HashMap继承了AbstractMap，Hashtable继承Dictionary抽象类，两者均实现Map接口。</p>
+<p>Java中Hashtable、Collections.synchronizedMap、以及 ConcurrentHashMap 可以实现线程安全的Map。<br>Hashtable 是直接在方法上加 synchronized 关键字，锁住整个数组，粒度比较大；即每次锁住整张表让线程独占，致使效率低下；<br>Collections.synchronizedMap 是使用 Collections 集合工具的内部类，通过传入 Map 封装出一个 SynchronizedMap 对象，内部定义了一个对象锁，方法内通过对象锁实现；<br>ConcurrentHashMap使用分段锁，降低了锁粒度，让并发度大大提高。</p>
+<h3 id="2-ConcurrentHashMap"><a href="#2-ConcurrentHashMap" class="headerlink" title="2 ConcurrentHashMap"></a>2 ConcurrentHashMap</h3><p>ConcurrentHashMap：一个哈希表，支持检索的完全并发性和更新的高预期并发性。该类遵循与Hashtable相同的功能规范，包括与Hashtable的每个方法对应的方法版本。但是，即使所有操作都是线程安全的，检索操作也不需要锁定，并且不支持以防止所有访问的方式锁定整个表。 在依赖其线程安全但不依赖于其同步细节的程序中，此类与 Hashtable 完全可互操作。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bin数组。第一次插入时延迟初始化。大小始终是 2 的幂。由迭代器直接访问。</span><br><span class="line">transient volatile Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
+
+<p>ConcurrentHashMap在对象中保存了一个Segment数组，即将整个Hash表划分为多个Segment；而每个Segment元素类似于一个Hashtable。这样，在执行 put操作时会先根据hash算法定位到元素属于哪个Segment，然后对该Segment加锁即可。</p>
+<p><strong>实现原理</strong><br>1.7 数组+链表。（segment+分段锁）。容器中有多把锁，每一把锁锁一段数据，这样在多线程访问不同段的数据时，就不会存在锁竞争了，这样便可以有效地提高并发效率。”分段锁”思想。<br>ConcurrentHashMap内部使用段(Segment)来表示这些不同的部分，每个段其实就是一个小的Hashtable，它们有自己的锁。每个segment使用单独的ReentrantLock（分段锁）。如果操作涉及不同segment，则可以并发执行，如果是同一个segment则会进行锁的竞争和等待。<br>ConcurrentHashMap定位一个元素的过程需要进行两次Hash操作。第一次Hash定位到Segment，第二次Hash定位到元素所在的链表的头部。</p>
+<p>1.8 数组+链表（红黑树）。CAS 和 synchronized 结合实现锁粒度的降低。1.7版本锁的粒度是基于Segment的，包含多个HashEntry，而1.8锁的粒度就是HashEntry。<br>1.8版本的数据结构变得更加简单，使得操作也更加清晰流畅，因为已经使用synchronized来进行同步，所以不需要分段锁的概念，也就不需要Segment这种数据结构了，由于粒度的降低，实现的复杂度也增加了。1.8使用红黑树来优化链表。</p>
+<p>CAS全称Compare and Swap，即比较并替换。CAS本质上很简单，一般至少有3个参数：一个变量v，旧值A，新值B。当且仅当变量v当前的值和旧值A相同时，才会将v的值更新为B。</p>
+<h3 id="3-LinkedHashMap"><a href="#3-LinkedHashMap" class="headerlink" title="3 LinkedHashMap"></a>3 LinkedHashMap</h3><p>Map接口的哈希表和链表实现，迭代顺序可预测。<br>此实现与 HashMap 的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LinkedHashMap&lt;K,V&gt;</span><br><span class="line">    extends HashMap&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;</span><br><span class="line">普通LinkedHashMap条目的HashMap.Node子类。</span><br><span class="line">static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; &#123;</span><br><span class="line">        Entry&lt;K,V&gt; before, after;</span><br><span class="line">        Entry(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            super(hash, key, value, next);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">双向链表的头部（最年长的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; head;</span><br><span class="line">双向链表的尾部（最年轻的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br><span class="line">此链接哈希映射的迭代排序方法：访问顺序为true，插入顺序为false。</span><br><span class="line">final boolean accessOrder;</span><br></pre></td></tr></table></figure>
+<p>双向链表<br>key和value都允许为空<br>key重复会覆盖<br>有序的<br>LinkedHashMap是非线程安全的</p>
+<p>LinkedHashMap中的Entry增加了 before 和 after两个指针，用于维护双向链表。before、after用于维护Entry插入的先后顺序的。正是因为before、after的存在,LinkedHashMap才形成了双向链表。<br>LinkedHashMap可以认为是散列表与链表（HashMap+LinkedList）的结合,它继承了HashMap,也用LinkedList维护插入/访问元素的先后顺序。从性能上而言，因为额外维护了链表的关系，性能上要略差于HashMap。</p>
+<p>TreeMap 是按照 Key 的自然顺序或者 Comprator 的顺序进行排序，内部是通过红黑树来实现。所以要么 key 所属的类实现 Comparable 接口，或者自定义一个实现了 Comparator 接口的比较器，传给 TreeMap 用户 key 的比较。</p>
+<h3 id="4-HashSet"><a href="#4-HashSet" class="headerlink" title="4 HashSet"></a>4 HashSet</h3><p>这个类实现了 Set 接口，由一个哈希表（实际上是一个 HashMap 实例）支持。 它不保证集合的迭代顺序；此类允许空元素。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class HashSet&lt;E&gt;</span><br><span class="line">    extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements Set&lt;E&gt;, Cloneable, java.io.Serializable</span><br><span class="line">private transient HashMap&lt;E,Object&gt; map;</span><br><span class="line">构造一个新的空集； 后备 HashMap 实例具有默认初始容量 (16) 和负载因子 (0.75)。</span><br><span class="line">public HashSet() &#123;</span><br><span class="line">        map &#x3D; new HashMap&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>为什么元素不能重复</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        return map.put(e, PRESENT)&#x3D;&#x3D;null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>元素值作为的是 map 的 key，map 的 value 则是 PRESENT 变量，这个变量只作为放入 map 时的一个占位符存在。HashMap 的 key 是不能重复的，HashSet 的元素作为 map 的 key，当然也不能重复了。</p>
+<h3 id="5-Iterator"><a href="#5-Iterator" class="headerlink" title="5 Iterator"></a>5 Iterator</h3><p>集合上的迭代器。 迭代器取代了 Java 集合框架中的枚举。 迭代器在两个方面不同于枚举：<br>迭代器允许调用者在具有明确定义语义的迭代期间从底层集合中删除元素。<br>方法名称已得到改进。</p>
+<p>ListIterator<br>public interface ListIterator<E> extends Iterator<E><br>列表的迭代器，允许程序员沿任一方向遍历列表，在迭代期间修改列表，并获取迭代器在列表中的当前位置。ListIterator 没有当前元素；它的光标位置始终位于调用 previous() 返回的元素和调用 next() 返回的元素之间。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>basic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>11_24_Java</title>
+    <url>/2021/11/24/11-24-Java/</url>
+    <content><![CDATA[<h3 id="1-线程池"><a href="#1-线程池" class="headerlink" title="1 线程池"></a>1 线程池</h3><p>线程池提供了一种限制和管理资源的方式。<br><strong>好处</strong><br>降低资源消耗：通过重复利用已创建的线程可以降低线程创建和销毁造成的消耗;<br>提高响应速度：当任务到达时，可以不需要等到线程创建就能立即执行;<br>提高线程的可管理性：线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。</p>
+<h3 id="2-创建线程池的参数"><a href="#2-创建线程池的参数" class="headerlink" title="2 创建线程池的参数"></a>2 创建线程池的参数</h3><p><strong>corePoolSize</strong>：核心池大小是保持活动状态的最小工作线程数（不允许超时等），除非设置了 allowCoreThreadTimeOut，在这种情况下，最小值为零。<br>当提交一个任务到线程池时，如果当前 poolSize &lt; corePoolSize 时，线程池会创建一个线程来执行任务，即使其他空闲的基本线程能够执行新任务，它也会创建线程，等到需要执行的任务数大于corePoolSize时就不再创建。如果调用了线程池的prestartAllCoreThreads() 方法，线程池会提前创建并启动所有基本线程。</p>
+<p><strong>maximumPoolSize</strong>：最大池大小。请注意，实际最大值受 CAPACITY 内部限制。<br>如果队列满了，并且已创建的线程数大于maximumPoolSize，则线程池会再创建新的线程执行任务。值得注意的是，如果使用了无界的任务队列这个参数就没什么效果。</p>
+<p><strong>keepAliveTime</strong>：等待工作的空闲线程的超时时间（以纳秒为单位）。当存在超过 corePoolSize 或允许 CoreThreadTimeOut 时，线程使用此超时。否则他们永远等待新的工作。</p>
+<p><strong>TimeUnit</strong>：表示给定粒度单位的持续时间，并提供实用方法来跨单位转换，并在这些单位中执行计时和延迟操作。</p>
+<p><strong>workQueue</strong>：用于保存任务和移交给工作线程的队列。</p>
+<p><strong>threadFactory</strong>：新线程的工厂。所有线程都是使用这个工厂创建的（通过方法 addWorker）。</p>
+<p>private volatile RejectedExecutionHandler handler;<br><strong>handle</strong>：在执行中饱和或关闭时调用的处理程序。队列和线程池都满了，说明线程池处于饱和状态，那么必须采取一种策略处理提交的新任务。这个策略默认情况下是AbortPolicy，表示无法处理新任务时抛出异常。<br>饱和策略：<br>AbortPolicy：直接抛出异常。<br>CallerRunsPolicy：只用调用者所在的线程来运行任务。<br>DiscardOldestPolicy：丢弃队列里最近的一个任务，并执行当前任务。<br>DiscardPolicy：不处理，丢弃掉。</p>
+<p>workQueue的选择（阻塞队列的选择）<br>ArrayBlockingQueue：基于数组的有界阻塞队列。此队列对元素 FIFO（先进先出）进行排序。队列的头部是在队列中停留时间最长的那个元素。队列的尾部是在队列中停留时间最短的那个元素。新元素插入队列尾部，队列检索操作获取队列头部元素。</p>
+<p>LinkedBlockingQueue：基于链表的可选有界阻塞队列。此队列对元素 FIFO（先进先出）进行排序。链接队列通常比基于数组的队列具有更高的吞吐量，但在大多数并发应用程序中的可预测性较差。静态工厂方法 Executors.newFixedThreadPool() 使用了这个队列。</p>
+<p>SynchronousQueue：一个阻塞队列，其中每个插入操作都必须等待另一个线程执行相应的移除操作，反之亦然。同步队列没有任何内部容量，甚至没有一个容量。您无法查看同步队列，因为元素仅在您尝试删除它时才存在；你不能插入一个元素（使用任何方法），除非另一个线程试图删除它；你不能迭代，因为没有什么可以迭代的。 队列的头部是第一个排队的插入线程试图添加到队列中的元素；如果没有这样的排队线程，则没有元素可用于删除，poll() 将返回 null。此队列不允许空元素。静态工厂方法 Executors.newCachedThreadPool()) 使用了这个队列。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>basic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>11_21_Java</title>
+    <url>/2021/11/21/11-21-Java/</url>
+    <content><![CDATA[<h3 id="1-进程与线程"><a href="#1-进程与线程" class="headerlink" title="1 进程与线程"></a>1 进程与线程</h3><p>Processes：一个进程有一个自包含的执行环境。一个进程通常有一套完整的、私有的基本运行时资源；特别是，每个进程都有自己的内存空间。Java虚拟机的大多数实现都作为单个进程运行。Java应用程序可以使用ProcessBuilder对象创建其他进程。</p>
+<p>Threads：线程有时被称为轻量级进程。进程和线程都提供了一个执行环境，但是创建一个新线程比创建一个新进程需要更少的资源。线程存在于一个进程中——每个进程至少有一个线程。线程共享进程的资源，包括内存和打开的文件。</p>
+<h3 id="2-创建线程的方式"><a href="#2-创建线程的方式" class="headerlink" title="2 创建线程的方式"></a>2 创建线程的方式</h3><p>通过继承Thread类，重写run方法创建线程。<br>通过实现Runnable接口的run方法来创建线程，启动线程需要通过Thread类。<br>通过实现Callable接口的call方法与FutureTask包装器来创建线程，有返回值。<br>通过线程池创建线程。</p>
+<h3 id="3-Runnable-与-Callable"><a href="#3-Runnable-与-Callable" class="headerlink" title="3 Runnable 与 Callable"></a>3 Runnable 与 Callable</h3><p>Runnable 接⼝中的 run() 方法的返回值是 void，它做的事情只是纯粹地去执行方法中的代码。<br>Callable 接⼝中的 call() 方法是有返回值的，是一个泛型，和 Future、FutureTask 配合可以用来获取异步执行的结果。</p>
+<h3 id="4-线程状态"><a href="#4-线程状态" class="headerlink" title="4 线程状态"></a>4 线程状态</h3><p>1 NEW：尚未启动的线程处于此状态。<br>2 RUNNABLE：在 Java 虚拟机中执行的线程处于这种状态。<br>3 BLOCKED：被阻塞等待监视器锁的线程处于这种状态。（synchronized同步块中阻塞）<br>4 WAITING：无限期等待另一个线程执行特定操作的线程处于此状态。（主动调用wait()、join()、park()方法后的状态）<br>5 TIMED_WAITING：等待另一个线程执行操作达指定等待时间的线程处于此状态。（Thead.sleep(long),wait(long),join(long),parkNanos (long),parkUntil）<br>6 TERMINATED：已退出的线程处于此状态。</p>
+<img src="/2021/11/21/11-21-Java/thread.png" class="">
+
+<h3 id="5-sleep-与wait"><a href="#5-sleep-与wait" class="headerlink" title="5 sleep()与wait()"></a>5 sleep()与wait()</h3><p>sleep()：使当前正在执行的线程休眠（暂时停止执行）指定的毫秒数加上指定的纳秒数，取决于系统计时器和调度程序的精度和准确性。该线程不会失去任何监视器的所有权。sleep为Thread中的方法，让出cpu，不会释放同步资源锁。<br>wait()：使当前线程等待，直到另一个线程为此对象调用notify() 方法或notifyAll() 方法，或者某个其他线程中断了当前线程，或者经过了一定的实时时间。wait为Object中的方法，让出cpu，释放同步资源锁。</p>
+<p>sleep() 方法可以在任何地方使用，而wait() 方法则只能在同步方法或同步块中使用。</p>
+<h3 id="6-run-与start"><a href="#6-run-与start" class="headerlink" title="6 run()与start()"></a>6 run()与start()</h3><p>通常，系统通过调用线程类的start()方法来启动一个线程、此时该线程处于就绪状态，即就是这个线程可以被JVM来调度执行。在调度过程中,JVM底层通过调用线程类的run()方法来完成实际的操作，当run()方法结束后，此线程就会终止。</p>
+<p>如果直接调用线程类的run()方法，此时run()方法仅仅被当做一个普通的函数调用，程序中仍然只有主线程这一个线程，无法达到启动多线程的目的。</p>
+<h3 id="7-线程安全的体现"><a href="#7-线程安全的体现" class="headerlink" title="7 线程安全的体现"></a>7 线程安全的体现</h3><p>原子性：提供互斥访问，同一时刻只能有一个线程对数据进行操作，（atomic，synchronized）；<br>可见性：一个线程对主内存的修改可以及时地被其他线程看到，（synchronized、volatile）；<br>有序性：一个线程观察其他线程的指令执行顺序，由于指令重排序，该观察结果一般杂乱无序，（happensbefore原则）。</p>
+<h3 id="8-线程同步的方法"><a href="#8-线程同步的方法" class="headerlink" title="8 线程同步的方法"></a>8 线程同步的方法</h3><p>1 使用 Synchronized 关键字；<br>2 wait 和 notify方法；<br>3 使用特殊域变量 volatile 实现线程同步；<br>4 使用可重入锁实现线程同步；<br>5 使用阻塞队列实现线程同步；<br>6 使用信号量 Semaphore。</p>
+<h3 id="9-Thread的interrupt方法原理"><a href="#9-Thread的interrupt方法原理" class="headerlink" title="9 Thread的interrupt方法原理"></a>9 Thread的interrupt方法原理</h3><p>interrupt是Thread类的实例方法，它的主要作用是给目标线程发送一个通知，有人希望你退出啦，同时会将目标线程的中断标志设置为true，也就是已经有人打断过该线程了。至于目标线程如何处理，完全取决于目标线程自身。<br>interrupt方法中断线程可以分为两种情况，第一种是打断正在运行的线程。<br>第二种情况是，打断正在休眠的线程，比如目标线程调用了sleep方法而处于阻塞状态，这时候如果打断它，就会抛出InterruptedException异常。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>basic</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>11_26_Java</title>
     <url>/2021/11/26/11-26-Java/</url>
     <content><![CDATA[<h3 id="1-创建线程池的方式"><a href="#1-创建线程池的方式" class="headerlink" title="1 创建线程池的方式"></a>1 创建线程池的方式</h3><p>通过<strong>ThreadPoolExecutor</strong>类的构造方法实现</p>
@@ -401,32 +401,6 @@
       </categories>
       <tags>
         <tag>basic</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>11_26_Redis</title>
-    <url>/2021/11/26/11-26-Redis/</url>
-    <content><![CDATA[<h3 id="1-Redis"><a href="#1-Redis" class="headerlink" title="1 Redis"></a>1 Redis</h3><p>Redis（Remote Dictionary Server )，即远程字典服务，是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库。</p>
-<p>Redis数据类型：<br>String、List、Set、Sorted Set、Hash。</p>
-<p>Redis功能如下：<br>数据缓存、分布式锁、支持数据持久化、支持事务、支持消息队列。</p>
-<p>Redis相比Memcached的优势：<br>Memcached 所有的值均是简单的字符串，Redis 支持更为丰富的数据类型；<br>Redis 的速度比 Memcached 更快；<br>Redis 可以持久化；</p>
-<p>Redis使用场景：<br>缓存：减轻 MySQL 的查询压力，提升系统性能；<br>排行榜：利用 Redis 的 Sorted Set（有序集合）实现；<br>计算器/限速器：利用 Redis 中原子性的自增操作，我们可以统计类似用户点赞数、用户访问数等。这类操作如果用 MySQL，频繁的读写会带来相当大的压力；限速器比较典型的使用场景是限制某个用户访问某个 API 的频率，常用于抢购，防止用户疯狂点击带来不必要的压力；<br>好友关系：利用集合的某些命令，例如求交集、并集、差集等。可以方便解决一些共同好友、共同爱好之类的功能；<br>session共享：Session 是保存在服务器的文件中，如果是集群服务，同一个用户过来可能落在不同机器上，这就会导致用户频繁登陆；采用 Redis 保存 Session 后，无论用户落在那台机器上都能够获取到对应的 Session 信息。</p>
-<p>Redis为什么这么快？<br>完全基于内存，绝大部分请求是纯粹的内存操作，非常快速。<br>数据结构简单，操作也简单。<br>采用单线程，避免了不必要的上下文切换和竞争条件，也不存在多进程或者多线程导致的切换而消耗 CPU，不用去考虑各种锁的问题。<br>使用多路 I/O 复用模型，非阻塞 IO。</p>
-<p>怎样保证缓存和数据库的一致性？<br>从理论上说，只要我们设置了合理的键过期时间，就能保证缓存和数据库中的数据最终是一致的。因为只要缓存数据过期了，就会被删除。随后读的时候，因为缓存中没有，就可以查数据库中的数据，然后写入缓存。<br>新增、更改、删除数据库操作时同步更新 Redis，可以使用事务机制来保证数据的一致性。</p>
-<h3 id="2-缓存穿透与缓存雪崩"><a href="#2-缓存穿透与缓存雪崩" class="headerlink" title="2 缓存穿透与缓存雪崩"></a>2 缓存穿透与缓存雪崩</h3><p><strong>缓存穿透</strong><br>请求缓存和数据库中都没有的数据，导致所有的请求都落到数据库上，造成数据库短时间内承受大量请求而崩掉。<br>解决办法：布隆过滤器，将所有可能存在的数据哈希到一个足够大的 bitmap 中，一个一定不存在的数据会被这个 bitmap 拦截掉，从而避免了对底层存储系统的查询压力。</p>
-<p><strong>缓存雪崩</strong><br>由于设置缓存时，key都采用了相同expire，导致缓存在同一时间大面积失效，请求全部落到DB，DB瞬时负载过重而雪崩。<br>解决办法：<br>随机值：在原有失效时间基础上增加一个随机值，这样每个缓存的过期时间重复率就会降低，集体失效概率也会大大降低。<br>加锁排队：在缓存失效后，通过加锁或者队列来控制读数据库写缓存的线程数量。比如对某个key只允许一个线程查询数据和写缓存，其他线程等待。<br>数据预热：可以通过缓存 reload 机制，预先去更新缓存，在即将发生大量并发访问前手动触发加载缓存不同的key，设置不同的过期时间，让缓存失效的时间点尽量均匀。<br>双缓存策略：Cache1 为原始缓存，Cache2 为拷贝缓存，Cache1 失效时，可以访问Cache2，Cache1缓存失效时间设置为短期，Cache2 设置为长期。</p>
-<h3 id="3-Redis持久化方式"><a href="#3-Redis持久化方式" class="headerlink" title="3 Redis持久化方式"></a>3 Redis持久化方式</h3><p>持久化就是把内存的数据写到磁盘中，防止服务宕机了内存数据丢失。<br>RDB（默认）<br>RDB(Redis DataBase)按照一定的时间周期策略把内存的数据以快照的形式保存到硬盘的二进制文件中。即 Snapshot 快照存储，对应产生的数据文件为 dump.rdb，通过配置文件中的 save 参数来定义快照的周期。核心函数：rdbSave（生成 RDB 文件）和 rdbLoad（从文件加载内存）两个函数。</p>
-<p>AOF<br>AOF（Append-only file）Redis会将每一个收到的写命令都通过 Write 函数追加到文件最后。Redis重启时会通过重新执行文件中保存的写命令来在内存中重建整个数据库的内容。每当执行服务器（定时）任务或者函数时，flushAppendOnlyFile 函数都会被调用。<br>WRITE：根据条件，将 aof_buf 中的缓存写入到 AOF 文件；<br>SAVE：根据条件，调用 fsync 或 fdatasync 函数，将 AOF 文件保存到磁盘中。</p>
-<p>区别：<br>RDB 性能比 AOF 好；<br>AOF 比 RDB 更新频率高，优先使用 AOF 还原数据；<br>AOF 比 RDB 更安全也更大；<br>如果两个都配置了，优先加载 AOF。</p>
-<h3 id="4-Redis淘汰策略"><a href="#4-Redis淘汰策略" class="headerlink" title="4 Redis淘汰策略"></a>4 Redis淘汰策略</h3><p>noeviction：禁止淘汰数据；<br>allkeys-lru：尝试回收最近最少使用的键，使得新添加的数据有空间存放；<br>volatile-lru：尝试回收最近最少使用的键，但仅限于在过期集合中的键，使得新添加的数据有空间存放；<br>allkeys-random：回收随机的键使得新添加的数据有空间存放；<br>volatile-random：回收随机的键使得新添加的数据有空间存放，但仅限于在过期集合中的键；<br>volatile-ttl：回收在过期集合中的键，并且优先回收存活时间较短的键，使得新添加的数据有空间存放。</p>
-<h3 id="5-Redis常见性能问题和解决方案"><a href="#5-Redis常见性能问题和解决方案" class="headerlink" title="5 Redis常见性能问题和解决方案"></a>5 Redis常见性能问题和解决方案</h3><p>Master最好不要做任何持久化工作，包括内存快照和AOF日志文件，特别是不要启用内存快照做持久化。<br>如果数据比较关键，某个Slave开启AOF备份数据，策略为每秒同步一次。<br>为了主从复制的速度和连接的稳定性，Slave和Master最好在同一个局域网内。<br>尽量避免在压力较大的主库上增加从库。<br>为了Master的稳定性，主从复制不要用图状结构，用单向链表结构更稳定，即主从关系为：Master&lt;–Slave1&lt;–Slave2&lt;–Slave3…，这样的结构也方便解决单点故障问题，实现Slave对Master的替换，如果Master挂了，可以立马启用Slave1做Master，其他不变。</p>
-<h3 id="6-Redis实现分布式锁"><a href="#6-Redis实现分布式锁" class="headerlink" title="6 Redis实现分布式锁"></a>6 Redis实现分布式锁</h3><p>Redis 为单线程模式，采用队列模式将并发访问变成串行访问，且多客户端对 Redis 的连接并不存在竞争关系。<br>Redis 中可以使用 SETNX 命令实现分布式锁。一般使用 setnx(set if not exists) 指令，只允许被一个程序占有，使用完调用 del 释放锁。</p>
-]]></content>
-      <categories>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>redis</tag>
       </tags>
   </entry>
   <entry>
@@ -458,6 +432,90 @@
       </categories>
       <tags>
         <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>binary_search</title>
+    <url>/2021/09/19/binary-search/</url>
+    <content><![CDATA[<h3 id="704-二分查找"><a href="#704-二分查找" class="headerlink" title="704 二分查找"></a>704 二分查找</h3><p>给定一个n个元素有序的（升序）整型数组nums和一个目标值target，写一个函数搜索nums中的target，如果目标值存在返回下标，否则返回-1。<br>tips<br>你可以假设 nums 中的所有元素是不重复的。<br>n 将在 [1, 10000]之间。<br>nums 的每个元素都将在[-9999, 9999]之间。</p>
+<p><strong>代码</strong><br>思路：有序整型数组查找给定的target，标准的二分查找。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int search(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return -1;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>减少内存消耗</strong><br>变量只有在用到它的时候才定义和实例化<br>尽量避免使用static变量，类里面私有常量可以用final来代替<br>StringBuffer代替String进行字符串相加</p>
+<p><strong>小知识</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">System.out.println(8 &gt;&gt; 1);  &#x2F;&#x2F;4  右移1位相当于除以2</span><br><span class="line">System.out.println(32 &gt;&gt; 3); &#x2F;&#x2F; 4 右移3位相当于除以2^3</span><br><span class="line">System.out.println(8 &lt;&lt; 1);  &#x2F;&#x2F;16 左移1位相当于乘以2</span><br><span class="line">System.out.println(2 &lt;&lt; 3);  &#x2F;&#x2F;16 左移3位相当于乘以2^3</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="278-First-Bad-Version"><a href="#278-First-Bad-Version" class="headerlink" title="278 First Bad Version"></a>278 First Bad Version</h3><p>寻找左侧边界的二分查找<br>你是产品经理，目前正在带领一个团队开发新的产品。不幸的是，你的产品的最新版本没有通过质量检测。由于每个版本都是基于之前的版本开发的，所以错误的版本之后的所有版本都是错的。</p>
+<p>假设你有 n 个版本 [1, 2, …, n]，你想找出导致之后所有版本出错的第一个错误的版本。</p>
+<p>你可以通过调用 bool isBadVersion(version) 接口来判断版本号 version 是否在单元测试中出错。实现一个函数来查找第一个错误的版本。你应该尽量减少对调用 API 的次数。</p>
+<p>tips<br>1 &lt;= bad &lt;= n &lt;= 2^31 - 1</p>
+<p><strong>代码</strong><br>思路：因为每个版本都是基于之前的版本开发的，所以正确的版本之前的版本都是正确的，错误的版本之后的版本都是错误的。因此需要找到正确和错误版本的临界点，可以采用二分查找法，每查找一次都可以缩小范围（左边界或右边界），效率高。<br>实现一</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 二分搜索的演化版本</span><br><span class="line">    public int firstBadVersion(int n) &#123;</span><br><span class="line">        int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        &#x2F;&#x2F; 终止条件是low &#x3D;&#x3D; high</span><br><span class="line">        while (low &lt; high) &#123;</span><br><span class="line">            &#x2F;&#x2F; 防止溢出超时,low和high相加超过int表示的最大范围时就会溢出变为负数</span><br><span class="line">            &#x2F;&#x2F; int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            &#x2F;&#x2F; 错误的版本</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 可能这就是第一个错误的版本</span><br><span class="line">                high &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现二</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        int firstBadVersion &#x3D; n;  &#x2F;&#x2F; 假设n为第一个错误版本</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &gt;&gt; 1;  &#x2F;&#x2F; 防止溢出</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 错误版本，可能是第一个，也可能不是。继续往左边搜索，同时记录下错误版本位置</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">                firstBadVersion &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                &#x2F;&#x2F; 不是错误版本，往右边搜索</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return firstBadVersion;</span><br></pre></td></tr></table></figure>
+
+<h3 id="35-搜索插入位置"><a href="#35-搜索插入位置" class="headerlink" title="35 搜索插入位置"></a>35 搜索插入位置</h3><p>给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。<br>请必须使用时间复杂度为 O(log n) 的算法。</p>
+<p>tips<br>1 &lt;= nums.length &lt;= 10^4<br>-10^4 &lt;= nums[i] &lt;= 10^4<br>nums 为无重复元素的升序排列数组<br>-10^4 &lt;= target &lt;= 10^4</p>
+<p><strong>代码</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int searchInsert(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &gt; nums[middle]) &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;  &#x2F;&#x2F; 目标值未找到，返回应插入的位置</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="二分查找法详解"><a href="#二分查找法详解" class="headerlink" title="二分查找法详解"></a>二分查找法详解</h3><h4 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h4><p><strong>循环结束条件</strong><br>while（low&lt;=high）还是while（low&lt;high);<br>low&lt;=high意味着循环终止条件为low=high+1;<br>low&lt;high意味着循环终止条件为low==high,具体问题具体分析。</p>
+<p><strong>middle值</strong><br>low=middle or low=middle+1 or high=middle or high=middle-1 and so on</p>
+<p><strong>防止溢出</strong><br>初始化时middle=low+(high-low)/2</p>
+]]></content>
+      <categories>
+        <category>Algorithm</category>
+      </categories>
+      <tags>
+        <tag>二分查找</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>11_26_Redis</title>
+    <url>/2021/11/26/11-26-Redis/</url>
+    <content><![CDATA[<h3 id="1-Redis"><a href="#1-Redis" class="headerlink" title="1 Redis"></a>1 Redis</h3><p>Redis（Remote Dictionary Server )，即远程字典服务，是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库。</p>
+<p>Redis数据类型：<br>String、List、Set、Sorted Set、Hash。</p>
+<p>Redis功能如下：<br>数据缓存、分布式锁、支持数据持久化、支持事务、支持消息队列。</p>
+<p>Redis相比Memcached的优势：<br>Memcached 所有的值均是简单的字符串，Redis 支持更为丰富的数据类型；<br>Redis 的速度比 Memcached 更快；<br>Redis 可以持久化；</p>
+<p>Redis使用场景：<br>缓存：减轻 MySQL 的查询压力，提升系统性能；<br>排行榜：利用 Redis 的 Sorted Set（有序集合）实现；<br>计算器/限速器：利用 Redis 中原子性的自增操作，我们可以统计类似用户点赞数、用户访问数等。这类操作如果用 MySQL，频繁的读写会带来相当大的压力；限速器比较典型的使用场景是限制某个用户访问某个 API 的频率，常用于抢购，防止用户疯狂点击带来不必要的压力；<br>好友关系：利用集合的某些命令，例如求交集、并集、差集等。可以方便解决一些共同好友、共同爱好之类的功能；<br>session共享：Session 是保存在服务器的文件中，如果是集群服务，同一个用户过来可能落在不同机器上，这就会导致用户频繁登陆；采用 Redis 保存 Session 后，无论用户落在那台机器上都能够获取到对应的 Session 信息。</p>
+<p>Redis为什么这么快？<br>完全基于内存，绝大部分请求是纯粹的内存操作，非常快速。<br>数据结构简单，操作也简单。<br>采用单线程，避免了不必要的上下文切换和竞争条件，也不存在多进程或者多线程导致的切换而消耗 CPU，不用去考虑各种锁的问题。<br>使用多路 I/O 复用模型，非阻塞 IO。</p>
+<p>怎样保证缓存和数据库的一致性？<br>从理论上说，只要我们设置了合理的键过期时间，就能保证缓存和数据库中的数据最终是一致的。因为只要缓存数据过期了，就会被删除。随后读的时候，因为缓存中没有，就可以查数据库中的数据，然后写入缓存。<br>新增、更改、删除数据库操作时同步更新 Redis，可以使用事务机制来保证数据的一致性。</p>
+<h3 id="2-缓存穿透与缓存雪崩"><a href="#2-缓存穿透与缓存雪崩" class="headerlink" title="2 缓存穿透与缓存雪崩"></a>2 缓存穿透与缓存雪崩</h3><p><strong>缓存穿透</strong><br>请求缓存和数据库中都没有的数据，导致所有的请求都落到数据库上，造成数据库短时间内承受大量请求而崩掉。<br>解决办法：布隆过滤器，将所有可能存在的数据哈希到一个足够大的 bitmap 中，一个一定不存在的数据会被这个 bitmap 拦截掉，从而避免了对底层存储系统的查询压力。</p>
+<p><strong>缓存雪崩</strong><br>由于设置缓存时，key都采用了相同expire，导致缓存在同一时间大面积失效，请求全部落到DB，DB瞬时负载过重而雪崩。<br>解决办法：<br>随机值：在原有失效时间基础上增加一个随机值，这样每个缓存的过期时间重复率就会降低，集体失效概率也会大大降低。<br>加锁排队：在缓存失效后，通过加锁或者队列来控制读数据库写缓存的线程数量。比如对某个key只允许一个线程查询数据和写缓存，其他线程等待。<br>数据预热：可以通过缓存 reload 机制，预先去更新缓存，在即将发生大量并发访问前手动触发加载缓存不同的key，设置不同的过期时间，让缓存失效的时间点尽量均匀。<br>双缓存策略：Cache1 为原始缓存，Cache2 为拷贝缓存，Cache1 失效时，可以访问Cache2，Cache1缓存失效时间设置为短期，Cache2 设置为长期。</p>
+<h3 id="3-Redis持久化方式"><a href="#3-Redis持久化方式" class="headerlink" title="3 Redis持久化方式"></a>3 Redis持久化方式</h3><p>持久化就是把内存的数据写到磁盘中，防止服务宕机了内存数据丢失。<br>RDB（默认）<br>RDB(Redis DataBase)按照一定的时间周期策略把内存的数据以快照的形式保存到硬盘的二进制文件中。即 Snapshot 快照存储，对应产生的数据文件为 dump.rdb，通过配置文件中的 save 参数来定义快照的周期。核心函数：rdbSave（生成 RDB 文件）和 rdbLoad（从文件加载内存）两个函数。</p>
+<p>AOF<br>AOF（Append-only file）Redis会将每一个收到的写命令都通过 Write 函数追加到文件最后。Redis重启时会通过重新执行文件中保存的写命令来在内存中重建整个数据库的内容。每当执行服务器（定时）任务或者函数时，flushAppendOnlyFile 函数都会被调用。<br>WRITE：根据条件，将 aof_buf 中的缓存写入到 AOF 文件；<br>SAVE：根据条件，调用 fsync 或 fdatasync 函数，将 AOF 文件保存到磁盘中。</p>
+<p>区别：<br>RDB 性能比 AOF 好；<br>AOF 比 RDB 更新频率高，优先使用 AOF 还原数据；<br>AOF 比 RDB 更安全也更大；<br>如果两个都配置了，优先加载 AOF。</p>
+<h3 id="4-Redis淘汰策略"><a href="#4-Redis淘汰策略" class="headerlink" title="4 Redis淘汰策略"></a>4 Redis淘汰策略</h3><p>noeviction：禁止淘汰数据；<br>allkeys-lru：尝试回收最近最少使用的键，使得新添加的数据有空间存放；<br>volatile-lru：尝试回收最近最少使用的键，但仅限于在过期集合中的键，使得新添加的数据有空间存放；<br>allkeys-random：回收随机的键使得新添加的数据有空间存放；<br>volatile-random：回收随机的键使得新添加的数据有空间存放，但仅限于在过期集合中的键；<br>volatile-ttl：回收在过期集合中的键，并且优先回收存活时间较短的键，使得新添加的数据有空间存放。</p>
+<h3 id="5-Redis常见性能问题和解决方案"><a href="#5-Redis常见性能问题和解决方案" class="headerlink" title="5 Redis常见性能问题和解决方案"></a>5 Redis常见性能问题和解决方案</h3><p>Master最好不要做任何持久化工作，包括内存快照和AOF日志文件，特别是不要启用内存快照做持久化。<br>如果数据比较关键，某个Slave开启AOF备份数据，策略为每秒同步一次。<br>为了主从复制的速度和连接的稳定性，Slave和Master最好在同一个局域网内。<br>尽量避免在压力较大的主库上增加从库。<br>为了Master的稳定性，主从复制不要用图状结构，用单向链表结构更稳定，即主从关系为：Master&lt;–Slave1&lt;–Slave2&lt;–Slave3…，这样的结构也方便解决单点故障问题，实现Slave对Master的替换，如果Master挂了，可以立马启用Slave1做Master，其他不变。</p>
+<h3 id="6-Redis实现分布式锁"><a href="#6-Redis实现分布式锁" class="headerlink" title="6 Redis实现分布式锁"></a>6 Redis实现分布式锁</h3><p>Redis 为单线程模式，采用队列模式将并发访问变成串行访问，且多客户端对 Redis 的连接并不存在竞争关系。<br>Redis 中可以使用 SETNX 命令实现分布式锁。一般使用 setnx(set if not exists) 指令，只允许被一个程序占有，使用完调用 del 释放锁。</p>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Three ways to create Java Multithread</title>
+    <url>/2020/09/23/concurrency/</url>
+    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
+<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>多线程</tag>
       </tags>
   </entry>
   <entry>
@@ -520,64 +578,6 @@
       </tags>
   </entry>
   <entry>
-    <title>binary_search</title>
-    <url>/2021/09/19/binary-search/</url>
-    <content><![CDATA[<h3 id="704-二分查找"><a href="#704-二分查找" class="headerlink" title="704 二分查找"></a>704 二分查找</h3><p>给定一个n个元素有序的（升序）整型数组nums和一个目标值target，写一个函数搜索nums中的target，如果目标值存在返回下标，否则返回-1。<br>tips<br>你可以假设 nums 中的所有元素是不重复的。<br>n 将在 [1, 10000]之间。<br>nums 的每个元素都将在[-9999, 9999]之间。</p>
-<p><strong>代码</strong><br>思路：有序整型数组查找给定的target，标准的二分查找。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int search(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return -1;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>减少内存消耗</strong><br>变量只有在用到它的时候才定义和实例化<br>尽量避免使用static变量，类里面私有常量可以用final来代替<br>StringBuffer代替String进行字符串相加</p>
-<p><strong>小知识</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">System.out.println(8 &gt;&gt; 1);  &#x2F;&#x2F;4  右移1位相当于除以2</span><br><span class="line">System.out.println(32 &gt;&gt; 3); &#x2F;&#x2F; 4 右移3位相当于除以2^3</span><br><span class="line">System.out.println(8 &lt;&lt; 1);  &#x2F;&#x2F;16 左移1位相当于乘以2</span><br><span class="line">System.out.println(2 &lt;&lt; 3);  &#x2F;&#x2F;16 左移3位相当于乘以2^3</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="278-First-Bad-Version"><a href="#278-First-Bad-Version" class="headerlink" title="278 First Bad Version"></a>278 First Bad Version</h3><p>寻找左侧边界的二分查找<br>你是产品经理，目前正在带领一个团队开发新的产品。不幸的是，你的产品的最新版本没有通过质量检测。由于每个版本都是基于之前的版本开发的，所以错误的版本之后的所有版本都是错的。</p>
-<p>假设你有 n 个版本 [1, 2, …, n]，你想找出导致之后所有版本出错的第一个错误的版本。</p>
-<p>你可以通过调用 bool isBadVersion(version) 接口来判断版本号 version 是否在单元测试中出错。实现一个函数来查找第一个错误的版本。你应该尽量减少对调用 API 的次数。</p>
-<p>tips<br>1 &lt;= bad &lt;= n &lt;= 2^31 - 1</p>
-<p><strong>代码</strong><br>思路：因为每个版本都是基于之前的版本开发的，所以正确的版本之前的版本都是正确的，错误的版本之后的版本都是错误的。因此需要找到正确和错误版本的临界点，可以采用二分查找法，每查找一次都可以缩小范围（左边界或右边界），效率高。<br>实现一</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 二分搜索的演化版本</span><br><span class="line">    public int firstBadVersion(int n) &#123;</span><br><span class="line">        int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        &#x2F;&#x2F; 终止条件是low &#x3D;&#x3D; high</span><br><span class="line">        while (low &lt; high) &#123;</span><br><span class="line">            &#x2F;&#x2F; 防止溢出超时,low和high相加超过int表示的最大范围时就会溢出变为负数</span><br><span class="line">            &#x2F;&#x2F; int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            &#x2F;&#x2F; 错误的版本</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 可能这就是第一个错误的版本</span><br><span class="line">                high &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>实现二</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        int firstBadVersion &#x3D; n;  &#x2F;&#x2F; 假设n为第一个错误版本</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &gt;&gt; 1;  &#x2F;&#x2F; 防止溢出</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 错误版本，可能是第一个，也可能不是。继续往左边搜索，同时记录下错误版本位置</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">                firstBadVersion &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                &#x2F;&#x2F; 不是错误版本，往右边搜索</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return firstBadVersion;</span><br></pre></td></tr></table></figure>
-
-<h3 id="35-搜索插入位置"><a href="#35-搜索插入位置" class="headerlink" title="35 搜索插入位置"></a>35 搜索插入位置</h3><p>给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。<br>请必须使用时间复杂度为 O(log n) 的算法。</p>
-<p>tips<br>1 &lt;= nums.length &lt;= 10^4<br>-10^4 &lt;= nums[i] &lt;= 10^4<br>nums 为无重复元素的升序排列数组<br>-10^4 &lt;= target &lt;= 10^4</p>
-<p><strong>代码</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int searchInsert(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &gt; nums[middle]) &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;  &#x2F;&#x2F; 目标值未找到，返回应插入的位置</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="二分查找法详解"><a href="#二分查找法详解" class="headerlink" title="二分查找法详解"></a>二分查找法详解</h3><h4 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h4><p><strong>循环结束条件</strong><br>while（low&lt;=high）还是while（low&lt;high);<br>low&lt;=high意味着循环终止条件为low=high+1;<br>low&lt;high意味着循环终止条件为low==high,具体问题具体分析。</p>
-<p><strong>middle值</strong><br>low=middle or low=middle+1 or high=middle or high=middle-1 and so on</p>
-<p><strong>防止溢出</strong><br>初始化时middle=low+(high-low)/2</p>
-]]></content>
-      <categories>
-        <category>Algorithm</category>
-      </categories>
-      <tags>
-        <tag>二分查找</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Three ways to create Java Multithread</title>
-    <url>/2020/09/23/concurrency/</url>
-    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
-<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>多线程</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>copy constructor</title>
     <url>/2021/04/04/copy/</url>
     <content><![CDATA[<h3 id="浅拷贝简介"><a href="#浅拷贝简介" class="headerlink" title="浅拷贝简介"></a>浅拷贝简介</h3><p>浅拷贝会创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。如果属性是基本数据类型，拷贝的就是值；如果属性是引用数据类型，拷贝的就是内存地址。<br>基本数据类型是值传递，所以修改一个对象的值不会影响另一个对象。<br>引用数据类型是引用传递，浅拷贝只是把内存地址赋值给了新对象，它们指向同一内存空间。所以改变其中一个也会影响另一个。</p>
@@ -600,22 +600,6 @@
       </categories>
       <tags>
         <tag>深浅拷贝</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>diffchain</title>
-    <url>/2020/11/16/difftimechain/</url>
-    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
-
-]]></content>
-      <categories>
-        <category>数据结构</category>
-      </categories>
-      <tags>
-        <tag>差分时间链</tag>
       </tags>
   </entry>
   <entry>
@@ -676,31 +660,6 @@
       </tags>
   </entry>
   <entry>
-    <title>dream</title>
-    <url>/2021/11/23/dream/</url>
-    <content><![CDATA[<p>昨天晚上又做了个奇怪的梦，已经好几天没有梦见过了。梦里一切是那么熟悉却又感到陌生。<br>早上起来脑海里还记忆犹新，仿佛就是前一刻，但又觉得已过数年。</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>evening</title>
-    <url>/2021/08/25/evening/</url>
-    <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
-<p>农历七月十八</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>郁</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>firstblog</title>
     <url>/2020/09/20/firstblog/</url>
     <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
@@ -723,9 +682,25 @@
       </tags>
   </entry>
   <entry>
+    <title>diffchain</title>
+    <url>/2020/11/16/difftimechain/</url>
+    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
+
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>差分时间链</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>human</title>
     <url>/2021/10/25/human/</url>
-    <content><![CDATA[<p><strong>人性经的起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
+    <content><![CDATA[<p><strong>人性经得起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
 <p>农历九月二十</p>
 ]]></content>
       <categories>
@@ -733,6 +708,50 @@
       </categories>
       <tags>
         <tag>日志</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>evening</title>
+    <url>/2021/08/25/evening/</url>
+    <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
+<p>农历七月十八</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>郁</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>markdown</title>
+    <url>/2021/04/15/markdown/</url>
+    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
+<p>格式如下图：</p>
+<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
+      <categories>
+        <category>markdown</category>
+      </categories>
+      <tags>
+        <tag>markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>memory</title>
+    <url>/2021/03/21/memory/</url>
+    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
+<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
+<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
+<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
+<img src="/2021/03/21/memory/memory.jpg" class="">
+
+<p>辛丑牛年农历二月初十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>旅行</tag>
       </tags>
   </entry>
   <entry>
@@ -758,20 +777,6 @@
       </categories>
       <tags>
         <tag>关键字</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>last_nightmare</title>
-    <url>/2021/11/05/last-nightmare/</url>
-    <content><![CDATA[<p>今天起了个大早，因为要去投票。选举投票是一项光荣而神圣的事情。</p>
-<p>这几天不知道为什么老是做一些奇奇怪怪的梦，充满着可怕、恐惧、与各种不好的东西。还是得调整一下自己的状态，这令人害怕。</p>
-<p>农历十月初一</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -828,16 +833,17 @@
       </tags>
   </entry>
   <entry>
-    <title>markdown</title>
-    <url>/2021/04/15/markdown/</url>
-    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
-<p>格式如下图：</p>
-<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
+    <title>new_day</title>
+    <url>/2021/10/24/new-day/</url>
+    <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
+<p>下午呆坐在实验室的我静静的听着歌，一首记忆发光让我想起了18年，三年了，《我的青春遇见你》这部电视剧又在脑海里回忆。直接看了最后一集，羡慕陈也与李招娣的爱情。一路走来，嫁给爱情是多么美好啊！不知不觉自己竟然流泪了，是啊，就像招娣拒绝贾方舟所说的，这座城市很大，坐在车里看外面的世界，灯红酒绿的，给人很美好的感觉。但你下车之后，漫步在雨中，发现这才是我的生活。是啊，生活中大多数人是陈也，不是贾方舟。那时的街道没有车水马龙，也没有太多的钢筋水泥，我们的生活却充实有趣。</p>
+<p>农历九月十九</p>
+]]></content>
       <categories>
-        <category>markdown</category>
+        <category>生活</category>
       </categories>
       <tags>
-        <tag>markdown</tag>
+        <tag>日志</tag>
       </tags>
   </entry>
   <entry>
@@ -869,19 +875,17 @@
       </tags>
   </entry>
   <entry>
-    <title></title>
-    <url>/2021/03/21/memory/</url>
-    <content><![CDATA[<hr>
-<p>title: memory<br>date: 2021-03-21 16:50:52<br>categories: 生活<br>tags: 旅行</p>
-<hr>
-<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
-<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
-<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
-<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
-<img src="/2021/03/21/memory/memory.jpg" class="">
-
-<p>辛丑牛年农历二月初十</p>
+    <title>now_do_it</title>
+    <url>/2021/10/29/now-do-it/</url>
+    <content><![CDATA[<p>不知不觉已经10月29号了，时间如白驹过隙，还有一个月就要开题答辩了。昨天老师腾讯会议聊完开题的事情，我的上一届师兄师姐在这个时候或多或少都有一定的研究成果了。但我的研究成果似乎还停滞在了2个月之前，安全多方计算、区块链、物联网。一个热门又新的领域，但似乎对我不太友好，可能我就不适合做科研工作者吧！但是没办法，你必须得硬着头皮往前冲，科研就是这样，培养的就是解决未知问题的能力。就是找没有答案的问题，如果是有答案的问题，那用部着进行科学研究。科研的道路注定充满艰辛、孤独。科研工作者就像勇士一样，必须连续作战，保持胜利战果，所以他是孤独的，同时也是令人敬佩的。加油吧，年轻人！</p>
+<p>农历九月二十四号</p>
 ]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
+      </tags>
   </entry>
   <entry>
     <title>mpc</title>
@@ -1147,93 +1151,10 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>new_day</title>
-    <url>/2021/10/24/new-day/</url>
-    <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
-<p>下午呆坐在实验室的我静静的听着歌，一首记忆发光让我想起了18年，三年了，《我的青春遇见你》这部电视剧又在脑海里回忆。直接看了最后一集，羡慕陈也与李招娣的爱情。一路走来，嫁给爱情是多么美好啊！不知不觉自己竟然流泪了，是啊，就像招娣拒绝贾方舟所说的，这座城市很大，坐在车里看外面的世界，灯红酒绿的，给人很美好的感觉。但你下车之后，漫步在雨中，发现这才是我的生活。是啊，生活中大多数人是陈也，不是贾方舟。那时的街道没有车水马龙，也没有太多的钢筋水泥，我们的生活却充实有趣。</p>
-<p>农历九月十九</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>spring</title>
     <url>/2021/03/24/new-term/</url>
     <content><![CDATA[<p>立春之后的北京逐渐开始暖和起来，春意盎然，似乎也给每个人的心增添了一份温暖。前几日体验了一回蹦床，这确实是个好东西。欢快的时光也变慢了，给这个快节奏的生活按下了一个暂停键。时间定住了，脑海里增添了一份回忆。可这回忆却不像长江后浪拍前浪，前浪会消亡。相反，它会随着岁月的流逝而变得更加难忘，充实着心里的那一份空落落。新的学期到来，我的生活依旧没有改变。还是宿舍-学校两点一线的生活。这几天帮着老师通知考研复试的同学，又让人想起去年今日的自己。一年的付出确实到了收获的季节。种下一粒种子，便会有可能长出一片森林。<br>            你已经度过了最困难的阶段，你知道自己要做什么，现在你可以用一生的时间去追寻它。</p>
 <p>辛丑牛年农历二月十二</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>nightmare</title>
-    <url>/2021/11/02/nightmare/</url>
-    <content><![CDATA[<p>今天已经是11月2号了，昨晚的噩梦令我心惊胆战，后怕。不知何时这已经从美梦变成了噩梦了。害怕、恐惧。但又觉得值得怀念。唉！往前看，做好当下的事情。理工的记忆永留在心里吧！论文、工作，未来才是most important。加油吧！</p>
-<p>农历九月二十八日</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>nightmare_again</title>
-    <url>/2021/11/04/nightmare-again/</url>
-    <content><![CDATA[<p>一连几天的噩梦让人浑身不舒服，为什么会做噩梦呢？难道11月是噩梦的开端？<br>当然不是，一天天的太累了，读研真的好难啊！各种压力纷涌而至，躲不掉也必须要解决。时间飞逝，希望赶快毕业，找份好工作。</p>
-<p>农历九月三十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>now_do_it</title>
-    <url>/2021/10/29/now-do-it/</url>
-    <content><![CDATA[<p>不知不觉已经10月29号了，时间如白驹过隙，还有一个月就要开题答辩了。昨天老师腾讯会议聊完开题的事情，我的上一届师兄师姐在这个时候或多或少都有一定的研究成果了。但我的研究成果似乎还停滞在了2个月之前，安全多方计算、区块链、物联网。一个热门又新的领域，但似乎对我不太友好，可能我就不适合做科研工作者吧！但是没办法，你必须得硬着头皮往前冲，科研就是这样，培养的就是解决未知问题的能力。就是找没有答案的问题，如果是有答案的问题，那用部着进行科学研究。科研的道路注定充满艰辛、孤独。科研工作者就像勇士一样，必须连续作战，保持胜利战果，所以他是孤独的，同时也是令人敬佩的。加油吧，年轻人！</p>
-<p>农历九月二十四号</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>日志</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>rain</title>
-    <url>/2021/03/26/rain/</url>
-    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
-<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
-<p>辛丑年农历二月十四</p>
-<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
-<p>辛丑年农历二月十五</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>如晴似雨</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>oct_day</title>
-    <url>/2021/10/30/oct-day/</url>
-    <content><![CDATA[<p>十月的北京可谓是诈寒还暖，十月的倒数第二天竟然有二十多度，比起国庆之后的最低气温，现在不可谓不舒适。后天就是十一月了，日子总是这么轻飘飘的就过去了，明天三年之约也来了。多么令人期待了，等待了数个三年之后，炎帝迎来了他的三年之约。十一月总是给人美好，十一月的自己也要更加自律了，毕竟毕业不是儿戏啊！而且实习经验也没有的自己更要抓紧时间了。</p>
-<p>今天又看了一下罗翔的圆圈正义，心中思绪万千！难过、伤心、后悔、害怕与恐惧。</p>
-<p>农历九月二十五日</p>
 ]]></content>
       <categories>
         <category>生活</category>
@@ -1284,20 +1205,19 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>hurt_cjm</title>
-    <url>/2021/10/20/thinking/</url>
-    <content><![CDATA[<p>今天是十月二十日，北京的最低温度已经降到了0度，常温在12度上下。这个季节本应是秋高气爽，结果却是凛冽寒风。就像我的心情一样，不知为何今天极度难受，心里总是空落落的，就像一个多年好友突然离你而去。</p>
-<p>前几天知道了一个网红在一些网友的怂恿下喝农药自杀了，人心不足蛇吞象啊！人性究竟是怎样的，一个人能否禁得起考验，在爱情、友情、亲情面前，对于自己问题，自己却没有百分之百的勇气说yes！也不知道自己到底怎么了！就像迪迦奥特曼里面的台词一样。</p>
-<p><strong>我感觉我们正失去一些美好的东西，善良温柔体贴，这些属于我们人类美好的本质，好像正慢慢淡化！</strong><br><strong>其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了</strong><br><strong>人类的欲望，比奇结拉的根还要深</strong><br><strong>即使艾博隆细胞已经完全消失，可是人类心理的黑暗面世不会消失的</strong><br>但尽管这样，<strong>人们之所以敬仰你，是因为你拥有每一个人都拥有的东西，勇气与爱的力量</strong>。是的，每个人心里都有黑暗面，但是也有光明的一面！现在，我已经能够相信了，只要努力到最后不轻言放弃，我相信人类，一定能够创造出光明的未来，也能创造出美好的生命。只要珍惜重要的东西，我相信一定能够办到！**珍惜重要的东西、保护重要的东西，平平淡淡的努力活完短短的一声。</p>
-<p>年少轻狂的岁月，沉淀下来的是那些再也回不到的过去。而总让人感叹的，<strong>则是未曾珍惜而失去的那些</strong>。但这些，恰恰也是生活让你去体会的。因为年少轻狂的岁月，一生也只有一次。当你紧握双手，里面什么也没有；当你打开双手，世界就在你手中。</p>
-<p>所谓成长，不过是用时间慢慢擦亮你的眼睛。少时看重的，年长后却视若鸿毛；少时看轻的，年长后却视若泰山。成长之路，亦是渐渐放下执念，内心归于平静的旅程，也许，我们永远都不会知道自己能走到何方，遇见何人，最后会变成什么样的人。但请一定要记住，能让自己登高的，永远不会是别人的肩膀。人生的道路刚刚启程，<strong>懂得珍惜、保护、敢于承担责任，顺顺利利的活完短短的一生</strong>。</p>
-<p>农历九月十五</p>
+    <title>rain</title>
+    <url>/2021/03/26/rain/</url>
+    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
+<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
+<p>辛丑年农历二月十四</p>
+<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
+<p>辛丑年农历二月十五</p>
 ]]></content>
       <categories>
         <category>生活</category>
       </categories>
       <tags>
-        <tag>日志</tag>
+        <tag>如晴似雨</tag>
       </tags>
   </entry>
   <entry>
@@ -1328,6 +1248,19 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>箭头含义</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>oct_day</title>
+    <url>/2021/10/30/oct-day/</url>
+    <content><![CDATA[<p>十月的北京可谓是诈寒还暖，十月的倒数第二天竟然有二十多度，比起国庆之后的最低气温，现在不可谓不舒适。后天就是十一月了，日子总是这么轻飘飘的就过去了，明天三年之约也来了。多么令人期待了，等待了数个三年之后，炎帝迎来了他的三年之约。十一月总是给人美好，十一月的自己也要更加自律了，毕竟毕业不是儿戏啊！而且实习经验也没有的自己更要抓紧时间了。</p>
+<p>农历九月二十五日</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>日志</tag>
       </tags>
   </entry>
 </search>
