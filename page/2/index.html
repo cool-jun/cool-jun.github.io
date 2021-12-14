@@ -187,6 +187,119 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/04/12-04-Java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/04/12-04-Java/" class="post-title-link" itemprop="url">12_04_Java</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-12-04 10:44:49 / 修改时间：11:48:49" itemprop="dateCreated datePublished" datetime="2021-12-04T10:44:49+08:00">2021-12-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/04/12-04-Java/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/04/12-04-Java/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-分代收集中年轻代和老年代采用的收集算法"><a href="#1-分代收集中年轻代和老年代采用的收集算法" class="headerlink" title="1 分代收集中年轻代和老年代采用的收集算法"></a>1 分代收集中年轻代和老年代采用的收集算法</h3><p>年轻代（Young Generation）的回收算法 (主要以 Copying 为主)</p>
+<ol>
+<li>所有新生成的对象首先都是放在年轻代的。年轻代的目标就是尽可能快速的收集掉那些生命周期短的对象。</li>
+<li>新生代内存按照 8:1:1 的比例分为一个 eden 区和两个 survivor（survivor0、 survivor1）区。大部分对象在eden 区中生成。回收时先将 eden 区存活对象复制到 survivor0 区，然后清空 eden 区，当survivor0 区也存放满了，则将 eden 区和 survivor0 区存活对象复制到 survivor1 区，然后清空 eden 区 和 survivor0 区，此时 survivor0 区是空的，然后将survivor0 区和 survivor1 区交换，即保持survivor1 区为空，如此往复。</li>
+<li>当 survivor1 区不足以存放 eden 区和 survivor0 区的存活对象时，就将存活对象直接存放到老年代。若是老年代也满了就会触发一次Full GC（Major GC），也就是新生代、老年代都进行回收。</li>
+<li>新生代发生的 GC 也叫做 Minor GC，MinorGC 发生频率比较高（不一定等 eden 区满了才触发）。</li>
+</ol>
+<p>老年代（Old Generation）的回收算法（主要以 Mark-Compact 为主）</p>
+<ol>
+<li>在年轻代中经历了 N 次垃圾回收后仍然存活的对象，就会被放到老年代中。因此，可以认为老年代中存放的都是一些生命周期比较长的对象。</li>
+<li>内存比新生代也大很多（1 : 2），当老年代内存满时触发 Major GC 即 Full GC，Full GC 发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
+</ol>
+<h3 id="2-常用的垃圾收集器"><a href="#2-常用的垃圾收集器" class="headerlink" title="2 常用的垃圾收集器"></a>2 常用的垃圾收集器</h3><ol>
+<li>Serial GC，它是最古老的垃圾收集器，“Serial”体现在其收集工作是单线程的，并且在进行垃圾收集过程中，会进入臭名昭著的“Stop-The-World”状态。当然，其单线程设计也意味着精简的 GC 实现，无需维护复杂的数据结构，初始化也简单，所以一直是 Client 模式下 JVM 的默认选项。</li>
+<li>从年代的角度，通常将其老年代实现单独称作 Serial Old，它采用了标记 - 整理（Mark-Compact）算法，区别于新生代的复制算法。</li>
+<li>ParNew GC，很明显是个新生代 GC 实现，它实际是 Serial GC 的多线程版本，最常见的应用场景是配合老年代的 CMS GC 工作。</li>
+<li>CMS（Concurrent Mark Sweep） GC，基于标记 - 清除（Mark-Sweep）算法，设计目标是尽量减少停顿时间，这一点对于 Web 等反应时间敏感的应用非常重要，一直到今天，仍然有很多系统使用 CMS GC。但是，CMS 采用的标记 - 清除算法，存在着内存碎片化问题，所以难以避免在长时间运行等情况下发生 full GC，导致恶劣的停顿。另外，既然强调了并发（Concurrent），CMS 会占用更多 CPU 资源，并和用户线程争抢。</li>
+<li>Parrallel GC，在早期 JDK 8 等版本中，它是 server 模式 JVM 的默认 GC 选择，也被称作是吞吐量优先的 GC。它的算法和 Serial GC 比较相似，尽管实现要复杂的多，其特点是新生代和老年代 GC 都是并行进行的，在常见的服务器环境中更加高效。</li>
+<li>G1 GC 这是一种兼顾吞吐量和停顿时间的 GC 实现，是 Oracle JDK 9 以后的默认 GC 选项。G1 可以直观的设定停顿时间的目标，相比于 CMS GC，G1 未必能做到 CMS 在最好情况下的延时停顿，但是最差情况要好很多。G1 GC内存结构为一个个region。Region 之间是复制算法，但整体上实际可看作是标记 - 整理（Mark-Compact）算法，可以有效地避免内存碎片，尤其是当 Java 堆非常大的时候，G1 的优势更加明显。G1 吞吐量和停顿表现都非常不错，并且仍然在不断地完善，与此同时 CMS 已经在 JDK 9 中被标记为废弃（deprecated）。</li>
+</ol>
+<h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>G1 GC是一种兼顾吞吐量和停顿时间的GC实现，是Oracle JDK 9以后的默认 GC 选项。<br>与以往的收集器不同，G1引入region（区间）的概念，它也分年轻代和老年代。年轻代依然有Eden区和Survivor区。从实际的物理角度看Eden，Survivor等不需要连续只需要保证逻辑上的连续即可。在G1中，堆被分成若干大小相等的区域（region），内存的回收和划分都以region为单位；同时，它吸取了 CMS 的特点，把整个垃圾回收过程分为几个阶段，分散一个垃圾回收过程；而且，G1 也认同分代垃圾回收的思想，认为不同对象的生命周期不同，可以采取不同收集方式，因此，它也支持分代的垃圾回收。为了达到对回收时间的可预计性，G1 在扫描了 region 以后，对其中的活跃对象的大小进行排序，首先会收集那些活跃对象小的 region，以便快速回收空间（要复制的活跃对象少了），因为活跃对象小，里面可以认为多数都是垃圾，所以这种方式被称为 Garbage First（G1）的垃圾回收算法。</p>
+<h3 id="4-内存分配的理解？大对象怎么分配？空间分配担保？"><a href="#4-内存分配的理解？大对象怎么分配？空间分配担保？" class="headerlink" title="4 内存分配的理解？大对象怎么分配？空间分配担保？"></a>4 内存分配的理解？大对象怎么分配？空间分配担保？</h3><ol>
+<li>对象优先在 Eden 区分配：大多数情况下，对象在新生代 Eden 区分配，当 Eden 区空间不够时，发起 MinorGC。</li>
+<li>大对象直接进入老年代：大对象是指需要连续内存空间的对象，最典型的大对象是那种很长的字符串以及数组。经常出现大对象会提前触发垃圾收集以获取足够的连续空间分配给大对象。PretenureSizeThreshold，大于此值的对象直接在老年代分配，避免在 Eden 区和 Survivor 区之间的大量内存复制。</li>
+<li>长期存活的对象将进入老年代：为对象定义年龄计数器，对象在 Eden 出生并经过 Minor GC 依然存活，将移动到 Survivor 中，年龄就增加 1 岁，增加到一定年龄则移动到老年代中。MaxTenuringThreshold 用来定义年龄的阈值。</li>
+<li>动态对象年龄判定：为了更好的适应不同程序的内存情况，虚拟机不是永远要求对象年龄必须达到了某个值才能进入老年代，如果 Survivor 空间中相同年龄所有对象大小的总和大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需达到要求的年龄。</li>
+</ol>
+<p>在发生 Minor GC 之前，虚拟机先检查老年代最大可用的连续空间是否大于新生代所有对象总空间，如果大于的话，那么 Minor GC 可以确认是安全的。</p>
+<h3 id="5-jvm监控工具"><a href="#5-jvm监控工具" class="headerlink" title="5 jvm监控工具"></a>5 jvm监控工具</h3><p>jvisualvm：虚拟机监视和故障处理平台<br>jps ：查看当前 Java 进程<br>jstat：显示虚拟机运⾏数据<br>jmap：内存监控<br>jhat：分析 heapdump ⽂件<br>jstack：线程快照<br>jinfo：虚拟机配置信息</p>
+<h3 id="6-class文件结构"><a href="#6-class文件结构" class="headerlink" title="6 class文件结构"></a>6 class文件结构</h3><p>Class文件结构采用类似C语言的结构体来存储数据的，主要有两类数据项，无符号数和表，无符号数用来表述数字，索引引用以及字符串等，比如 u1，u2，u4，u8分别代表1个字节，2个字节，4个字节，8个字节的无符号数，而表是有多个无符号数以及其它的表组成的复合结构，习惯地以_info结尾。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic;</span><br><span class="line">    u2             minor_version;</span><br><span class="line">    u2             major_version;</span><br><span class="line">    u2             constant_pool_count;</span><br><span class="line">    cp_info        constant_pool[constant_pool_count-1];</span><br><span class="line">    u2             access_flags;</span><br><span class="line">    u2             this_class;</span><br><span class="line">    u2             super_class;</span><br><span class="line">    u2             interfaces_count;</span><br><span class="line">    u2             interfaces[interfaces_count];</span><br><span class="line">    u2             fields_count;</span><br><span class="line">    field_info     fields[fields_count];</span><br><span class="line">    u2             methods_count;</span><br><span class="line">    method_info    methods[methods_count];</span><br><span class="line">    u2             attributes_count;</span><br><span class="line">    attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每个 Class 文件的头 4 个字节称为魔数（magic），它的值固定为 0xCAFEBABE，表示文件类型是能够被JVM处理的Class文件。紧接着magic之后的四个字节存储的是 Class 文件的次版本号和主版本号。<br>在主次版本号之后是常量池。常量池主要存储了字面量以及符号引用。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/01/12-01-Java/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1104,118 +1217,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/20/11-20-Java/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/20/11-20-Java/" class="post-title-link" itemprop="url">11_20_Java</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-11-20 14:07:49" itemprop="dateCreated datePublished" datetime="2021-11-20T14:07:49+08:00">2021-11-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-11-26 21:33:42" itemprop="dateModified" datetime="2021-11-26T21:33:42+08:00">2021-11-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/11/20/11-20-Java/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/20/11-20-Java/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-HashMap多线程死循环问题"><a href="#1-HashMap多线程死循环问题" class="headerlink" title="1 HashMap多线程死循环问题"></a>1 HashMap多线程死循环问题</h3><p>当多线程同时 put 时，如果同时触发了 rehash 操作，会导致 HashMap 的链表中出现循环节点，使得后面 get 的时候，会死循环。</p>
-<p>resize方法：<br>条件：size &gt; capacity * loadFactor<br>创建一个新的Entry空数组，长度是原数组的2倍。<br>rehash：遍历原Entry数组，把所有的Entry重新Hash到新数组。为什么要重新Hash呢？因为长度扩大以后，Hash的规则也随之改变。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-HashMap与Hashtable"><a href="#2-HashMap与Hashtable" class="headerlink" title="2 HashMap与Hashtable"></a>2 HashMap与Hashtable</h3><p>Hashtable：这个类实现了一个哈希表，它将键映射到值。任何非空对象都可以用作键或值。<br>HashMap 的 key 和 value 都允许为 null，而 Hashtable 的 key 和 value 都不允许为 null。<br>HashMap 遇到key 为 null 的时候，调用 putForNullKey 方法进行处理，但对 value 没有处理；Hashtable 遇到 null，直接返回 NullPointerException。<br>Hashtable是线程安全的，HashMap是非线程安全的。<br>HashMap继承了AbstractMap，Hashtable继承Dictionary抽象类，两者均实现Map接口。</p>
-<p>Java中Hashtable、Collections.synchronizedMap、以及 ConcurrentHashMap 可以实现线程安全的Map。<br>Hashtable 是直接在方法上加 synchronized 关键字，锁住整个数组，粒度比较大；即每次锁住整张表让线程独占，致使效率低下；<br>Collections.synchronizedMap 是使用 Collections 集合工具的内部类，通过传入 Map 封装出一个 SynchronizedMap 对象，内部定义了一个对象锁，方法内通过对象锁实现；<br>ConcurrentHashMap使用分段锁，降低了锁粒度，让并发度大大提高。</p>
-<h3 id="2-ConcurrentHashMap"><a href="#2-ConcurrentHashMap" class="headerlink" title="2 ConcurrentHashMap"></a>2 ConcurrentHashMap</h3><p>ConcurrentHashMap：一个哈希表，支持检索的完全并发性和更新的高预期并发性。该类遵循与Hashtable相同的功能规范，包括与Hashtable的每个方法对应的方法版本。但是，即使所有操作都是线程安全的，检索操作也不需要锁定，并且不支持以防止所有访问的方式锁定整个表。 在依赖其线程安全但不依赖于其同步细节的程序中，此类与 Hashtable 完全可互操作。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bin数组。第一次插入时延迟初始化。大小始终是 2 的幂。由迭代器直接访问。</span><br><span class="line">transient volatile Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
-
-<p>ConcurrentHashMap在对象中保存了一个Segment数组，即将整个Hash表划分为多个Segment；而每个Segment元素类似于一个Hashtable。这样，在执行 put操作时会先根据hash算法定位到元素属于哪个Segment，然后对该Segment加锁即可。</p>
-<p><strong>实现原理</strong><br>1.7 数组+链表。（segment+分段锁）。容器中有多把锁，每一把锁锁一段数据，这样在多线程访问不同段的数据时，就不会存在锁竞争了，这样便可以有效地提高并发效率。”分段锁”思想。<br>ConcurrentHashMap内部使用段(Segment)来表示这些不同的部分，每个段其实就是一个小的Hashtable，它们有自己的锁。每个segment使用单独的ReentrantLock（分段锁）。如果操作涉及不同segment，则可以并发执行，如果是同一个segment则会进行锁的竞争和等待。<br>ConcurrentHashMap定位一个元素的过程需要进行两次Hash操作。第一次Hash定位到Segment，第二次Hash定位到元素所在的链表的头部。</p>
-<p>1.8 数组+链表（红黑树）。CAS 和 synchronized 结合实现锁粒度的降低。1.7版本锁的粒度是基于Segment的，包含多个HashEntry，而1.8锁的粒度就是HashEntry。<br>1.8版本的数据结构变得更加简单，使得操作也更加清晰流畅，因为已经使用synchronized来进行同步，所以不需要分段锁的概念，也就不需要Segment这种数据结构了，由于粒度的降低，实现的复杂度也增加了。1.8使用红黑树来优化链表。</p>
-<p>CAS全称Compare and Swap，即比较并替换。CAS本质上很简单，一般至少有3个参数：一个变量v，旧值A，新值B。当且仅当变量v当前的值和旧值A相同时，才会将v的值更新为B。</p>
-<h3 id="3-LinkedHashMap"><a href="#3-LinkedHashMap" class="headerlink" title="3 LinkedHashMap"></a>3 LinkedHashMap</h3><p>Map接口的哈希表和链表实现，迭代顺序可预测。<br>此实现与 HashMap 的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class LinkedHashMap&lt;K,V&gt;</span><br><span class="line">    extends HashMap&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;</span><br><span class="line">普通LinkedHashMap条目的HashMap.Node子类。</span><br><span class="line">static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; &#123;</span><br><span class="line">        Entry&lt;K,V&gt; before, after;</span><br><span class="line">        Entry(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            super(hash, key, value, next);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">双向链表的头部（最年长的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; head;</span><br><span class="line">双向链表的尾部（最年轻的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br><span class="line">此链接哈希映射的迭代排序方法：访问顺序为true，插入顺序为false。</span><br><span class="line">final boolean accessOrder;</span><br></pre></td></tr></table></figure>
-<p>双向链表<br>key和value都允许为空<br>key重复会覆盖<br>有序的<br>LinkedHashMap是非线程安全的</p>
-<p>LinkedHashMap中的Entry增加了 before 和 after两个指针，用于维护双向链表。before、after用于维护Entry插入的先后顺序的。正是因为before、after的存在,LinkedHashMap才形成了双向链表。<br>LinkedHashMap可以认为是散列表与链表（HashMap+LinkedList）的结合,它继承了HashMap,也用LinkedList维护插入/访问元素的先后顺序。从性能上而言，因为额外维护了链表的关系，性能上要略差于HashMap。</p>
-<p>TreeMap 是按照 Key 的自然顺序或者 Comprator 的顺序进行排序，内部是通过红黑树来实现。所以要么 key 所属的类实现 Comparable 接口，或者自定义一个实现了 Comparator 接口的比较器，传给 TreeMap 用户 key 的比较。</p>
-<h3 id="4-HashSet"><a href="#4-HashSet" class="headerlink" title="4 HashSet"></a>4 HashSet</h3><p>这个类实现了 Set 接口，由一个哈希表（实际上是一个 HashMap 实例）支持。 它不保证集合的迭代顺序；此类允许空元素。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class HashSet&lt;E&gt;</span><br><span class="line">    extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements Set&lt;E&gt;, Cloneable, java.io.Serializable</span><br><span class="line">private transient HashMap&lt;E,Object&gt; map;</span><br><span class="line">构造一个新的空集； 后备 HashMap 实例具有默认初始容量 (16) 和负载因子 (0.75)。</span><br><span class="line">public HashSet() &#123;</span><br><span class="line">        map &#x3D; new HashMap&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p><strong>为什么元素不能重复</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        return map.put(e, PRESENT)&#x3D;&#x3D;null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>元素值作为的是 map 的 key，map 的 value 则是 PRESENT 变量，这个变量只作为放入 map 时的一个占位符存在。HashMap 的 key 是不能重复的，HashSet 的元素作为 map 的 key，当然也不能重复了。</p>
-<h3 id="5-Iterator"><a href="#5-Iterator" class="headerlink" title="5 Iterator"></a>5 Iterator</h3><p>集合上的迭代器。 迭代器取代了 Java 集合框架中的枚举。 迭代器在两个方面不同于枚举：<br>迭代器允许调用者在具有明确定义语义的迭代期间从底层集合中删除元素。<br>方法名称已得到改进。</p>
-<p>ListIterator<br>public interface ListIterator<E> extends Iterator<E><br>列表的迭代器，允许程序员沿任一方向遍历列表，在迭代期间修改列表，并获取迭代器在列表中的当前位置。ListIterator 没有当前元素；它的光标位置始终位于调用 previous() 返回的元素和调用 next() 返回的元素之间。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1287,7 +1288,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-count">49</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

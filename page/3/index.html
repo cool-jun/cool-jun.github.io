@@ -187,6 +187,118 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/20/11-20-Java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/20/11-20-Java/" class="post-title-link" itemprop="url">11_20_Java</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-20 14:07:49" itemprop="dateCreated datePublished" datetime="2021-11-20T14:07:49+08:00">2021-11-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-11-26 21:33:42" itemprop="dateModified" datetime="2021-11-26T21:33:42+08:00">2021-11-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/11/20/11-20-Java/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/20/11-20-Java/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-HashMap多线程死循环问题"><a href="#1-HashMap多线程死循环问题" class="headerlink" title="1 HashMap多线程死循环问题"></a>1 HashMap多线程死循环问题</h3><p>当多线程同时 put 时，如果同时触发了 rehash 操作，会导致 HashMap 的链表中出现循环节点，使得后面 get 的时候，会死循环。</p>
+<p>resize方法：<br>条件：size &gt; capacity * loadFactor<br>创建一个新的Entry空数组，长度是原数组的2倍。<br>rehash：遍历原Entry数组，把所有的Entry重新Hash到新数组。为什么要重新Hash呢？因为长度扩大以后，Hash的规则也随之改变。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-HashMap与Hashtable"><a href="#2-HashMap与Hashtable" class="headerlink" title="2 HashMap与Hashtable"></a>2 HashMap与Hashtable</h3><p>Hashtable：这个类实现了一个哈希表，它将键映射到值。任何非空对象都可以用作键或值。<br>HashMap 的 key 和 value 都允许为 null，而 Hashtable 的 key 和 value 都不允许为 null。<br>HashMap 遇到key 为 null 的时候，调用 putForNullKey 方法进行处理，但对 value 没有处理；Hashtable 遇到 null，直接返回 NullPointerException。<br>Hashtable是线程安全的，HashMap是非线程安全的。<br>HashMap继承了AbstractMap，Hashtable继承Dictionary抽象类，两者均实现Map接口。</p>
+<p>Java中Hashtable、Collections.synchronizedMap、以及 ConcurrentHashMap 可以实现线程安全的Map。<br>Hashtable 是直接在方法上加 synchronized 关键字，锁住整个数组，粒度比较大；即每次锁住整张表让线程独占，致使效率低下；<br>Collections.synchronizedMap 是使用 Collections 集合工具的内部类，通过传入 Map 封装出一个 SynchronizedMap 对象，内部定义了一个对象锁，方法内通过对象锁实现；<br>ConcurrentHashMap使用分段锁，降低了锁粒度，让并发度大大提高。</p>
+<h3 id="2-ConcurrentHashMap"><a href="#2-ConcurrentHashMap" class="headerlink" title="2 ConcurrentHashMap"></a>2 ConcurrentHashMap</h3><p>ConcurrentHashMap：一个哈希表，支持检索的完全并发性和更新的高预期并发性。该类遵循与Hashtable相同的功能规范，包括与Hashtable的每个方法对应的方法版本。但是，即使所有操作都是线程安全的，检索操作也不需要锁定，并且不支持以防止所有访问的方式锁定整个表。 在依赖其线程安全但不依赖于其同步细节的程序中，此类与 Hashtable 完全可互操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bin数组。第一次插入时延迟初始化。大小始终是 2 的幂。由迭代器直接访问。</span><br><span class="line">transient volatile Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
+
+<p>ConcurrentHashMap在对象中保存了一个Segment数组，即将整个Hash表划分为多个Segment；而每个Segment元素类似于一个Hashtable。这样，在执行 put操作时会先根据hash算法定位到元素属于哪个Segment，然后对该Segment加锁即可。</p>
+<p><strong>实现原理</strong><br>1.7 数组+链表。（segment+分段锁）。容器中有多把锁，每一把锁锁一段数据，这样在多线程访问不同段的数据时，就不会存在锁竞争了，这样便可以有效地提高并发效率。”分段锁”思想。<br>ConcurrentHashMap内部使用段(Segment)来表示这些不同的部分，每个段其实就是一个小的Hashtable，它们有自己的锁。每个segment使用单独的ReentrantLock（分段锁）。如果操作涉及不同segment，则可以并发执行，如果是同一个segment则会进行锁的竞争和等待。<br>ConcurrentHashMap定位一个元素的过程需要进行两次Hash操作。第一次Hash定位到Segment，第二次Hash定位到元素所在的链表的头部。</p>
+<p>1.8 数组+链表（红黑树）。CAS 和 synchronized 结合实现锁粒度的降低。1.7版本锁的粒度是基于Segment的，包含多个HashEntry，而1.8锁的粒度就是HashEntry。<br>1.8版本的数据结构变得更加简单，使得操作也更加清晰流畅，因为已经使用synchronized来进行同步，所以不需要分段锁的概念，也就不需要Segment这种数据结构了，由于粒度的降低，实现的复杂度也增加了。1.8使用红黑树来优化链表。</p>
+<p>CAS全称Compare and Swap，即比较并替换。CAS本质上很简单，一般至少有3个参数：一个变量v，旧值A，新值B。当且仅当变量v当前的值和旧值A相同时，才会将v的值更新为B。</p>
+<h3 id="3-LinkedHashMap"><a href="#3-LinkedHashMap" class="headerlink" title="3 LinkedHashMap"></a>3 LinkedHashMap</h3><p>Map接口的哈希表和链表实现，迭代顺序可预测。<br>此实现与 HashMap 的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class LinkedHashMap&lt;K,V&gt;</span><br><span class="line">    extends HashMap&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;</span><br><span class="line">普通LinkedHashMap条目的HashMap.Node子类。</span><br><span class="line">static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; &#123;</span><br><span class="line">        Entry&lt;K,V&gt; before, after;</span><br><span class="line">        Entry(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            super(hash, key, value, next);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">双向链表的头部（最年长的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; head;</span><br><span class="line">双向链表的尾部（最年轻的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br><span class="line">此链接哈希映射的迭代排序方法：访问顺序为true，插入顺序为false。</span><br><span class="line">final boolean accessOrder;</span><br></pre></td></tr></table></figure>
+<p>双向链表<br>key和value都允许为空<br>key重复会覆盖<br>有序的<br>LinkedHashMap是非线程安全的</p>
+<p>LinkedHashMap中的Entry增加了 before 和 after两个指针，用于维护双向链表。before、after用于维护Entry插入的先后顺序的。正是因为before、after的存在,LinkedHashMap才形成了双向链表。<br>LinkedHashMap可以认为是散列表与链表（HashMap+LinkedList）的结合,它继承了HashMap,也用LinkedList维护插入/访问元素的先后顺序。从性能上而言，因为额外维护了链表的关系，性能上要略差于HashMap。</p>
+<p>TreeMap 是按照 Key 的自然顺序或者 Comprator 的顺序进行排序，内部是通过红黑树来实现。所以要么 key 所属的类实现 Comparable 接口，或者自定义一个实现了 Comparator 接口的比较器，传给 TreeMap 用户 key 的比较。</p>
+<h3 id="4-HashSet"><a href="#4-HashSet" class="headerlink" title="4 HashSet"></a>4 HashSet</h3><p>这个类实现了 Set 接口，由一个哈希表（实际上是一个 HashMap 实例）支持。 它不保证集合的迭代顺序；此类允许空元素。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class HashSet&lt;E&gt;</span><br><span class="line">    extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements Set&lt;E&gt;, Cloneable, java.io.Serializable</span><br><span class="line">private transient HashMap&lt;E,Object&gt; map;</span><br><span class="line">构造一个新的空集； 后备 HashMap 实例具有默认初始容量 (16) 和负载因子 (0.75)。</span><br><span class="line">public HashSet() &#123;</span><br><span class="line">        map &#x3D; new HashMap&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>为什么元素不能重复</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        return map.put(e, PRESENT)&#x3D;&#x3D;null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>元素值作为的是 map 的 key，map 的 value 则是 PRESENT 变量，这个变量只作为放入 map 时的一个占位符存在。HashMap 的 key 是不能重复的，HashSet 的元素作为 map 的 key，当然也不能重复了。</p>
+<h3 id="5-Iterator"><a href="#5-Iterator" class="headerlink" title="5 Iterator"></a>5 Iterator</h3><p>集合上的迭代器。 迭代器取代了 Java 集合框架中的枚举。 迭代器在两个方面不同于枚举：<br>迭代器允许调用者在具有明确定义语义的迭代期间从底层集合中删除元素。<br>方法名称已得到改进。</p>
+<p>ListIterator<br>public interface ListIterator<E> extends Iterator<E><br>列表的迭代器，允许程序员沿任一方向遍历列表，在迭代期间修改列表，并获取迭代器在列表中的当前位置。ListIterator 没有当前元素；它的光标位置始终位于调用 previous() 返回的元素和调用 next() 返回的元素之间。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/19/11-19-Java/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1103,95 +1215,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/25/human/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/10/25/human/" class="post-title-link" itemprop="url">human</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-10-25 17:24:08" itemprop="dateCreated datePublished" datetime="2021-10-25T17:24:08+08:00">2021-10-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-11-29 17:33:08" itemprop="dateModified" datetime="2021-11-29T17:33:08+08:00">2021-11-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index"><span itemprop="name">生活</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/10/25/human/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/10/25/human/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><strong>人性经得起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
-<p>农历九月二十</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1263,7 +1286,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-count">49</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
