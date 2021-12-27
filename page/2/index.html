@@ -187,6 +187,106 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/11/12-11-Network/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/11/12-11-Network/" class="post-title-link" itemprop="url">12_11_Network</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-11 21:03:02" itemprop="dateCreated datePublished" datetime="2021-12-11T21:03:02+08:00">2021-12-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-12-21 11:55:42" itemprop="dateModified" datetime="2021-12-21T11:55:42+08:00">2021-12-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/11/12-11-Network/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/11/12-11-Network/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-三次握手"><a href="#1-三次握手" class="headerlink" title="1 三次握手"></a>1 三次握手</h3><p>为什么只有三次握手才能确认双方的接收与发送能力是否正常，而两次握手却不可以。<br>第一次握手：客户端发送网络包，服务端收到了。此时服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>第二次握手：服务端发包，客户端收到了。此时客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务端并不能确认客户端的接收能力是否正常。<br>第三次握手：客户端发包，服务端收到了。此时服务端就能得出结论：客户端的接收、发送能力正常，服务端的发送、接收能力也正常。<br>因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
+<p>三次握手过程：刚开始客户端处于 closed 的状态，服务端处于 listen 状态。</p>
+<ol>
+<li>第一次握手：客户端给服务端发一个 SYN 报文，并指明客户端的初始化序列号 ISN(c)。此时客户端处于 SYN_Send 状态。</li>
+<li>第二次握手：服务端收到客户端的 SYN 报文之后，会以自己的 SYN 报文作为应答，并且也是指定了自己的初始化序列号 ISN(s)，同时会把客户端的 ISN + 1 作为 ACK 的值，表示自己已经收到了客户端的 SYN，此时服务端处于 SYN_REVD 的状态。</li>
+<li>第三次握手：客户端收到 SYN 报文之后，会发送一个 ACK 报文，当然，也是同样把服务端的 ISN + 1 作为 ACK 的值，表示已经收到了服务端的 SYN 报文，此时客户端处于 establised 状态。<br>服务器收到 ACK 报文之后，也处于 establised 状态，此时，双方建立起了连接。</li>
+</ol>
+<p>三次握手好处：<br>确认双方的接收能力、发送能力是否正常。<br>指定自己的初始化序列号，为后面的可靠传送做准备。</p>
+<p>ISN不是固定的<br>三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。<br>如果ISN是固定的，攻击者很容易猜出后续的确认号(acknowledgement number)，因此 ISN 是动态生成的。</p>
+<p>半连接队列<br>服务端第一次收到客户端的 SYN(Synchronize Sequence Numbers) 之后，就会处于 SYN_RCVD 状态，此时双方还没有完全建立连接，服务端会把此种状态下的请求连接放在一个队列里，称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列里。如果队列满了就有可能会出现丢包现象。</p>
+<p>SYN-ACK重传次数问题<br>服务器发送完SYN－ACK包，如果未收到客户端确认包，服务器进行首次重传，等待一段时间仍未收到客户端确认包，进行第二次重传，如果重传次数超过系统规定的最大重传次数，系统会将该连接信息从半连接队列中删除。</p>
+<p>三次握手过程中可以携带数据吗？<br>第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。<br>第三次握手时，客户端已经处于 established 状态，对于客户端来说，他已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的，所以能携带数据。</p>
+<p>SYN洪泛攻击<br>服务器端的资源分配是在第二次握手时分配的，而客户端的资源是在完成三次握手时分配的，所以服务器容易受到SYN洪泛攻击。<br>SYN攻击就是Client在短时间内伪造大量不存在的IP地址，并向Server不断地发送SYN包，Server回复确认包，并等待Client确认。由于源地址不存在，因此Server需要不断重发直至超时，这些伪造的SYN包将长时间占用未连接队列，导致正常的SYN请求因为队列满而被丢弃，从而引起网络拥塞甚至系统瘫痪。SYN 攻击是一种典型的 DoS/DDoS 攻击。<br>防御方法：<br>缩短超时时间（SYN Timeout)<br>增加最大半连接数<br>过滤网关防护<br>SYN cookies技术</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/11/12-11-Spring/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1140,114 +1240,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/26/11-26-Redis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/26/11-26-Redis/" class="post-title-link" itemprop="url">11_26_Redis</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-11-26 21:28:04" itemprop="dateCreated datePublished" datetime="2021-11-26T21:28:04+08:00">2021-11-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-21 21:17:12" itemprop="dateModified" datetime="2021-12-21T21:17:12+08:00">2021-12-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/11/26/11-26-Redis/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/26/11-26-Redis/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-Redis"><a href="#1-Redis" class="headerlink" title="1 Redis"></a>1 Redis</h3><p>Redis（Remote Dictionary Server )，即远程字典服务，是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库。</p>
-<p>Redis数据类型：<br>String、List、Set、Sorted Set、Hash。</p>
-<p>Redis功能如下：<br>数据缓存、分布式锁、支持数据持久化、支持事务、支持消息队列。</p>
-<p>Redis相比Memcached的优势：<br>Memcached 所有的值均是简单的字符串，Redis 支持更为丰富的数据类型；<br>Redis 的速度比 Memcached 更快；<br>Redis 可以持久化；</p>
-<p>Redis使用场景：<br>缓存：减轻 MySQL 的查询压力，提升系统性能；<br>排行榜：利用 Redis 的 Sorted Set（有序集合）实现；<br>计算器/限速器：利用 Redis 中原子性的自增操作，我们可以统计类似用户点赞数、用户访问数等。这类操作如果用 MySQL，频繁的读写会带来相当大的压力；限速器比较典型的使用场景是限制某个用户访问某个 API 的频率，常用于抢购，防止用户疯狂点击带来不必要的压力；<br>好友关系：利用集合的某些命令，例如求交集、并集、差集等。可以方便解决一些共同好友、共同爱好之类的功能；<br>session共享：Session 是保存在服务器的文件中，如果是集群服务，同一个用户过来可能落在不同机器上，这就会导致用户频繁登陆；采用 Redis 保存 Session 后，无论用户落在那台机器上都能够获取到对应的 Session 信息。</p>
-<p>Redis为什么这么快？<br>完全基于内存，绝大部分请求是纯粹的内存操作，非常快速。<br>数据结构简单，操作也简单。<br>采用单线程，避免了不必要的上下文切换和竞争条件，也不存在多进程或者多线程导致的切换而消耗 CPU，不用去考虑各种锁的问题。<br>使用多路 I/O 复用模型，非阻塞 IO。</p>
-<p>怎样保证缓存和数据库的一致性？<br>从理论上说，只要我们设置了合理的键过期时间，就能保证缓存和数据库中的数据最终是一致的。因为只要缓存数据过期了，就会被删除。随后读的时候，因为缓存中没有，就可以查数据库中的数据，然后写入缓存。<br>新增、更改、删除数据库操作时同步更新Redis，可以使用事务机制来保证数据的一致性。</p>
-<h3 id="2-缓存穿透与缓存雪崩"><a href="#2-缓存穿透与缓存雪崩" class="headerlink" title="2 缓存穿透与缓存雪崩"></a>2 缓存穿透与缓存雪崩</h3><p><strong>缓存穿透</strong><br>请求缓存和数据库中都没有的数据，导致所有的请求都落到数据库上，造成数据库短时间内承受大量请求而崩掉。<br>解决办法：布隆过滤器，将所有可能存在的数据哈希到一个足够大的 bitmap 中，一个一定不存在的数据会被这个 bitmap 拦截掉，从而避免了对底层存储系统的查询压力。</p>
-<p><strong>缓存雪崩</strong><br>由于设置缓存时，key都采用了相同expire，导致缓存在同一时间大面积失效，请求全部落到DB，DB瞬时负载过重而雪崩。<br>解决办法：<br>随机值：在原有失效时间基础上增加一个随机值，这样每个缓存的过期时间重复率就会降低，集体失效概率也会大大降低。<br>加锁排队：在缓存失效后，通过加锁或者队列来控制读数据库写缓存的线程数量。比如对某个key只允许一个线程查询数据和写缓存，其他线程等待。<br>数据预热：可以通过缓存 reload 机制，预先去更新缓存，在即将发生大量并发访问前手动触发加载缓存不同的key，设置不同的过期时间，让缓存失效的时间点尽量均匀。<br>双缓存策略：Cache1 为原始缓存，Cache2 为拷贝缓存，Cache1 失效时，可以访问Cache2，Cache1缓存失效时间设置为短期，Cache2 设置为长期。</p>
-<h3 id="3-Redis持久化方式"><a href="#3-Redis持久化方式" class="headerlink" title="3 Redis持久化方式"></a>3 Redis持久化方式</h3><p>持久化就是把内存的数据写到磁盘中，防止服务宕机了内存数据丢失。<br>RDB（默认）<br>RDB(Redis DataBase)按照一定的时间周期策略把内存的数据以快照的形式保存到硬盘的二进制文件中。即 Snapshot 快照存储，对应产生的数据文件为 dump.rdb，通过配置文件中的 save 参数来定义快照的周期。核心函数：rdbSave（生成 RDB 文件）和 rdbLoad（从文件加载内存）两个函数。</p>
-<p>AOF<br>AOF（Append-only file）Redis会将每一个收到的写命令都通过 Write 函数追加到文件最后。Redis重启时会通过重新执行文件中保存的写命令来在内存中重建整个数据库的内容。每当执行服务器（定时）任务或者函数时，flushAppendOnlyFile 函数都会被调用。<br>WRITE：根据条件，将 aof_buf 中的缓存写入到 AOF 文件；<br>SAVE：根据条件，调用 fsync 或 fdatasync 函数，将 AOF 文件保存到磁盘中。</p>
-<p>区别：<br>RDB 性能比 AOF 好；<br>AOF 比 RDB 更新频率高，优先使用 AOF 还原数据；<br>AOF 比 RDB 更安全也更大；<br>如果两个都配置了，优先加载 AOF。</p>
-<h3 id="4-Redis淘汰策略"><a href="#4-Redis淘汰策略" class="headerlink" title="4 Redis淘汰策略"></a>4 Redis淘汰策略</h3><p>noeviction：禁止淘汰数据；<br>allkeys-lru：尝试回收最近最少使用的键，使得新添加的数据有空间存放；<br>volatile-lru：尝试回收最近最少使用的键，但仅限于在过期集合中的键，使得新添加的数据有空间存放；<br>allkeys-random：回收随机的键使得新添加的数据有空间存放；<br>volatile-random：回收随机的键使得新添加的数据有空间存放，但仅限于在过期集合中的键；<br>volatile-ttl：回收在过期集合中的键，并且优先回收存活时间较短的键，使得新添加的数据有空间存放。</p>
-<h3 id="5-Redis常见性能问题和解决方案"><a href="#5-Redis常见性能问题和解决方案" class="headerlink" title="5 Redis常见性能问题和解决方案"></a>5 Redis常见性能问题和解决方案</h3><p>Master最好不要做任何持久化工作，包括内存快照和AOF日志文件，特别是不要启用内存快照做持久化。<br>如果数据比较关键，某个Slave开启AOF备份数据，策略为每秒同步一次。<br>为了主从复制的速度和连接的稳定性，Slave和Master最好在同一个局域网内。<br>尽量避免在压力较大的主库上增加从库。<br>为了Master的稳定性，主从复制不要用图状结构，用单向链表结构更稳定，即主从关系为：Master&lt;–Slave1&lt;–Slave2&lt;–Slave3…，这样的结构也方便解决单点故障问题，实现Slave对Master的替换，如果Master挂了，可以立马启用Slave1做Master，其他不变。</p>
-<h3 id="6-Redis怎样实现分布式锁"><a href="#6-Redis怎样实现分布式锁" class="headerlink" title="6 Redis怎样实现分布式锁"></a>6 Redis怎样实现分布式锁</h3><p>Redis 为单线程模式，采用队列模式将并发访问变成串行访问，且多客户端对 redis 的连接并不存在竞争关系。</p>
-<p>redis要实现分布式锁，应该满足以下条件：<br>互斥性：在任意时刻，只有一个客户端能持有锁。<br>不能死锁：客户端在持有锁的期间崩溃而没有主动解锁，也能保证后续其他客户端能加锁。<br>容错性：只要大部分的redis节点正常运行，客户端就可以加锁和解锁。</p>
-<p>可以直接通过 set key value px milliseconds nx 命令实现加锁，通过Lua脚本实现解锁。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 加锁</span><br><span class="line">&#x2F;&#x2F; 加锁实际上就是在redis中，给Key键设置一个值，为避免死锁，设置一个过期时间。</span><br><span class="line">SET resource_key unique_value NX PX 30000</span><br><span class="line">&#x2F;&#x2F; unique_value 是客户端生成的唯一字符串。</span><br><span class="line">&#x2F;&#x2F; NX 代表只在键不存在时，才对键进行设置操作。</span><br><span class="line">&#x2F;&#x2F; PX 30000 设置键的过期时间为5000毫秒。</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 解锁（lua脚本中，一定要比较value，防止误解锁）</span><br><span class="line">&#x2F;&#x2F; 解锁的过程就是将Key键删除</span><br><span class="line">if redis.call(&quot;get&quot;,KEYS[1]) &#x3D;&#x3D; ARGV[1] then</span><br><span class="line">    return redis.call(&quot;del&quot;,KEYS[1])</span><br><span class="line">else</span><br><span class="line">    return 0</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
-
-<p>首先，set()加入了NX参数，可以保证如果key已经存在，则函数不会调用成功，也就是说只有一个客户端能持有锁，满足互斥性。<br>其次，由于我们对锁设置了过期时间，即使锁的持有者后续发生崩溃而没有解锁，锁也会因为到了过期时间而自动解锁（即key被删除），不会发生死锁。<br>最后，因为我们将value赋值为requestId，用来标识这把锁是哪个请求加的，那么客户端在解锁的时候就可以进行校验是否是同一个客户端。</p>
-<p>将Lua代码传到jedis.eval()方法里，并使参数KEYS[1]赋值为lockKey，ARGV[1]赋值为requestId。在执行的时候，首先会获取锁对应的value值，检查是否与requestId相等，如果相等则解锁（删除key）。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1319,20 +1311,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">54</span>
+          <span class="site-state-item-count">55</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-count">47</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
