@@ -56,32 +56,6 @@
       </tags>
   </entry>
   <entry>
-    <title>11_10_Java</title>
-    <url>/2021/11/10/11-10-Java/</url>
-    <content><![CDATA[<h3 id="1-递归和迭代的区别"><a href="#1-递归和迭代的区别" class="headerlink" title="1 递归和迭代的区别"></a>1 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中, 问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远变近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
-<p>以斐波那契数列为例。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>递归容易产生“栈溢出”问题（stack overflow）<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
-<h3 id="2-Java中String为什么是final"><a href="#2-Java中String为什么是final" class="headerlink" title="2 Java中String为什么是final"></a>2 Java中String为什么是final</h3><p>字符串是常量；它们的值在创建后无法更改。<br>StringBuffer支持可变字符串。<br>因为 String 对象是不可变的，所以它们可以共享。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
-<p>安全性：String 被许多的 Java 类(库)用来当做参数，例如：网络连接地址 URL、文件路径 path、还有反射机制所需要 的 String 参数等, 假若 String 不是固定不变的，将会引起各种安全隐患；<br>允许 String 对象缓存 HashCode：Java 中 String 对象的哈希码被频繁地使用,比如在 HashMap 等容器中。字符串不变性保证了 hash 码的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是 Java 堆内存中一个特殊的存储区域, 当创建一个 String 对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
-<h3 id="3-String-str2-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str2-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str2 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str2 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">        String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">        String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">        String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">        System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">        System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">        System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">        System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
-<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量； 它们的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。 此类提供与 StringBuffer 兼容的 API，但不保证同步。 此类旨在用作 StringBuffer 的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。 在可能的情况下，建议优先使用此类而不是 StringBuffer，因为在大多数实现下它会更快。StringBuilder 上的主要操作是 append 和 insert 方法，它们被重载以接受任何类型的数据。 每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。 append 方法总是在构建器的末尾添加这些字符； insert 方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。 字符串缓冲区类似于字符串，但可以修改。 在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>string</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>11_14_Java</title>
     <url>/2021/11/14/11-14-Java/</url>
     <content><![CDATA[<h3 id="1-Error和Exception的区别"><a href="#1-Error和Exception的区别" class="headerlink" title="1 Error和Exception的区别"></a>1 Error和Exception的区别</h3><p>Error：一般指与虚拟机相关的问题，如：系统崩溃、虚拟机错误、内存空间不足、栈溢出等。错误导致应用程序中断，仅靠程序本身无法恢复的预防。</p>
@@ -110,6 +84,32 @@
       </categories>
       <tags>
         <tag>stream</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>11_10_Java</title>
+    <url>/2021/11/10/11-10-Java/</url>
+    <content><![CDATA[<h3 id="1-递归和迭代的区别"><a href="#1-递归和迭代的区别" class="headerlink" title="1 递归和迭代的区别"></a>1 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中, 问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远变近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
+<p>以斐波那契数列为例。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>递归容易产生“栈溢出”问题（stack overflow）<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
+<h3 id="2-Java中String为什么是final"><a href="#2-Java中String为什么是final" class="headerlink" title="2 Java中String为什么是final"></a>2 Java中String为什么是final</h3><p>字符串是常量；它们的值在创建后无法更改。<br>StringBuffer支持可变字符串。<br>因为 String 对象是不可变的，所以它们可以共享。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
+<p>安全性：String 被许多的 Java 类(库)用来当做参数，例如：网络连接地址 URL、文件路径 path、还有反射机制所需要 的 String 参数等, 假若 String 不是固定不变的，将会引起各种安全隐患；<br>允许 String 对象缓存 HashCode：Java 中 String 对象的哈希码被频繁地使用,比如在 HashMap 等容器中。字符串不变性保证了 hash 码的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是 Java 堆内存中一个特殊的存储区域, 当创建一个 String 对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
+<h3 id="3-String-str2-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str2-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str2 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str2 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">        String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">        String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">        String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">        System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">        System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">        System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">        System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
+<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量； 它们的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。 此类提供与 StringBuffer 兼容的 API，但不保证同步。 此类旨在用作 StringBuffer 的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。 在可能的情况下，建议优先使用此类而不是 StringBuffer，因为在大多数实现下它会更快。StringBuilder 上的主要操作是 append 和 insert 方法，它们被重载以接受任何类型的数据。 每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。 append 方法总是在构建器的末尾添加这些字符； insert 方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。 字符串缓冲区类似于字符串，但可以修改。 在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>string</tag>
       </tags>
   </entry>
   <entry>
@@ -223,6 +223,31 @@
       </tags>
   </entry>
   <entry>
+    <title>11_21_Java</title>
+    <url>/2021/11/21/11-21-Java/</url>
+    <content><![CDATA[<h3 id="1-进程与线程"><a href="#1-进程与线程" class="headerlink" title="1 进程与线程"></a>1 进程与线程</h3><p>Processes：一个进程有一个自包含的执行环境。一个进程通常有一套完整的、私有的基本运行时资源；特别是，每个进程都有自己的内存空间。Java虚拟机的大多数实现都作为单个进程运行。Java应用程序可以使用ProcessBuilder对象创建其他进程。</p>
+<p>Threads：线程有时被称为轻量级进程。进程和线程都提供了一个执行环境，但是创建一个新线程比创建一个新进程需要更少的资源。线程存在于一个进程中——每个进程至少有一个线程。线程共享进程的资源，包括内存和打开的文件。</p>
+<h3 id="2-创建线程的方式"><a href="#2-创建线程的方式" class="headerlink" title="2 创建线程的方式"></a>2 创建线程的方式</h3><p>通过继承Thread类，重写run方法创建线程。<br>通过实现Runnable接口的run方法来创建线程，启动线程需要通过Thread类。<br>通过实现Callable接口的call方法与FutureTask包装器来创建线程，有返回值。<br>通过线程池创建线程。</p>
+<h3 id="3-Runnable-与-Callable"><a href="#3-Runnable-与-Callable" class="headerlink" title="3 Runnable 与 Callable"></a>3 Runnable 与 Callable</h3><p>Runnable 接⼝中的 run() 方法的返回值是 void，它做的事情只是纯粹地去执行方法中的代码。<br>Callable 接⼝中的 call() 方法是有返回值的，是一个泛型，和 Future、FutureTask 配合可以用来获取异步执行的结果。</p>
+<h3 id="4-线程状态"><a href="#4-线程状态" class="headerlink" title="4 线程状态"></a>4 线程状态</h3><p>1 NEW：尚未启动的线程处于此状态。<br>2 RUNNABLE：在 Java 虚拟机中执行的线程处于这种状态。<br>3 BLOCKED：被阻塞等待监视器锁的线程处于这种状态。（synchronized同步块中阻塞）<br>4 WAITING：无限期等待另一个线程执行特定操作的线程处于此状态。（主动调用wait()、join()、park()方法后的状态）<br>5 TIMED_WAITING：等待另一个线程执行操作达指定等待时间的线程处于此状态。（Thead.sleep(long),wait(long),join(long),parkNanos (long),parkUntil）<br>6 TERMINATED：已退出的线程处于此状态。</p>
+<img src="/2021/11/21/11-21-Java/thread.png" class="">
+
+<h3 id="5-sleep-与wait"><a href="#5-sleep-与wait" class="headerlink" title="5 sleep()与wait()"></a>5 sleep()与wait()</h3><p>sleep()：使当前正在执行的线程休眠（暂时停止执行）指定的毫秒数加上指定的纳秒数，取决于系统计时器和调度程序的精度和准确性。该线程不会失去任何监视器的所有权。sleep为Thread中的方法，让出cpu，不会释放同步资源锁。<br>wait()：使当前线程等待，直到另一个线程为此对象调用notify() 方法或notifyAll() 方法，或者某个其他线程中断了当前线程，或者经过了一定的实时时间。wait为Object中的方法，让出cpu，释放同步资源锁。</p>
+<p>sleep() 方法可以在任何地方使用，而wait() 方法则只能在同步方法或同步块中使用。</p>
+<h3 id="6-run-与start"><a href="#6-run-与start" class="headerlink" title="6 run()与start()"></a>6 run()与start()</h3><p>通常，系统通过调用线程类的start()方法来启动一个线程、此时该线程处于就绪状态，即就是这个线程可以被JVM来调度执行。在调度过程中,JVM底层通过调用线程类的run()方法来完成实际的操作，当run()方法结束后，此线程就会终止。</p>
+<p>如果直接调用线程类的run()方法，此时run()方法仅仅被当做一个普通的函数调用，程序中仍然只有主线程这一个线程，无法达到启动多线程的目的。</p>
+<h3 id="7-线程安全的体现"><a href="#7-线程安全的体现" class="headerlink" title="7 线程安全的体现"></a>7 线程安全的体现</h3><p>原子性：提供互斥访问，同一时刻只能有一个线程对数据进行操作，（atomic，synchronized）；<br>可见性：一个线程对主内存的修改可以及时地被其他线程看到，（synchronized、volatile）；<br>有序性：一个线程观察其他线程的指令执行顺序，由于指令重排序，该观察结果一般杂乱无序，（happensbefore原则）。</p>
+<h3 id="8-线程同步的方法"><a href="#8-线程同步的方法" class="headerlink" title="8 线程同步的方法"></a>8 线程同步的方法</h3><p>1 使用 Synchronized 关键字；<br>2 wait 和 notify方法；<br>3 使用特殊域变量 volatile 实现线程同步；<br>4 使用可重入锁实现线程同步；<br>5 使用阻塞队列实现线程同步；<br>6 使用信号量 Semaphore。</p>
+<h3 id="9-Thread的interrupt方法原理"><a href="#9-Thread的interrupt方法原理" class="headerlink" title="9 Thread的interrupt方法原理"></a>9 Thread的interrupt方法原理</h3><p>interrupt是Thread类的实例方法，它的主要作用是给目标线程发送一个通知，有人希望你退出啦，同时会将目标线程的中断标志设置为true，也就是已经有人打断过该线程了。至于目标线程如何处理，完全取决于目标线程自身。<br>interrupt方法中断线程可以分为两种情况，第一种是打断正在运行的线程。<br>第二种情况是，打断正在休眠的线程，比如目标线程调用了sleep方法而处于阻塞状态，这时候如果打断它，就会抛出InterruptedException异常。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>线程</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>11_19_Java</title>
     <url>/2021/11/19/11-19-Java/</url>
     <content><![CDATA[<h3 id="1-HashMap的底层实现原理？"><a href="#1-HashMap的底层实现原理？" class="headerlink" title="1 HashMap的底层实现原理？"></a>1 HashMap的底层实现原理？</h3><p>JDK1.7：entry数组+链表<br>JDK1.8：node数组+链表+红黑树。当链表上的元素个数超过8个并且数组长度&gt;=64时自动转化成红黑树，节点变成树节点，以提高搜索效率和插入效率至 O(logN)。<br>Entry 和 Node 都包含 key、value、hash、next 属性。</p>
@@ -255,28 +280,46 @@
       </tags>
   </entry>
   <entry>
-    <title>11_21_Java</title>
-    <url>/2021/11/21/11-21-Java/</url>
-    <content><![CDATA[<h3 id="1-进程与线程"><a href="#1-进程与线程" class="headerlink" title="1 进程与线程"></a>1 进程与线程</h3><p>Processes：一个进程有一个自包含的执行环境。一个进程通常有一套完整的、私有的基本运行时资源；特别是，每个进程都有自己的内存空间。Java虚拟机的大多数实现都作为单个进程运行。Java应用程序可以使用ProcessBuilder对象创建其他进程。</p>
-<p>Threads：线程有时被称为轻量级进程。进程和线程都提供了一个执行环境，但是创建一个新线程比创建一个新进程需要更少的资源。线程存在于一个进程中——每个进程至少有一个线程。线程共享进程的资源，包括内存和打开的文件。</p>
-<h3 id="2-创建线程的方式"><a href="#2-创建线程的方式" class="headerlink" title="2 创建线程的方式"></a>2 创建线程的方式</h3><p>通过继承Thread类，重写run方法创建线程。<br>通过实现Runnable接口的run方法来创建线程，启动线程需要通过Thread类。<br>通过实现Callable接口的call方法与FutureTask包装器来创建线程，有返回值。<br>通过线程池创建线程。</p>
-<h3 id="3-Runnable-与-Callable"><a href="#3-Runnable-与-Callable" class="headerlink" title="3 Runnable 与 Callable"></a>3 Runnable 与 Callable</h3><p>Runnable 接⼝中的 run() 方法的返回值是 void，它做的事情只是纯粹地去执行方法中的代码。<br>Callable 接⼝中的 call() 方法是有返回值的，是一个泛型，和 Future、FutureTask 配合可以用来获取异步执行的结果。</p>
-<h3 id="4-线程状态"><a href="#4-线程状态" class="headerlink" title="4 线程状态"></a>4 线程状态</h3><p>1 NEW：尚未启动的线程处于此状态。<br>2 RUNNABLE：在 Java 虚拟机中执行的线程处于这种状态。<br>3 BLOCKED：被阻塞等待监视器锁的线程处于这种状态。（synchronized同步块中阻塞）<br>4 WAITING：无限期等待另一个线程执行特定操作的线程处于此状态。（主动调用wait()、join()、park()方法后的状态）<br>5 TIMED_WAITING：等待另一个线程执行操作达指定等待时间的线程处于此状态。（Thead.sleep(long),wait(long),join(long),parkNanos (long),parkUntil）<br>6 TERMINATED：已退出的线程处于此状态。</p>
-<img src="/2021/11/21/11-21-Java/thread.png" class="">
+    <title>11_22_Java</title>
+    <url>/2021/11/22/11-22-Java/</url>
+    <content><![CDATA[<h3 id="1-ThreadLocal"><a href="#1-ThreadLocal" class="headerlink" title="1 ThreadLocal"></a>1 ThreadLocal</h3><p>此类提供thread-local变量。<br>ThreadLocal 提供 get 和 set 方法，为每一个使用这个变量的线程都保存一份独立初始化的变量副本。只要线程处于活动状态并且可以访问 ThreadLocal 实例，每个线程都持有对其线程局部变量副本的隐式引用；线程消失后，它的所有线程本地实例副本都将进行垃圾回收。<br>ThreadLocal保证了各个线程的数据互不干扰。<br>每个线程中都有一个ThreadLocalMap数据结构，当执行set方法时，其值是保存在当前线程的threadLocals变量中，当执行set方法时，是从当前线程的threadLocals变量获取。<br>ThreadLocalMap 是一种定制的哈希映射，仅适用于维护线程本地值。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">返回thread-local变量的当前线程副本中的值。</span><br><span class="line">如果该变量对于当前线程没有值，则首先将其初始化为调用 initialValue 方法返回的值。</span><br><span class="line">public T get() &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null) &#123;</span><br><span class="line">            ThreadLocalMap.Entry e &#x3D; map.getEntry(this);</span><br><span class="line">            if (e !&#x3D; null) &#123;</span><br><span class="line">                @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">                T result &#x3D; (T)e.value;</span><br><span class="line">                return result;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return setInitialValue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">将thread-local变量的当前线程副本设置为指定值。</span><br><span class="line">public void set(T value) &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null)</span><br><span class="line">            map.set(this, value);</span><br><span class="line">        else</span><br><span class="line">            createMap(t, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">删除thread-local变量的当前线程值。</span><br><span class="line">public void remove() &#123;</span><br><span class="line">         ThreadLocalMap m &#x3D; getMap(Thread.currentThread());</span><br><span class="line">         if (m !&#x3D; null)</span><br><span class="line">             m.remove(this);</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="5-sleep-与wait"><a href="#5-sleep-与wait" class="headerlink" title="5 sleep()与wait()"></a>5 sleep()与wait()</h3><p>sleep()：使当前正在执行的线程休眠（暂时停止执行）指定的毫秒数加上指定的纳秒数，取决于系统计时器和调度程序的精度和准确性。该线程不会失去任何监视器的所有权。sleep为Thread中的方法，让出cpu，不会释放同步资源锁。<br>wait()：使当前线程等待，直到另一个线程为此对象调用notify() 方法或notifyAll() 方法，或者某个其他线程中断了当前线程，或者经过了一定的实时时间。wait为Object中的方法，让出cpu，释放同步资源锁。</p>
-<p>sleep() 方法可以在任何地方使用，而wait() 方法则只能在同步方法或同步块中使用。</p>
-<h3 id="6-run-与start"><a href="#6-run-与start" class="headerlink" title="6 run()与start()"></a>6 run()与start()</h3><p>通常，系统通过调用线程类的start()方法来启动一个线程、此时该线程处于就绪状态，即就是这个线程可以被JVM来调度执行。在调度过程中,JVM底层通过调用线程类的run()方法来完成实际的操作，当run()方法结束后，此线程就会终止。</p>
-<p>如果直接调用线程类的run()方法，此时run()方法仅仅被当做一个普通的函数调用，程序中仍然只有主线程这一个线程，无法达到启动多线程的目的。</p>
-<h3 id="7-线程安全的体现"><a href="#7-线程安全的体现" class="headerlink" title="7 线程安全的体现"></a>7 线程安全的体现</h3><p>原子性：提供互斥访问，同一时刻只能有一个线程对数据进行操作，（atomic，synchronized）；<br>可见性：一个线程对主内存的修改可以及时地被其他线程看到，（synchronized、volatile）；<br>有序性：一个线程观察其他线程的指令执行顺序，由于指令重排序，该观察结果一般杂乱无序，（happensbefore原则）。</p>
-<h3 id="8-线程同步的方法"><a href="#8-线程同步的方法" class="headerlink" title="8 线程同步的方法"></a>8 线程同步的方法</h3><p>1 使用 Synchronized 关键字；<br>2 wait 和 notify方法；<br>3 使用特殊域变量 volatile 实现线程同步；<br>4 使用可重入锁实现线程同步；<br>5 使用阻塞队列实现线程同步；<br>6 使用信号量 Semaphore。</p>
-<h3 id="9-Thread的interrupt方法原理"><a href="#9-Thread的interrupt方法原理" class="headerlink" title="9 Thread的interrupt方法原理"></a>9 Thread的interrupt方法原理</h3><p>interrupt是Thread类的实例方法，它的主要作用是给目标线程发送一个通知，有人希望你退出啦，同时会将目标线程的中断标志设置为true，也就是已经有人打断过该线程了。至于目标线程如何处理，完全取决于目标线程自身。<br>interrupt方法中断线程可以分为两种情况，第一种是打断正在运行的线程。<br>第二种情况是，打断正在休眠的线程，比如目标线程调用了sleep方法而处于阻塞状态，这时候如果打断它，就会抛出InterruptedException异常。</p>
+<h3 id="2-ThreadLocal使用场景"><a href="#2-ThreadLocal使用场景" class="headerlink" title="2 ThreadLocal使用场景"></a>2 ThreadLocal使用场景</h3><p>Spring实现事务隔离<br>Spring采用Threadlocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。</p>
+<h3 id="3-synchronized"><a href="#3-synchronized" class="headerlink" title="3 synchronized"></a>3 synchronized</h3><p>Synchronized同步方法可以支持使用一种简单的策略来防止线程干扰和内存一致性错误：如果一个对象对多个线程可见，则对该对象变量的所有读取或写入都是通过同步方法完成的。它是一种基本的同步锁。<br>synchronized底层是借助操作系统的Mutex Lock(互斥锁)来实现的线程同步。</p>
+<p>Synchronized的作用就是解决Java并发问题的一种最常用最简单的方法，它可以确保同一个时刻最多只有一个线程执行同步代码，从而保证多线程环境下并发安全的效果。如果有一段代码被Synchronized所修饰，那么这段代码就会以原子的方式执行，当多个线程在执行这段代码的时候，它们是互斥的，不会相互干扰，不会同时执行。</p>
+<p>Synchronized工作机制就是在多线程环境中使用一把锁，在第一个线程去执行的时候去获取这把锁，一旦获取就独占这把锁直到执行完毕或者在一定条件下释放这把锁，但在这把锁释放之前其他的线程只能阻塞等待。</p>
+<p>JVM 基于进入和退出Monitor对象来实现方法同步 和 代码块同步。</p>
+<p>synchronized同步代码块的实现使用的是 monitorenter 和 monitorexit 指令，其中 monitorenter 指令指向同步代码块的开始位置，monitorexit 指令则指向同步代码块的结束位置。</p>
+<p>当执行 monitorenter 指令时，线程试图获取锁也就是获取 监视器锁（monitor）的持有权。monitor 对象存在于每个 Java 对象的对象头中，synchronized 锁便是通过这种方式获取锁的，也是为什么 Java 中任意对象可以作为锁的原因。当计数器为 0 则可以成功获取，获取后将锁计数器设为 1。相应的在执行 monitorexit 指令后，将锁计数器设为 0，表明锁被释放。如果获取对象锁失败，那当前线程就要阻塞，直到锁被另外一个线程释放为止。</p>
+<p>synchronized 修饰的方法用 ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。</p>
+<h3 id="4-synchronized使用"><a href="#4-synchronized使用" class="headerlink" title="4 synchronized使用"></a>4 synchronized使用</h3><p>修饰实例方法：给当前实例对象加锁，进入同步代码前要获得当前实例对象的锁；</p>
+<p>修饰静态方法：给当前类对象加锁，进入同步代码前要获得当前类对象的锁。访问静态 synchronized 方法占用的锁是当前类的锁，而访问非静态 synchronized方法占用的锁是当前实例对象锁；</p>
+<p>修饰代码块：对给定对象加锁，进入同步代码前要获得给定对象的锁。和 synchronized方法一样，synchronized(this) 代码块也是锁定当前对象的。synchronized 关键字加到 static 静态方法和<br>synchronized(class) 代码块上都是是给 Class 类上锁。synchronized 关键字加到非 static 静态方法上是给实例对象上锁。</p>
+<p>双重校验锁实现单例模式</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    private volatile static SingletonDemo uniqueInstance;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line">    public static SingletonDemo getUniqueInstance() &#123;</span><br><span class="line">        &#x2F;&#x2F; 先判断对象是否已经实例化，没有实例化过才进⼊加锁代码</span><br><span class="line">        if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            &#x2F;&#x2F; 类对象加锁</span><br><span class="line">            synchronized (SingletonDemo.class) &#123;</span><br><span class="line">                if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    uniqueInstance &#x3D; new SingletonDemo();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码执行顺序：</p>
+<ol>
+<li>为 uniqueInstance 分配内存空间</li>
+<li>初始化 uniqueInstance</li>
+<li>将 uniqueInstance 指向分配的内存地址</li>
+</ol>
+<p>但是由于 JVM 具有指令重排的特性，执行顺序有可能变成 1 -&gt; 3 -&gt; 2。指令重排在单线程环境下不会出现问题，但是在多线程环境下会导致一个线程获得还没有初始化的实例。<br>volatile常用于<strong>保持内存可见性</strong>和<strong>防止指令重排序</strong>。</p>
+<h3 id="5-JDK1-6之后synchronized关键字所做的优化"><a href="#5-JDK1-6之后synchronized关键字所做的优化" class="headerlink" title="5 JDK1.6之后synchronized关键字所做的优化"></a>5 JDK1.6之后synchronized关键字所做的优化</h3><p>JDK1.6对锁的实现引入了大量的优化，如自旋锁、适应性自旋锁、锁消除、锁粗化、偏向锁、轻量级锁等技术来减少锁操作的开销。</p>
+<p>优化后synchronized锁的分类：无锁状态、偏向锁状态、轻量级锁状态、重量级锁状态。锁可以升级，但是不能降级，即无锁状态 –&gt; 偏向锁状态 –&gt; 轻量级锁状态 –&gt; 重量级锁状态。这种策略是为了提高获得锁和释放锁的效率。</p>
+<p><strong>偏向锁</strong><br>偏向于第一个获得它的线程，如果在接下来的执行中，该锁没有被其他线程获取，那么持有偏向锁的线程就不需要进行同步。偏向锁是针对于一个线程而言的。<br>但是对于锁竞争比较激烈的场景，偏向锁就失效了，因为极有可能每次申请锁的线程都是不相同的，因此这种场景下不应该使用偏向锁。需要注意的是，偏向锁失败后，并不会立即膨胀为重量级锁，而是先升级为轻量级锁。</p>
+<p><strong>轻量级锁</strong><br>当出现有两个线程来竞争锁的话，那么偏向锁就失效了，此时锁就会膨胀，升级为轻量级锁。<br>在没有多线程竞争的前提下，减少传统的重量级锁使用操作系统互斥量产生的性能消耗，因为使用轻量级锁时，不需要申请互斥量。另外，轻量级锁的加锁和解锁都用到了CAS操作。<br>“对于绝大部分锁，在整个同步周期内都是不存在竞争的”。如果没有竞争，轻量级锁使用 CAS 操作避免了使用互斥操作的开销。但如果存在锁竞争，除了互斥量开销外，还会额外发生 CAS 操作，因此在有锁竞争的情况下，轻量级锁比传统的重量级锁更慢！如果锁竞争激烈，那么轻量级将很快膨胀为重量级锁！</p>
+<p><strong>自旋锁</strong><br>轻量级锁失败后，虚拟机为了避免线程真实地在操作系统层面挂起，还会进行一项称为自旋锁的优化手段。<br>一般线程持有锁的时间都不是太久，所以仅仅为了这一点时间去挂起线程/恢复线程是得不偿失的。<br>思想：让一个线程在请求一个共享数据的锁时执行忙循环（自旋）一段时间，如果在这段时间内能获得锁，就可以避免进入阻塞状态。<br>自旋等待不能完全替代阻塞，因为它还是要占用处理器时间。如果锁被占用的时间短，那么效果当然就很好了。反之，自旋等待的时间必须要有限度。如果自旋超过了限定次数任然没有获得锁，就应该挂起线程。</p>
+<p><strong>自适应自旋锁</strong><br>自旋的时间不再固定了，而是由前一次在同一个锁上的自旋时间以及锁的拥有者的状态来决定。</p>
+<p><strong>重量级锁</strong><br>阻塞所有等待竞争的线程，防止CPU空转。</p>
+<p><strong>锁消除</strong><br>虚拟机的JIT在运行时如果检测到一些要求同步的代码上不可能发生共享数据竞争，则会去掉这些锁。</p>
+<p><strong>锁粗化</strong><br>减少不必要的紧连在一起的 lock，unlock 操作，将多个连续的锁扩展成一个范围更大的锁。</p>
 ]]></content>
       <categories>
         <category>Java</category>
       </categories>
       <tags>
-        <tag>线程</tag>
+        <tag>threadlocal</tag>
       </tags>
   </entry>
   <entry>
@@ -363,49 +406,6 @@
       </tags>
   </entry>
   <entry>
-    <title>11_22_Java</title>
-    <url>/2021/11/22/11-22-Java/</url>
-    <content><![CDATA[<h3 id="1-ThreadLocal"><a href="#1-ThreadLocal" class="headerlink" title="1 ThreadLocal"></a>1 ThreadLocal</h3><p>此类提供thread-local变量。<br>ThreadLocal 提供 get 和 set 方法，为每一个使用这个变量的线程都保存一份独立初始化的变量副本。只要线程处于活动状态并且可以访问 ThreadLocal 实例，每个线程都持有对其线程局部变量副本的隐式引用；线程消失后，它的所有线程本地实例副本都将进行垃圾回收。<br>ThreadLocal保证了各个线程的数据互不干扰。<br>每个线程中都有一个ThreadLocalMap数据结构，当执行set方法时，其值是保存在当前线程的threadLocals变量中，当执行set方法时，是从当前线程的threadLocals变量获取。<br>ThreadLocalMap 是一种定制的哈希映射，仅适用于维护线程本地值。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">返回thread-local变量的当前线程副本中的值。</span><br><span class="line">如果该变量对于当前线程没有值，则首先将其初始化为调用 initialValue 方法返回的值。</span><br><span class="line">public T get() &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null) &#123;</span><br><span class="line">            ThreadLocalMap.Entry e &#x3D; map.getEntry(this);</span><br><span class="line">            if (e !&#x3D; null) &#123;</span><br><span class="line">                @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">                T result &#x3D; (T)e.value;</span><br><span class="line">                return result;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return setInitialValue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">将thread-local变量的当前线程副本设置为指定值。</span><br><span class="line">public void set(T value) &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null)</span><br><span class="line">            map.set(this, value);</span><br><span class="line">        else</span><br><span class="line">            createMap(t, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">删除thread-local变量的当前线程值。</span><br><span class="line">public void remove() &#123;</span><br><span class="line">         ThreadLocalMap m &#x3D; getMap(Thread.currentThread());</span><br><span class="line">         if (m !&#x3D; null)</span><br><span class="line">             m.remove(this);</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-ThreadLocal使用场景"><a href="#2-ThreadLocal使用场景" class="headerlink" title="2 ThreadLocal使用场景"></a>2 ThreadLocal使用场景</h3><p>Spring实现事务隔离<br>Spring采用Threadlocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。</p>
-<h3 id="3-synchronized"><a href="#3-synchronized" class="headerlink" title="3 synchronized"></a>3 synchronized</h3><p>Synchronized同步方法可以支持使用一种简单的策略来防止线程干扰和内存一致性错误：如果一个对象对多个线程可见，则对该对象变量的所有读取或写入都是通过同步方法完成的。它是一种基本的同步锁。<br>synchronized底层是借助操作系统的Mutex Lock(互斥锁)来实现的线程同步。</p>
-<p>Synchronized的作用就是解决Java并发问题的一种最常用最简单的方法，它可以确保同一个时刻最多只有一个线程执行同步代码，从而保证多线程环境下并发安全的效果。如果有一段代码被Synchronized所修饰，那么这段代码就会以原子的方式执行，当多个线程在执行这段代码的时候，它们是互斥的，不会相互干扰，不会同时执行。</p>
-<p>Synchronized工作机制就是在多线程环境中使用一把锁，在第一个线程去执行的时候去获取这把锁，一旦获取就独占这把锁直到执行完毕或者在一定条件下释放这把锁，但在这把锁释放之前其他的线程只能阻塞等待。</p>
-<p>JVM 基于进入和退出Monitor对象来实现方法同步 和 代码块同步。</p>
-<p>synchronized同步代码块的实现使用的是 monitorenter 和 monitorexit 指令，其中 monitorenter 指令指向同步代码块的开始位置，monitorexit 指令则指向同步代码块的结束位置。</p>
-<p>当执行 monitorenter 指令时，线程试图获取锁也就是获取 监视器锁（monitor）的持有权。monitor 对象存在于每个 Java 对象的对象头中，synchronized 锁便是通过这种方式获取锁的，也是为什么 Java 中任意对象可以作为锁的原因。当计数器为 0 则可以成功获取，获取后将锁计数器设为 1。相应的在执行 monitorexit 指令后，将锁计数器设为 0，表明锁被释放。如果获取对象锁失败，那当前线程就要阻塞，直到锁被另外一个线程释放为止。</p>
-<p>synchronized 修饰的方法用 ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。</p>
-<h3 id="4-synchronized使用"><a href="#4-synchronized使用" class="headerlink" title="4 synchronized使用"></a>4 synchronized使用</h3><p>修饰实例方法：给当前实例对象加锁，进入同步代码前要获得当前实例对象的锁；</p>
-<p>修饰静态方法：给当前类对象加锁，进入同步代码前要获得当前类对象的锁。访问静态 synchronized 方法占用的锁是当前类的锁，而访问非静态 synchronized方法占用的锁是当前实例对象锁；</p>
-<p>修饰代码块：对给定对象加锁，进入同步代码前要获得给定对象的锁。和 synchronized方法一样，synchronized(this) 代码块也是锁定当前对象的。synchronized 关键字加到 static 静态方法和<br>synchronized(class) 代码块上都是是给 Class 类上锁。synchronized 关键字加到非 static 静态方法上是给实例对象上锁。</p>
-<p>双重校验锁实现单例模式</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    private volatile static SingletonDemo uniqueInstance;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line">    public static SingletonDemo getUniqueInstance() &#123;</span><br><span class="line">        &#x2F;&#x2F; 先判断对象是否已经实例化，没有实例化过才进⼊加锁代码</span><br><span class="line">        if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            &#x2F;&#x2F; 类对象加锁</span><br><span class="line">            synchronized (SingletonDemo.class) &#123;</span><br><span class="line">                if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    uniqueInstance &#x3D; new SingletonDemo();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>代码执行顺序：</p>
-<ol>
-<li>为 uniqueInstance 分配内存空间</li>
-<li>初始化 uniqueInstance</li>
-<li>将 uniqueInstance 指向分配的内存地址</li>
-</ol>
-<p>但是由于 JVM 具有指令重排的特性，执行顺序有可能变成 1 -&gt; 3 -&gt; 2。指令重排在单线程环境下不会出现问题，但是在多线程环境下会导致一个线程获得还没有初始化的实例。<br>volatile常用于<strong>保持内存可见性</strong>和<strong>防止指令重排序</strong>。</p>
-<h3 id="5-JDK1-6之后synchronized关键字所做的优化"><a href="#5-JDK1-6之后synchronized关键字所做的优化" class="headerlink" title="5 JDK1.6之后synchronized关键字所做的优化"></a>5 JDK1.6之后synchronized关键字所做的优化</h3><p>JDK1.6对锁的实现引入了大量的优化，如自旋锁、适应性自旋锁、锁消除、锁粗化、偏向锁、轻量级锁等技术来减少锁操作的开销。</p>
-<p>优化后synchronized锁的分类：无锁状态、偏向锁状态、轻量级锁状态、重量级锁状态。锁可以升级，但是不能降级，即无锁状态 –&gt; 偏向锁状态 –&gt; 轻量级锁状态 –&gt; 重量级锁状态。这种策略是为了提高获得锁和释放锁的效率。</p>
-<p><strong>偏向锁</strong><br>偏向于第一个获得它的线程，如果在接下来的执行中，该锁没有被其他线程获取，那么持有偏向锁的线程就不需要进行同步。偏向锁是针对于一个线程而言的。<br>但是对于锁竞争比较激烈的场景，偏向锁就失效了，因为极有可能每次申请锁的线程都是不相同的，因此这种场景下不应该使用偏向锁。需要注意的是，偏向锁失败后，并不会立即膨胀为重量级锁，而是先升级为轻量级锁。</p>
-<p><strong>轻量级锁</strong><br>当出现有两个线程来竞争锁的话，那么偏向锁就失效了，此时锁就会膨胀，升级为轻量级锁。<br>在没有多线程竞争的前提下，减少传统的重量级锁使用操作系统互斥量产生的性能消耗，因为使用轻量级锁时，不需要申请互斥量。另外，轻量级锁的加锁和解锁都用到了CAS操作。<br>“对于绝大部分锁，在整个同步周期内都是不存在竞争的”。如果没有竞争，轻量级锁使用 CAS 操作避免了使用互斥操作的开销。但如果存在锁竞争，除了互斥量开销外，还会额外发生 CAS 操作，因此在有锁竞争的情况下，轻量级锁比传统的重量级锁更慢！如果锁竞争激烈，那么轻量级将很快膨胀为重量级锁！</p>
-<p><strong>自旋锁</strong><br>轻量级锁失败后，虚拟机为了避免线程真实地在操作系统层面挂起，还会进行一项称为自旋锁的优化手段。<br>一般线程持有锁的时间都不是太久，所以仅仅为了这一点时间去挂起线程/恢复线程是得不偿失的。<br>思想：让一个线程在请求一个共享数据的锁时执行忙循环（自旋）一段时间，如果在这段时间内能获得锁，就可以避免进入阻塞状态。<br>自旋等待不能完全替代阻塞，因为它还是要占用处理器时间。如果锁被占用的时间短，那么效果当然就很好了。反之，自旋等待的时间必须要有限度。如果自旋超过了限定次数任然没有获得锁，就应该挂起线程。</p>
-<p><strong>自适应自旋锁</strong><br>自旋的时间不再固定了，而是由前一次在同一个锁上的自旋时间以及锁的拥有者的状态来决定。</p>
-<p><strong>重量级锁</strong><br>阻塞所有等待竞争的线程，防止CPU空转。</p>
-<p><strong>锁消除</strong><br>虚拟机的JIT在运行时如果检测到一些要求同步的代码上不可能发生共享数据竞争，则会去掉这些锁。</p>
-<p><strong>锁粗化</strong><br>减少不必要的紧连在一起的 lock，unlock 操作，将多个连续的锁扩展成一个范围更大的锁。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>threadlocal</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>11_26_Redis</title>
     <url>/2021/11/26/11-26-Redis/</url>
     <content><![CDATA[<h3 id="1-Redis"><a href="#1-Redis" class="headerlink" title="1 Redis"></a>1 Redis</h3><p>Redis（Remote Dictionary Server )，即远程字典服务，是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库。</p>
@@ -459,6 +459,41 @@
       </tags>
   </entry>
   <entry>
+    <title>11_27_Mysql</title>
+    <url>/2021/11/27/11-27-Mysql/</url>
+    <content><![CDATA[<h3 id="1-mysql架构"><a href="#1-mysql架构" class="headerlink" title="1 mysql架构"></a>1 mysql架构</h3><img src="/2021/11/27/11-27-Mysql/mysql.png" class="">
+<p>MySQL可以分为 Server 层和存储引擎两部分。<br>Server 层包括：连接器、查询缓存、分析器、优化器、执行器等，涵盖了 MySQL 大多数核心服务功能，以及所有的内置函数（如：日期、时间、数学和加密函数等），所有跨存储引擎的功能都在这一层实现，例如：存储过程、触发器、视图等等。<br>存储引擎层：负责数据的存储和提取。其架构是插件式的，支持 InnoDB、MyISAM 等多个存储引擎。默认是InnoDB，但是在建表时可以通过 engine = MyISAM 来指定存储引擎。不同存储引擎的表数据存取方式不同，支持的功能也不同。</p>
+<h3 id="2-MyISAM与InnoDB"><a href="#2-MyISAM与InnoDB" class="headerlink" title="2 MyISAM与InnoDB"></a>2 MyISAM与InnoDB</h3><p>MyISAM是MySQL的默认数据库引擎（5.5版之前）。虽然性能极佳，而且提供了大量的特性，包括全文索引、压缩、空间函数等，但MyISAM不支持事务和行级锁，而且最大的缺陷就是崩溃后无法安全恢复。不过，5.5版本之后，MySQL引入了InnoDB，并且5.5版本后默认的存储引擎为InnoDB。</p>
+<p>MyISAM 强调的是性能，每次查询具有原子性,其执行速度比InnoDB类型更快，但是不提供事务支持。InnoDB 提供事务支持，外部键等高级数据库功能。具有事务(commit)、回滚(rollback)和崩溃修复能力(crash recovery capabilities)的事务安全(transaction-safe (ACID compliant))型表。</p>
+<p>MyISAM不支持事务，InnoDB支持事务。<br>MyISAM不支持外键，InnoDB支持外键。<br>MyISAM只支持表级锁(table-level locking)，而 InnoDB 支持行级锁(rowlevel locking)和表级锁,默认为行级锁。<br>仅 InnoDB 支持mvcc。应对高并发事务, MVCC比单纯的加锁更高效;<br>MVCC 只在 READ COMMITTED 和 REPEATABLE READ 两个隔离级别下工作;<br>MVCC 可以使用乐观(optimistic)锁和悲观(pessimistic)锁来实现。</p>
+<h3 id="3-mvcc（Mutil-Version-Concurrency-Control-多版本并发控制"><a href="#3-mvcc（Mutil-Version-Concurrency-Control-多版本并发控制" class="headerlink" title="3 mvcc（Mutil-Version Concurrency Control)多版本并发控制"></a>3 mvcc（Mutil-Version Concurrency Control)多版本并发控制</h3><p>MVCC是一种并发控制的方法，一般在数据库管理系统中，实现对数据库的并发访问。<br>早期的数据库系统，只有读-读之间可以并发，读-写，写-写都要阻塞。引入多版本之后，只有写-写之间相互阻塞，其他2种操作都可以并行，这样大幅度提高了数据库的并发性能。</p>
+<p>原理就是通过数据行的多个版本管理来实现数据库的并发控制，简单来说就是保存数据的历史版本。可以通过比较版本号决定数据是否显示出来。<br>InnoDB是在undo log中实现的，通过undo log可以找回数据的历史版本。找回的数据历史版本可以提供给用户读(按照隔离级别的定义，有些读请求只能看到比较老的数据版本)，也可以在回滚的时候覆盖数据页上的数据。</p>
+<h3 id="4-一条sql语句的执行过程"><a href="#4-一条sql语句的执行过程" class="headerlink" title="4 一条sql语句的执行过程"></a>4 一条sql语句的执行过程</h3><ol>
+<li>连接数据库。</li>
+<li>查询缓存。MySQL拿到一个查询请求后，会先到查询缓存查找，看之前是不是执行过这条语句。因为执行过的语句及其结果都会以key-value的形式，被直接缓存到内存中。其中，key 是查询语句，value 是查询结果。如果你的查询能够直接在缓存中找到（key），那么这个 value 就会直接返回给客户端。如果语句不在查询缓存中，就会继续后面的执行阶段。但是大多数情况下不建议使用查询缓存。MySQL8.0版本已经将查询缓存功能删除了。</li>
+<li>分析器。进行sql语句的词法分析、语法分析。</li>
+<li>优化器。优化器的作用就是以它认为的最优执行方案去执行。例如：在表里有多个索引的时候，决定使用哪个索引；或者在一个语句有多表关联（join）的时候，决定各个表的连接顺序。</li>
+<li>执行器。执行语句，然后从存储引擎返回数据。</li>
+</ol>
+<h3 id="5-索引"><a href="#5-索引" class="headerlink" title="5 索引"></a>5 索引</h3><p>索引的出现是为了提高数据的查询效率，就像书的目录一样。<br>MySQL索引的实现通常使用B树及其变种B+树。MySQL中使用较多的索引有 Hash 索引、B+ 树索引等。InnoDB存储引擎的默认索引实现为 B+ 树索引。</p>
+<p>但是为表设置索引需要付出代价：一是增加了数据库的存储空间，二是在插入和修改数据时要花费较多的时间(因为索引也要随之变动)。</p>
+<p>建立索引的原则：<br>在最频繁使用的、用以缩小查询范围的字段上建立索引；<br>在频繁使用的、需要排序的字段上建立索引。</p>
+<h3 id="6-索引分类"><a href="#6-索引分类" class="headerlink" title="6 索引分类"></a>6 索引分类</h3><p>数据结构角度：树索引、hash索引。<br>物理存储角度：聚簇索引、非聚簇索引。<br><strong>逻辑角度</strong>：普通索引、唯一索引、主键索引、联合索引、全文索引。<br>InnoDB 主键使用的是聚簇索引，MyISAM 不管是主键，还是二级索引使用的都是非聚簇索引。</p>
+<p>聚簇索引（主键索引）：按照每张表的主键构造一颗B+树，同时叶子节点存放表的记录数据。特点是存储数据的顺序和索引顺序一致。一般情况下主键会默认创建聚簇索引，且一张表只允许存在一个聚簇索引。</p>
+<p>非聚簇索引（辅助索引）：B+Tree叶子节点的data域存放的是数据记录的地址。在索引检索的时候，首先按照B+Tree搜索算法搜索索引，如果指定的Key存在，则取出其 data 域的值，然后以 data 域的值为地址读取相应的数据记录。索引文件和数据文件是独立分开的。</p>
+<p>聚簇索引的叶子节点就是数据节点，而非聚簇索引的叶子节点仍然是索引节点，只不过有指向对应数据的指针。</p>
+<p>哈希索引：哈希索引能以 O(1) 时间进行查找，但是失去了有序性。无法用于排序与分组、只支持精确查找，无法用于部分查找和范围查找。</p>
+<p>Mysql中InnoDB引擎有一个特殊的功能叫做自适应哈希索引，它会在内存中基于B+Tree索引的基础上创建一个哈希索引，这让B+Tree索引具备了一些哈希索引的优点。</p>
+<h3 id="7-为什么-InnoDB-存储引擎选用-B-树而不是-B-树？"><a href="#7-为什么-InnoDB-存储引擎选用-B-树而不是-B-树？" class="headerlink" title="7 为什么 InnoDB 存储引擎选用 B+ 树而不是 B 树？"></a>7 为什么 InnoDB 存储引擎选用 B+ 树而不是 B 树？</h3><p>主要考虑的是 IO 对性能的影响，B 树的每个节点都存储数据，而 B+ 树只有叶子节点才存储数据，所以查找相同数据量的情况下，B 树的高度大，IO 更频繁。</p>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>12_01_Java</title>
     <url>/2021/12/01/12-01-Java/</url>
     <content><![CDATA[<h3 id="1-Java参数传递"><a href="#1-Java参数传递" class="headerlink" title="1 Java参数传递"></a>1 Java参数传递</h3><p>Java 在方法调用传递参数时，所以它都是进行传值调用。<br>在运行栈中，基本类型和引用的处理是一样的，都是传值。但是当进入被调用方法时，被传递的这个引用的值，被程序解释到堆中的对象，这个时候才对应到真正的对象。如果此时进行修改，修改的是引用对应的对象，而不是引用本身，即：修改的是堆中的数据。所以这个修改是可以保持的。</p>
@@ -477,6 +512,41 @@
 <p><strong>复制算法</strong>copying<br>复制算法的提出是为了克服句柄开销和解决内存碎片问题。把堆分成 一个对象面和多个空闲面， 程序从对象面为对象分配空间，当对象满了，基于 copying 算法的垃圾收集就从根集合（GC Roots）中扫描活动对象，并将每个活动对象复制到空闲面，这样空闲面变成了对象面，原来的对象面变成了空闲面，程序会在新的对象面中分配内存。</p>
 <p><strong>标记-整理算法</strong>ark-compact<br>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但在清除时不同，在回收不存活的对象占用的空间后，会将所有的存活对象往左端空闲空间移动，并更新对应的指针。标记-整理算法是在标记-清除算法的基础上，又进行了对象的移动，因此成本更高，但是却解决了内存碎片的问题。</p>
 <p><strong>分代收集算法</strong><br>分代收集算法是目前大部分 JVM 的垃圾收集器采用的算法。它的核心思想是根据对象存活的生命周期将内存划分为若干个不同的区域。一般情况下将堆划分为老年代（Tenured Generation）和新生代（Young Generation），在堆之外还有一个代就是永久代（Permanet Generation）。<br>老年代的特点是每次垃圾收集时只有少量对象需要被回收，而新生代的特点是每次垃圾回收时都有大量的对象需要被回收，那么就可以根据不同代的特点采取最适合的收集算法。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>12_05_Java</title>
+    <url>/2021/12/05/12-05-Java/</url>
+    <content><![CDATA[<h3 id="1-类加载机制"><a href="#1-类加载机制" class="headerlink" title="1 类加载机制"></a>1 类加载机制</h3><p>虚拟机把描述类的数据从 Class 文件加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的 Java 类型，这就是虚拟机的类加载机制。<br>类的生命周期包括7个阶段：<strong>加载、验证、准备、解析、初始化、使用和卸载</strong>。<br>其中解析过程在某些情况下可以在初始化阶段之后再开始，这是为了支持 Java 动态绑定。</p>
+<img src="/2021/12/05/12-05-Java/class.png" class="">
+<ol>
+<li>加载<br>在加载阶段，虚拟机完成三件事：<br>通过一个类的全限定名来获取定义此类的二进制字节流；<br>将二进制字节流所代表的静态存储结构转化为方法区的运行时数据结构；<br>在内存中生成一个代表这个类的 java.lang.Class 对象，作为方法区这个类的各种数据的访问接口。</li>
+<li>验证<br>主要是为了确保 Class 文件的字节流中包含的信息符合当前虚拟机的要求，并且不会危害虚拟机自身的安全。验证阶段大致上分为 4 个阶段的检验动作：文件格式验证、元数据验证、字节码验证、符号引用验证。<br>文件格式校验：验证字节流是否符合 class 文件的规范，并且能被当前版本的虚拟机处理。只有通过这个阶段的验证后，字节流才会进入内存的方法区进行存储，所以后面的3个阶段全部是基于方法区的存储结构进行的，不会再直接操作字节流；<br>元数据验证：对字节码描述的信息进行语义分析，以保证其描述的信息符合Java语言规范的要求；<br>字节码验证：该阶段主要工作是进行数据流和控制流分析，保证被校验类的方法在运行时不会做出危害虚拟机安全的行为；<br>符号引用验证：最后一个阶段的校验发生在虚拟机将符号引用转化为直接引用的时候，这个转化动作将在连接的第三个阶段——解析阶段中发生。</li>
+<li>准备<br>为类变量分配内存并设置类变量的初始值，这些变量所使用的内存都将在方法区中进行分配。这时候进入内存分配的仅包括类变量（被 static 修饰的变量），而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在 Java 堆中。实例化不是类加载的一个过程，类加载发生在所有实例化操作之前，并且类加载只进行一次，实例化可以进行多次。</li>
+<li>解析<br>虚拟机将常量池内的符号引用替换为直接引用。</li>
+<li>初始化<br>在准备阶段，类变量已经赋过一次系统要求的初始值，而在初始化阶段，根据程序员通过程序制定的主观计划去初始化类变量和其它资源。或者说初始化阶段即虚拟机执行类构造器()方法的过程。</li>
+</ol>
+<h3 id="2-类加载器有哪些？"><a href="#2-类加载器有哪些？" class="headerlink" title="2 类加载器有哪些？"></a>2 类加载器有哪些？</h3><p>引导类加载器（Bootstrap ClassLoader）：内嵌在jvm中的一段特殊的用来加载java核心类库的C++代码。它负责将JAVA_HOME/lib下面的核心类库或-X bootclasspath选项指定的jar包等虚拟机识别的类库加载到内存中。</p>
+<p>拓展类加载器（Extension ClassLoader）：由Sun的ExtClassLoader实现的，它负责将JAVA_HOME /lib/ext或者由系统变量-D java.ext.dir指定位置中的类库加载到内存中。</p>
+<p>应用类加载器（Application ClassLoader)：由 sun.misc.Launcher$AppClassLoder 实现。由于应用类加载器是 ClassLoader 中的 getSystemClassLoader() 方法的返回值，所以一般也称之为系统类加载器。它负责加载用户路径（ClassPath）所指定的类库，开发者可以直接使用这个类加载器，如果应用程序中没有自定义过类加载器，一般情况下这个就是程序中默认的类加载器。</p>
+<h3 id="3-双亲委派模型"><a href="#3-双亲委派模型" class="headerlink" title="3 双亲委派模型"></a>3 双亲委派模型</h3><p>双亲委派模式要求除了顶层的bootstrap类加载器外，其余的类加载器都应当有自己的父类加载器，请注意双亲委派模式中的父子关系并非通常所说的类继承关系，而是采用<strong>组合关系</strong>来复用父类加载器的相关代码。</p>
+<img src="/2021/12/05/12-05-Java/classloader.png" class="">
+<p>工作原理：如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，请求最终将到达顶层的引导类加载器。如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载。</p>
+<p>双亲委派模式优势：Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层次关可以避免类的重复加载，当父加载器已经加载了该类时，子类ClassLoader就没有必要再加载一次。</p>
+<p>主要代码实现：loadClass()方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected Class&lt;?&gt; loadClass(String name, boolean resolve)</span><br><span class="line">        throws ClassNotFoundException</span><br><span class="line">    &#123;</span><br><span class="line">        synchronized (getClassLoadingLock(name)) &#123;</span><br><span class="line">            &#x2F;&#x2F; First, check if the class has already been loaded</span><br><span class="line">            Class&lt;?&gt; c &#x3D; findLoadedClass(name);</span><br><span class="line">            if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                long t0 &#x3D; System.nanoTime();</span><br><span class="line">                try &#123;</span><br><span class="line">                    if (parent !&#x3D; null) &#123;</span><br><span class="line">                        c &#x3D; parent.loadClass(name, false);</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        c &#x3D; findBootstrapClassOrNull(name);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">                    &#x2F;&#x2F; ClassNotFoundException thrown if class not found</span><br><span class="line">                    &#x2F;&#x2F; from the non-null parent class loader</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    &#x2F;&#x2F; If still not found, then invoke findClass in order</span><br><span class="line">                    &#x2F;&#x2F; to find the class.</span><br><span class="line">                    long t1 &#x3D; System.nanoTime();</span><br><span class="line">                    c &#x3D; findClass(name);</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; this is the defining class loader; record the stats</span><br><span class="line">                    sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClasses().increment();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (resolve) &#123;</span><br><span class="line">                resolveClass(c);</span><br><span class="line">            &#125;</span><br><span class="line">            return c;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>先检查是否已经被加载过，若没有加载则调用父类加载器的 loadClass() 方法，若父类加载器为空则默认使用bootstrap类加载器作为父类加载器。如果父类加载失败，抛出 ClassNotFoundException 异常后，再调用自己的 findClass() 方法进行加载。</p>
+<p>若要实现自定义类加载器，只需要继承 java.lang.ClassLoader 类，并且重写其 findClass() 方法即可。</p>
+<h3 id="4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"><a href="#4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？" class="headerlink" title="4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"></a>4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？</h3><p>解释器：程序可以迅速启动和执行，消耗内存小（成本低，到后期效率低）；<br>编译器：随着代码频繁执行会将代码编译成本地机器码（成本高，到后期效率高）。</p>
+<p>在整个虚拟机执行架构中，解释器与编译器经常配合工作，两者各有优势：当程序需要迅速启动和执行的时候，解释器可以优先发挥作用，省去编译的时间，立即执行。在程序运行后，随着时间的推移，编译器逐渐发挥作用，把越来越多的代码编译成本地代码之后，可以获取更高的执行效率。当程序运行环境中内存资源限制较大（如部分嵌入式系统），可以使用解释执行来节约内存，反之可以使用编译执行来提升效率。<br>解释执行可以节约内存，而编译执行可以提升效率。因此，在整个虚拟机执行架构中，解释器与编译器经常配合工作。</p>
+<h3 id="5-Java内存模型"><a href="#5-Java内存模型" class="headerlink" title="5 Java内存模型"></a>5 Java内存模型</h3><p>Java内存模型（Java Memory Model，JMM）：屏蔽掉各种硬件和操作系统的内存访问差异，以实现让Java程序在各种平台下都能达到一致的并发效果。<br>Java 内存模型的主要目标是定义程序中各个变量的访问规则，在虚拟机中将变量存储到内存和从内存中取出变量。<br>Java 内存模型规定了所有的变量都存储在主内存（Main Memory）中，每个线程有自己的工作线程（Working Memory），保存主内存副本拷贝和私有变量，不同线程不能访问工作内存中的变量。线程间变量值的传递需要通过主内存来完成。</p>
+<h3 id="6-内存间的交互"><a href="#6-内存间的交互" class="headerlink" title="6 内存间的交互"></a>6 内存间的交互</h3><p>关于主内存与工作内存之间的具体交互协议，即一个变量如何从主内存拷贝到工作内存、如何从工作内存同步到主内存之间的实现细节，Java内存模型定义了以下八种操作来完成：<br>lock（锁定）：作用于主内存的变量，把一个变量标识为一条线程独占状态。<br>unlock（解锁）：作用于主内存变量，把一个处于锁定状态的变量释放出来，释放后的变量才可以被其他线程锁定。<br>read（读取）：作用于主内存变量，把一个变量值从主内存传输到线程的工作内存中，以便随后的load动作使用<br>load（载入）：作用于工作内存的变量，它把read操作从主内存中得到的变量值放入工作内存的变量副本中。<br>use（使用）：作用于工作内存的变量，把工作内存中的一个变量值传递给执行引擎，每当虚拟机遇到一个需要使用变量的值的字节码指令时将会执行这个操作。<br>assign（赋值）：作用于工作内存的变量，它把一个从执行引擎接收到的值赋值给工作内存的变量，每当虚拟机遇到一个给变量赋值的字节码指令时执行这个操作。<br>store（存储）：作用于工作内存的变量，把工作内存中的一个变量的值传送到主内存中，以便随后的write的操作。<br>write（写入）：作用于主内存的变量，它把store操作从工作内存中一个变量的值传送到主内存的变量中。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -520,76 +590,6 @@
 <h3 id="6-class文件结构"><a href="#6-class文件结构" class="headerlink" title="6 class文件结构"></a>6 class文件结构</h3><p>Class文件结构采用类似C语言的结构体来存储数据的，主要有两类数据项，无符号数和表，无符号数用来表述数字，索引引用以及字符串等，比如 u1，u2，u4，u8分别代表1个字节，2个字节，4个字节，8个字节的无符号数，而表是有多个无符号数以及其它的表组成的复合结构，习惯地以_info结尾。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic;</span><br><span class="line">    u2             minor_version;</span><br><span class="line">    u2             major_version;</span><br><span class="line">    u2             constant_pool_count;</span><br><span class="line">    cp_info        constant_pool[constant_pool_count-1];</span><br><span class="line">    u2             access_flags;</span><br><span class="line">    u2             this_class;</span><br><span class="line">    u2             super_class;</span><br><span class="line">    u2             interfaces_count;</span><br><span class="line">    u2             interfaces[interfaces_count];</span><br><span class="line">    u2             fields_count;</span><br><span class="line">    field_info     fields[fields_count];</span><br><span class="line">    u2             methods_count;</span><br><span class="line">    method_info    methods[methods_count];</span><br><span class="line">    u2             attributes_count;</span><br><span class="line">    attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>每个 Class 文件的头 4 个字节称为魔数（magic），它的值固定为 0xCAFEBABE，表示文件类型是能够被JVM处理的Class文件。紧接着magic之后的四个字节存储的是 Class 文件的次版本号和主版本号。<br>在主次版本号之后是常量池。常量池主要存储了字面量以及符号引用。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>11_27_Mysql</title>
-    <url>/2021/11/27/11-27-Mysql/</url>
-    <content><![CDATA[<h3 id="1-mysql架构"><a href="#1-mysql架构" class="headerlink" title="1 mysql架构"></a>1 mysql架构</h3><img src="/2021/11/27/11-27-Mysql/mysql.png" class="">
-<p>MySQL可以分为 Server 层和存储引擎两部分。<br>Server 层包括：连接器、查询缓存、分析器、优化器、执行器等，涵盖了 MySQL 大多数核心服务功能，以及所有的内置函数（如：日期、时间、数学和加密函数等），所有跨存储引擎的功能都在这一层实现，例如：存储过程、触发器、视图等等。<br>存储引擎层：负责数据的存储和提取。其架构是插件式的，支持 InnoDB、MyISAM 等多个存储引擎。默认是InnoDB，但是在建表时可以通过 engine = MyISAM 来指定存储引擎。不同存储引擎的表数据存取方式不同，支持的功能也不同。</p>
-<h3 id="2-MyISAM与InnoDB"><a href="#2-MyISAM与InnoDB" class="headerlink" title="2 MyISAM与InnoDB"></a>2 MyISAM与InnoDB</h3><p>MyISAM是MySQL的默认数据库引擎（5.5版之前）。虽然性能极佳，而且提供了大量的特性，包括全文索引、压缩、空间函数等，但MyISAM不支持事务和行级锁，而且最大的缺陷就是崩溃后无法安全恢复。不过，5.5版本之后，MySQL引入了InnoDB，并且5.5版本后默认的存储引擎为InnoDB。</p>
-<p>MyISAM 强调的是性能，每次查询具有原子性,其执行速度比InnoDB类型更快，但是不提供事务支持。InnoDB 提供事务支持，外部键等高级数据库功能。具有事务(commit)、回滚(rollback)和崩溃修复能力(crash recovery capabilities)的事务安全(transaction-safe (ACID compliant))型表。</p>
-<p>MyISAM不支持事务，InnoDB支持事务。<br>MyISAM不支持外键，InnoDB支持外键。<br>MyISAM只支持表级锁(table-level locking)，而 InnoDB 支持行级锁(rowlevel locking)和表级锁,默认为行级锁。<br>仅 InnoDB 支持mvcc。应对高并发事务, MVCC比单纯的加锁更高效;<br>MVCC 只在 READ COMMITTED 和 REPEATABLE READ 两个隔离级别下工作;<br>MVCC 可以使用乐观(optimistic)锁和悲观(pessimistic)锁来实现。</p>
-<h3 id="3-mvcc（Mutil-Version-Concurrency-Control-多版本并发控制"><a href="#3-mvcc（Mutil-Version-Concurrency-Control-多版本并发控制" class="headerlink" title="3 mvcc（Mutil-Version Concurrency Control)多版本并发控制"></a>3 mvcc（Mutil-Version Concurrency Control)多版本并发控制</h3><p>MVCC是一种并发控制的方法，一般在数据库管理系统中，实现对数据库的并发访问。<br>早期的数据库系统，只有读-读之间可以并发，读-写，写-写都要阻塞。引入多版本之后，只有写-写之间相互阻塞，其他2种操作都可以并行，这样大幅度提高了数据库的并发性能。</p>
-<p>原理就是通过数据行的多个版本管理来实现数据库的并发控制，简单来说就是保存数据的历史版本。可以通过比较版本号决定数据是否显示出来。<br>InnoDB是在undo log中实现的，通过undo log可以找回数据的历史版本。找回的数据历史版本可以提供给用户读(按照隔离级别的定义，有些读请求只能看到比较老的数据版本)，也可以在回滚的时候覆盖数据页上的数据。</p>
-<h3 id="4-一条sql语句的执行过程"><a href="#4-一条sql语句的执行过程" class="headerlink" title="4 一条sql语句的执行过程"></a>4 一条sql语句的执行过程</h3><ol>
-<li>连接数据库。</li>
-<li>查询缓存。MySQL拿到一个查询请求后，会先到查询缓存查找，看之前是不是执行过这条语句。因为执行过的语句及其结果都会以key-value的形式，被直接缓存到内存中。其中，key 是查询语句，value 是查询结果。如果你的查询能够直接在缓存中找到（key），那么这个 value 就会直接返回给客户端。如果语句不在查询缓存中，就会继续后面的执行阶段。但是大多数情况下不建议使用查询缓存。MySQL8.0版本已经将查询缓存功能删除了。</li>
-<li>分析器。进行sql语句的词法分析、语法分析。</li>
-<li>优化器。优化器的作用就是以它认为的最优执行方案去执行。例如：在表里有多个索引的时候，决定使用哪个索引；或者在一个语句有多表关联（join）的时候，决定各个表的连接顺序。</li>
-<li>执行器。执行语句，然后从存储引擎返回数据。</li>
-</ol>
-<h3 id="5-索引"><a href="#5-索引" class="headerlink" title="5 索引"></a>5 索引</h3><p>索引的出现是为了提高数据的查询效率，就像书的目录一样。<br>MySQL索引的实现通常使用B树及其变种B+树。MySQL中使用较多的索引有 Hash 索引、B+ 树索引等。InnoDB存储引擎的默认索引实现为 B+ 树索引。</p>
-<p>但是为表设置索引需要付出代价：一是增加了数据库的存储空间，二是在插入和修改数据时要花费较多的时间(因为索引也要随之变动)。</p>
-<p>建立索引的原则：<br>在最频繁使用的、用以缩小查询范围的字段上建立索引；<br>在频繁使用的、需要排序的字段上建立索引。</p>
-<h3 id="6-索引分类"><a href="#6-索引分类" class="headerlink" title="6 索引分类"></a>6 索引分类</h3><p>数据结构角度：树索引、hash索引。<br>物理存储角度：聚簇索引、非聚簇索引。<br><strong>逻辑角度</strong>：普通索引、唯一索引、主键索引、联合索引、全文索引。<br>InnoDB 主键使用的是聚簇索引，MyISAM 不管是主键，还是二级索引使用的都是非聚簇索引。</p>
-<p>聚簇索引（主键索引）：按照每张表的主键构造一颗B+树，同时叶子节点存放表的记录数据。特点是存储数据的顺序和索引顺序一致。一般情况下主键会默认创建聚簇索引，且一张表只允许存在一个聚簇索引。</p>
-<p>非聚簇索引（辅助索引）：B+Tree叶子节点的data域存放的是数据记录的地址。在索引检索的时候，首先按照B+Tree搜索算法搜索索引，如果指定的Key存在，则取出其 data 域的值，然后以 data 域的值为地址读取相应的数据记录。索引文件和数据文件是独立分开的。</p>
-<p>聚簇索引的叶子节点就是数据节点，而非聚簇索引的叶子节点仍然是索引节点，只不过有指向对应数据的指针。</p>
-<p>哈希索引：哈希索引能以 O(1) 时间进行查找，但是失去了有序性。无法用于排序与分组、只支持精确查找，无法用于部分查找和范围查找。</p>
-<p>Mysql中InnoDB引擎有一个特殊的功能叫做自适应哈希索引，它会在内存中基于B+Tree索引的基础上创建一个哈希索引，这让B+Tree索引具备了一些哈希索引的优点。</p>
-<h3 id="7-为什么-InnoDB-存储引擎选用-B-树而不是-B-树？"><a href="#7-为什么-InnoDB-存储引擎选用-B-树而不是-B-树？" class="headerlink" title="7 为什么 InnoDB 存储引擎选用 B+ 树而不是 B 树？"></a>7 为什么 InnoDB 存储引擎选用 B+ 树而不是 B 树？</h3><p>主要考虑的是 IO 对性能的影响，B 树的每个节点都存储数据，而 B+ 树只有叶子节点才存储数据，所以查找相同数据量的情况下，B 树的高度大，IO 更频繁。</p>
-]]></content>
-      <categories>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>12_05_Java</title>
-    <url>/2021/12/05/12-05-Java/</url>
-    <content><![CDATA[<h3 id="1-类加载机制"><a href="#1-类加载机制" class="headerlink" title="1 类加载机制"></a>1 类加载机制</h3><p>虚拟机把描述类的数据从 Class 文件加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的 Java 类型，这就是虚拟机的类加载机制。<br>类的生命周期包括7个阶段：<strong>加载、验证、准备、解析、初始化、使用和卸载</strong>。<br>其中解析过程在某些情况下可以在初始化阶段之后再开始，这是为了支持 Java 动态绑定。</p>
-<img src="/2021/12/05/12-05-Java/class.png" class="">
-<ol>
-<li>加载<br>在加载阶段，虚拟机完成三件事：<br>通过一个类的全限定名来获取定义此类的二进制字节流；<br>将二进制字节流所代表的静态存储结构转化为方法区的运行时数据结构；<br>在内存中生成一个代表这个类的 java.lang.Class 对象，作为方法区这个类的各种数据的访问接口。</li>
-<li>验证<br>主要是为了确保 Class 文件的字节流中包含的信息符合当前虚拟机的要求，并且不会危害虚拟机自身的安全。验证阶段大致上分为 4 个阶段的检验动作：文件格式验证、元数据验证、字节码验证、符号引用验证。<br>文件格式校验：验证字节流是否符合 class 文件的规范，并且能被当前版本的虚拟机处理。只有通过这个阶段的验证后，字节流才会进入内存的方法区进行存储，所以后面的3个阶段全部是基于方法区的存储结构进行的，不会再直接操作字节流；<br>元数据验证：对字节码描述的信息进行语义分析，以保证其描述的信息符合Java语言规范的要求；<br>字节码验证：该阶段主要工作是进行数据流和控制流分析，保证被校验类的方法在运行时不会做出危害虚拟机安全的行为；<br>符号引用验证：最后一个阶段的校验发生在虚拟机将符号引用转化为直接引用的时候，这个转化动作将在连接的第三个阶段——解析阶段中发生。</li>
-<li>准备<br>为类变量分配内存并设置类变量的初始值，这些变量所使用的内存都将在方法区中进行分配。这时候进入内存分配的仅包括类变量（被 static 修饰的变量），而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在 Java 堆中。实例化不是类加载的一个过程，类加载发生在所有实例化操作之前，并且类加载只进行一次，实例化可以进行多次。</li>
-<li>解析<br>虚拟机将常量池内的符号引用替换为直接引用。</li>
-<li>初始化<br>在准备阶段，类变量已经赋过一次系统要求的初始值，而在初始化阶段，根据程序员通过程序制定的主观计划去初始化类变量和其它资源。或者说初始化阶段即虚拟机执行类构造器()方法的过程。</li>
-</ol>
-<h3 id="2-类加载器有哪些？"><a href="#2-类加载器有哪些？" class="headerlink" title="2 类加载器有哪些？"></a>2 类加载器有哪些？</h3><p>引导类加载器（Bootstrap ClassLoader）：内嵌在jvm中的一段特殊的用来加载java核心类库的C++代码。它负责将JAVA_HOME/lib下面的核心类库或-X bootclasspath选项指定的jar包等虚拟机识别的类库加载到内存中。</p>
-<p>拓展类加载器（Extension ClassLoader）：由Sun的ExtClassLoader实现的，它负责将JAVA_HOME /lib/ext或者由系统变量-D java.ext.dir指定位置中的类库加载到内存中。</p>
-<p>应用类加载器（Application ClassLoader)：由 sun.misc.Launcher$AppClassLoder 实现。由于应用类加载器是 ClassLoader 中的 getSystemClassLoader() 方法的返回值，所以一般也称之为系统类加载器。它负责加载用户路径（ClassPath）所指定的类库，开发者可以直接使用这个类加载器，如果应用程序中没有自定义过类加载器，一般情况下这个就是程序中默认的类加载器。</p>
-<h3 id="3-双亲委派模型"><a href="#3-双亲委派模型" class="headerlink" title="3 双亲委派模型"></a>3 双亲委派模型</h3><p>双亲委派模式要求除了顶层的bootstrap类加载器外，其余的类加载器都应当有自己的父类加载器，请注意双亲委派模式中的父子关系并非通常所说的类继承关系，而是采用<strong>组合关系</strong>来复用父类加载器的相关代码。</p>
-<img src="/2021/12/05/12-05-Java/classloader.png" class="">
-<p>工作原理：如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，请求最终将到达顶层的引导类加载器。如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载。</p>
-<p>双亲委派模式优势：Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层次关可以避免类的重复加载，当父加载器已经加载了该类时，子类ClassLoader就没有必要再加载一次。</p>
-<p>主要代码实现：loadClass()方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected Class&lt;?&gt; loadClass(String name, boolean resolve)</span><br><span class="line">        throws ClassNotFoundException</span><br><span class="line">    &#123;</span><br><span class="line">        synchronized (getClassLoadingLock(name)) &#123;</span><br><span class="line">            &#x2F;&#x2F; First, check if the class has already been loaded</span><br><span class="line">            Class&lt;?&gt; c &#x3D; findLoadedClass(name);</span><br><span class="line">            if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                long t0 &#x3D; System.nanoTime();</span><br><span class="line">                try &#123;</span><br><span class="line">                    if (parent !&#x3D; null) &#123;</span><br><span class="line">                        c &#x3D; parent.loadClass(name, false);</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        c &#x3D; findBootstrapClassOrNull(name);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">                    &#x2F;&#x2F; ClassNotFoundException thrown if class not found</span><br><span class="line">                    &#x2F;&#x2F; from the non-null parent class loader</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    &#x2F;&#x2F; If still not found, then invoke findClass in order</span><br><span class="line">                    &#x2F;&#x2F; to find the class.</span><br><span class="line">                    long t1 &#x3D; System.nanoTime();</span><br><span class="line">                    c &#x3D; findClass(name);</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; this is the defining class loader; record the stats</span><br><span class="line">                    sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClasses().increment();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (resolve) &#123;</span><br><span class="line">                resolveClass(c);</span><br><span class="line">            &#125;</span><br><span class="line">            return c;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>先检查是否已经被加载过，若没有加载则调用父类加载器的 loadClass() 方法，若父类加载器为空则默认使用bootstrap类加载器作为父类加载器。如果父类加载失败，抛出 ClassNotFoundException 异常后，再调用自己的 findClass() 方法进行加载。</p>
-<p>若要实现自定义类加载器，只需要继承 java.lang.ClassLoader 类，并且重写其 findClass() 方法即可。</p>
-<h3 id="4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"><a href="#4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？" class="headerlink" title="4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"></a>4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？</h3><p>解释器：程序可以迅速启动和执行，消耗内存小（成本低，到后期效率低）；<br>编译器：随着代码频繁执行会将代码编译成本地机器码（成本高，到后期效率高）。</p>
-<p>在整个虚拟机执行架构中，解释器与编译器经常配合工作，两者各有优势：当程序需要迅速启动和执行的时候，解释器可以优先发挥作用，省去编译的时间，立即执行。在程序运行后，随着时间的推移，编译器逐渐发挥作用，把越来越多的代码编译成本地代码之后，可以获取更高的执行效率。当程序运行环境中内存资源限制较大（如部分嵌入式系统），可以使用解释执行来节约内存，反之可以使用编译执行来提升效率。<br>解释执行可以节约内存，而编译执行可以提升效率。因此，在整个虚拟机执行架构中，解释器与编译器经常配合工作。</p>
-<h3 id="5-Java内存模型"><a href="#5-Java内存模型" class="headerlink" title="5 Java内存模型"></a>5 Java内存模型</h3><p>Java内存模型（Java Memory Model，JMM）：屏蔽掉各种硬件和操作系统的内存访问差异，以实现让Java程序在各种平台下都能达到一致的并发效果。<br>Java 内存模型的主要目标是定义程序中各个变量的访问规则，在虚拟机中将变量存储到内存和从内存中取出变量。<br>Java 内存模型规定了所有的变量都存储在主内存（Main Memory）中，每个线程有自己的工作线程（Working Memory），保存主内存副本拷贝和私有变量，不同线程不能访问工作内存中的变量。线程间变量值的传递需要通过主内存来完成。</p>
-<h3 id="6-内存间的交互"><a href="#6-内存间的交互" class="headerlink" title="6 内存间的交互"></a>6 内存间的交互</h3><p>关于主内存与工作内存之间的具体交互协议，即一个变量如何从主内存拷贝到工作内存、如何从工作内存同步到主内存之间的实现细节，Java内存模型定义了以下八种操作来完成：<br>lock（锁定）：作用于主内存的变量，把一个变量标识为一条线程独占状态。<br>unlock（解锁）：作用于主内存变量，把一个处于锁定状态的变量释放出来，释放后的变量才可以被其他线程锁定。<br>read（读取）：作用于主内存变量，把一个变量值从主内存传输到线程的工作内存中，以便随后的load动作使用<br>load（载入）：作用于工作内存的变量，它把read操作从主内存中得到的变量值放入工作内存的变量副本中。<br>use（使用）：作用于工作内存的变量，把工作内存中的一个变量值传递给执行引擎，每当虚拟机遇到一个需要使用变量的值的字节码指令时将会执行这个操作。<br>assign（赋值）：作用于工作内存的变量，它把一个从执行引擎接收到的值赋值给工作内存的变量，每当虚拟机遇到一个给变量赋值的字节码指令时执行这个操作。<br>store（存储）：作用于工作内存的变量，把工作内存中的一个变量的值传送到主内存中，以便随后的write的操作。<br>write（写入）：作用于主内存的变量，它把store操作从工作内存中一个变量的值传送到主内存的变量中。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -758,6 +758,26 @@
       </tags>
   </entry>
   <entry>
+    <title>12_11_Spring</title>
+    <url>/2021/12/11/12-11-Spring/</url>
+    <content><![CDATA[<h3 id="1-Spring事务"><a href="#1-Spring事务" class="headerlink" title="1 Spring事务"></a>1 Spring事务</h3><p>事务是指作为单个逻辑工作单元执行的一系列操作。这些操作要么全部执行，要么全部不执行。<br>事务特性：<br>原子性（atomicity）：强调事务的不可分割。事务的原子性确保动作要么全部完成，要么完全不起作用。<br>一致性（consistency）：事务执行前后数据的完整性保持一致。<br>隔离性（isolation）：一个事务执行的过程中,不应该受到其他事务的干扰。<br>持久性（durability）：事务被提交之后，它对数据库中数据的改变是持久的。</p>
+<p>Spring事务可以分为两种：<br>编程式事务(通过代码的方式来实现事务)<br>声明式事务(通过配置的方式来实现事务)</p>
+<p>在编程式事务中有以下几个重要的接口<br>TransactionDefinition：定义了Spring兼容的事务属性(比如事务隔离级别、事务传播、事务超时、是否只读状态)<br>TransactionStatus：代表了事务的具体运行状态(获取事务运行状态的信息，也可以通过该接口间接回滚事务等操作)<br>PlatformTransactionManager：事务管理器接口(定义了一组行为，具体实现交由不同的持久化框架来完成)</p>
+<p>TransactionDefinition接口中定义了五个表示隔离级别的常量<br>ISOLATION_DEFAULT：使用后端数据库默认的隔离界别，MySQL默认采用REPEATABLE_READ隔离级别，Oracle默认采用READ_COMMITTED隔离级别。<br>ISOLATION_READ_UNCOMMITTED：这是事务最低的隔离级别，它允许另外一个事务可以看到这个事务未提交的数据。这种隔离级别会产生脏读，不可重复读和幻读。<br>ISOLATION_READ_COMMITTED：保证一个事务修改的数据提交后才能被另外一个事务读取，另外一个事务不能读取该事务未提交的数据。这种事务隔离级别可以避免脏读，但是可能会出现不可重复读和幻读。<br>ISOLATION_REPEATABLE_READ：这种事务隔离级别可以防止脏读、不可重复读，但是可能出现幻读。对同一字段的多次读取结果都是一致的。它除了保证一个事务不能读取另一个事务未提交的数据外，还保证了不可重复读。<br>ISOLATION_SERIALIZABLE：最高的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰。该级别可以防止脏读、不可重复读以及幻读。但这将严重影响程序的性能。</p>
+<h3 id="2-Spring事务传播行为"><a href="#2-Spring事务传播行为" class="headerlink" title="2 Spring事务传播行为"></a>2 Spring事务传播行为</h3><p>当一个事务方法被另一个事务方法调用时，这个事务方法应该如何传播（进行）。例如：methodA事务方法调用methodB事务方法时，methodB是继续在调用者methodA的事务中运行呢，还是为自己开启一个新事务运行，这就是由methodB的事务传播行为决定的。</p>
+<p>支持当前事务<br>PROPAGATION_REQUIRED：如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务。<br>PROPAGATION_SUPPORTS：如果当前存在事务，则加入该事务；如果当前没有事务，则以非事务的方式继续运行。<br>PROPAGATION_MANDATORY：如果当前存在事务，则加入该事务；如果当前没有事务，则抛出异常。</p>
+<p>不支持当前事务<br>PROPAGATION_REQUIRES_NEW：创建一个新的事务，如果当前存在事务，则把当前事务挂起。<br>PROPAGATION_NOT_SUPPORTED：以非事务方式运行，如果当前存在事务，则把当前事务挂起。<br>PROPAGATION_NEVER：以非事务方式运行，如果当前存在事务，则抛出异常。</p>
+<p>其它情况<br>PROPAGATION_NESTED：如果当前存在事务，则创建一个事务作为当前事务的嵌套事务来运行；如果当前没有事务，则创建一个新的事务。</p>
+<h3 id="3-Spring中用到的设计模式"><a href="#3-Spring中用到的设计模式" class="headerlink" title="3 Spring中用到的设计模式"></a>3 Spring中用到的设计模式</h3><p>工厂模式: Spring使用工厂模式通过 BeanFactory、ApplicationContext 创建 bean 对象。<br>代理模式: Spring AOP 功能的实现。<br>单例模式: Spring 中的 Bean 默认都是单例的。<br>模板模式: Spring 中 jdbcTemplate、hibernateTemplate 等以 Template结尾的对数据库操作的类，它们就使用到了模板模式。<br>装饰器模式: 我们的项目需要连接多个数据库，而且不同的客户在每次访问中根据需要会去访问不同的数据库。这种模式让我们可以根据客户的需求能够动态切换不同的数据源。<br>观察者模式: Spring 事件驱动模型就是观察者模式很经典的一个应用。<br>适配器模式: Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配Controller。</p>
+]]></content>
+      <categories>
+        <category>Spring</category>
+      </categories>
+      <tags>
+        <tag>事务</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>12_13_Network</title>
     <url>/2021/12/13/12-13-Network/</url>
     <content><![CDATA[<h3 id="1-四次挥手"><a href="#1-四次挥手" class="headerlink" title="1 四次挥手"></a>1 四次挥手</h3><p>建立一个连接需要三次握手，而终止一个连接要经过四次挥手。<br>四次挥手过程：刚开始双方都处于 establised 的状态。</p>
@@ -859,26 +879,6 @@
       </tags>
   </entry>
   <entry>
-    <title>12_11_Spring</title>
-    <url>/2021/12/11/12-11-Spring/</url>
-    <content><![CDATA[<h3 id="1-Spring事务"><a href="#1-Spring事务" class="headerlink" title="1 Spring事务"></a>1 Spring事务</h3><p>事务是指作为单个逻辑工作单元执行的一系列操作。这些操作要么全部执行，要么全部不执行。<br>事务特性：<br>原子性（atomicity）：强调事务的不可分割。事务的原子性确保动作要么全部完成，要么完全不起作用。<br>一致性（consistency）：事务执行前后数据的完整性保持一致。<br>隔离性（isolation）：一个事务执行的过程中,不应该受到其他事务的干扰。<br>持久性（durability）：事务被提交之后，它对数据库中数据的改变是持久的。</p>
-<p>Spring事务可以分为两种：<br>编程式事务(通过代码的方式来实现事务)<br>声明式事务(通过配置的方式来实现事务)</p>
-<p>在编程式事务中有以下几个重要的接口<br>TransactionDefinition：定义了Spring兼容的事务属性(比如事务隔离级别、事务传播、事务超时、是否只读状态)<br>TransactionStatus：代表了事务的具体运行状态(获取事务运行状态的信息，也可以通过该接口间接回滚事务等操作)<br>PlatformTransactionManager：事务管理器接口(定义了一组行为，具体实现交由不同的持久化框架来完成)</p>
-<p>TransactionDefinition接口中定义了五个表示隔离级别的常量<br>ISOLATION_DEFAULT：使用后端数据库默认的隔离界别，MySQL默认采用REPEATABLE_READ隔离级别，Oracle默认采用READ_COMMITTED隔离级别。<br>ISOLATION_READ_UNCOMMITTED：这是事务最低的隔离级别，它允许另外一个事务可以看到这个事务未提交的数据。这种隔离级别会产生脏读，不可重复读和幻读。<br>ISOLATION_READ_COMMITTED：保证一个事务修改的数据提交后才能被另外一个事务读取，另外一个事务不能读取该事务未提交的数据。这种事务隔离级别可以避免脏读，但是可能会出现不可重复读和幻读。<br>ISOLATION_REPEATABLE_READ：这种事务隔离级别可以防止脏读、不可重复读，但是可能出现幻读。对同一字段的多次读取结果都是一致的。它除了保证一个事务不能读取另一个事务未提交的数据外，还保证了不可重复读。<br>ISOLATION_SERIALIZABLE：最高的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰。该级别可以防止脏读、不可重复读以及幻读。但这将严重影响程序的性能。</p>
-<h3 id="2-Spring事务传播行为"><a href="#2-Spring事务传播行为" class="headerlink" title="2 Spring事务传播行为"></a>2 Spring事务传播行为</h3><p>当一个事务方法被另一个事务方法调用时，这个事务方法应该如何传播（进行）。例如：methodA事务方法调用methodB事务方法时，methodB是继续在调用者methodA的事务中运行呢，还是为自己开启一个新事务运行，这就是由methodB的事务传播行为决定的。</p>
-<p>支持当前事务<br>PROPAGATION_REQUIRED：如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务。<br>PROPAGATION_SUPPORTS：如果当前存在事务，则加入该事务；如果当前没有事务，则以非事务的方式继续运行。<br>PROPAGATION_MANDATORY：如果当前存在事务，则加入该事务；如果当前没有事务，则抛出异常。</p>
-<p>不支持当前事务<br>PROPAGATION_REQUIRES_NEW：创建一个新的事务，如果当前存在事务，则把当前事务挂起。<br>PROPAGATION_NOT_SUPPORTED：以非事务方式运行，如果当前存在事务，则把当前事务挂起。<br>PROPAGATION_NEVER：以非事务方式运行，如果当前存在事务，则抛出异常。</p>
-<p>其它情况<br>PROPAGATION_NESTED：如果当前存在事务，则创建一个事务作为当前事务的嵌套事务来运行；如果当前没有事务，则创建一个新的事务。</p>
-<h3 id="3-Spring中用到的设计模式"><a href="#3-Spring中用到的设计模式" class="headerlink" title="3 Spring中用到的设计模式"></a>3 Spring中用到的设计模式</h3><p>工厂模式: Spring使用工厂模式通过 BeanFactory、ApplicationContext 创建 bean 对象。<br>代理模式: Spring AOP 功能的实现。<br>单例模式: Spring 中的 Bean 默认都是单例的。<br>模板模式: Spring 中 jdbcTemplate、hibernateTemplate 等以 Template结尾的对数据库操作的类，它们就使用到了模板模式。<br>装饰器模式: 我们的项目需要连接多个数据库，而且不同的客户在每次访问中根据需要会去访问不同的数据库。这种模式让我们可以根据客户的需求能够动态切换不同的数据源。<br>观察者模式: Spring 事件驱动模型就是观察者模式很经典的一个应用。<br>适配器模式: Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配Controller。</p>
-]]></content>
-      <categories>
-        <category>Spring</category>
-      </categories>
-      <tags>
-        <tag>事务</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>12_14_Mybatis</title>
     <url>/2021/12/14/12-14-Mybatis/</url>
     <content><![CDATA[<h3 id="1-mybatis"><a href="#1-mybatis" class="headerlink" title="1 mybatis"></a>1 mybatis</h3><p>MyBatis 是一个持久层框架，它内部封装了 JDBC，开发者只需要关注 SQL 语句本身，不需要花费精力去处理加载驱动、创建连接、创建statement 等过程。<br>它免除了几乎所有的 JDBC 代码以及设置参数和获取结果集的工作。MyBatis 可以通过简单的 XML 或注解来配置和映射原始类型、接口和 Java POJO（Plain Old Java Objects，普通老式 Java 对象）为数据库中的记录。<br>通过 XML 或注解的方式将要执行的各种 statement 配置起来，并通过java 对象和 statement 中 sql 的动态参数进行映射生成最终执行的 sql 语句，最后由 mybatis 框架执行 sql 并将结果映射为 java 对象并返回。</p>
@@ -915,6 +915,47 @@
       </categories>
       <tags>
         <tag>http</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>12_16_Network</title>
+    <url>/2021/12/16/12-16-Network/</url>
+    <content><![CDATA[<h3 id="1-每一层对应的网络协议"><a href="#1-每一层对应的网络协议" class="headerlink" title="1 每一层对应的网络协议"></a>1 每一层对应的网络协议</h3><img src="/2021/12/16/12-16-Network/protocol.png" class="">
+
+<h3 id="2-ARP协议"><a href="#2-ARP协议" class="headerlink" title="2 ARP协议"></a>2 ARP协议</h3><p>网络层的 ARP 协议完成了 IP 地址与物理地址的映射。</p>
+<p>首先，每台主机都会在自己的 ARP 缓冲区中建立一个 ARP 列表，以表示 IP 地址和 MAC 地址的对应关系。当源主机需要将一个数据包发送到目的主机时，会首先检查自己 ARP 列表中是否存在该 IP 地址对应的 MAC 地址。如果有，就直接将数据包发送到这个 MAC 地址；如果没有，就向本地网段发起一个 ARP 请求的广播包，查询此目的主机对应的 MAC 地址。</p>
+<p>ARP 请求数据包中包括源主机的 IP 地址、硬件地址、以及目的主机的 IP 地址。网络中所有的主机收到这个 ARP 请求后，会检查数据包中的目的 IP 是否和自己的 IP 地址一致。如果不相同就忽略此数据包；如果相同，该主机首先将发送端的 MAC 地址和 IP 地址添加到自己的 ARP 列表中，如果 ARP 表中已经存在该 IP 的信息，则将其覆盖，然后给源主机发送一个 ARP 响应数据包，告诉对方自己是它需要查找的 MAC 地址；源主机收到这个 ARP 响应数据包后，将得到的目的主机的 IP 地址和 MAC 地址添加到自己的 ARP 列表中，并利用此信息开始数据的传输。如果源主机一直没有收到 ARP 响应数据包，表示 ARP 查询失败。</p>
+<h3 id="3-粘包"><a href="#3-粘包" class="headerlink" title="3 粘包"></a>3 粘包</h3><p>客户端连续不断的向服务端发送数据包时，服务端接收的数据会出现两个数据包粘在一起的情况。</p>
+<ol>
+<li>TCP 是基于字节流的，虽然应用层和 TCP 传输层之间的数据交互是大小不等的数据块，但是 TCP 把这些数据块仅仅看成是一连串无结构的字节流，没有边界；</li>
+<li>从 TCP 的帧结构也可以看出，在 TCP 的首部没有表示数据长度的字段。<br>基于上面两点，在使用 TCP 传输数据时，才有粘包或者拆包现象发生的可能。<br>一个数据包中包含了发送端发送的两个数据包的信息，这种现象称为粘包。<br>接收端收到了两个数据包，但是这两个数据包要么是不完整的，要么就是多出来一块，这种情况即发生了拆包和粘包。拆包和粘包的问题导致接收端在处理的时候会非常困难，因为无法区分一个完整的数据包。</li>
+</ol>
+<p>TCP粘包的产生：<br>发送方产生粘包：采用 TCP 协议传输数据的客户端与服务器经常是保持一个长连接的状态，双方在连接不断开的情况下，可以一直传输数据。当发送的数据包太小时，那么 TCP 协议默认会启用 Nagle 算法，将这些较小的数据包进行合并（缓冲区数据发送是一个堆压的过程）；这个合并过程就是在发送缓冲区中进行的，也就是说数据发送出来时它已经是粘包的状态了。</p>
+<p>接收方产生粘包：由于tcp是面向字节流的协议，即协议的内容是像流水一样的字节流，内容与内容之间没有明确的分界标志，需要我们人为地去给这些协议划分边界。</p>
+<p>解决办法：<br>以指定字符（串）作为包的结束标志；<br>包头定长（在包头的首部添加数据包的长度）。</p>
+<h3 id="4-在浏览器中输入-URL-地址到显示主页的过程"><a href="#4-在浏览器中输入-URL-地址到显示主页的过程" class="headerlink" title="4 在浏览器中输入 URL 地址到显示主页的过程"></a>4 在浏览器中输入 URL 地址到显示主页的过程</h3><ol>
+<li>DNS解析<br>如果输入ip地址表示直接从主机上调用内容。如果输入域名，则是通过域名解析服务器指向对应主机的IP地址，再从主机上调用网址的内容。<br>DNS解析过程：<br>查询<strong>浏览器缓存</strong>，如果没有查到会进入<strong>系统缓存</strong>进行查询，此时主要查询host文件，这个文件主要保存以前访问过的域名和IP地址，类似本地数据库。如果找到，可直接获取目标主机的IP地址，如果没找到，进入<strong>路由器缓存</strong>，路由器有自己的DNS缓存，如果查到就返回，否则进入<strong>ISP DNS缓存</strong>。从根域名服务器 –&gt; 顶级域名服务器 –&gt; 极限域名服务器，依次搜索查找对应目标域名的IP，找到以后，会建立TCP连接。</li>
+<li>TCP连接<br>浏览器获得域名对应的 IP 地址以后，会向服务器请求建立连接，发起三次握手。</li>
+<li>发送HTTP请求<br>TCP连接建立后，浏览器向服务器发送 HTTP 请求。<br>一个HTTP请求报文由请求行（request line）、请求头部（headers）、空行（blank line）和请求数据（request body）4个部分组成。</li>
+<li>服务器响应HTTP请求<br>服务器在收到http请求后，会根据路径参数映射到特定的请求处理器进行处理，并将处理结果及相应的视图返回给浏览器。</li>
+<li>浏览器解析渲染页面<br>这是一个边解析边渲染的过程。首先浏览器解析HTML文件构建DOM树，然后解析CSS文件构建渲染树，等到渲染树构建完成后，浏览器开始布局渲染树并将其绘制到屏幕上。JS的解析是由浏览器中的JS解析引擎完成的。</li>
+<li>连接结束<br>TCP四次挥手。</li>
+</ol>
+<h3 id="5-HTTPS工作过程"><a href="#5-HTTPS工作过程" class="headerlink" title="5 HTTPS工作过程"></a>5 HTTPS工作过程</h3><p>HTTPS是一种通过计算机网络进行安全通信的传输协议，经由HTTP进行通信，利用SSL/TLS建立全信道，加密数据包。HTTPS使用的主要目的是提供对网站服务器的身份认证，同时保护交换数据的隐私与完整性。</p>
+<p>1.客户端向服务器发起HTTPS请求，连接到服务器的443端口。<br>2.服务器端有一个密钥对，即公钥和私钥，用来进行非对称加密的。服务器端保存着私钥，不能将其泄露，公钥可以发送给任何人。服务器将自己的公钥发送给客户端（以证书的形式）。<br>3.客户端收到服务器端的证书之后，会对证书进行检查，验证其合法性，如果发现证书有问题，那么HTTPS传输就无法继续。如果验证通过，那么客户端会生成一个随机值，这个随机值就是用于对称加密的密钥，我们将该密钥称之为client key，即客户端密钥。然后用服务器的公钥对客户端密钥进行非对称加密，这样客户端密钥就变成密文了。至此，HTTPS中的第一次HTTP请求结束。<br>4.客户端发起HTTPS中的第二个HTTP请求，将加密之后的客户端密钥发送给服务器。<br>5.服务器接收到客户端发来的密文之后，会用自己的私钥对其进行非对称解密，解密之后的明文就是客户端密钥，然后用客户端密钥对数据进行对称加密，这样数据就变成了密文。最后服务器将加密后的密文发送给客户端。<br>6.客户端收到服务器发来的密文，用客户端密钥对其进行解密，得到服务器发送的数据。这样HTTPS中的第二个HTTP请求结束，整个HTTPS传输完成。</p>
+<p>优点：<br>使用HTTPS协议可认证用户和服务器，确保数据发送到正确的客户端和服务器。<br>HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议。它比http协议更安全，可防止数据在传输过程中被窃取、篡改，确保了数据的完整性。<br>HTTPS是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</p>
+<p>缺点：<br>HTTPS协议握手阶段比较费时，会使页面的加载时间延长近50%，增加10%到20%的耗电。<br>HTTPS连接缓存不如HTTP高效，会增加数据开销和功耗，甚至已有的安全措施也会因此而受到影响。</p>
+<h3 id="6-HTTP与HTTPS"><a href="#6-HTTP与HTTPS" class="headerlink" title="6 HTTP与HTTPS"></a>6 HTTP与HTTPS</h3><p>安全性不同：HTTP的连接很简单，是无状态的(无状态的意思是其数据包的发送、传输和接收都是相互独立的。无连接的意思是指通信双方都不长久的维持对方的任何信息。)；HTTPS 协议是由 TSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 HTTP 协议安全。</p>
+<p>默认端口不同：http和https使用的是完全不同的连接方式，同时使用的端口也不同。http使用的是80端口，https使用的是443端口。在网络模型中，HTTP工作于应用层，而HTTPS工作在传输层。</p>
+<p>网站申请流程不同：https协议需要到CA申请证书，一般免费证书很少，需要交费。Web服务器启用SSL需要获得一个服务器证书并将该证书与要使用SSL的服务器进行绑定。</p>
+<h3 id="7-数字签名与数字证书"><a href="#7-数字签名与数字证书" class="headerlink" title="7 数字签名与数字证书"></a>7 数字签名与数字证书</h3><p>为了避免数据在传输过程中被替换，发送端做一个数字签名。把数据的摘要消息进行加密，得到一个签名，它和数据一起发送。接收端把数据摘要进行加密，如果和签名一样，则说明数据确实是真的。</p>
+<p>虽然数字签名可以保证数据不被替换，但是数据是由公钥加密的，如果公钥也被替换，则仍然可以伪造数据。为了保证发送方的公钥是真的，CA 证书机构会负责颁发一个证书，里面的公钥保证是真的，用户请求服务器时，服务器将证书发给用户。</p>
+]]></content>
+      <categories>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络协议</tag>
       </tags>
   </entry>
   <entry>
@@ -971,96 +1012,6 @@
       </categories>
       <tags>
         <tag>进程调度</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>12_16_Network</title>
-    <url>/2021/12/16/12-16-Network/</url>
-    <content><![CDATA[<h3 id="1-每一层对应的网络协议"><a href="#1-每一层对应的网络协议" class="headerlink" title="1 每一层对应的网络协议"></a>1 每一层对应的网络协议</h3><img src="/2021/12/16/12-16-Network/protocol.png" class="">
-
-<h3 id="2-ARP协议"><a href="#2-ARP协议" class="headerlink" title="2 ARP协议"></a>2 ARP协议</h3><p>网络层的 ARP 协议完成了 IP 地址与物理地址的映射。</p>
-<p>首先，每台主机都会在自己的 ARP 缓冲区中建立一个 ARP 列表，以表示 IP 地址和 MAC 地址的对应关系。当源主机需要将一个数据包发送到目的主机时，会首先检查自己 ARP 列表中是否存在该 IP 地址对应的 MAC 地址。如果有，就直接将数据包发送到这个 MAC 地址；如果没有，就向本地网段发起一个 ARP 请求的广播包，查询此目的主机对应的 MAC 地址。</p>
-<p>ARP 请求数据包中包括源主机的 IP 地址、硬件地址、以及目的主机的 IP 地址。网络中所有的主机收到这个 ARP 请求后，会检查数据包中的目的 IP 是否和自己的 IP 地址一致。如果不相同就忽略此数据包；如果相同，该主机首先将发送端的 MAC 地址和 IP 地址添加到自己的 ARP 列表中，如果 ARP 表中已经存在该 IP 的信息，则将其覆盖，然后给源主机发送一个 ARP 响应数据包，告诉对方自己是它需要查找的 MAC 地址；源主机收到这个 ARP 响应数据包后，将得到的目的主机的 IP 地址和 MAC 地址添加到自己的 ARP 列表中，并利用此信息开始数据的传输。如果源主机一直没有收到 ARP 响应数据包，表示 ARP 查询失败。</p>
-<h3 id="3-粘包"><a href="#3-粘包" class="headerlink" title="3 粘包"></a>3 粘包</h3><p>客户端连续不断的向服务端发送数据包时，服务端接收的数据会出现两个数据包粘在一起的情况。</p>
-<ol>
-<li>TCP 是基于字节流的，虽然应用层和 TCP 传输层之间的数据交互是大小不等的数据块，但是 TCP 把这些数据块仅仅看成是一连串无结构的字节流，没有边界；</li>
-<li>从 TCP 的帧结构也可以看出，在 TCP 的首部没有表示数据长度的字段。<br>基于上面两点，在使用 TCP 传输数据时，才有粘包或者拆包现象发生的可能。<br>一个数据包中包含了发送端发送的两个数据包的信息，这种现象称为粘包。<br>接收端收到了两个数据包，但是这两个数据包要么是不完整的，要么就是多出来一块，这种情况即发生了拆包和粘包。拆包和粘包的问题导致接收端在处理的时候会非常困难，因为无法区分一个完整的数据包。</li>
-</ol>
-<p>TCP粘包的产生：<br>发送方产生粘包：采用 TCP 协议传输数据的客户端与服务器经常是保持一个长连接的状态，双方在连接不断开的情况下，可以一直传输数据。当发送的数据包太小时，那么 TCP 协议默认会启用 Nagle 算法，将这些较小的数据包进行合并（缓冲区数据发送是一个堆压的过程）；这个合并过程就是在发送缓冲区中进行的，也就是说数据发送出来时它已经是粘包的状态了。</p>
-<p>接收方产生粘包：由于tcp是面向字节流的协议，即协议的内容是像流水一样的字节流，内容与内容之间没有明确的分界标志，需要我们人为地去给这些协议划分边界。</p>
-<p>解决办法：<br>以指定字符（串）作为包的结束标志；<br>包头定长（在包头的首部添加数据包的长度）。</p>
-<h3 id="4-在浏览器中输入-URL-地址到显示主页的过程"><a href="#4-在浏览器中输入-URL-地址到显示主页的过程" class="headerlink" title="4 在浏览器中输入 URL 地址到显示主页的过程"></a>4 在浏览器中输入 URL 地址到显示主页的过程</h3><ol>
-<li>DNS解析<br>如果输入ip地址表示直接从主机上调用内容。如果输入域名，则是通过域名解析服务器指向对应主机的IP地址，再从主机上调用网址的内容。<br>DNS解析过程：<br>查询<strong>浏览器缓存</strong>，如果没有查到会进入<strong>系统缓存</strong>进行查询，此时主要查询host文件，这个文件主要保存以前访问过的域名和IP地址，类似本地数据库。如果找到，可直接获取目标主机的IP地址，如果没找到，进入<strong>路由器缓存</strong>，路由器有自己的DNS缓存，如果查到就返回，否则进入<strong>ISP DNS缓存</strong>。从根域名服务器 –&gt; 顶级域名服务器 –&gt; 极限域名服务器，依次搜索查找对应目标域名的IP，找到以后，会建立TCP连接。</li>
-<li>TCP连接<br>浏览器获得域名对应的 IP 地址以后，会向服务器请求建立连接，发起三次握手。</li>
-<li>发送HTTP请求<br>TCP连接建立后，浏览器向服务器发送 HTTP 请求。<br>一个HTTP请求报文由请求行（request line）、请求头部（headers）、空行（blank line）和请求数据（request body）4个部分组成。</li>
-<li>服务器响应HTTP请求<br>服务器在收到http请求后，会根据路径参数映射到特定的请求处理器进行处理，并将处理结果及相应的视图返回给浏览器。</li>
-<li>浏览器解析渲染页面<br>这是一个边解析边渲染的过程。首先浏览器解析HTML文件构建DOM树，然后解析CSS文件构建渲染树，等到渲染树构建完成后，浏览器开始布局渲染树并将其绘制到屏幕上。JS的解析是由浏览器中的JS解析引擎完成的。</li>
-<li>连接结束<br>TCP四次挥手。</li>
-</ol>
-<h3 id="5-HTTPS工作过程"><a href="#5-HTTPS工作过程" class="headerlink" title="5 HTTPS工作过程"></a>5 HTTPS工作过程</h3><p>HTTPS是一种通过计算机网络进行安全通信的传输协议，经由HTTP进行通信，利用SSL/TLS建立全信道，加密数据包。HTTPS使用的主要目的是提供对网站服务器的身份认证，同时保护交换数据的隐私与完整性。</p>
-<p>1.客户端向服务器发起HTTPS请求，连接到服务器的443端口。<br>2.服务器端有一个密钥对，即公钥和私钥，用来进行非对称加密的。服务器端保存着私钥，不能将其泄露，公钥可以发送给任何人。服务器将自己的公钥发送给客户端（以证书的形式）。<br>3.客户端收到服务器端的证书之后，会对证书进行检查，验证其合法性，如果发现证书有问题，那么HTTPS传输就无法继续。如果验证通过，那么客户端会生成一个随机值，这个随机值就是用于对称加密的密钥，我们将该密钥称之为client key，即客户端密钥。然后用服务器的公钥对客户端密钥进行非对称加密，这样客户端密钥就变成密文了。至此，HTTPS中的第一次HTTP请求结束。<br>4.客户端发起HTTPS中的第二个HTTP请求，将加密之后的客户端密钥发送给服务器。<br>5.服务器接收到客户端发来的密文之后，会用自己的私钥对其进行非对称解密，解密之后的明文就是客户端密钥，然后用客户端密钥对数据进行对称加密，这样数据就变成了密文。最后服务器将加密后的密文发送给客户端。<br>6.客户端收到服务器发来的密文，用客户端密钥对其进行解密，得到服务器发送的数据。这样HTTPS中的第二个HTTP请求结束，整个HTTPS传输完成。</p>
-<p>优点：<br>使用HTTPS协议可认证用户和服务器，确保数据发送到正确的客户端和服务器。<br>HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议。它比http协议更安全，可防止数据在传输过程中被窃取、篡改，确保了数据的完整性。<br>HTTPS是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</p>
-<p>缺点：<br>HTTPS协议握手阶段比较费时，会使页面的加载时间延长近50%，增加10%到20%的耗电。<br>HTTPS连接缓存不如HTTP高效，会增加数据开销和功耗，甚至已有的安全措施也会因此而受到影响。</p>
-<h3 id="6-HTTP与HTTPS"><a href="#6-HTTP与HTTPS" class="headerlink" title="6 HTTP与HTTPS"></a>6 HTTP与HTTPS</h3><p>安全性不同：HTTP的连接很简单，是无状态的(无状态的意思是其数据包的发送、传输和接收都是相互独立的。无连接的意思是指通信双方都不长久的维持对方的任何信息。)；HTTPS 协议是由 TSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 HTTP 协议安全。</p>
-<p>默认端口不同：http和https使用的是完全不同的连接方式，同时使用的端口也不同。http使用的是80端口，https使用的是443端口。在网络模型中，HTTP工作于应用层，而HTTPS工作在传输层。</p>
-<p>网站申请流程不同：https协议需要到CA申请证书，一般免费证书很少，需要交费。Web服务器启用SSL需要获得一个服务器证书并将该证书与要使用SSL的服务器进行绑定。</p>
-<h3 id="7-数字签名与数字证书"><a href="#7-数字签名与数字证书" class="headerlink" title="7 数字签名与数字证书"></a>7 数字签名与数字证书</h3><p>为了避免数据在传输过程中被替换，发送端做一个数字签名。把数据的摘要消息进行加密，得到一个签名，它和数据一起发送。接收端把数据摘要进行加密，如果和签名一样，则说明数据确实是真的。</p>
-<p>虽然数字签名可以保证数据不被替换，但是数据是由公钥加密的，如果公钥也被替换，则仍然可以伪造数据。为了保证发送方的公钥是真的，CA 证书机构会负责颁发一个证书，里面的公钥保证是真的，用户请求服务器时，服务器将证书发给用户。</p>
-]]></content>
-      <categories>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络协议</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>12_27_desgin_mode</title>
-    <url>/2021/12/27/12-27-desgin-mode/</url>
-    <content><![CDATA[<h3 id="1-设计模式分类"><a href="#1-设计模式分类" class="headerlink" title="1 设计模式分类"></a>1 设计模式分类</h3><p>设计模式可分为三类：</p>
-<p>创建型模式（五种）：工厂方法模式、抽象工厂模式、单例模式、建造者模式、原型模式。</p>
-<p>结构型模式（七种）：适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。</p>
-<p>行为型模式（十一种）：策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。</p>
-<h3 id="2-工厂模式"><a href="#2-工厂模式" class="headerlink" title="2 工厂模式"></a>2 工厂模式</h3><p>工厂模式有 3 种不同的实现方式，分别是简单工厂模式、工厂方法模式和抽象工厂模式。</p>
-<p><strong>简单工厂模式</strong><br>我们把被创建的对象称为“产品”，把创建产品的对象称为“工厂”。如果要创建的产品不多，只要一个工厂类就可以完成，这种模式叫“简单工厂模式”。<br>简单工厂模式有一个具体的工厂类，可以生成多个不同的产品。<br>简单工厂模式有一个问题就是，类的创建依赖工厂类。也就是说，如果想要拓展程序（增加一个产品），必须对工厂类进行修改，这违背了开闭原则。</p>
-<p><strong>工厂方法模式</strong><br>定义了一个创建对象的抽象方法，由子类决定要实例化的类。工厂方法模式将对象的实例化推迟到子类。<br>“工厂方法模式”是对简单工厂模式的进一步抽象化，其好处是可以使系统在不修改原来代码的情况下引进新的产品，即满足开闭原则。如果想增加一个产品，只要扩展一个工厂类就可以。<br>缺点：每次增加一个产品时，都需要增加一个具体类和对象实现工厂，使得系统中类的个数成倍增加，在一定程度上增加了系统的复杂度。<br>工厂方法模式只考虑生产同等级的产品（比如不同牌子的电视机）。不能生产多等级产品（比如电视机和空调）。抽象工厂模式可以解决。</p>
-<p><strong>抽象工厂模式</strong><br>一种为访问类提供一个创建一组相关或相互依赖对象的接口，且访问类无须指定所要产品的具体类就能得到同族的不同等级的产品的模式结构。<br>工厂方法模式只生产一个等级的产品，而抽象工厂模式可生产多个等级的产品。</p>
-<h3 id="3-单例模式"><a href="#3-单例模式" class="headerlink" title="3 单例模式"></a>3 单例模式</h3><p>一个类只有一个实例，且该类能自行创建这个实例的一种模式。<br>单例类只有一个实例对象；该单例对象必须由单例类自行创建；对外提供一个访问该单例的全局访问点。<br>单例模式有2种实现方式：懒汉式和饿汉式。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LazySingleton &#123;</span><br><span class="line">    private static volatile LazySingleton instance &#x3D; null;    &#x2F;&#x2F;保证 instance 在所有线程中同步</span><br><span class="line">    private LazySingleton() &#123;</span><br><span class="line">    &#125;    &#x2F;&#x2F;private 避免类在外部被实例化</span><br><span class="line">    public static synchronized LazySingleton getInstance() &#123;</span><br><span class="line">        &#x2F;&#x2F;getInstance 方法前加同步</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            instance &#x3D; new LazySingleton();</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>如果编写的是多线程程序，则不要删除上例代码中的关键字 volatile 和 synchronized，否则将存在线程不安全的问题。如果不删除这两个关键字就能保证线程安全，但是每次访问时都要同步，会影响性能，且消耗更多的资源，这是懒汉式单例的缺点。<br>优点：第一次调用才初始化，避免内存浪费。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class HungrySingleton &#123;</span><br><span class="line">    private static final HungrySingleton instance &#x3D; new HungrySingleton();</span><br><span class="line">    private HungrySingleton() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    public static HungrySingleton getInstance() &#123;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>该模式的特点是类一旦加载就创建一个单例，保证在调用 getInstance 方法之前单例已经存在了。</p>
-<h3 id="4-代理模式"><a href="#4-代理模式" class="headerlink" title="4 代理模式"></a>4 代理模式</h3><p>给某对象提供一个代理以控制对该对象的访问。这时，访问对象不适合或者不能直接引用目标对象，代理对象作为访问对象和目标对象之间的中介。</p>
-<p>优点：<br>代理对象可以扩展目标对象的功能；<br>代理模式能将客户端与目标对象分离，在一定程度上降低了系统的耦合度，增加了程序的可扩展性；</p>
-<p>缺点：<br>代理模式会造成系统设计中类的数量增加；<br>在客户端和目标对象之间增加一个代理对象，会造成请求处理速度变慢；</p>
-<h3 id="5-适配器模式"><a href="#5-适配器模式" class="headerlink" title="5 适配器模式"></a>5 适配器模式</h3><p>作为两个不兼容的接口之间的桥梁。例如：读卡器是作为内存卡和笔记本之间的适配器。</p>
-<h3 id="6-装饰器模式"><a href="#6-装饰器模式" class="headerlink" title="6 装饰器模式"></a>6 装饰器模式</h3><p>在不改变现有对象结构的情况下，动态地给该对象增加一些职责。</p>
-<img src="/2021/12/27/12-27-desgin-mode/decorator.png" class="">
-
-<h3 id="6-模板模式"><a href="#6-模板模式" class="headerlink" title="6 模板模式"></a>6 模板模式</h3><p>一个抽象类公开定义了执行它的方法的方式（模板）。它的子类可以按照需要重写方法实现，但调用将以抽象类中定义的方式进行。</p>
-<p>它封装了不变部分，扩展了可变部分。它把认为是不变部分的算法封装到父类中实现，而把可变部分算法由子类继承实现，便于子类继续扩展。<br>它在父类中提取了公共部分代码，便于代码复用。</p>
-<h3 id="7-观察者模式"><a href="#7-观察者模式" class="headerlink" title="7 观察者模式"></a>7 观察者模式</h3><p>指多个对象间存在一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都得到通知并且被自动更新。</p>
-]]></content>
-      <categories>
-        <category>设计模式</category>
-      </categories>
-      <tags>
-        <tag>designmode</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>12_life</title>
-    <url>/2021/12/04/12-life/</url>
-    <content><![CDATA[<img src="/2021/12/04/12-life/life.png" class="">
-
-<p>江城子 乙卯正月二十日夜记梦<br>宋 苏轼</p>
-<p>十年生死两茫茫，不思量，自难忘。千里孤坟，无处话凄凉。纵使相逢应不识，尘满面，鬓如霜。<br>夜来幽梦忽还乡，小轩窗，正梳妆。相顾无言，惟有泪千行。料得年年肠断处，明月夜，短松冈。</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>爱情</tag>
       </tags>
   </entry>
   <entry>
@@ -1126,6 +1077,40 @@
       </tags>
   </entry>
   <entry>
+    <title>12_27_desgin_mode</title>
+    <url>/2021/12/27/12-27-desgin-mode/</url>
+    <content><![CDATA[<h3 id="1-设计模式分类"><a href="#1-设计模式分类" class="headerlink" title="1 设计模式分类"></a>1 设计模式分类</h3><p>设计模式可分为三类：</p>
+<p>创建型模式（五种）：工厂方法模式、抽象工厂模式、单例模式、建造者模式、原型模式。</p>
+<p>结构型模式（七种）：适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。</p>
+<p>行为型模式（十一种）：策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。</p>
+<h3 id="2-工厂模式"><a href="#2-工厂模式" class="headerlink" title="2 工厂模式"></a>2 工厂模式</h3><p>工厂模式有 3 种不同的实现方式，分别是简单工厂模式、工厂方法模式和抽象工厂模式。</p>
+<p><strong>简单工厂模式</strong><br>我们把被创建的对象称为“产品”，把创建产品的对象称为“工厂”。如果要创建的产品不多，只要一个工厂类就可以完成，这种模式叫“简单工厂模式”。<br>简单工厂模式有一个具体的工厂类，可以生成多个不同的产品。<br>简单工厂模式有一个问题就是，类的创建依赖工厂类。也就是说，如果想要拓展程序（增加一个产品），必须对工厂类进行修改，这违背了开闭原则。</p>
+<p><strong>工厂方法模式</strong><br>定义了一个创建对象的抽象方法，由子类决定要实例化的类。工厂方法模式将对象的实例化推迟到子类。<br>“工厂方法模式”是对简单工厂模式的进一步抽象化，其好处是可以使系统在不修改原来代码的情况下引进新的产品，即满足开闭原则。如果想增加一个产品，只要扩展一个工厂类就可以。<br>缺点：每次增加一个产品时，都需要增加一个具体类和对象实现工厂，使得系统中类的个数成倍增加，在一定程度上增加了系统的复杂度。<br>工厂方法模式只考虑生产同等级的产品（比如不同牌子的电视机）。不能生产多等级产品（比如电视机和空调）。抽象工厂模式可以解决。</p>
+<p><strong>抽象工厂模式</strong><br>一种为访问类提供一个创建一组相关或相互依赖对象的接口，且访问类无须指定所要产品的具体类就能得到同族的不同等级的产品的模式结构。<br>工厂方法模式只生产一个等级的产品，而抽象工厂模式可生产多个等级的产品。</p>
+<h3 id="3-单例模式"><a href="#3-单例模式" class="headerlink" title="3 单例模式"></a>3 单例模式</h3><p>一个类只有一个实例，且该类能自行创建这个实例的一种模式。<br>单例类只有一个实例对象；该单例对象必须由单例类自行创建；对外提供一个访问该单例的全局访问点。<br>单例模式有2种实现方式：懒汉式和饿汉式。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LazySingleton &#123;</span><br><span class="line">    private static volatile LazySingleton instance &#x3D; null;    &#x2F;&#x2F;保证 instance 在所有线程中同步</span><br><span class="line">    private LazySingleton() &#123;</span><br><span class="line">    &#125;    &#x2F;&#x2F;private 避免类在外部被实例化</span><br><span class="line">    public static synchronized LazySingleton getInstance() &#123;</span><br><span class="line">        &#x2F;&#x2F;getInstance 方法前加同步</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            instance &#x3D; new LazySingleton();</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果编写的是多线程程序，则不要删除上例代码中的关键字 volatile 和 synchronized，否则将存在线程不安全的问题。如果不删除这两个关键字就能保证线程安全，但是每次访问时都要同步，会影响性能，且消耗更多的资源，这是懒汉式单例的缺点。<br>优点：第一次调用才初始化，避免内存浪费。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class HungrySingleton &#123;</span><br><span class="line">    private static final HungrySingleton instance &#x3D; new HungrySingleton();</span><br><span class="line">    private HungrySingleton() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    public static HungrySingleton getInstance() &#123;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该模式的特点是类一旦加载就创建一个单例，保证在调用 getInstance 方法之前单例已经存在了。</p>
+<h3 id="4-代理模式"><a href="#4-代理模式" class="headerlink" title="4 代理模式"></a>4 代理模式</h3><p>给某对象提供一个代理以控制对该对象的访问。这时，访问对象不适合或者不能直接引用目标对象，代理对象作为访问对象和目标对象之间的中介。</p>
+<p>优点：<br>代理对象可以扩展目标对象的功能；<br>代理模式能将客户端与目标对象分离，在一定程度上降低了系统的耦合度，增加了程序的可扩展性；</p>
+<p>缺点：<br>代理模式会造成系统设计中类的数量增加；<br>在客户端和目标对象之间增加一个代理对象，会造成请求处理速度变慢；</p>
+<h3 id="5-适配器模式"><a href="#5-适配器模式" class="headerlink" title="5 适配器模式"></a>5 适配器模式</h3><p>作为两个不兼容的接口之间的桥梁。例如：读卡器是作为内存卡和笔记本之间的适配器。</p>
+<h3 id="6-装饰器模式"><a href="#6-装饰器模式" class="headerlink" title="6 装饰器模式"></a>6 装饰器模式</h3><p>在不改变现有对象结构的情况下，动态地给该对象增加一些职责。</p>
+<img src="/2021/12/27/12-27-desgin-mode/decorator.png" class="">
+
+<h3 id="6-模板模式"><a href="#6-模板模式" class="headerlink" title="6 模板模式"></a>6 模板模式</h3><p>一个抽象类公开定义了执行它的方法的方式（模板）。它的子类可以按照需要重写方法实现，但调用将以抽象类中定义的方式进行。</p>
+<p>它封装了不变部分，扩展了可变部分。它把认为是不变部分的算法封装到父类中实现，而把可变部分算法由子类继承实现，便于子类继续扩展。<br>它在父类中提取了公共部分代码，便于代码复用。</p>
+<h3 id="7-观察者模式"><a href="#7-观察者模式" class="headerlink" title="7 观察者模式"></a>7 观察者模式</h3><p>指多个对象间存在一对多的依赖关系，当一个对象的状态发生改变时，所有依赖于它的对象都得到通知并且被自动更新。</p>
+]]></content>
+      <categories>
+        <category>设计模式</category>
+      </categories>
+      <tags>
+        <tag>designmode</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>12_29_Tree</title>
     <url>/2021/12/29/12-29-Tree/</url>
     <content><![CDATA[<h3 id="1-二叉树"><a href="#1-二叉树" class="headerlink" title="1 二叉树"></a>1 二叉树</h3><p>1）每个结点最多有两颗子树，所以二叉树中不存在度大于2的结点。<br>2）左子树和右子树是有顺序的，次序不能颠倒。<br>3）即使树中某结点只有一棵子树，也要区分它是左子树还是右子树。</p>
@@ -1145,6 +1130,21 @@
       </categories>
       <tags>
         <tag>二叉树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>12_life</title>
+    <url>/2021/12/04/12-life/</url>
+    <content><![CDATA[<img src="/2021/12/04/12-life/life.png" class="">
+
+<p>江城子 乙卯正月二十日夜记梦<br>宋 苏轼</p>
+<p>十年生死两茫茫，不思量，自难忘。千里孤坟，无处话凄凉。纵使相逢应不识，尘满面，鬓如霜。<br>夜来幽梦忽还乡，小轩窗，正梳妆。相顾无言，惟有泪千行。料得年年肠断处，明月夜，短松冈。</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>爱情</tag>
       </tags>
   </entry>
   <entry>
@@ -1247,11 +1247,11 @@
   <entry>
     <title>Three ways to create Java Multithread</title>
     <url>/2020/09/23/concurrency/</url>
-    <content><![CDATA[<p>最近回顾了一下Java的知识，发现创建Java多线程的方式一般有三种。下面将一一讲诉。</p>
-<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点吧。</p>
+    <content><![CDATA[<p>创建Java多线程三种方式。</p>
+<h3 id="Thread"><a href="#Thread" class="headerlink" title="Thread"></a>Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承Thread类的类不能再继承其它类了，这也是一个缺点。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下通过此方法来创建多线程。</p>
+<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下用此方法来创建多线程。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
@@ -1303,6 +1303,19 @@
       </categories>
       <tags>
         <tag>差分时间链</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>evening</title>
+    <url>/2021/08/25/evening/</url>
+    <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
+<p>农历七月十八</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>郁</tag>
       </tags>
   </entry>
   <entry>
@@ -1363,6 +1376,19 @@
       </tags>
   </entry>
   <entry>
+    <title>human</title>
+    <url>/2021/10/25/human/</url>
+    <content><![CDATA[<p><strong>人性经得起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
+<p>农历九月二十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>humanity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>firstblog</title>
     <url>/2020/09/20/firstblog/</url>
     <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
@@ -1382,32 +1408,6 @@
       </categories>
       <tags>
         <tag>初入北京</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>evening</title>
-    <url>/2021/08/25/evening/</url>
-    <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
-<p>农历七月十八</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>郁</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>human</title>
-    <url>/2021/10/25/human/</url>
-    <content><![CDATA[<p><strong>人性经得起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
-<p>农历九月二十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>humanity</tag>
       </tags>
   </entry>
   <entry>
@@ -1811,6 +1811,19 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
+    <title>oct_day</title>
+    <url>/2021/10/30/oct-day/</url>
+    <content><![CDATA[<p>十月的北京可谓是诈寒还暖，十月的倒数第二天竟然有二十多度，比起国庆之后的最低气温，现在不可谓不舒适。后天就是十一月了，日子总是这么轻飘飘的就过去了，明天三年之约也来了。多么令人期待了，等待了数个三年之后，炎帝迎来了他的三年之约。十一月总是给人美好，十一月的自己也要更加自律了，毕竟毕业不是儿戏啊！而且实习经验也没有的自己更要抓紧时间了。</p>
+<p>农历九月二十五日</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>十月</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>new_day</title>
     <url>/2021/10/24/new-day/</url>
     <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
@@ -1822,32 +1835,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>程序员节</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>now_do_it</title>
-    <url>/2021/10/29/now-do-it/</url>
-    <content><![CDATA[<p>不知不觉已经10月29号了，时间如白驹过隙，还有一个月就要开题答辩了。昨天老师腾讯会议聊完开题的事情，我的上一届师兄师姐在这个时候或多或少都有一定的研究成果了。但我的研究成果似乎还停滞在了2个月之前，安全多方计算、区块链、物联网。一个热门又新的领域，但似乎对我不太友好，可能我就不适合做科研工作者吧！但是没办法，你必须得硬着头皮往前冲，科研就是这样，培养的就是解决未知问题的能力。就是找没有答案的问题，如果是有答案的问题，那用部着进行科学研究。科研的道路注定充满艰辛、孤独。科研工作者就像勇士一样，必须连续作战，保持胜利战果，所以他是孤独的，同时也是令人敬佩的。加油吧，年轻人！</p>
-<p>农历九月二十四号</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>十月的尾巴</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>oct_day</title>
-    <url>/2021/10/30/oct-day/</url>
-    <content><![CDATA[<p>十月的北京可谓是诈寒还暖，十月的倒数第二天竟然有二十多度，比起国庆之后的最低气温，现在不可谓不舒适。后天就是十一月了，日子总是这么轻飘飘的就过去了，明天三年之约也来了。多么令人期待了，等待了数个三年之后，炎帝迎来了他的三年之约。十一月总是给人美好，十一月的自己也要更加自律了，毕竟毕业不是儿戏啊！而且实习经验也没有的自己更要抓紧时间了。</p>
-<p>农历九月二十五日</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>十月</tag>
       </tags>
   </entry>
   <entry>
@@ -1864,6 +1851,19 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>如晴似雨</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>now_do_it</title>
+    <url>/2021/10/29/now-do-it/</url>
+    <content><![CDATA[<p>不知不觉已经10月29号了，时间如白驹过隙，还有一个月就要开题答辩了。昨天老师腾讯会议聊完开题的事情，我的上一届师兄师姐在这个时候或多或少都有一定的研究成果了。但我的研究成果似乎还停滞在了2个月之前，安全多方计算、区块链、物联网。一个热门又新的领域，但似乎对我不太友好，可能我就不适合做科研工作者吧！但是没办法，你必须得硬着头皮往前冲，科研就是这样，培养的就是解决未知问题的能力。就是找没有答案的问题，如果是有答案的问题，那用部着进行科学研究。科研的道路注定充满艰辛、孤独。科研工作者就像勇士一样，必须连续作战，保持胜利战果，所以他是孤独的，同时也是令人敬佩的。加油吧，年轻人！</p>
+<p>农历九月二十四号</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>十月的尾巴</tag>
       </tags>
   </entry>
   <entry>
