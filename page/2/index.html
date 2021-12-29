@@ -187,6 +187,128 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/12/12-12-SpringMVC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/12/12-12-SpringMVC/" class="post-title-link" itemprop="url">12_12_SpringMVC</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-12 12:39:41" itemprop="dateCreated datePublished" datetime="2021-12-12T12:39:41+08:00">2021-12-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-12-21 11:54:47" itemprop="dateModified" datetime="2021-12-21T11:54:47+08:00">2021-12-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SpringMVC/" itemprop="url" rel="index"><span itemprop="name">SpringMVC</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/12/12-12-SpringMVC/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/12/12-12-SpringMVC/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-MVC模式"><a href="#1-MVC模式" class="headerlink" title="1 MVC模式"></a>1 MVC模式</h3><p>模型－视图－控制器（MVC）。M是指业务模型，V是指用户界面，C则是控制器，使用MVC的目的是将M和V的实现代码分离，从而使同一个程序可以使用不同的表现形式。</p>
+<img src="/2021/12/12/12-12-SpringMVC/mvc.png" class="">
+<p>Model（模型）：是程序的主体部分，主要包含业务数据和业务逻辑。在模型层，还会涉及到用户发布的服务，在服务中会根据不同的业务需求，更新业务模型中的数据。<br>View（视图）：是程序呈现给用户的部分，是用户和程序交互的接口，用户会根据具体的业务需求，在 View 层输出特定的业务数据，并通过界面的事件交互，将对应的输入参数提交给后台控制器进行处理。<br>Controller（控制器）：Controller 是用来处理用户输入数据，以及更新业务模型的部分。控制器中接收了用户与界面交互时传递过来的数据，并根据数据业务逻辑来执行服务的调用和更新业务模型的数据和状态。</p>
+<h3 id="2-SpringMVC的工作原理（执行流程）"><a href="#2-SpringMVC的工作原理（执行流程）" class="headerlink" title="2 SpringMVC的工作原理（执行流程）"></a>2 SpringMVC的工作原理（执行流程）</h3><p>SpringWebMVC是基于ServletAPI构建的原始Web框架，从一开始就包含在Spring框架中。正式名称“SpringWebMVC”来自其源模块（SpringWebMVC）的名称，但更常见的名称是“SpringMVC”。</p>
+<p>区域设置解析器绑定到请求，以使流程中的元素在处理请求（呈现视图、准备数据等）时解析要使用的区域设置。如果不需要区域设置解析，则不需要区域设置解析程序。<br>主题解析器绑定到请求，以让视图等元素确定要使用的主题。如果不使用主题，可以忽略它。<br>如果指定多部分文件解析器，则会检查请求的多部分。如果找到multipart，请求将被包装在multipartttpServletRequest中，以供流程中的其他元素进一步处理。</p>
+<p>将搜索适当的处理程序。如果找到处理程序，将运行与该处理程序（预处理器、后处理器和控制器）关联的执行链，以准备用于渲染的模型。或者，对于带注释的控制器，可以呈现响应（在HandlerAdapter中），而不是返回视图。<br>如果返回模型，则渲染视图。如果没有返回任何模型（可能是由于预处理器或后处理器拦截了请求，可能是出于安全原因），则不会呈现任何视图，因为请求可能已经完成。</p>
+<img src="/2021/12/12/12-12-SpringMVC/springmvc_process.png" class="">
+<ol>
+<li>客户端(浏览器)发送请求到前端控制器DispatcherServlet。</li>
+<li>DispatcherServlet根据请求信息调用HandlerMapping去查找处理程序（Handler）（通过xml配置或者注解进行查找）。</li>
+<li>找到相应的Handler后，向DispatcherServlet返回执行链（HandlerExecutionChain）。</li>
+<li>DispatcherServlet调用HandlerAdapter去执行处理程序（Handler）。</li>
+<li>HandlerAdapter会根据Handler来调用真正的处理程序处理请求，并处理相应的业务逻辑。</li>
+<li>处理完后返回ModelAndView对象。</li>
+<li>DispatcherServlet调用ViewResolver进行视图解析。解析完后返回一个view。</li>
+<li>DispatcherServlet对视图进行渲染，向用户响应结果。</li>
+</ol>
+<p><strong>核心组件</strong><br>DispatcherServlet：SpringMVC和许多其他web框架一样，是围绕前端控制器模式设计的，其中一个中央Servlet DispatcherServlet为请求处理提供了一个共享算法，而实际工作是由可配置的委托组件执行的。该模型灵活，支持多种工作流。<br>DispatcherServlet与任何Servlet一样，需要使用Java配置或者在web.xml中根据Servlet规范声明和映射。反过来，DispatcherServlet使用Spring配置来发现请求映射、视图解析、异常处理等所需的委托组件。</p>
+<p>DispatcherServlet将委托给特殊bean来处理请求并提供适当的响应。</p>
+<p>HandlerMapping：将请求映射到处理程序，以及用于预处理和后处理的拦截器列表。映射基于一些标准，这些标准的细节因HandlerMapping实现而异。两个主要的HandlerMapping实现是RequestMappingHandlerMapping（支持@RequestMapping注释方法）和SimpleUrlHandlerMapping（维护URI路径模式到处理程序的显式注册）。</p>
+<p>HandlerAdapter：帮助DispatcherServlet调用映射到请求的处理程序，而不管实际如何调用该处理程序。例如，调用带注释的控制器需要解析注释。HandlerAdapter的主要用途是保护DispatcherServlet不受此类细节的影响。</p>
+<p>ViewResolver：将处理程序返回的基于逻辑字符串的视图名称解析为实际视图，并将其呈现给响应。</p>
+<h3 id="3-常用注解"><a href="#3-常用注解" class="headerlink" title="3 常用注解"></a>3 常用注解</h3><p>@RequestMapping：您可以使用@RequestMapping注释将请求映射到控制器方法。它具有各种属性，可以通过URL、HTTP方法、请求参数、头和媒体类型进行匹配。您可以在类级别使用它来表示共享映射，或者在方法级别使用它来缩小到特定的端点映射。</p>
+<p>@RequestBody：此注解用于接收前端传来的实体，接收参数也是对应的实体，比如前端通过 JSON 提交传来两个参数 username 和 password，此时我们需要在后端封装一个实体来接收。在传递的参数比较多的情况下，使用 @RequestBody 接收会非常方便。</p>
+<p>@ResponseBody：此注解将返回的数据结构转换为 JSON 格式。</p>
+<h3 id="3-redirect与forward"><a href="#3-redirect与forward" class="headerlink" title="3 redirect与forward"></a>3 redirect与forward</h3><p>request.getRequestDispatcher(“hj.jsp”).forward(request, response);<br>// 转发到 hj.jsp<br>response.sendRedirect(“hj.jsp”);             // 重定向到 hj.jsp<br>可以知道的是一个是用request对象调用，一个是用response对象调用。<br>两者区别如下：</p>
+<ol>
+<li>地址栏显示<br>forword是服务器内部的重定向，服务器直接访问目标地址（url），把里面的东西读取出来。但是客户端并不知道，因此客户端（浏览器）的网址是不会发生变化的。<br>redirect是服务器根据逻辑发送一个状态码，告诉浏览器重新去请求目标地址，所以地址栏显示的是新的地址。</li>
+<li>数据共享<br>由于在整个定向的过程中用的是同一个request，因此forward会将request的信息带到被重定向的jsp或者servlet中使用。即可以共享数据。<br>redirect不能共享数据。</li>
+<li>场景<br>forword一般用于用户登录的时候，根据角色转发到相应的模块。<br>redirect一般用于用户注销时返回主页面或者跳转到其他网站。</li>
+<li>效率<br>forword效率高，而redirect效率低。</li>
+</ol>
+<p><strong>本质</strong><br>forword是服务器行为，而redirect是客户端行为。</p>
+<p>转发过程：浏览器发送http请求—&gt;web服务器接受此请求—&gt;调用内部的一个方法在容器内部完成请求处理和转发动作—&gt;将目标资源发送给客户；在这里，转发的路径必须是同一个web容器下的url，其不能转向到其他的web路径上去，中间传递的是自己的容器内的request。在浏览器路径栏显示的仍然是其第一次访问的路径，也就是说客户是感觉不到服务器做了转发的。转发行为是浏览器只做了一次访问请求。</p>
+<p>重定向过程：浏览器发送http请求—&gt;web服务器接受后发送302状态码及对应新的location给浏览器—&gt;浏览器发现是302响应，则自动再发送一个新的http请求，请求的url是新的location地址—&gt;服务器根据此请求寻找资源并发送给客户。在这里 location可以重定向到任意URL，既然是浏览器重新发出了请求，则就没有什么request传递的概念了。在浏览器路径栏显示的是其重定向的路径，客户可以观察到地址的变化的。重定向行为是浏览器做了至少两次的访问请求的。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/11/12-11-Network/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1129,117 +1251,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/27/11-27-Mysql/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/27/11-27-Mysql/" class="post-title-link" itemprop="url">11_27_Mysql</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-11-27 14:14:31" itemprop="dateCreated datePublished" datetime="2021-11-27T14:14:31+08:00">2021-11-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-23 15:40:30" itemprop="dateModified" datetime="2021-12-23T15:40:30+08:00">2021-12-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/11/27/11-27-Mysql/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/27/11-27-Mysql/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-mysql架构"><a href="#1-mysql架构" class="headerlink" title="1 mysql架构"></a>1 mysql架构</h3><img src="/2021/11/27/11-27-Mysql/mysql.png" class="">
-<p>MySQL可以分为 Server 层和存储引擎两部分。<br>Server 层包括：连接器、查询缓存、分析器、优化器、执行器等，涵盖了 MySQL 大多数核心服务功能，以及所有的内置函数（如：日期、时间、数学和加密函数等），所有跨存储引擎的功能都在这一层实现，例如：存储过程、触发器、视图等等。<br>存储引擎层：负责数据的存储和提取。其架构是插件式的，支持 InnoDB、MyISAM 等多个存储引擎。默认是InnoDB，但是在建表时可以通过 engine = MyISAM 来指定存储引擎。不同存储引擎的表数据存取方式不同，支持的功能也不同。</p>
-<h3 id="2-MyISAM与InnoDB"><a href="#2-MyISAM与InnoDB" class="headerlink" title="2 MyISAM与InnoDB"></a>2 MyISAM与InnoDB</h3><p>MyISAM是MySQL的默认数据库引擎（5.5版之前）。虽然性能极佳，而且提供了大量的特性，包括全文索引、压缩、空间函数等，但MyISAM不支持事务和行级锁，而且最大的缺陷就是崩溃后无法安全恢复。不过，5.5版本之后，MySQL引入了InnoDB，并且5.5版本后默认的存储引擎为InnoDB。</p>
-<p>MyISAM 强调的是性能，每次查询具有原子性,其执行速度比InnoDB类型更快，但是不提供事务支持。InnoDB 提供事务支持，外部键等高级数据库功能。具有事务(commit)、回滚(rollback)和崩溃修复能力(crash recovery capabilities)的事务安全(transaction-safe (ACID compliant))型表。</p>
-<p>MyISAM不支持事务，InnoDB支持事务。<br>MyISAM不支持外键，InnoDB支持外键。<br>MyISAM只支持表级锁(table-level locking)，而 InnoDB 支持行级锁(rowlevel locking)和表级锁,默认为行级锁。<br>仅 InnoDB 支持mvcc。应对高并发事务, MVCC比单纯的加锁更高效;<br>MVCC 只在 READ COMMITTED 和 REPEATABLE READ 两个隔离级别下工作;<br>MVCC 可以使用乐观(optimistic)锁和悲观(pessimistic)锁来实现。</p>
-<h3 id="3-mvcc（Mutil-Version-Concurrency-Control-多版本并发控制"><a href="#3-mvcc（Mutil-Version-Concurrency-Control-多版本并发控制" class="headerlink" title="3 mvcc（Mutil-Version Concurrency Control)多版本并发控制"></a>3 mvcc（Mutil-Version Concurrency Control)多版本并发控制</h3><p>MVCC是一种并发控制的方法，一般在数据库管理系统中，实现对数据库的并发访问。<br>早期的数据库系统，只有读-读之间可以并发，读-写，写-写都要阻塞。引入多版本之后，只有写-写之间相互阻塞，其他2种操作都可以并行，这样大幅度提高了数据库的并发性能。</p>
-<p>原理就是通过数据行的多个版本管理来实现数据库的并发控制，简单来说就是保存数据的历史版本。可以通过比较版本号决定数据是否显示出来。<br>InnoDB是在undo log中实现的，通过undo log可以找回数据的历史版本。找回的数据历史版本可以提供给用户读(按照隔离级别的定义，有些读请求只能看到比较老的数据版本)，也可以在回滚的时候覆盖数据页上的数据。</p>
-<h3 id="4-一条sql语句的执行过程"><a href="#4-一条sql语句的执行过程" class="headerlink" title="4 一条sql语句的执行过程"></a>4 一条sql语句的执行过程</h3><ol>
-<li>连接数据库。</li>
-<li>查询缓存。MySQL拿到一个查询请求后，会先到查询缓存查找，看之前是不是执行过这条语句。因为执行过的语句及其结果都会以key-value的形式，被直接缓存到内存中。其中，key 是查询语句，value 是查询结果。如果你的查询能够直接在缓存中找到（key），那么这个 value 就会直接返回给客户端。如果语句不在查询缓存中，就会继续后面的执行阶段。但是大多数情况下不建议使用查询缓存。MySQL8.0版本已经将查询缓存功能删除了。</li>
-<li>分析器。进行sql语句的词法分析、语法分析。</li>
-<li>优化器。优化器的作用就是以它认为的最优执行方案去执行。例如：在表里有多个索引的时候，决定使用哪个索引；或者在一个语句有多表关联（join）的时候，决定各个表的连接顺序。</li>
-<li>执行器。执行语句，然后从存储引擎返回数据。</li>
-</ol>
-<h3 id="5-索引"><a href="#5-索引" class="headerlink" title="5 索引"></a>5 索引</h3><p>索引的出现是为了提高数据的查询效率，就像书的目录一样。<br>MySQL索引的实现通常使用B树及其变种B+树。MySQL中使用较多的索引有 Hash 索引、B+ 树索引等。InnoDB存储引擎的默认索引实现为 B+ 树索引。</p>
-<p>但是为表设置索引需要付出代价：一是增加了数据库的存储空间，二是在插入和修改数据时要花费较多的时间(因为索引也要随之变动)。</p>
-<p>建立索引的原则：<br>在最频繁使用的、用以缩小查询范围的字段上建立索引；<br>在频繁使用的、需要排序的字段上建立索引。</p>
-<h3 id="6-索引分类"><a href="#6-索引分类" class="headerlink" title="6 索引分类"></a>6 索引分类</h3><p>数据结构角度：树索引、hash索引。<br>物理存储角度：聚簇索引、非聚簇索引。<br><strong>逻辑角度</strong>：普通索引、唯一索引、主键索引、联合索引、全文索引。<br>InnoDB 主键使用的是聚簇索引，MyISAM 不管是主键，还是二级索引使用的都是非聚簇索引。</p>
-<p>聚簇索引（主键索引）：按照每张表的主键构造一颗B+树，同时叶子节点存放表的记录数据。特点是存储数据的顺序和索引顺序一致。一般情况下主键会默认创建聚簇索引，且一张表只允许存在一个聚簇索引。</p>
-<p>非聚簇索引（辅助索引）：B+Tree叶子节点的data域存放的是数据记录的地址。在索引检索的时候，首先按照B+Tree搜索算法搜索索引，如果指定的Key存在，则取出其 data 域的值，然后以 data 域的值为地址读取相应的数据记录。索引文件和数据文件是独立分开的。</p>
-<p>聚簇索引的叶子节点就是数据节点，而非聚簇索引的叶子节点仍然是索引节点，只不过有指向对应数据的指针。</p>
-<p>哈希索引：哈希索引能以 O(1) 时间进行查找，但是失去了有序性。无法用于排序与分组、只支持精确查找，无法用于部分查找和范围查找。</p>
-<p>Mysql中InnoDB引擎有一个特殊的功能叫做自适应哈希索引，它会在内存中基于B+Tree索引的基础上创建一个哈希索引，这让B+Tree索引具备了一些哈希索引的优点。</p>
-<h3 id="7-为什么-InnoDB-存储引擎选用-B-树而不是-B-树？"><a href="#7-为什么-InnoDB-存储引擎选用-B-树而不是-B-树？" class="headerlink" title="7 为什么 InnoDB 存储引擎选用 B+ 树而不是 B 树？"></a>7 为什么 InnoDB 存储引擎选用 B+ 树而不是 B 树？</h3><p>主要考虑的是 IO 对性能的影响，B 树的每个节点都存储数据，而 B+ 树只有叶子节点才存储数据，所以查找相同数据量的情况下，B 树的高度大，IO 更频繁。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1311,7 +1322,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">55</span>
+          <span class="site-state-item-count">56</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1324,7 +1335,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">47</span>
+        <span class="site-state-item-count">48</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
