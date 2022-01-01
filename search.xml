@@ -56,32 +56,6 @@
       </tags>
   </entry>
   <entry>
-    <title>11_10_Java</title>
-    <url>/2021/11/10/11-10-Java/</url>
-    <content><![CDATA[<h3 id="1-递归和迭代的区别"><a href="#1-递归和迭代的区别" class="headerlink" title="1 递归和迭代的区别"></a>1 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中, 问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远变近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
-<p>以斐波那契数列为例。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>递归容易产生“栈溢出”问题（stack overflow）<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
-<h3 id="2-Java中String为什么是final"><a href="#2-Java中String为什么是final" class="headerlink" title="2 Java中String为什么是final"></a>2 Java中String为什么是final</h3><p>字符串是常量；它们的值在创建后无法更改。<br>StringBuffer支持可变字符串。<br>因为 String 对象是不可变的，所以它们可以共享。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
-<p>安全性：String 被许多的 Java 类(库)用来当做参数，例如：网络连接地址 URL、文件路径 path、还有反射机制所需要 的 String 参数等, 假若 String 不是固定不变的，将会引起各种安全隐患；<br>允许 String 对象缓存 HashCode：Java 中 String 对象的哈希码被频繁地使用,比如在 HashMap 等容器中。字符串不变性保证了 hash 码的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是 Java 堆内存中一个特殊的存储区域, 当创建一个 String 对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
-<h3 id="3-String-str2-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str2-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str2 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str2 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">        String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">        String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">        String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">        System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">        System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">        System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">        System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
-<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量； 它们的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。 此类提供与 StringBuffer 兼容的 API，但不保证同步。 此类旨在用作 StringBuffer 的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。 在可能的情况下，建议优先使用此类而不是 StringBuffer，因为在大多数实现下它会更快。StringBuilder 上的主要操作是 append 和 insert 方法，它们被重载以接受任何类型的数据。 每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。 append 方法总是在构建器的末尾添加这些字符； insert 方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。 字符串缓冲区类似于字符串，但可以修改。 在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>string</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>11_14_Java</title>
     <url>/2021/11/14/11-14-Java/</url>
     <content><![CDATA[<h3 id="1-Error和Exception的区别"><a href="#1-Error和Exception的区别" class="headerlink" title="1 Error和Exception的区别"></a>1 Error和Exception的区别</h3><p>Error：一般指与虚拟机相关的问题，如：系统崩溃、虚拟机错误、内存空间不足、栈溢出等。错误导致应用程序中断，仅靠程序本身无法恢复的预防。</p>
@@ -110,6 +84,32 @@
       </categories>
       <tags>
         <tag>stream</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>11_10_Java</title>
+    <url>/2021/11/10/11-10-Java/</url>
+    <content><![CDATA[<h3 id="1-递归和迭代的区别"><a href="#1-递归和迭代的区别" class="headerlink" title="1 递归和迭代的区别"></a>1 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中, 问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远变近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
+<p>以斐波那契数列为例。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>递归容易产生“栈溢出”问题（stack overflow）<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
+<h3 id="2-Java中String为什么是final"><a href="#2-Java中String为什么是final" class="headerlink" title="2 Java中String为什么是final"></a>2 Java中String为什么是final</h3><p>字符串是常量；它们的值在创建后无法更改。<br>StringBuffer支持可变字符串。<br>因为 String 对象是不可变的，所以它们可以共享。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
+<p>安全性：String 被许多的 Java 类(库)用来当做参数，例如：网络连接地址 URL、文件路径 path、还有反射机制所需要 的 String 参数等, 假若 String 不是固定不变的，将会引起各种安全隐患；<br>允许 String 对象缓存 HashCode：Java 中 String 对象的哈希码被频繁地使用,比如在 HashMap 等容器中。字符串不变性保证了 hash 码的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是 Java 堆内存中一个特殊的存储区域, 当创建一个 String 对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
+<h3 id="3-String-str2-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str2-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str2 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str2 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">        String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">        String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">        String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">        System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">        System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">        System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">        System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
+<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量； 它们的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。 此类提供与 StringBuffer 兼容的 API，但不保证同步。 此类旨在用作 StringBuffer 的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。 在可能的情况下，建议优先使用此类而不是 StringBuffer，因为在大多数实现下它会更快。StringBuilder 上的主要操作是 append 和 insert 方法，它们被重载以接受任何类型的数据。 每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。 append 方法总是在构建器的末尾添加这些字符； insert 方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。 字符串缓冲区类似于字符串，但可以修改。 在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>string</tag>
       </tags>
   </entry>
   <entry>
@@ -187,31 +187,6 @@
       </tags>
   </entry>
   <entry>
-    <title>11_21_Java</title>
-    <url>/2021/11/21/11-21-Java/</url>
-    <content><![CDATA[<h3 id="1-进程与线程"><a href="#1-进程与线程" class="headerlink" title="1 进程与线程"></a>1 进程与线程</h3><p>Processes：一个进程有一个自包含的执行环境。一个进程通常有一套完整的、私有的基本运行时资源；特别是，每个进程都有自己的内存空间。Java虚拟机的大多数实现都作为单个进程运行。Java应用程序可以使用ProcessBuilder对象创建其他进程。</p>
-<p>Threads：线程有时被称为轻量级进程。进程和线程都提供了一个执行环境，但是创建一个新线程比创建一个新进程需要更少的资源。线程存在于一个进程中——每个进程至少有一个线程。线程共享进程的资源，包括内存和打开的文件。</p>
-<h3 id="2-创建线程的方式"><a href="#2-创建线程的方式" class="headerlink" title="2 创建线程的方式"></a>2 创建线程的方式</h3><p>通过继承Thread类，重写run方法创建线程。<br>通过实现Runnable接口的run方法来创建线程，启动线程需要通过Thread类。<br>通过实现Callable接口的call方法与FutureTask包装器来创建线程，有返回值。<br>通过线程池创建线程。</p>
-<h3 id="3-Runnable-与-Callable"><a href="#3-Runnable-与-Callable" class="headerlink" title="3 Runnable 与 Callable"></a>3 Runnable 与 Callable</h3><p>Runnable 接⼝中的 run() 方法的返回值是 void，它做的事情只是纯粹地去执行方法中的代码。<br>Callable 接⼝中的 call() 方法是有返回值的，是一个泛型，和 Future、FutureTask 配合可以用来获取异步执行的结果。</p>
-<h3 id="4-线程状态"><a href="#4-线程状态" class="headerlink" title="4 线程状态"></a>4 线程状态</h3><p>1 NEW：尚未启动的线程处于此状态。<br>2 RUNNABLE：在 Java 虚拟机中执行的线程处于这种状态。<br>3 BLOCKED：被阻塞等待监视器锁的线程处于这种状态。（synchronized同步块中阻塞）<br>4 WAITING：无限期等待另一个线程执行特定操作的线程处于此状态。（主动调用wait()、join()、park()方法后的状态）<br>5 TIMED_WAITING：等待另一个线程执行操作达指定等待时间的线程处于此状态。（Thead.sleep(long),wait(long),join(long),parkNanos (long),parkUntil）<br>6 TERMINATED：已退出的线程处于此状态。</p>
-<img src="/2021/11/21/11-21-Java/thread.png" class="">
-
-<h3 id="5-sleep-与wait"><a href="#5-sleep-与wait" class="headerlink" title="5 sleep()与wait()"></a>5 sleep()与wait()</h3><p>sleep()：使当前正在执行的线程休眠（暂时停止执行）指定的毫秒数加上指定的纳秒数，取决于系统计时器和调度程序的精度和准确性。该线程不会失去任何监视器的所有权。sleep为Thread中的方法，让出cpu，不会释放同步资源锁。<br>wait()：使当前线程等待，直到另一个线程为此对象调用notify() 方法或notifyAll() 方法，或者某个其他线程中断了当前线程，或者经过了一定的实时时间。wait为Object中的方法，让出cpu，释放同步资源锁。</p>
-<p>sleep() 方法可以在任何地方使用，而wait() 方法则只能在同步方法或同步块中使用。</p>
-<h3 id="6-run-与start"><a href="#6-run-与start" class="headerlink" title="6 run()与start()"></a>6 run()与start()</h3><p>通常，系统通过调用线程类的start()方法来启动一个线程、此时该线程处于就绪状态，即就是这个线程可以被JVM来调度执行。在调度过程中,JVM底层通过调用线程类的run()方法来完成实际的操作，当run()方法结束后，此线程就会终止。</p>
-<p>如果直接调用线程类的run()方法，此时run()方法仅仅被当做一个普通的函数调用，程序中仍然只有主线程这一个线程，无法达到启动多线程的目的。</p>
-<h3 id="7-线程安全的体现"><a href="#7-线程安全的体现" class="headerlink" title="7 线程安全的体现"></a>7 线程安全的体现</h3><p>原子性：提供互斥访问，同一时刻只能有一个线程对数据进行操作，（atomic，synchronized）；<br>可见性：一个线程对主内存的修改可以及时地被其他线程看到，（synchronized、volatile）；<br>有序性：一个线程观察其他线程的指令执行顺序，由于指令重排序，该观察结果一般杂乱无序，（happensbefore原则）。</p>
-<h3 id="8-线程同步的方法"><a href="#8-线程同步的方法" class="headerlink" title="8 线程同步的方法"></a>8 线程同步的方法</h3><p>1 使用 Synchronized 关键字；<br>2 wait 和 notify方法；<br>3 使用特殊域变量 volatile 实现线程同步；<br>4 使用可重入锁实现线程同步；<br>5 使用阻塞队列实现线程同步；<br>6 使用信号量 Semaphore。</p>
-<h3 id="9-Thread的interrupt方法原理"><a href="#9-Thread的interrupt方法原理" class="headerlink" title="9 Thread的interrupt方法原理"></a>9 Thread的interrupt方法原理</h3><p>interrupt是Thread类的实例方法，它的主要作用是给目标线程发送一个通知，有人希望你退出啦，同时会将目标线程的中断标志设置为true，也就是已经有人打断过该线程了。至于目标线程如何处理，完全取决于目标线程自身。<br>interrupt方法中断线程可以分为两种情况，第一种是打断正在运行的线程。<br>第二种情况是，打断正在休眠的线程，比如目标线程调用了sleep方法而处于阻塞状态，这时候如果打断它，就会抛出InterruptedException异常。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>线程</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>11_19_Java</title>
     <url>/2021/11/19/11-19-Java/</url>
     <content><![CDATA[<h3 id="1-HashMap的底层实现原理？"><a href="#1-HashMap的底层实现原理？" class="headerlink" title="1 HashMap的底层实现原理？"></a>1 HashMap的底层实现原理？</h3><p>JDK1.7：entry数组+链表<br>JDK1.8：node数组+链表+红黑树。当链表上的元素个数超过8个并且数组长度&gt;=64时自动转化成红黑树，节点变成树节点，以提高搜索效率和插入效率至 O(logN)。<br>Entry 和 Node 都包含 key、value、hash、next 属性。</p>
@@ -244,46 +219,28 @@
       </tags>
   </entry>
   <entry>
-    <title>11_22_Java</title>
-    <url>/2021/11/22/11-22-Java/</url>
-    <content><![CDATA[<h3 id="1-ThreadLocal"><a href="#1-ThreadLocal" class="headerlink" title="1 ThreadLocal"></a>1 ThreadLocal</h3><p>此类提供thread-local变量。<br>ThreadLocal 提供 get 和 set 方法，为每一个使用这个变量的线程都保存一份独立初始化的变量副本。只要线程处于活动状态并且可以访问 ThreadLocal 实例，每个线程都持有对其线程局部变量副本的隐式引用；线程消失后，它的所有线程本地实例副本都将进行垃圾回收。<br>ThreadLocal保证了各个线程的数据互不干扰。<br>每个线程中都有一个ThreadLocalMap数据结构，当执行set方法时，其值是保存在当前线程的threadLocals变量中，当执行set方法时，是从当前线程的threadLocals变量获取。<br>ThreadLocalMap 是一种定制的哈希映射，仅适用于维护线程本地值。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">返回thread-local变量的当前线程副本中的值。</span><br><span class="line">如果该变量对于当前线程没有值，则首先将其初始化为调用 initialValue 方法返回的值。</span><br><span class="line">public T get() &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null) &#123;</span><br><span class="line">            ThreadLocalMap.Entry e &#x3D; map.getEntry(this);</span><br><span class="line">            if (e !&#x3D; null) &#123;</span><br><span class="line">                @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">                T result &#x3D; (T)e.value;</span><br><span class="line">                return result;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return setInitialValue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">将thread-local变量的当前线程副本设置为指定值。</span><br><span class="line">public void set(T value) &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null)</span><br><span class="line">            map.set(this, value);</span><br><span class="line">        else</span><br><span class="line">            createMap(t, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">删除thread-local变量的当前线程值。</span><br><span class="line">public void remove() &#123;</span><br><span class="line">         ThreadLocalMap m &#x3D; getMap(Thread.currentThread());</span><br><span class="line">         if (m !&#x3D; null)</span><br><span class="line">             m.remove(this);</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+    <title>11_21_Java</title>
+    <url>/2021/11/21/11-21-Java/</url>
+    <content><![CDATA[<h3 id="1-进程与线程"><a href="#1-进程与线程" class="headerlink" title="1 进程与线程"></a>1 进程与线程</h3><p>Processes：一个进程有一个自包含的执行环境。一个进程通常有一套完整的、私有的基本运行时资源；特别是，每个进程都有自己的内存空间。Java虚拟机的大多数实现都作为单个进程运行。Java应用程序可以使用ProcessBuilder对象创建其他进程。</p>
+<p>Threads：线程有时被称为轻量级进程。进程和线程都提供了一个执行环境，但是创建一个新线程比创建一个新进程需要更少的资源。线程存在于一个进程中——每个进程至少有一个线程。线程共享进程的资源，包括内存和打开的文件。</p>
+<h3 id="2-创建线程的方式"><a href="#2-创建线程的方式" class="headerlink" title="2 创建线程的方式"></a>2 创建线程的方式</h3><p>通过继承Thread类，重写run方法创建线程。<br>通过实现Runnable接口的run方法来创建线程，启动线程需要通过Thread类。<br>通过实现Callable接口的call方法与FutureTask包装器来创建线程，有返回值。<br>通过线程池创建线程。</p>
+<h3 id="3-Runnable-与-Callable"><a href="#3-Runnable-与-Callable" class="headerlink" title="3 Runnable 与 Callable"></a>3 Runnable 与 Callable</h3><p>Runnable 接⼝中的 run() 方法的返回值是 void，它做的事情只是纯粹地去执行方法中的代码。<br>Callable 接⼝中的 call() 方法是有返回值的，是一个泛型，和 Future、FutureTask 配合可以用来获取异步执行的结果。</p>
+<h3 id="4-线程状态"><a href="#4-线程状态" class="headerlink" title="4 线程状态"></a>4 线程状态</h3><p>1 NEW：尚未启动的线程处于此状态。<br>2 RUNNABLE：在 Java 虚拟机中执行的线程处于这种状态。<br>3 BLOCKED：被阻塞等待监视器锁的线程处于这种状态。（synchronized同步块中阻塞）<br>4 WAITING：无限期等待另一个线程执行特定操作的线程处于此状态。（主动调用wait()、join()、park()方法后的状态）<br>5 TIMED_WAITING：等待另一个线程执行操作达指定等待时间的线程处于此状态。（Thead.sleep(long),wait(long),join(long),parkNanos (long),parkUntil）<br>6 TERMINATED：已退出的线程处于此状态。</p>
+<img src="/2021/11/21/11-21-Java/thread.png" class="">
 
-<h3 id="2-ThreadLocal使用场景"><a href="#2-ThreadLocal使用场景" class="headerlink" title="2 ThreadLocal使用场景"></a>2 ThreadLocal使用场景</h3><p>Spring实现事务隔离<br>Spring采用Threadlocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。</p>
-<h3 id="3-synchronized"><a href="#3-synchronized" class="headerlink" title="3 synchronized"></a>3 synchronized</h3><p>Synchronized同步方法可以支持使用一种简单的策略来防止线程干扰和内存一致性错误：如果一个对象对多个线程可见，则对该对象变量的所有读取或写入都是通过同步方法完成的。它是一种基本的同步锁。<br>synchronized底层是借助操作系统的Mutex Lock(互斥锁)来实现的线程同步。</p>
-<p>Synchronized的作用就是解决Java并发问题的一种最常用最简单的方法，它可以确保同一个时刻最多只有一个线程执行同步代码，从而保证多线程环境下并发安全的效果。如果有一段代码被Synchronized所修饰，那么这段代码就会以原子的方式执行，当多个线程在执行这段代码的时候，它们是互斥的，不会相互干扰，不会同时执行。</p>
-<p>Synchronized工作机制就是在多线程环境中使用一把锁，在第一个线程去执行的时候去获取这把锁，一旦获取就独占这把锁直到执行完毕或者在一定条件下释放这把锁，但在这把锁释放之前其他的线程只能阻塞等待。</p>
-<p>JVM 基于进入和退出Monitor对象来实现方法同步 和 代码块同步。</p>
-<p>synchronized同步代码块的实现使用的是 monitorenter 和 monitorexit 指令，其中 monitorenter 指令指向同步代码块的开始位置，monitorexit 指令则指向同步代码块的结束位置。</p>
-<p>当执行 monitorenter 指令时，线程试图获取锁也就是获取 监视器锁（monitor）的持有权。monitor 对象存在于每个 Java 对象的对象头中，synchronized 锁便是通过这种方式获取锁的，也是为什么 Java 中任意对象可以作为锁的原因。当计数器为 0 则可以成功获取，获取后将锁计数器设为 1。相应的在执行 monitorexit 指令后，将锁计数器设为 0，表明锁被释放。如果获取对象锁失败，那当前线程就要阻塞，直到锁被另外一个线程释放为止。</p>
-<p>synchronized 修饰的方法用 ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。</p>
-<h3 id="4-synchronized使用"><a href="#4-synchronized使用" class="headerlink" title="4 synchronized使用"></a>4 synchronized使用</h3><p>修饰实例方法：给当前实例对象加锁，进入同步代码前要获得当前实例对象的锁；</p>
-<p>修饰静态方法：给当前类对象加锁，进入同步代码前要获得当前类对象的锁。访问静态 synchronized 方法占用的锁是当前类的锁，而访问非静态 synchronized方法占用的锁是当前实例对象锁；</p>
-<p>修饰代码块：对给定对象加锁，进入同步代码前要获得给定对象的锁。和 synchronized方法一样，synchronized(this) 代码块也是锁定当前对象的。synchronized 关键字加到 static 静态方法和<br>synchronized(class) 代码块上都是是给 Class 类上锁。synchronized 关键字加到非 static 静态方法上是给实例对象上锁。</p>
-<p>双重校验锁实现单例模式</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    private volatile static SingletonDemo uniqueInstance;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line">    public static SingletonDemo getUniqueInstance() &#123;</span><br><span class="line">        &#x2F;&#x2F; 先判断对象是否已经实例化，没有实例化过才进⼊加锁代码</span><br><span class="line">        if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            &#x2F;&#x2F; 类对象加锁</span><br><span class="line">            synchronized (SingletonDemo.class) &#123;</span><br><span class="line">                if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    uniqueInstance &#x3D; new SingletonDemo();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>代码执行顺序：</p>
-<ol>
-<li>为 uniqueInstance 分配内存空间</li>
-<li>初始化 uniqueInstance</li>
-<li>将 uniqueInstance 指向分配的内存地址</li>
-</ol>
-<p>但是由于 JVM 具有指令重排的特性，执行顺序有可能变成 1 -&gt; 3 -&gt; 2。指令重排在单线程环境下不会出现问题，但是在多线程环境下会导致一个线程获得还没有初始化的实例。<br>volatile常用于<strong>保持内存可见性</strong>和<strong>防止指令重排序</strong>。</p>
-<h3 id="5-JDK1-6之后synchronized关键字所做的优化"><a href="#5-JDK1-6之后synchronized关键字所做的优化" class="headerlink" title="5 JDK1.6之后synchronized关键字所做的优化"></a>5 JDK1.6之后synchronized关键字所做的优化</h3><p>JDK1.6对锁的实现引入了大量的优化，如自旋锁、适应性自旋锁、锁消除、锁粗化、偏向锁、轻量级锁等技术来减少锁操作的开销。</p>
-<p>优化后synchronized锁的分类：无锁状态、偏向锁状态、轻量级锁状态、重量级锁状态。锁可以升级，但是不能降级，即无锁状态 –&gt; 偏向锁状态 –&gt; 轻量级锁状态 –&gt; 重量级锁状态。这种策略是为了提高获得锁和释放锁的效率。</p>
-<p><strong>偏向锁</strong><br>偏向于第一个获得它的线程，如果在接下来的执行中，该锁没有被其他线程获取，那么持有偏向锁的线程就不需要进行同步。偏向锁是针对于一个线程而言的。<br>但是对于锁竞争比较激烈的场景，偏向锁就失效了，因为极有可能每次申请锁的线程都是不相同的，因此这种场景下不应该使用偏向锁。需要注意的是，偏向锁失败后，并不会立即膨胀为重量级锁，而是先升级为轻量级锁。</p>
-<p><strong>轻量级锁</strong><br>当出现有两个线程来竞争锁的话，那么偏向锁就失效了，此时锁就会膨胀，升级为轻量级锁。<br>在没有多线程竞争的前提下，减少传统的重量级锁使用操作系统互斥量产生的性能消耗，因为使用轻量级锁时，不需要申请互斥量。另外，轻量级锁的加锁和解锁都用到了CAS操作。<br>“对于绝大部分锁，在整个同步周期内都是不存在竞争的”。如果没有竞争，轻量级锁使用 CAS 操作避免了使用互斥操作的开销。但如果存在锁竞争，除了互斥量开销外，还会额外发生 CAS 操作，因此在有锁竞争的情况下，轻量级锁比传统的重量级锁更慢！如果锁竞争激烈，那么轻量级将很快膨胀为重量级锁！</p>
-<p><strong>自旋锁</strong><br>轻量级锁失败后，虚拟机为了避免线程真实地在操作系统层面挂起，还会进行一项称为自旋锁的优化手段。<br>一般线程持有锁的时间都不是太久，所以仅仅为了这一点时间去挂起线程/恢复线程是得不偿失的。<br>思想：让一个线程在请求一个共享数据的锁时执行忙循环（自旋）一段时间，如果在这段时间内能获得锁，就可以避免进入阻塞状态。<br>自旋等待不能完全替代阻塞，因为它还是要占用处理器时间。如果锁被占用的时间短，那么效果当然就很好了。反之，自旋等待的时间必须要有限度。如果自旋超过了限定次数任然没有获得锁，就应该挂起线程。</p>
-<p><strong>自适应自旋锁</strong><br>自旋的时间不再固定了，而是由前一次在同一个锁上的自旋时间以及锁的拥有者的状态来决定。</p>
-<p><strong>重量级锁</strong><br>阻塞所有等待竞争的线程，防止CPU空转。</p>
-<p><strong>锁消除</strong><br>虚拟机的JIT在运行时如果检测到一些要求同步的代码上不可能发生共享数据竞争，则会去掉这些锁。</p>
-<p><strong>锁粗化</strong><br>减少不必要的紧连在一起的 lock，unlock 操作，将多个连续的锁扩展成一个范围更大的锁。</p>
+<h3 id="5-sleep-与wait"><a href="#5-sleep-与wait" class="headerlink" title="5 sleep()与wait()"></a>5 sleep()与wait()</h3><p>sleep()：使当前正在执行的线程休眠（暂时停止执行）指定的毫秒数加上指定的纳秒数，取决于系统计时器和调度程序的精度和准确性。该线程不会失去任何监视器的所有权。sleep为Thread中的方法，让出cpu，不会释放同步资源锁。<br>wait()：使当前线程等待，直到另一个线程为此对象调用notify() 方法或notifyAll() 方法，或者某个其他线程中断了当前线程，或者经过了一定的实时时间。wait为Object中的方法，让出cpu，释放同步资源锁。</p>
+<p>sleep() 方法可以在任何地方使用，而wait() 方法则只能在同步方法或同步块中使用。</p>
+<h3 id="6-run-与start"><a href="#6-run-与start" class="headerlink" title="6 run()与start()"></a>6 run()与start()</h3><p>通常，系统通过调用线程类的start()方法来启动一个线程、此时该线程处于就绪状态，即就是这个线程可以被JVM来调度执行。在调度过程中,JVM底层通过调用线程类的run()方法来完成实际的操作，当run()方法结束后，此线程就会终止。</p>
+<p>如果直接调用线程类的run()方法，此时run()方法仅仅被当做一个普通的函数调用，程序中仍然只有主线程这一个线程，无法达到启动多线程的目的。</p>
+<h3 id="7-线程安全的体现"><a href="#7-线程安全的体现" class="headerlink" title="7 线程安全的体现"></a>7 线程安全的体现</h3><p>原子性：提供互斥访问，同一时刻只能有一个线程对数据进行操作，（atomic，synchronized）；<br>可见性：一个线程对主内存的修改可以及时地被其他线程看到，（synchronized、volatile）；<br>有序性：一个线程观察其他线程的指令执行顺序，由于指令重排序，该观察结果一般杂乱无序，（happensbefore原则）。</p>
+<h3 id="8-线程同步的方法"><a href="#8-线程同步的方法" class="headerlink" title="8 线程同步的方法"></a>8 线程同步的方法</h3><p>1 使用 Synchronized 关键字；<br>2 wait 和 notify方法；<br>3 使用特殊域变量 volatile 实现线程同步；<br>4 使用可重入锁实现线程同步；<br>5 使用阻塞队列实现线程同步；<br>6 使用信号量 Semaphore。</p>
+<h3 id="9-Thread的interrupt方法原理"><a href="#9-Thread的interrupt方法原理" class="headerlink" title="9 Thread的interrupt方法原理"></a>9 Thread的interrupt方法原理</h3><p>interrupt是Thread类的实例方法，它的主要作用是给目标线程发送一个通知，有人希望你退出啦，同时会将目标线程的中断标志设置为true，也就是已经有人打断过该线程了。至于目标线程如何处理，完全取决于目标线程自身。<br>interrupt方法中断线程可以分为两种情况，第一种是打断正在运行的线程。<br>第二种情况是，打断正在休眠的线程，比如目标线程调用了sleep方法而处于阻塞状态，这时候如果打断它，就会抛出InterruptedException异常。</p>
 ]]></content>
       <categories>
         <category>Java</category>
       </categories>
       <tags>
-        <tag>threadlocal</tag>
+        <tag>线程</tag>
       </tags>
   </entry>
   <entry>
@@ -381,6 +338,49 @@
       </tags>
   </entry>
   <entry>
+    <title>11_22_Java</title>
+    <url>/2021/11/22/11-22-Java/</url>
+    <content><![CDATA[<h3 id="1-ThreadLocal"><a href="#1-ThreadLocal" class="headerlink" title="1 ThreadLocal"></a>1 ThreadLocal</h3><p>此类提供thread-local变量。<br>ThreadLocal 提供 get 和 set 方法，为每一个使用这个变量的线程都保存一份独立初始化的变量副本。只要线程处于活动状态并且可以访问 ThreadLocal 实例，每个线程都持有对其线程局部变量副本的隐式引用；线程消失后，它的所有线程本地实例副本都将进行垃圾回收。<br>ThreadLocal保证了各个线程的数据互不干扰。<br>每个线程中都有一个ThreadLocalMap数据结构，当执行set方法时，其值是保存在当前线程的threadLocals变量中，当执行set方法时，是从当前线程的threadLocals变量获取。<br>ThreadLocalMap 是一种定制的哈希映射，仅适用于维护线程本地值。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">返回thread-local变量的当前线程副本中的值。</span><br><span class="line">如果该变量对于当前线程没有值，则首先将其初始化为调用 initialValue 方法返回的值。</span><br><span class="line">public T get() &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null) &#123;</span><br><span class="line">            ThreadLocalMap.Entry e &#x3D; map.getEntry(this);</span><br><span class="line">            if (e !&#x3D; null) &#123;</span><br><span class="line">                @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">                T result &#x3D; (T)e.value;</span><br><span class="line">                return result;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return setInitialValue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">将thread-local变量的当前线程副本设置为指定值。</span><br><span class="line">public void set(T value) &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null)</span><br><span class="line">            map.set(this, value);</span><br><span class="line">        else</span><br><span class="line">            createMap(t, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">删除thread-local变量的当前线程值。</span><br><span class="line">public void remove() &#123;</span><br><span class="line">         ThreadLocalMap m &#x3D; getMap(Thread.currentThread());</span><br><span class="line">         if (m !&#x3D; null)</span><br><span class="line">             m.remove(this);</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-ThreadLocal使用场景"><a href="#2-ThreadLocal使用场景" class="headerlink" title="2 ThreadLocal使用场景"></a>2 ThreadLocal使用场景</h3><p>Spring实现事务隔离<br>Spring采用Threadlocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。</p>
+<h3 id="3-synchronized"><a href="#3-synchronized" class="headerlink" title="3 synchronized"></a>3 synchronized</h3><p>Synchronized同步方法可以支持使用一种简单的策略来防止线程干扰和内存一致性错误：如果一个对象对多个线程可见，则对该对象变量的所有读取或写入都是通过同步方法完成的。它是一种基本的同步锁。<br>synchronized底层是借助操作系统的Mutex Lock(互斥锁)来实现的线程同步。</p>
+<p>Synchronized的作用就是解决Java并发问题的一种最常用最简单的方法，它可以确保同一个时刻最多只有一个线程执行同步代码，从而保证多线程环境下并发安全的效果。如果有一段代码被Synchronized所修饰，那么这段代码就会以原子的方式执行，当多个线程在执行这段代码的时候，它们是互斥的，不会相互干扰，不会同时执行。</p>
+<p>Synchronized工作机制就是在多线程环境中使用一把锁，在第一个线程去执行的时候去获取这把锁，一旦获取就独占这把锁直到执行完毕或者在一定条件下释放这把锁，但在这把锁释放之前其他的线程只能阻塞等待。</p>
+<p>JVM 基于进入和退出Monitor对象来实现方法同步 和 代码块同步。</p>
+<p>synchronized同步代码块的实现使用的是 monitorenter 和 monitorexit 指令，其中 monitorenter 指令指向同步代码块的开始位置，monitorexit 指令则指向同步代码块的结束位置。</p>
+<p>当执行 monitorenter 指令时，线程试图获取锁也就是获取 监视器锁（monitor）的持有权。monitor 对象存在于每个 Java 对象的对象头中，synchronized 锁便是通过这种方式获取锁的，也是为什么 Java 中任意对象可以作为锁的原因。当计数器为 0 则可以成功获取，获取后将锁计数器设为 1。相应的在执行 monitorexit 指令后，将锁计数器设为 0，表明锁被释放。如果获取对象锁失败，那当前线程就要阻塞，直到锁被另外一个线程释放为止。</p>
+<p>synchronized 修饰的方法用 ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。</p>
+<h3 id="4-synchronized使用"><a href="#4-synchronized使用" class="headerlink" title="4 synchronized使用"></a>4 synchronized使用</h3><p>修饰实例方法：给当前实例对象加锁，进入同步代码前要获得当前实例对象的锁；</p>
+<p>修饰静态方法：给当前类对象加锁，进入同步代码前要获得当前类对象的锁。访问静态 synchronized 方法占用的锁是当前类的锁，而访问非静态 synchronized方法占用的锁是当前实例对象锁；</p>
+<p>修饰代码块：对给定对象加锁，进入同步代码前要获得给定对象的锁。和 synchronized方法一样，synchronized(this) 代码块也是锁定当前对象的。synchronized 关键字加到 static 静态方法和<br>synchronized(class) 代码块上都是是给 Class 类上锁。synchronized 关键字加到非 static 静态方法上是给实例对象上锁。</p>
+<p>双重校验锁实现单例模式</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    private volatile static SingletonDemo uniqueInstance;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line">    public static SingletonDemo getUniqueInstance() &#123;</span><br><span class="line">        &#x2F;&#x2F; 先判断对象是否已经实例化，没有实例化过才进⼊加锁代码</span><br><span class="line">        if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            &#x2F;&#x2F; 类对象加锁</span><br><span class="line">            synchronized (SingletonDemo.class) &#123;</span><br><span class="line">                if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    uniqueInstance &#x3D; new SingletonDemo();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码执行顺序：</p>
+<ol>
+<li>为 uniqueInstance 分配内存空间</li>
+<li>初始化 uniqueInstance</li>
+<li>将 uniqueInstance 指向分配的内存地址</li>
+</ol>
+<p>但是由于 JVM 具有指令重排的特性，执行顺序有可能变成 1 -&gt; 3 -&gt; 2。指令重排在单线程环境下不会出现问题，但是在多线程环境下会导致一个线程获得还没有初始化的实例。<br>volatile常用于<strong>保持内存可见性</strong>和<strong>防止指令重排序</strong>。</p>
+<h3 id="5-JDK1-6之后synchronized关键字所做的优化"><a href="#5-JDK1-6之后synchronized关键字所做的优化" class="headerlink" title="5 JDK1.6之后synchronized关键字所做的优化"></a>5 JDK1.6之后synchronized关键字所做的优化</h3><p>JDK1.6对锁的实现引入了大量的优化，如自旋锁、适应性自旋锁、锁消除、锁粗化、偏向锁、轻量级锁等技术来减少锁操作的开销。</p>
+<p>优化后synchronized锁的分类：无锁状态、偏向锁状态、轻量级锁状态、重量级锁状态。锁可以升级，但是不能降级，即无锁状态 –&gt; 偏向锁状态 –&gt; 轻量级锁状态 –&gt; 重量级锁状态。这种策略是为了提高获得锁和释放锁的效率。</p>
+<p><strong>偏向锁</strong><br>偏向于第一个获得它的线程，如果在接下来的执行中，该锁没有被其他线程获取，那么持有偏向锁的线程就不需要进行同步。偏向锁是针对于一个线程而言的。<br>但是对于锁竞争比较激烈的场景，偏向锁就失效了，因为极有可能每次申请锁的线程都是不相同的，因此这种场景下不应该使用偏向锁。需要注意的是，偏向锁失败后，并不会立即膨胀为重量级锁，而是先升级为轻量级锁。</p>
+<p><strong>轻量级锁</strong><br>当出现有两个线程来竞争锁的话，那么偏向锁就失效了，此时锁就会膨胀，升级为轻量级锁。<br>在没有多线程竞争的前提下，减少传统的重量级锁使用操作系统互斥量产生的性能消耗，因为使用轻量级锁时，不需要申请互斥量。另外，轻量级锁的加锁和解锁都用到了CAS操作。<br>“对于绝大部分锁，在整个同步周期内都是不存在竞争的”。如果没有竞争，轻量级锁使用 CAS 操作避免了使用互斥操作的开销。但如果存在锁竞争，除了互斥量开销外，还会额外发生 CAS 操作，因此在有锁竞争的情况下，轻量级锁比传统的重量级锁更慢！如果锁竞争激烈，那么轻量级将很快膨胀为重量级锁！</p>
+<p><strong>自旋锁</strong><br>轻量级锁失败后，虚拟机为了避免线程真实地在操作系统层面挂起，还会进行一项称为自旋锁的优化手段。<br>一般线程持有锁的时间都不是太久，所以仅仅为了这一点时间去挂起线程/恢复线程是得不偿失的。<br>思想：让一个线程在请求一个共享数据的锁时执行忙循环（自旋）一段时间，如果在这段时间内能获得锁，就可以避免进入阻塞状态。<br>自旋等待不能完全替代阻塞，因为它还是要占用处理器时间。如果锁被占用的时间短，那么效果当然就很好了。反之，自旋等待的时间必须要有限度。如果自旋超过了限定次数任然没有获得锁，就应该挂起线程。</p>
+<p><strong>自适应自旋锁</strong><br>自旋的时间不再固定了，而是由前一次在同一个锁上的自旋时间以及锁的拥有者的状态来决定。</p>
+<p><strong>重量级锁</strong><br>阻塞所有等待竞争的线程，防止CPU空转。</p>
+<p><strong>锁消除</strong><br>虚拟机的JIT在运行时如果检测到一些要求同步的代码上不可能发生共享数据竞争，则会去掉这些锁。</p>
+<p><strong>锁粗化</strong><br>减少不必要的紧连在一起的 lock，unlock 操作，将多个连续的锁扩展成一个范围更大的锁。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>threadlocal</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>11_26_Java</title>
     <url>/2021/11/26/11-26-Java/</url>
     <content><![CDATA[<h3 id="1-创建线程池的方式"><a href="#1-创建线程池的方式" class="headerlink" title="1 创建线程池的方式"></a>1 创建线程池的方式</h3><p>通过<strong>ThreadPoolExecutor</strong>类的构造方法实现</p>
@@ -438,6 +438,27 @@
       </tags>
   </entry>
   <entry>
+    <title>11_27_Java</title>
+    <url>/2021/11/27/11-27-Java/</url>
+    <content><![CDATA[<h3 id="1-JVM主要组成部分及其作用"><a href="#1-JVM主要组成部分及其作用" class="headerlink" title="1 JVM主要组成部分及其作用"></a>1 JVM主要组成部分及其作用</h3><p>1 类加载器（ClassLoader）<br>2 运行时数据区（Runtime Data Area)<br>3 执行引擎（Execution Engine）<br>4 本地库接口（Native Interface）</p>
+<p>首先通过类加载器（ClassLoader）会把 Java 代码转换成字节码，运行时数据区（Runtime Data Area）会把字节码加载到内存中，而字节码文件只是 JVM 的一套指令集规范，并不能直接交给底层操作系统去执行，因此需要特定的命令解析器执行引擎（Execution Engine），将字节码翻译成底层系统指令，再交由 CPU 去执行，而这个过程中需要调用其他语言的本地库接口（Native Interface）来实现整个程序的功能。</p>
+<h3 id="2-运行时数据区"><a href="#2-运行时数据区" class="headerlink" title="2 运行时数据区"></a>2 运行时数据区</h3><p>1 <strong>程序计数器</strong><br>程序计数器（Program Counter Register）：是一块较小的内存空间，它可以看作是当前线程所执行的字节码的行号指示器。<br>字节码解释器执作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令。程序的分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。<br>由于 Java 虚拟机的多线程是通过线程轮流切换并分配处理器执行时间的方式来实现的，在任何一个确定的时刻，每个处理器都只会执行一条线程中的命令。因此，为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器，各线程之间的计数器互不影响，独立存储，我们程这块内存区域为“线程私有”的内存。<br>此区域是唯一一个虚拟机规范中没有规定任何 OutOfMemoryError 情况的区域。</p>
+<p>2 <strong>Java虚拟机栈</strong><br>Java 虚拟机栈（Java Virtual Machine Stacks）：描述的是Java方法执行的内存模型：每个方法在执行的同时都会创建一个帧栈（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中入栈到出栈的过程。它的线程也是私有的，生命周期与线程相同。<br>局部变量表存放了编译期可知的各种基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用和 returnAddress 类型（指向了一条字节码指令的地址）。<br>Java 虚拟机栈的局部变量表的空间单位是槽（Slot），其中 64 位长度的 double 和long 类型会占用两个 Slot。局部变量表所需内存空间在编译期完成分配，当进入一个方法时，该方法需要在帧中分配多大的局部变量是完全确定的，在方法运行期间不会改变局部变量表的大小。<br>Java虚拟机栈有两种异常状况：如果线程请求的栈的深度大于虚拟机所允许的深度，将抛出 StackOverflowError异常；如果扩展时无法申请到足够的内存，就会抛出 OutOfMemoryError 异常。</p>
+<p>3 <strong>本地方法栈</strong><br>本地方法栈（Native Method Stack）：与虚拟机栈所发挥的作用是非常相似的，它们之间的区别只不过是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则为虚拟机使用到的 Native 方法服务。<br>Java 虚拟机规范没有对本地方法栈中方法使用的语言、使用的方式和数据结构做出强制规定，因此具体的虚拟机可以自由地实现它。例如：Sun HotSpot 虚拟机直接把Java虚拟机栈和本地方法栈合二为一。<br>与Java虚拟机栈一样，本地方法栈也会抛出StackOverflowError和 OutOfMemoryError 异常。</p>
+<p>4 <strong>Java堆</strong><br>Java堆（Java Heap）：是被所有线程所共享的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是：存放对象实例，几乎所有的对象实例都在这里分配内存。<br>Java 堆是垃圾收集器管理的主要区域，因此很多时候也被称做“GC”堆（Garbage Collected Heap）。从内存回收的角度看，由于现在收集器基本都采用分代收集算法，所以 Java 堆中还可以细分为：新生代和老年代。从内存分配角度来看，线程共享的 Java 堆中可能划分出多个线程私有的分配缓冲区（Thread Local Allocation Buffer,TLAB）。不过无论如何划分，都与存放的内容无关，无论哪个区域，存储的都仍然是对象实例，进一步划分的目的是为了更好地回收内存，或者更快地分配内存。<br>Java 虚拟机规定，Java 堆可以处于物理上不连续的内存空间中，只要逻辑上是连续的即可。在实现时，可以是固定大小的，也可以是可扩展的。如果在堆中没有完成实例分配。并且堆也无法扩展时，将会抛出OutOfMemoryError 异常。</p>
+<p>5 <strong>方法区</strong><br>方法区（Method Area）：与 Java 堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。<br>虽然 Java 虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做 Non-Heap（非堆），其目的应该就是与Java堆区分开来。<br>Java 虚拟机规范对方法区的限制非常宽松，除了和 Java 堆一样不需要连续的内存和可以选择固定大小或者可扩展外，还可以选择不实现垃圾收集。这个区域的内存回收目标主要是针对常量池的回收和对类型的卸载。<br>根据Java虚拟机规范规定，当方法区无法满足内存分配需求时，将抛出OutOfMemoryError异常。</p>
+<p>运行时常量池（Runtime Constant Pool）：是方法区的一部分。Class 文件中除了有类的版本、字段、方法、接口等描述信息外，还有一些信息是常量池，用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后进入方法区的运行时常量池中存放。<br>Java 虚拟机对 Class 文件每一部分（当然也包括常量池）的格式都有严格的规定，每一个字节用于存储哪种数据都必须符合规范上的要求才会被虚拟机认可、装载和执行。</p>
+<p>直接内存（Direct Memory）：并不是虚拟机运行时数据区的一部分，也不是 Java 虚拟机规范中定义的内存区域。但是这部分内存也频繁地使用，而且也可能导致OutOfMemoryError 异常。本地直接内存的分配不会受到 Java 堆大小的限制，但是，既然是内存，肯定还是会受到本机总内存大小以及处理器寻址空间的限制。如果各个内存区域总和大于物理内存限制，从而导致动态扩展时出现OutOfMemoryError 异常。</p>
+<p>3 <strong>堆与栈</strong><br>堆和栈（虚拟机栈）是完全不同的两块内存区域，一个是线程独享的，一个是线程共享的。二者之间最大的区别就是存储的内容不同：堆中主要存放对象实例。栈（局部变量表）中主要存放各种基本数据类型、对象的引用。<br>从作用来说，栈是运行时的单位，堆是存储的单位。栈解决程序的运行问题，即程序如何执行，或者说如何处理数据。堆解决的是数据存储的问题，即数据怎么放、放在哪儿。在 Java 中一个线程就会相应有一个线程栈与之对应，因为不同的线程执行逻辑有所不同，因此需要一个独立的线程栈。而堆则是所有线程共享的。栈因为是运行时的单位，因此里面存储的信息都是跟当前线程（或程序）相关的信息。包括局部变量、程序运行状态、方法返回值等等；堆只负责存储对象实例。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>11_27_Mysql</title>
     <url>/2021/11/27/11-27-Mysql/</url>
     <content><![CDATA[<h3 id="1-mysql架构"><a href="#1-mysql架构" class="headerlink" title="1 mysql架构"></a>1 mysql架构</h3><img src="/2021/11/27/11-27-Mysql/mysql.png" class="">
@@ -470,54 +491,6 @@
       </categories>
       <tags>
         <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>11_27_Java</title>
-    <url>/2021/11/27/11-27-Java/</url>
-    <content><![CDATA[<h3 id="1-JVM主要组成部分及其作用"><a href="#1-JVM主要组成部分及其作用" class="headerlink" title="1 JVM主要组成部分及其作用"></a>1 JVM主要组成部分及其作用</h3><p>1 类加载器（ClassLoader）<br>2 运行时数据区（Runtime Data Area)<br>3 执行引擎（Execution Engine）<br>4 本地库接口（Native Interface）</p>
-<p>首先通过类加载器（ClassLoader）会把 Java 代码转换成字节码，运行时数据区（Runtime Data Area）会把字节码加载到内存中，而字节码文件只是 JVM 的一套指令集规范，并不能直接交给底层操作系统去执行，因此需要特定的命令解析器执行引擎（Execution Engine），将字节码翻译成底层系统指令，再交由 CPU 去执行，而这个过程中需要调用其他语言的本地库接口（Native Interface）来实现整个程序的功能。</p>
-<h3 id="2-运行时数据区"><a href="#2-运行时数据区" class="headerlink" title="2 运行时数据区"></a>2 运行时数据区</h3><p>1 <strong>程序计数器</strong><br>程序计数器（Program Counter Register）：是一块较小的内存空间，它可以看作是当前线程所执行的字节码的行号指示器。<br>字节码解释器执作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令。程序的分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。<br>由于 Java 虚拟机的多线程是通过线程轮流切换并分配处理器执行时间的方式来实现的，在任何一个确定的时刻，每个处理器都只会执行一条线程中的命令。因此，为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器，各线程之间的计数器互不影响，独立存储，我们程这块内存区域为“线程私有”的内存。<br>此区域是唯一一个虚拟机规范中没有规定任何 OutOfMemoryError 情况的区域。</p>
-<p>2 <strong>Java虚拟机栈</strong><br>Java 虚拟机栈（Java Virtual Machine Stacks）：描述的是Java方法执行的内存模型：每个方法在执行的同时都会创建一个帧栈（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中入栈到出栈的过程。它的线程也是私有的，生命周期与线程相同。<br>局部变量表存放了编译期可知的各种基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用和 returnAddress 类型（指向了一条字节码指令的地址）。<br>Java 虚拟机栈的局部变量表的空间单位是槽（Slot），其中 64 位长度的 double 和long 类型会占用两个 Slot。局部变量表所需内存空间在编译期完成分配，当进入一个方法时，该方法需要在帧中分配多大的局部变量是完全确定的，在方法运行期间不会改变局部变量表的大小。<br>Java虚拟机栈有两种异常状况：如果线程请求的栈的深度大于虚拟机所允许的深度，将抛出 StackOverflowError异常；如果扩展时无法申请到足够的内存，就会抛出 OutOfMemoryError 异常。</p>
-<p>3 <strong>本地方法栈</strong><br>本地方法栈（Native Method Stack）：与虚拟机栈所发挥的作用是非常相似的，它们之间的区别只不过是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则为虚拟机使用到的 Native 方法服务。<br>Java 虚拟机规范没有对本地方法栈中方法使用的语言、使用的方式和数据结构做出强制规定，因此具体的虚拟机可以自由地实现它。例如：Sun HotSpot 虚拟机直接把Java虚拟机栈和本地方法栈合二为一。<br>与Java虚拟机栈一样，本地方法栈也会抛出StackOverflowError和 OutOfMemoryError 异常。</p>
-<p>4 <strong>Java堆</strong><br>Java堆（Java Heap）：是被所有线程所共享的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是：存放对象实例，几乎所有的对象实例都在这里分配内存。<br>Java 堆是垃圾收集器管理的主要区域，因此很多时候也被称做“GC”堆（Garbage Collected Heap）。从内存回收的角度看，由于现在收集器基本都采用分代收集算法，所以 Java 堆中还可以细分为：新生代和老年代。从内存分配角度来看，线程共享的 Java 堆中可能划分出多个线程私有的分配缓冲区（Thread Local Allocation Buffer,TLAB）。不过无论如何划分，都与存放的内容无关，无论哪个区域，存储的都仍然是对象实例，进一步划分的目的是为了更好地回收内存，或者更快地分配内存。<br>Java 虚拟机规定，Java 堆可以处于物理上不连续的内存空间中，只要逻辑上是连续的即可。在实现时，可以是固定大小的，也可以是可扩展的。如果在堆中没有完成实例分配。并且堆也无法扩展时，将会抛出OutOfMemoryError 异常。</p>
-<p>5 <strong>方法区</strong><br>方法区（Method Area）：与 Java 堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。<br>虽然 Java 虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做 Non-Heap（非堆），其目的应该就是与Java堆区分开来。<br>Java 虚拟机规范对方法区的限制非常宽松，除了和 Java 堆一样不需要连续的内存和可以选择固定大小或者可扩展外，还可以选择不实现垃圾收集。这个区域的内存回收目标主要是针对常量池的回收和对类型的卸载。<br>根据Java虚拟机规范规定，当方法区无法满足内存分配需求时，将抛出OutOfMemoryError异常。</p>
-<p>运行时常量池（Runtime Constant Pool）：是方法区的一部分。Class 文件中除了有类的版本、字段、方法、接口等描述信息外，还有一些信息是常量池，用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后进入方法区的运行时常量池中存放。<br>Java 虚拟机对 Class 文件每一部分（当然也包括常量池）的格式都有严格的规定，每一个字节用于存储哪种数据都必须符合规范上的要求才会被虚拟机认可、装载和执行。</p>
-<p>直接内存（Direct Memory）：并不是虚拟机运行时数据区的一部分，也不是 Java 虚拟机规范中定义的内存区域。但是这部分内存也频繁地使用，而且也可能导致OutOfMemoryError 异常。本地直接内存的分配不会受到 Java 堆大小的限制，但是，既然是内存，肯定还是会受到本机总内存大小以及处理器寻址空间的限制。如果各个内存区域总和大于物理内存限制，从而导致动态扩展时出现OutOfMemoryError 异常。</p>
-<p>3 <strong>堆与栈</strong><br>堆和栈（虚拟机栈）是完全不同的两块内存区域，一个是线程独享的，一个是线程共享的。二者之间最大的区别就是存储的内容不同：堆中主要存放对象实例。栈（局部变量表）中主要存放各种基本数据类型、对象的引用。<br>从作用来说，栈是运行时的单位，堆是存储的单位。栈解决程序的运行问题，即程序如何执行，或者说如何处理数据。堆解决的是数据存储的问题，即数据怎么放、放在哪儿。在 Java 中一个线程就会相应有一个线程栈与之对应，因为不同的线程执行逻辑有所不同，因此需要一个独立的线程栈。而堆则是所有线程共享的。栈因为是运行时的单位，因此里面存储的信息都是跟当前线程（或程序）相关的信息。包括局部变量、程序运行状态、方法返回值等等；堆只负责存储对象实例。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>12_01_Java</title>
-    <url>/2021/12/01/12-01-Java/</url>
-    <content><![CDATA[<h3 id="1-Java参数传递"><a href="#1-Java参数传递" class="headerlink" title="1 Java参数传递"></a>1 Java参数传递</h3><p>Java 在方法调用传递参数时，所以它都是进行传值调用。<br>在运行栈中，基本类型和引用的处理是一样的，都是传值。但是当进入被调用方法时，被传递的这个引用的值，被程序解释到堆中的对象，这个时候才对应到真正的对象。如果此时进行修改，修改的是引用对应的对象，而不是引用本身，即：修改的是堆中的数据。所以这个修改是可以保持的。</p>
-<h3 id="2-判断垃圾可以回收的方法"><a href="#2-判断垃圾可以回收的方法" class="headerlink" title="2 判断垃圾可以回收的方法"></a>2 判断垃圾可以回收的方法</h3><p>垃圾收集器在对堆和方法区进行回收前，首先要确定这些区域的对象哪些可以回收，哪些暂时还不能回收，这就要用到判断对象是否存活的算法。<br><strong>引用计数法</strong><br>引用计数是垃圾收集器的早期策略。在这种方法中，堆中每个对象实例都有一个引用计数。当一个对象被创建时，就将该对象实例分配给一个变量，该变量计数设置为 1。当任何其它变量被赋值为这个对象的引用时，计数加1（a = b，则 b 引用的对象实例的计数器加 1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数器减 1。任何引用计数器为 0 的对象实例都可以被当作垃圾收集。当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器减 1。</p>
-<p>优点：引用计数收集器可以很快的执行，交织在程序运行中。对程序需要不被长时间打断的实时环境比较较有利。<br>缺点：无法检测出循环引用。</p>
-<p><strong>可达性分析算法</strong><br>可达性分析算法是从离散数学中的图论引入的，程序把所有的引用关系看作一张图，从一个节点 GC ROOT 开始，寻找对应的引用节点，找到这个节点以后，继续寻找这个节点的引用节点，当所有的引用节点寻找完毕之后，剩余的节点则被认为是没有被引用到的节点，即无用的节点，这些节点将会被判定为是可回收的对象。</p>
-<p>在 Java 语言中，可作为 GC Roots 的对象包括以下几种：<br>虚拟机栈中引用的对象（栈帧中的本地变量表）；<br>方法区中类静态属性引用的对象；<br>方法区中常量引用的对象；<br>本地方法栈中 JNI（Native方法）引用的对象。</p>
-<h3 id="3-被标记为垃圾的对象一定会被回收吗？"><a href="#3-被标记为垃圾的对象一定会被回收吗？" class="headerlink" title="3 被标记为垃圾的对象一定会被回收吗？"></a>3 被标记为垃圾的对象一定会被回收吗？</h3><p>不一定。可达性分析算法中，要真正宣告一个对象死亡，至少要经历两次标记过程。<br>第一次标记：如果对象在进行可达性分析后发现没有与 GC Roots 相连接的引用链，那它将会被第一次标记。<br>第二次标记：第一次标记后接着会进行一次筛选，筛选的条件是此对象是否有必要执行 finalize() 方法。在finalize() 方法中没有重新与引用链建立关联关系的，将被进行第二次标记。第二次标记成功的对象将被回收，如果对象在 finalize() 方法中重新与引用链建立了关联关系，那么将会逃离本次回收，继续存活。</p>
-<h3 id="4-Java引用类型"><a href="#4-Java引用类型" class="headerlink" title="4 Java引用类型"></a>4 Java引用类型</h3><p>强引用<br>强引用是使用最普遍的引用。如果一个对象具有强引用，那么垃圾回收器不会回收它。</p>
-<p>软引用<br>可以通过java.lang.ref.SoftReference使用软引用。一个持有软引用的对象，不会被JVM很快回收，JVM会根据当前堆的使用情况来判断何时回收。当堆使用率临近阈值时，才会去回收软引用的对象。因此，软引用可以用于实现对内存敏感的高速缓存。</p>
-<p>弱引用<br>当垃圾收集器工作时，无论当前内存是否足够，都会回收掉只被弱引用关联的对象。</p>
-<p>虚引用<br>一个对象是否有虚引用的存在，完全不会对其生存时间构成影响，也无法通过虚引用来取得一个对象实例。它的作用是能在这个对象被收集器回收时收到一个系统通知。</p>
-<h3 id="5-Java内存泄露"><a href="#5-Java内存泄露" class="headerlink" title="5 Java内存泄露"></a>5 Java内存泄露</h3><p>内存泄漏就是存在一些不会再被使用却没有被回收的对象，这些对象有下两个特点：<br>这些对象是可达的，即在有向图中，存在通路可以与其相连。<br>这些对象是无用的，即程序以后不会再使用这些对象。<br>这些对象不会被 GC 所回收，然而它却占用内存。</p>
-<p>根本原因：<br>长生命周期的对象持有短生命周期对象的引用就很可能发生内存泄漏，尽管短生命周期对象已经不再需要，但是因为长生命周期持有它的引用而导致不能被回收，这就是 Java 中内存泄漏的发生场景。<br>数据库连接（dataSourse.getConnection()），网络连接(socket) 和 IO 连接，除非其显式的调用了 close() 方法将其连接关闭，否则是不会主动被 GC 回收的；<br>单例对象在初始化后将在 JVM 的整个生命周期中存在（以静态变量的方式），如果单例对象持有外部的引用，那么这个对象将不能被 JVM 正常回收，导致内存泄漏。</p>
-<h3 id="6-常用的垃圾收集算法"><a href="#6-常用的垃圾收集算法" class="headerlink" title="6 常用的垃圾收集算法"></a>6 常用的垃圾收集算法</h3><p><strong>标记-清除算法</strong>mark-sweep<br>标记-清除算法采用从根集合（GC Roots）进行扫描，对存活的对象进行标记，标记完毕后，再扫描整个空间中未被标记的对象，进行回收。标记-清除算法不需要进行对象的移动，只需对不存活的对象进行处理，在存活对象比较多的情况下极为高效，但由于标记-清除算法直接回收不存活的对象，因此会造成内存碎片。</p>
-<p><strong>复制算法</strong>copying<br>复制算法的提出是为了克服句柄开销和解决内存碎片问题。把堆分成 一个对象面和多个空闲面， 程序从对象面为对象分配空间，当对象满了，基于 copying 算法的垃圾收集就从根集合（GC Roots）中扫描活动对象，并将每个活动对象复制到空闲面，这样空闲面变成了对象面，原来的对象面变成了空闲面，程序会在新的对象面中分配内存。</p>
-<p><strong>标记-整理算法</strong>ark-compact<br>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但在清除时不同，在回收不存活的对象占用的空间后，会将所有的存活对象往左端空闲空间移动，并更新对应的指针。标记-整理算法是在标记-清除算法的基础上，又进行了对象的移动，因此成本更高，但是却解决了内存碎片的问题。</p>
-<p><strong>分代收集算法</strong><br>分代收集算法是目前大部分 JVM 的垃圾收集器采用的算法。它的核心思想是根据对象存活的生命周期将内存划分为若干个不同的区域。一般情况下将堆划分为老年代（Tenured Generation）和新生代（Young Generation），在堆之外还有一个代就是永久代（Permanet Generation）。<br>老年代的特点是每次垃圾收集时只有少量对象需要被回收，而新生代的特点是每次垃圾回收时都有大量的对象需要被回收，那么就可以根据不同代的特点采取最适合的收集算法。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>jvm</tag>
       </tags>
   </entry>
   <entry>
@@ -555,6 +528,33 @@
 <h3 id="6-class文件结构"><a href="#6-class文件结构" class="headerlink" title="6 class文件结构"></a>6 class文件结构</h3><p>Class文件结构采用类似C语言的结构体来存储数据的，主要有两类数据项，无符号数和表，无符号数用来表述数字，索引引用以及字符串等，比如 u1，u2，u4，u8分别代表1个字节，2个字节，4个字节，8个字节的无符号数，而表是有多个无符号数以及其它的表组成的复合结构，习惯地以_info结尾。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic;</span><br><span class="line">    u2             minor_version;</span><br><span class="line">    u2             major_version;</span><br><span class="line">    u2             constant_pool_count;</span><br><span class="line">    cp_info        constant_pool[constant_pool_count-1];</span><br><span class="line">    u2             access_flags;</span><br><span class="line">    u2             this_class;</span><br><span class="line">    u2             super_class;</span><br><span class="line">    u2             interfaces_count;</span><br><span class="line">    u2             interfaces[interfaces_count];</span><br><span class="line">    u2             fields_count;</span><br><span class="line">    field_info     fields[fields_count];</span><br><span class="line">    u2             methods_count;</span><br><span class="line">    method_info    methods[methods_count];</span><br><span class="line">    u2             attributes_count;</span><br><span class="line">    attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>每个 Class 文件的头 4 个字节称为魔数（magic），它的值固定为 0xCAFEBABE，表示文件类型是能够被JVM处理的Class文件。紧接着magic之后的四个字节存储的是 Class 文件的次版本号和主版本号。<br>在主次版本号之后是常量池。常量池主要存储了字面量以及符号引用。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>12_01_Java</title>
+    <url>/2021/12/01/12-01-Java/</url>
+    <content><![CDATA[<h3 id="1-Java参数传递"><a href="#1-Java参数传递" class="headerlink" title="1 Java参数传递"></a>1 Java参数传递</h3><p>Java 在方法调用传递参数时，所以它都是进行传值调用。<br>在运行栈中，基本类型和引用的处理是一样的，都是传值。但是当进入被调用方法时，被传递的这个引用的值，被程序解释到堆中的对象，这个时候才对应到真正的对象。如果此时进行修改，修改的是引用对应的对象，而不是引用本身，即：修改的是堆中的数据。所以这个修改是可以保持的。</p>
+<h3 id="2-判断垃圾可以回收的方法"><a href="#2-判断垃圾可以回收的方法" class="headerlink" title="2 判断垃圾可以回收的方法"></a>2 判断垃圾可以回收的方法</h3><p>垃圾收集器在对堆和方法区进行回收前，首先要确定这些区域的对象哪些可以回收，哪些暂时还不能回收，这就要用到判断对象是否存活的算法。<br><strong>引用计数法</strong><br>引用计数是垃圾收集器的早期策略。在这种方法中，堆中每个对象实例都有一个引用计数。当一个对象被创建时，就将该对象实例分配给一个变量，该变量计数设置为 1。当任何其它变量被赋值为这个对象的引用时，计数加1（a = b，则 b 引用的对象实例的计数器加 1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数器减 1。任何引用计数器为 0 的对象实例都可以被当作垃圾收集。当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器减 1。</p>
+<p>优点：引用计数收集器可以很快的执行，交织在程序运行中。对程序需要不被长时间打断的实时环境比较较有利。<br>缺点：无法检测出循环引用。</p>
+<p><strong>可达性分析算法</strong><br>可达性分析算法是从离散数学中的图论引入的，程序把所有的引用关系看作一张图，从一个节点 GC ROOT 开始，寻找对应的引用节点，找到这个节点以后，继续寻找这个节点的引用节点，当所有的引用节点寻找完毕之后，剩余的节点则被认为是没有被引用到的节点，即无用的节点，这些节点将会被判定为是可回收的对象。</p>
+<p>在 Java 语言中，可作为 GC Roots 的对象包括以下几种：<br>虚拟机栈中引用的对象（栈帧中的本地变量表）；<br>方法区中类静态属性引用的对象；<br>方法区中常量引用的对象；<br>本地方法栈中 JNI（Native方法）引用的对象。</p>
+<h3 id="3-被标记为垃圾的对象一定会被回收吗？"><a href="#3-被标记为垃圾的对象一定会被回收吗？" class="headerlink" title="3 被标记为垃圾的对象一定会被回收吗？"></a>3 被标记为垃圾的对象一定会被回收吗？</h3><p>不一定。可达性分析算法中，要真正宣告一个对象死亡，至少要经历两次标记过程。<br>第一次标记：如果对象在进行可达性分析后发现没有与 GC Roots 相连接的引用链，那它将会被第一次标记。<br>第二次标记：第一次标记后接着会进行一次筛选，筛选的条件是此对象是否有必要执行 finalize() 方法。在finalize() 方法中没有重新与引用链建立关联关系的，将被进行第二次标记。第二次标记成功的对象将被回收，如果对象在 finalize() 方法中重新与引用链建立了关联关系，那么将会逃离本次回收，继续存活。</p>
+<h3 id="4-Java引用类型"><a href="#4-Java引用类型" class="headerlink" title="4 Java引用类型"></a>4 Java引用类型</h3><p>强引用<br>强引用是使用最普遍的引用。如果一个对象具有强引用，那么垃圾回收器不会回收它。</p>
+<p>软引用<br>可以通过java.lang.ref.SoftReference使用软引用。一个持有软引用的对象，不会被JVM很快回收，JVM会根据当前堆的使用情况来判断何时回收。当堆使用率临近阈值时，才会去回收软引用的对象。因此，软引用可以用于实现对内存敏感的高速缓存。</p>
+<p>弱引用<br>当垃圾收集器工作时，无论当前内存是否足够，都会回收掉只被弱引用关联的对象。</p>
+<p>虚引用<br>一个对象是否有虚引用的存在，完全不会对其生存时间构成影响，也无法通过虚引用来取得一个对象实例。它的作用是能在这个对象被收集器回收时收到一个系统通知。</p>
+<h3 id="5-Java内存泄露"><a href="#5-Java内存泄露" class="headerlink" title="5 Java内存泄露"></a>5 Java内存泄露</h3><p>内存泄漏就是存在一些不会再被使用却没有被回收的对象，这些对象有下两个特点：<br>这些对象是可达的，即在有向图中，存在通路可以与其相连。<br>这些对象是无用的，即程序以后不会再使用这些对象。<br>这些对象不会被 GC 所回收，然而它却占用内存。</p>
+<p>根本原因：<br>长生命周期的对象持有短生命周期对象的引用就很可能发生内存泄漏，尽管短生命周期对象已经不再需要，但是因为长生命周期持有它的引用而导致不能被回收，这就是 Java 中内存泄漏的发生场景。<br>数据库连接（dataSourse.getConnection()），网络连接(socket) 和 IO 连接，除非其显式的调用了 close() 方法将其连接关闭，否则是不会主动被 GC 回收的；<br>单例对象在初始化后将在 JVM 的整个生命周期中存在（以静态变量的方式），如果单例对象持有外部的引用，那么这个对象将不能被 JVM 正常回收，导致内存泄漏。</p>
+<h3 id="6-常用的垃圾收集算法"><a href="#6-常用的垃圾收集算法" class="headerlink" title="6 常用的垃圾收集算法"></a>6 常用的垃圾收集算法</h3><p><strong>标记-清除算法</strong>mark-sweep<br>标记-清除算法采用从根集合（GC Roots）进行扫描，对存活的对象进行标记，标记完毕后，再扫描整个空间中未被标记的对象，进行回收。标记-清除算法不需要进行对象的移动，只需对不存活的对象进行处理，在存活对象比较多的情况下极为高效，但由于标记-清除算法直接回收不存活的对象，因此会造成内存碎片。</p>
+<p><strong>复制算法</strong>copying<br>复制算法的提出是为了克服句柄开销和解决内存碎片问题。把堆分成 一个对象面和多个空闲面， 程序从对象面为对象分配空间，当对象满了，基于 copying 算法的垃圾收集就从根集合（GC Roots）中扫描活动对象，并将每个活动对象复制到空闲面，这样空闲面变成了对象面，原来的对象面变成了空闲面，程序会在新的对象面中分配内存。</p>
+<p><strong>标记-整理算法</strong>ark-compact<br>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但在清除时不同，在回收不存活的对象占用的空间后，会将所有的存活对象往左端空闲空间移动，并更新对应的指针。标记-整理算法是在标记-清除算法的基础上，又进行了对象的移动，因此成本更高，但是却解决了内存碎片的问题。</p>
+<p><strong>分代收集算法</strong><br>分代收集算法是目前大部分 JVM 的垃圾收集器采用的算法。它的核心思想是根据对象存活的生命周期将内存划分为若干个不同的区域。一般情况下将堆划分为老年代（Tenured Generation）和新生代（Young Generation），在堆之外还有一个代就是永久代（Permanet Generation）。<br>老年代的特点是每次垃圾收集时只有少量对象需要被回收，而新生代的特点是每次垃圾回收时都有大量的对象需要被回收，那么就可以根据不同代的特点采取最适合的收集算法。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -688,26 +688,6 @@
       </tags>
   </entry>
   <entry>
-    <title>12_11_Spring</title>
-    <url>/2021/12/11/12-11-Spring/</url>
-    <content><![CDATA[<h3 id="1-Spring事务"><a href="#1-Spring事务" class="headerlink" title="1 Spring事务"></a>1 Spring事务</h3><p>事务是指作为单个逻辑工作单元执行的一系列操作。这些操作要么全部执行，要么全部不执行。<br>事务特性：<br>原子性（atomicity）：强调事务的不可分割。事务的原子性确保动作要么全部完成，要么完全不起作用。<br>一致性（consistency）：事务执行前后数据的完整性保持一致。<br>隔离性（isolation）：一个事务执行的过程中,不应该受到其他事务的干扰。<br>持久性（durability）：事务被提交之后，它对数据库中数据的改变是持久的。</p>
-<p>Spring事务可以分为两种：<br>编程式事务(通过代码的方式来实现事务)<br>声明式事务(通过配置的方式来实现事务)</p>
-<p>在编程式事务中有以下几个重要的接口<br>TransactionDefinition：定义了Spring兼容的事务属性(比如事务隔离级别、事务传播、事务超时、是否只读状态)<br>TransactionStatus：代表了事务的具体运行状态(获取事务运行状态的信息，也可以通过该接口间接回滚事务等操作)<br>PlatformTransactionManager：事务管理器接口(定义了一组行为，具体实现交由不同的持久化框架来完成)</p>
-<p>TransactionDefinition接口中定义了五个表示隔离级别的常量<br>ISOLATION_DEFAULT：使用后端数据库默认的隔离界别，MySQL默认采用REPEATABLE_READ隔离级别，Oracle默认采用READ_COMMITTED隔离级别。<br>ISOLATION_READ_UNCOMMITTED：这是事务最低的隔离级别，它允许另外一个事务可以看到这个事务未提交的数据。这种隔离级别会产生脏读，不可重复读和幻读。<br>ISOLATION_READ_COMMITTED：保证一个事务修改的数据提交后才能被另外一个事务读取，另外一个事务不能读取该事务未提交的数据。这种事务隔离级别可以避免脏读，但是可能会出现不可重复读和幻读。<br>ISOLATION_REPEATABLE_READ：这种事务隔离级别可以防止脏读、不可重复读，但是可能出现幻读。对同一字段的多次读取结果都是一致的。它除了保证一个事务不能读取另一个事务未提交的数据外，还保证了不可重复读。<br>ISOLATION_SERIALIZABLE：最高的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰。该级别可以防止脏读、不可重复读以及幻读。但这将严重影响程序的性能。</p>
-<h3 id="2-Spring事务传播行为"><a href="#2-Spring事务传播行为" class="headerlink" title="2 Spring事务传播行为"></a>2 Spring事务传播行为</h3><p>当一个事务方法被另一个事务方法调用时，这个事务方法应该如何传播（进行）。例如：methodA事务方法调用methodB事务方法时，methodB是继续在调用者methodA的事务中运行呢，还是为自己开启一个新事务运行，这就是由methodB的事务传播行为决定的。</p>
-<p>支持当前事务<br>PROPAGATION_REQUIRED：如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务。<br>PROPAGATION_SUPPORTS：如果当前存在事务，则加入该事务；如果当前没有事务，则以非事务的方式继续运行。<br>PROPAGATION_MANDATORY：如果当前存在事务，则加入该事务；如果当前没有事务，则抛出异常。</p>
-<p>不支持当前事务<br>PROPAGATION_REQUIRES_NEW：创建一个新的事务，如果当前存在事务，则把当前事务挂起。<br>PROPAGATION_NOT_SUPPORTED：以非事务方式运行，如果当前存在事务，则把当前事务挂起。<br>PROPAGATION_NEVER：以非事务方式运行，如果当前存在事务，则抛出异常。</p>
-<p>其它情况<br>PROPAGATION_NESTED：如果当前存在事务，则创建一个事务作为当前事务的嵌套事务来运行；如果当前没有事务，则创建一个新的事务。</p>
-<h3 id="3-Spring中用到的设计模式"><a href="#3-Spring中用到的设计模式" class="headerlink" title="3 Spring中用到的设计模式"></a>3 Spring中用到的设计模式</h3><p>工厂模式: Spring使用工厂模式通过 BeanFactory、ApplicationContext 创建 bean 对象。<br>代理模式: Spring AOP 功能的实现。<br>单例模式: Spring 中的 Bean 默认都是单例的。<br>模板模式: Spring 中 jdbcTemplate、hibernateTemplate 等以 Template结尾的对数据库操作的类，它们就使用到了模板模式。<br>装饰器模式: 我们的项目需要连接多个数据库，而且不同的客户在每次访问中根据需要会去访问不同的数据库。这种模式让我们可以根据客户的需求能够动态切换不同的数据源。<br>观察者模式: Spring 事件驱动模型就是观察者模式很经典的一个应用。<br>适配器模式: Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配Controller。</p>
-]]></content>
-      <categories>
-        <category>Spring</category>
-      </categories>
-      <tags>
-        <tag>事务</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>12_11_Network</title>
     <url>/2021/12/11/12-11-Network/</url>
     <content><![CDATA[<h3 id="1-三次握手"><a href="#1-三次握手" class="headerlink" title="1 三次握手"></a>1 三次握手</h3><p>为什么只有三次握手才能确认双方的接收与发送能力是否正常，而两次握手却不可以。<br>第一次握手：客户端发送网络包，服务端收到了。此时服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>第二次握手：服务端发包，客户端收到了。此时客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务端并不能确认客户端的接收能力是否正常。<br>第三次握手：客户端发包，服务端收到了。此时服务端就能得出结论：客户端的接收、发送能力正常，服务端的发送、接收能力也正常。<br>因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
@@ -732,6 +712,26 @@
       </categories>
       <tags>
         <tag>三次握手</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>12_11_Spring</title>
+    <url>/2021/12/11/12-11-Spring/</url>
+    <content><![CDATA[<h3 id="1-Spring事务"><a href="#1-Spring事务" class="headerlink" title="1 Spring事务"></a>1 Spring事务</h3><p>事务是指作为单个逻辑工作单元执行的一系列操作。这些操作要么全部执行，要么全部不执行。<br>事务特性：<br>原子性（atomicity）：强调事务的不可分割。事务的原子性确保动作要么全部完成，要么完全不起作用。<br>一致性（consistency）：事务执行前后数据的完整性保持一致。<br>隔离性（isolation）：一个事务执行的过程中,不应该受到其他事务的干扰。<br>持久性（durability）：事务被提交之后，它对数据库中数据的改变是持久的。</p>
+<p>Spring事务可以分为两种：<br>编程式事务(通过代码的方式来实现事务)<br>声明式事务(通过配置的方式来实现事务)</p>
+<p>在编程式事务中有以下几个重要的接口<br>TransactionDefinition：定义了Spring兼容的事务属性(比如事务隔离级别、事务传播、事务超时、是否只读状态)<br>TransactionStatus：代表了事务的具体运行状态(获取事务运行状态的信息，也可以通过该接口间接回滚事务等操作)<br>PlatformTransactionManager：事务管理器接口(定义了一组行为，具体实现交由不同的持久化框架来完成)</p>
+<p>TransactionDefinition接口中定义了五个表示隔离级别的常量<br>ISOLATION_DEFAULT：使用后端数据库默认的隔离界别，MySQL默认采用REPEATABLE_READ隔离级别，Oracle默认采用READ_COMMITTED隔离级别。<br>ISOLATION_READ_UNCOMMITTED：这是事务最低的隔离级别，它允许另外一个事务可以看到这个事务未提交的数据。这种隔离级别会产生脏读，不可重复读和幻读。<br>ISOLATION_READ_COMMITTED：保证一个事务修改的数据提交后才能被另外一个事务读取，另外一个事务不能读取该事务未提交的数据。这种事务隔离级别可以避免脏读，但是可能会出现不可重复读和幻读。<br>ISOLATION_REPEATABLE_READ：这种事务隔离级别可以防止脏读、不可重复读，但是可能出现幻读。对同一字段的多次读取结果都是一致的。它除了保证一个事务不能读取另一个事务未提交的数据外，还保证了不可重复读。<br>ISOLATION_SERIALIZABLE：最高的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰。该级别可以防止脏读、不可重复读以及幻读。但这将严重影响程序的性能。</p>
+<h3 id="2-Spring事务传播行为"><a href="#2-Spring事务传播行为" class="headerlink" title="2 Spring事务传播行为"></a>2 Spring事务传播行为</h3><p>当一个事务方法被另一个事务方法调用时，这个事务方法应该如何传播（进行）。例如：methodA事务方法调用methodB事务方法时，methodB是继续在调用者methodA的事务中运行呢，还是为自己开启一个新事务运行，这就是由methodB的事务传播行为决定的。</p>
+<p>支持当前事务<br>PROPAGATION_REQUIRED：如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务。<br>PROPAGATION_SUPPORTS：如果当前存在事务，则加入该事务；如果当前没有事务，则以非事务的方式继续运行。<br>PROPAGATION_MANDATORY：如果当前存在事务，则加入该事务；如果当前没有事务，则抛出异常。</p>
+<p>不支持当前事务<br>PROPAGATION_REQUIRES_NEW：创建一个新的事务，如果当前存在事务，则把当前事务挂起。<br>PROPAGATION_NOT_SUPPORTED：以非事务方式运行，如果当前存在事务，则把当前事务挂起。<br>PROPAGATION_NEVER：以非事务方式运行，如果当前存在事务，则抛出异常。</p>
+<p>其它情况<br>PROPAGATION_NESTED：如果当前存在事务，则创建一个事务作为当前事务的嵌套事务来运行；如果当前没有事务，则创建一个新的事务。</p>
+<h3 id="3-Spring中用到的设计模式"><a href="#3-Spring中用到的设计模式" class="headerlink" title="3 Spring中用到的设计模式"></a>3 Spring中用到的设计模式</h3><p>工厂模式: Spring使用工厂模式通过 BeanFactory、ApplicationContext 创建 bean 对象。<br>代理模式: Spring AOP 功能的实现。<br>单例模式: Spring 中的 Bean 默认都是单例的。<br>模板模式: Spring 中 jdbcTemplate、hibernateTemplate 等以 Template结尾的对数据库操作的类，它们就使用到了模板模式。<br>装饰器模式: 我们的项目需要连接多个数据库，而且不同的客户在每次访问中根据需要会去访问不同的数据库。这种模式让我们可以根据客户的需求能够动态切换不同的数据源。<br>观察者模式: Spring 事件驱动模型就是观察者模式很经典的一个应用。<br>适配器模式: Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配Controller。</p>
+]]></content>
+      <categories>
+        <category>Spring</category>
+      </categories>
+      <tags>
+        <tag>事务</tag>
       </tags>
   </entry>
   <entry>
@@ -781,6 +781,67 @@
       </tags>
   </entry>
   <entry>
+    <title>12_14_Mybatis</title>
+    <url>/2021/12/14/12-14-Mybatis/</url>
+    <content><![CDATA[<h3 id="1-mybatis"><a href="#1-mybatis" class="headerlink" title="1 mybatis"></a>1 mybatis</h3><p>MyBatis 是一个持久层框架，它内部封装了 JDBC，开发者只需要关注 SQL 语句本身，不需要花费精力去处理加载驱动、创建连接、创建statement 等过程。<br>它免除了几乎所有的 JDBC 代码以及设置参数和获取结果集的工作。MyBatis 可以通过简单的 XML 或注解来配置和映射原始类型、接口和 Java POJO（Plain Old Java Objects，普通老式 Java 对象）为数据库中的记录。<br>通过 XML 或注解的方式将要执行的各种 statement 配置起来，并通过java 对象和 statement 中 sql 的动态参数进行映射生成最终执行的 sql 语句，最后由 mybatis 框架执行 sql 并将结果映射为 java 对象并返回。</p>
+<p>优点：<br>基于 SQL 语句编程，相当灵活，不会对应用程序或者数据库的现有设计造成影响；SQL 写在 XML 中，解除了 sql 与程序代码的耦合，便于统一管理；提供 XML 标签，支持编写动态 SQL 语句，并可重用。</p>
+<p>缺点：<br>SQL 语句的编写工作量较大；且语句依赖于数据库，导致数据库移植性差，不能随意更换数据库。</p>
+<h3 id="2-与"><a href="#2-与" class="headerlink" title="2 #{}与${}"></a>2 #{}与${}</h3><p>${}是字符串替换，#{}是预编译处理。<br>Mybatis 在处理#{}时，会将 sql 中的#{}替换为?号，调用 PreparedStatement 的set 方法来赋值。<br>Mybatis 在处理${}时，就是把${}替换成变量的值。<br>使用#{}可以有效的防止 SQL 注入，提高系统安全性。<br>${}传入值时，sql解析参数是不带引号的，而#{}传入值时，sql解析参数是带引号的。</p>
+<h3 id="3-mybatis延迟加载及原理"><a href="#3-mybatis延迟加载及原理" class="headerlink" title="3 mybatis延迟加载及原理"></a>3 mybatis延迟加载及原理</h3><p>Mybatis仅支持一对一关联查询和一对多关联查询的延迟加载。<br>MyBatis中使用collection标签来解决一对多的关联查询；使用association标签来解决一对一的关联查询。<br>在Mybatis配置文件中，可以配置是否启用延迟加载lazyLoadingEnabled=true|false。<br>原理：使用CGLIB创建目标对象的代理对象，当调用目标方法时，进入拦截器方法，比如调用a.getB().getName()，拦截器invoke()方法发现a.getB()是null值，那么就会单独发送事先保存好的查询关联B对象的sql，把B查询上来，然后调用a.setB(b)，于是a的对象b属性就有值了，接着完成a.getB().getName()方法的调用。这就是延迟加载的基本原理。</p>
+<h3 id="4-mybatis的一级和二级缓存"><a href="#4-mybatis的一级和二级缓存" class="headerlink" title="4 mybatis的一级和二级缓存"></a>4 mybatis的一级和二级缓存</h3><p>一级缓存: 基于 PerpetualCache 的 HashMap 本地缓存，其存储作用域为 Session，当 Session flush 或 close 之后，该 Session 中的所有 Cache 就将被清空，默认打开一级缓存。<br>二级缓存：与一级缓存机制相同，默认也是采用 PerpetualCache的HashMap 存储，不同点在于其存储作用域为 Mapper(Namespace)，并且可自定义存储源，如 Ehcache。默认不打开二级缓存，要开启二级缓存，使用二级缓存属性类需要实现 Serializable 序列化接口(用来保存对象的状态)，在它的映射文件中配置。<br>对于缓存数据更新机制，当某一个作用域(一级缓存 Session/二级缓存Namespaces)进行了C/U/D 操作后，默认该作用域下所有 select 中的缓存将被 clear。</p>
+<h3 id="5-Mybatis-执行器（Executor）"><a href="#5-Mybatis-执行器（Executor）" class="headerlink" title="5 Mybatis 执行器（Executor）"></a>5 Mybatis 执行器（Executor）</h3><p>SimpleExecutor：每执行一次update或select，就开启一个Statement对象，用完立刻关闭Statement对象。<br>ReuseExecutor：执行update或select，以sql作为key查找Statement对象，存在就使用，不存在就创建，用完后，不关闭Statement对象，而是放置于Map内，供下一次使用。简言之，就是重复使用Statement对象。<br>BatchExecutor：执行update（JDBC批处理不支持select），将所有sql都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个Statement对象。</p>
+<h3 id="6-mybatis动态sql"><a href="#6-mybatis动态sql" class="headerlink" title="6 mybatis动态sql"></a>6 mybatis动态sql</h3><p>MyBatis 动态 SQL 可以让我们在 XML 映射文件内，以标签的形式编写 SQL，并完成逻辑判断和动态拼接 SQL 的功能。<br>MyBatis 提供了 9 种动态 SQL 标签：trim、where、set、foreach、if、choose、when、otherwise、bind。<br>执行原理：使用 OGNL 从 SQL 参数对象中计算表达式的值，然后根据表达式的值动态拼接 SQL，以此来完成动态 SQL 的功能。</p>
+]]></content>
+      <categories>
+        <category>Mybatis</category>
+      </categories>
+      <tags>
+        <tag>mybatis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>12_16_Network</title>
+    <url>/2021/12/16/12-16-Network/</url>
+    <content><![CDATA[<h3 id="1-每一层对应的网络协议"><a href="#1-每一层对应的网络协议" class="headerlink" title="1 每一层对应的网络协议"></a>1 每一层对应的网络协议</h3><img src="/2021/12/16/12-16-Network/protocol.png" class="">
+
+<h3 id="2-ARP协议"><a href="#2-ARP协议" class="headerlink" title="2 ARP协议"></a>2 ARP协议</h3><p>地址解析协议，即ARP（Address Resolution Protocol），是根据IP地址获取物理地址的一个TCP/IP协议。</p>
+<p>首先，每台主机都会在自己的 ARP 缓冲区中建立一个 ARP 列表，以表示 IP 地址和 MAC 地址的对应关系。当源主机需要将一个数据包发送到目的主机时，会首先检查自己 ARP 列表中是否存在该 IP 地址对应的 MAC 地址。如果有，就直接将数据包发送到这个 MAC 地址；如果没有，就向本地网段发起一个 ARP 请求的广播包，查询此目的主机对应的 MAC 地址。</p>
+<p>ARP请求数据包中包括源主机的 IP 地址、硬件地址、以及目的主机的 IP 地址。网络中所有的主机收到这个 ARP 请求后，会检查数据包中的目的 IP 是否和自己的 IP 地址一致。如果不相同就忽略此数据包；如果相同，该主机首先将发送端的 MAC 地址和 IP 地址添加到自己的 ARP 列表中，如果 ARP 表中已经存在该 IP 的信息，则将其覆盖，然后给源主机发送一个 ARP 响应数据包，告诉对方自己是它需要查找的 MAC 地址；源主机收到这个 ARP 响应数据包后，将得到的目的主机的 IP 地址和 MAC 地址添加到自己的 ARP 列表中，并利用此信息开始数据的传输。如果源主机一直没有收到 ARP 响应数据包，表示 ARP 查询失败。</p>
+<h3 id="3-粘包"><a href="#3-粘包" class="headerlink" title="3 粘包"></a>3 粘包</h3><p>客户端连续不断的向服务端发送数据包时，服务端接收的数据会出现两个数据包粘在一起的情况。</p>
+<ol>
+<li>TCP是基于字节流的，虽然应用层和传输层之间的数据交互是大小不等的数据块，但是TCP把这些数据块仅仅看成是一连串无结构的字节流，没有边界；</li>
+<li>从 TCP 的帧结构也可以看出，在 TCP 的首部没有表示数据长度的字段。<br>基于上面两点，在使用 TCP 传输数据时，才有粘包或者拆包现象发生的可能。</li>
+</ol>
+<p>一个数据包中包含了发送端发送的两个数据包的信息，这种现象称为粘包。<br>接收端收到了两个数据包，但是这两个数据包要么是不完整的，要么就是多出来一块，这种情况即发生了拆包和粘包。拆包和粘包的问题导致接收端在处理的时候会非常困难，因为无法区分一个完整的数据包。</p>
+<p>TCP粘包的产生：<br>发送方产生粘包：采用 TCP 协议传输数据的客户端与服务器经常是保持一个长连接的状态，双方在连接不断开的情况下，可以一直传输数据。当发送的数据包太小时，那么 TCP 协议默认会启用 Nagle 算法，将这些较小的数据包进行合并（缓冲区数据发送是一个堆压的过程）；这个合并过程就是在发送缓冲区中进行的，也就是说数据发送出来时它已经是粘包的状态了。</p>
+<p>接收方产生粘包：由于tcp是面向字节流的协议，即协议的内容是像流水一样的字节流，内容与内容之间没有明确的分界标志，需要我们人为地去给这些协议划分边界。</p>
+<p>解决办法：<br>以指定字符（串）作为包的结束标志；<br>包头定长（在包头的首部添加数据包的长度）。</p>
+<h3 id="4-在浏览器中输入-URL-地址到显示网页的过程"><a href="#4-在浏览器中输入-URL-地址到显示网页的过程" class="headerlink" title="4 在浏览器中输入 URL 地址到显示网页的过程"></a>4 在浏览器中输入 URL 地址到显示网页的过程</h3><ol>
+<li>DNS解析<br>如果输入ip地址表示直接从主机上调用内容。如果输入域名，则是通过域名解析服务器指向对应主机的IP地址，再从主机上调用网址的内容。<br>DNS解析过程：<br>查询<strong>浏览器缓存</strong>，如果没有查到会进入<strong>系统缓存</strong>进行查询，此时主要查询host文件，这个文件主要保存以前访问过的域名和IP地址，类似本地数据库。如果找到，可直接获取目标主机的IP地址，如果没找到，进入<strong>路由器缓存</strong>，路由器有自己的DNS缓存，如果查到就返回，否则进入<strong>ISP DNS缓存</strong>。从根域名服务器 –&gt; 顶级域名服务器 –&gt; 极限域名服务器，依次搜索查找对应目标域名的IP，找到以后，会建立TCP连接。</li>
+<li>TCP连接<br>浏览器获得域名对应的 IP 地址以后，会向服务器请求建立连接，发起三次握手。</li>
+<li>发送HTTP请求<br>TCP连接建立后，浏览器向服务器发送 HTTP 请求。<br>一个HTTP请求报文由请求行（request line）、请求头部（headers）、空行（blank line）和请求数据（request body）4个部分组成。</li>
+<li>服务器响应HTTP请求<br>服务器在收到http请求后，会根据路径参数映射到特定的请求处理器进行处理，并将处理结果及相应的视图返回给浏览器。</li>
+<li>浏览器解析渲染页面<br>这是一个边解析边渲染的过程。首先浏览器解析HTML文件构建DOM树，然后解析CSS文件构建渲染树，等到渲染树构建完成后，浏览器开始布局渲染树并将其绘制到屏幕上。JS的解析是由浏览器中的JS解析引擎完成的。</li>
+<li>连接结束<br>TCP四次挥手。</li>
+</ol>
+<h3 id="5-HTTPS工作过程"><a href="#5-HTTPS工作过程" class="headerlink" title="5 HTTPS工作过程"></a>5 HTTPS工作过程</h3><p>HTTPS是一种通过计算机网络进行安全通信的传输协议，经由HTTP进行通信，利用SSL/TLS建立安全信道，加密数据包。HTTPS的主要目的是提供对网站服务器的身份认证，同时保护交换数据的隐私与完整性。</p>
+<p>1.客户端向服务器发起HTTPS请求，连接到服务器的443端口。<br>2.服务器端有一个密钥对，即公钥和私钥，用来进行非对称加密的。服务器端保存着私钥，不能将其泄露，公钥可以发送给任何人。服务器将自己的公钥发送给客户端（以证书的形式）。<br>3.客户端收到服务器端的证书之后，会对证书进行检查，验证其合法性，如果发现证书有问题，那么HTTPS传输就无法继续。如果验证通过，那么客户端会生成一个随机值，这个随机值就是用于对称加密的密钥，我们将该密钥称之为client key，即客户端密钥。然后用服务器的公钥对客户端密钥进行非对称加密，这样客户端密钥就变成密文了。至此，HTTPS中的第一次HTTP请求结束。<br>4.客户端发起HTTPS中的第二次HTTP请求，将加密之后的客户端密钥发送给服务器。<br>5.服务器接收到客户端发来的密文之后，会用自己的私钥对其进行非对称解密，解密之后的明文就是客户端密钥，然后用客户端密钥对数据进行对称加密，这样数据就变成了密文。最后服务器将加密后的密文发送给客户端。<br>6.客户端收到服务器发来的密文，用客户端密钥对其进行解密，得到服务器发送的数据。这样HTTPS中的第二个HTTP请求结束，整个HTTPS传输完成。</p>
+<p>优点：<br>使用HTTPS协议可认证用户和服务器，确保数据发送到正确的客户端和服务器。<br>HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议。它比http协议更安全，可防止数据在传输过程中被窃取、篡改，确保了数据的完整性。<br>HTTPS是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</p>
+<p>缺点：<br>HTTPS协议握手阶段比较费时，会使页面的加载时间延长近50%，增加10%到20%的耗电。<br>HTTPS连接缓存不如HTTP高效，会增加数据开销和功耗，甚至已有的安全措施也会因此而受到影响。</p>
+<h3 id="6-HTTP与HTTPS"><a href="#6-HTTP与HTTPS" class="headerlink" title="6 HTTP与HTTPS"></a>6 HTTP与HTTPS</h3><p>安全性不同：HTTP协议是无状态、无连接的。<br>无状态的意思是协议对于交互性场景没有记忆能力。服务器中没有保存客户端的状态，每次的请求都是独立的。<br>无连接的含义是限制每次连接只处理一个请求。服务器处理完客户端的请求，并收到客户端的应答后，立即断开连接。<br>HTTPS协议是由 TSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 HTTP 协议安全。</p>
+<p>默认端口不同：http和https使用的是完全不同的连接方式，同时使用的端口也不同。http使用的是80端口，https使用的是443端口。在网络模型中，HTTP工作于应用层，而HTTPS工作在传输层。</p>
+<p>网站申请流程不同：https协议需要到CA申请证书，一般免费证书很少，需要交费。Web服务器启用SSL需要获得一个服务器证书并将该证书与要使用SSL的服务器进行绑定。</p>
+<h3 id="7-数字签名与数字证书"><a href="#7-数字签名与数字证书" class="headerlink" title="7 数字签名与数字证书"></a>7 数字签名与数字证书</h3><p>为了避免数据在传输过程中被替换，发送端做一个数字签名。把数据的摘要消息进行加密，得到一个签名，它和数据一起发送。接收端把数据摘要进行加密，如果和签名一样，则说明数据确实是真的。</p>
+<p>虽然数字签名可以保证数据不被替换，但是数据是由公钥加密的，如果公钥也被替换，则仍然可以伪造数据。<br>为了保证发送方的公钥是真的，CA证书机构会负责颁发一个证书，里面的公钥保证是真的，用户请求服务器时，服务器将证书发给用户。</p>
+]]></content>
+      <categories>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络协议</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>12_14_Network</title>
     <url>/2021/12/14/12-14-Network/</url>
     <content><![CDATA[<h3 id="1-http1-0、1-1、2-2"><a href="#1-http1-0、1-1、2-2" class="headerlink" title="1 http1.0、1.1、2.2"></a>1 http1.0、1.1、2.2</h3><p>http1.0：为了提高系统的效率，HTTP1.0规定浏览器与服务器只保持短暂的连接，浏览器的每次请求都需要与服务器建立一个TCP连接，服务器完成请求处理后立即断开TCP连接，服务器不跟踪每个客户也不记录过去的请求。</p>
@@ -805,29 +866,46 @@
       </tags>
   </entry>
   <entry>
-    <title>12_14_Mybatis</title>
-    <url>/2021/12/14/12-14-Mybatis/</url>
-    <content><![CDATA[<h3 id="1-mybatis"><a href="#1-mybatis" class="headerlink" title="1 mybatis"></a>1 mybatis</h3><p>MyBatis 是一个持久层框架，它内部封装了 JDBC，开发者只需要关注 SQL 语句本身，不需要花费精力去处理加载驱动、创建连接、创建statement 等过程。<br>它免除了几乎所有的 JDBC 代码以及设置参数和获取结果集的工作。MyBatis 可以通过简单的 XML 或注解来配置和映射原始类型、接口和 Java POJO（Plain Old Java Objects，普通老式 Java 对象）为数据库中的记录。<br>通过 XML 或注解的方式将要执行的各种 statement 配置起来，并通过java 对象和 statement 中 sql 的动态参数进行映射生成最终执行的 sql 语句，最后由 mybatis 框架执行 sql 并将结果映射为 java 对象并返回。</p>
-<p>优点：<br>基于 SQL 语句编程，相当灵活，不会对应用程序或者数据库的现有设计造成影响；SQL 写在 XML 中，解除了 sql 与程序代码的耦合，便于统一管理；提供 XML 标签，支持编写动态 SQL 语句，并可重用。</p>
-<p>缺点：<br>SQL 语句的编写工作量较大；且语句依赖于数据库，导致数据库移植性差，不能随意更换数据库。</p>
-<h3 id="2-与"><a href="#2-与" class="headerlink" title="2 #{}与${}"></a>2 #{}与${}</h3><p>${}是字符串替换，#{}是预编译处理。<br>Mybatis 在处理#{}时，会将 sql 中的#{}替换为?号，调用 PreparedStatement 的set 方法来赋值。<br>Mybatis 在处理${}时，就是把${}替换成变量的值。<br>使用#{}可以有效的防止 SQL 注入，提高系统安全性。<br>${}传入值时，sql解析参数是不带引号的，而#{}传入值时，sql解析参数是带引号的。</p>
-<h3 id="3-mybatis延迟加载及原理"><a href="#3-mybatis延迟加载及原理" class="headerlink" title="3 mybatis延迟加载及原理"></a>3 mybatis延迟加载及原理</h3><p>Mybatis仅支持一对一关联查询和一对多关联查询的延迟加载。<br>MyBatis中使用collection标签来解决一对多的关联查询；使用association标签来解决一对一的关联查询。<br>在Mybatis配置文件中，可以配置是否启用延迟加载lazyLoadingEnabled=true|false。<br>原理：使用CGLIB创建目标对象的代理对象，当调用目标方法时，进入拦截器方法，比如调用a.getB().getName()，拦截器invoke()方法发现a.getB()是null值，那么就会单独发送事先保存好的查询关联B对象的sql，把B查询上来，然后调用a.setB(b)，于是a的对象b属性就有值了，接着完成a.getB().getName()方法的调用。这就是延迟加载的基本原理。</p>
-<h3 id="4-mybatis的一级和二级缓存"><a href="#4-mybatis的一级和二级缓存" class="headerlink" title="4 mybatis的一级和二级缓存"></a>4 mybatis的一级和二级缓存</h3><p>一级缓存: 基于 PerpetualCache 的 HashMap 本地缓存，其存储作用域为 Session，当 Session flush 或 close 之后，该 Session 中的所有 Cache 就将被清空，默认打开一级缓存。<br>二级缓存：与一级缓存机制相同，默认也是采用 PerpetualCache的HashMap 存储，不同点在于其存储作用域为 Mapper(Namespace)，并且可自定义存储源，如 Ehcache。默认不打开二级缓存，要开启二级缓存，使用二级缓存属性类需要实现 Serializable 序列化接口(用来保存对象的状态)，在它的映射文件中配置。<br>对于缓存数据更新机制，当某一个作用域(一级缓存 Session/二级缓存Namespaces)进行了C/U/D 操作后，默认该作用域下所有 select 中的缓存将被 clear。</p>
-<h3 id="5-Mybatis-执行器（Executor）"><a href="#5-Mybatis-执行器（Executor）" class="headerlink" title="5 Mybatis 执行器（Executor）"></a>5 Mybatis 执行器（Executor）</h3><p>SimpleExecutor：每执行一次update或select，就开启一个Statement对象，用完立刻关闭Statement对象。<br>ReuseExecutor：执行update或select，以sql作为key查找Statement对象，存在就使用，不存在就创建，用完后，不关闭Statement对象，而是放置于Map内，供下一次使用。简言之，就是重复使用Statement对象。<br>BatchExecutor：执行update（JDBC批处理不支持select），将所有sql都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个Statement对象。</p>
-<h3 id="6-mybatis动态sql"><a href="#6-mybatis动态sql" class="headerlink" title="6 mybatis动态sql"></a>6 mybatis动态sql</h3><p>MyBatis 动态 SQL 可以让我们在 XML 映射文件内，以标签的形式编写 SQL，并完成逻辑判断和动态拼接 SQL 的功能。<br>MyBatis 提供了 9 种动态 SQL 标签：trim、where、set、foreach、if、choose、when、otherwise、bind。<br>执行原理：使用 OGNL 从 SQL 参数对象中计算表达式的值，然后根据表达式的值动态拼接 SQL，以此来完成动态 SQL 的功能。</p>
+    <title>12_18_OS</title>
+    <url>/2021/12/18/12-18-OS/</url>
+    <content><![CDATA[<h3 id="1-进程状态"><a href="#1-进程状态" class="headerlink" title="1 进程状态"></a>1 进程状态</h3><img src="/2021/12/18/12-18-OS/process.png" class="">
+
+<p>就绪状态：进程已处于准备运行状态，即进程获得了除了处理器之外的一切所需资源，一旦得到处理器资源(处理器分配的时间片)即可运行。</p>
+<p>运行状态：进程正在处理器上运行(单核CPU下任意时刻只有一个进程处于运行状态)。</p>
+<p>阻塞状态：又称为等待状态，进程正在等待某一事件而暂停运行。例如等待某资源为可用或等待IO操作完成。即使处理器空闲，该进程也不能运行。</p>
+<h3 id="2-进程间通信（InterProcess-Communication）方式有哪些？"><a href="#2-进程间通信（InterProcess-Communication）方式有哪些？" class="headerlink" title="2 进程间通信（InterProcess Communication）方式有哪些？"></a>2 进程间通信（InterProcess Communication）方式有哪些？</h3><p>每个进程都有不同的用户地址空间，任何一个进程的全局变量对另一个进程是不可见的，所以进程之间要交换数据必须通过内核。在内核中开辟一块缓冲区，进程1把数据从用户空间拷到内核缓冲区，进程2再从内核缓冲区把数据读走，内核提供的这种机制称为进程间通信（IPC，InterProcess Communication）。</p>
+<p><strong>管道（无名管道）</strong><br>管道是半双工的，数据只能向一个方向流动；双方通信时，需要建立起两个管道；<br>只能用于父子进程或者兄弟进程之间(具有亲缘关系的进程)的通信；<br>单独构成一种独立的文件系统：管道对于管道两端的进程而言，就是一个文件，但它不是普通的文件，它不属于某种文件系统，而是单独构成一种文件系统，并且只存在于内存中；<br>数据的读出和写入：一个进程向管道中写的内容被管道另一端的进程读出。写入的内容每次都添加在管道缓冲区的末尾，并且每次都是从管道缓冲区的头部读出数据。</p>
+<p>局限：<br>只支持单向数据流；<br>只能用于具有亲缘关系的进程之间；<br>没有名字；<br>管道的缓冲区是有限的；<br>管道所传送的是无格式字节流，这就要求管道的双方必须事先约定好数据的格式。</p>
+<p><strong>有名管道（FIFO）</strong><br>有名管道提供了一个路径名与之关联，以有名管道的文件形式存在于文件系统中。这样，即使与有名管道的创建进程不存在亲缘关系的进程，只要可以访问该路径，就能够彼此通过有名管道相互通信。因此，通过有名管道不相关的进程也能交换数据。有名管道的名字存在于文件系统中，内容存放在内存中。</p>
+<p><strong>消息队列</strong><br>消息队列是存放在内核中的消息链表，每个消息队列由消息队列标识符表示；<br>消息队列是面向记录的，其中的消息具有特定的格式以及特定的优先级；<br>消息队列独立于发送与接收进程。进程终止时，消息队列及其内容并不会被删除。只有在内核重启(操作系统重启)或者显示地删除一个消息队列时，该消息队列才会被真正的删除；<br>消息队列可以实现消息的随机查询,消息不一定要以先进先出的次序读取,也可以按消息的类型读取。</p>
+<p><strong>信号量</strong><br>信号量是一个计数器，用于多进程对共享数据的访问，信号量的意图在于进程间同步。<br>信号量用于进程间同步，若要在进程间传递数据需要结合共享内存；<br>信号量基于操作系统的 PV 操作，程序对信号量的操作都是原子操作；<br>每次对信号量的 PV 操作不仅限于对信号量值加 1 或减1，而是可以加减任意正整数。</p>
+<p><strong>共享内存</strong><br>指两个或多个进程可以直接（共享）读写同一块内存空间；<br>共享内存是最快的一种IPC，因为进程是直接对内存进行存取；<br>由于多个进程共享一段内存，因此需要依靠某种同步机制（如信号量）来达到进程间的同步。</p>
+<p><strong>信号</strong><br>信号是一种比较复杂的通信方式，用于通知接收进程某个事件已经发生。</p>
+<p><strong>套接字（socket）</strong><br>主要用于在客户端和服务器之间通过网络进行通信。套接字是支持 TCP/IP 的网络通信的基本操作单元，可以看做是不同主机之间的进程进行双向通信的端点，简单说就是通信双方的一种约定，用套接字中的相关函数来完成通信过程。</p>
+<h3 id="3-进程调度算法"><a href="#3-进程调度算法" class="headerlink" title="3 进程调度算法"></a>3 进程调度算法</h3><p>为了确定首先执行哪个进程以及最后执行哪个进程以实现最大CPU利用率。</p>
+<p><strong>先来先服务(FCFS)调度算法</strong><br>每个进程就绪后加入就绪队列，从就绪队列中选择一个最先进入该队列的进程并为之分配资源，然后立即执行。FCFS是非抢占式的，易于实现，但效率不高，性能不好。有利于长作业（CPU繁忙性）而不利于短作业（I/O繁忙性）。</p>
+<p><strong>短作业优先（SJF）调度算法</strong><br>每次从后备队列中选择一个或若干个估计运行时间最短的作业，将它们调入内存运行。SJF是非抢占式的，优先照顾短作业，具有很好的性能，降低平均等待时间，提高吞吐量。<br>不利于长作业，长作业可能一直处于等待状态，会出现饥饿现象；完全未考虑作业的优先紧迫程度，不能用于实时系统。</p>
+<p><strong>时间片轮转调度算法</strong><br>时间片轮转调度是一种最古老，最简单，最公平且使用最广泛的算法。每个进程被分配一个时间段，称作它的时间片，即该进程允许运行的时间。进程调度程序总是选择就绪队列中第一个进程执行，即先来先服务的原则，但仅能运行一个时间片。适用于分时系统。</p>
+<p><strong>最短剩余时间优先调度算法</strong><br>最短剩余时间优先是针对短作业优先增加了抢占机制的版本。进程调度程序总是选择预期剩余时间最短的进程。当一个进程加入到就绪队列，它可能比当前运行的进程具有更短的剩余时间，因此调度程序就很可能抢占当前正在运行的进程。</p>
+<p><strong>高响应比优先调度算法</strong><br>高响应比优先调度算法（Highest Reponse Ratio First, HRRF）是非抢占式的，主要用于作业调度。每次进行作业调度时，先计算后备队列中每个作业的响应比，选择响应比最高的作业调度运行。<br>响应比 = （等待时间 + 服务时间） / 服务时间 = 等待时间 / 服务时间 + 1<br>该算法介于FCFS和SJF之间，但是每次需要计算每个作业的响应比，增加系统开销。</p>
+<p><strong>优先级调度算法</strong><br>为每个进程分配一个优先级，首先执行具有最高优先级的进程，依此类推。具有相同优先级的进程以 FCFS 方式执行。</p>
+<p><strong>多级反馈队列调度算法</strong><br>设置多个就绪队列，并为各个队列赋予不同的优先级。在优先级越高的队列中，每个进程所规定的执行时间片就越小。<br>当一个新进程进入内存后，首先放入第一队列的末尾，按照先来先服务原则排队等候调度。如果它能在一个时间片中完成，便可撤离；如果未完成，就转入第二队列的末尾，等待调度。依此类推。<br>仅当第一队列空闲的时候，调度程序才调度第二队列中的进程运行。<br>如果处理机正在处理第i队列中的进程，又有新进程进入优先级更高的队列，则此新队列抢占正在运行的处理机，并把正在运行的进程放在第i队列的队尾。</p>
+<h3 id="4-作业调度与进程调度"><a href="#4-作业调度与进程调度" class="headerlink" title="4 作业调度与进程调度"></a>4 作业调度与进程调度</h3><p>作业调度又称为高级调度，频率较低。其主要任务就是将位于外存后备队列中的某个（或某些）作业调入内存，排在就绪队列上。但仅仅是将作业调入内存，并为作业创建进程、分配资源，此时进程处于就绪状态，并没有执行。</p>
+<p>进程调度又称为低级调度，是最基本的、频率最高的调度方式。其主要任务是从就绪队列中选取一个（或几个）进程，并为之分配处理机，这时候才可以理解为“执行”。</p>
+<p>区别：<br>作业调度是为作业建立进程的过程，是将作业由外存调入内存的过程；<br>而进程调度整个过程并没有跑出内存的范围，而是将就绪态的进程变为运行态的进程。</p>
 ]]></content>
       <categories>
-        <category>Mybatis</category>
+        <category>操作系统</category>
       </categories>
       <tags>
-        <tag>mybatis</tag>
+        <tag>进程调度</tag>
       </tags>
   </entry>
   <entry>
     <title>12_21_OS</title>
     <url>/2021/12/21/12-21-OS/</url>
-    <content><![CDATA[<h3 id="1-分段与分页的区别"><a href="#1-分段与分页的区别" class="headerlink" title="1 分段与分页的区别"></a>1 分段与分页的区别</h3><p>段是信息的逻辑单位，它是根据用户的需要划分的，因此段对用户是可见的；页是信息的物理单位，是为了管理主存的方便而划分的，对用户是不可见的；<br>段的大小不固定，由它所完成的功能决定；页面大小固定，由系统决定；<br>段向用户提供二维地址空间；页向用户提供的是一维地址空间；<br>段是信息的逻辑单位，便于存储保护和信息的共享，页的保护和共享受到限制。</p>
-<h3 id="2-死锁产生的必要条件"><a href="#2-死锁产生的必要条件" class="headerlink" title="2 死锁产生的必要条件"></a>2 死锁产生的必要条件</h3><p>互斥条件：资源是独占的且排它使用，进程互斥使用资源，即任意时刻一个资源只能给一个进程使用。其他进程若申请一个资源，而该资源被另一进程占有时，申请者等待直到资源被占有者释放。<br>不可剥夺条件：进程所获得的资源在未使用完毕之前，不被其他进程强行剥夺，而只能由获得该资源的进程释放。<br>请求和保持条件：进程每次申请它所需要的一部分资源，在申请新的资源的同时，继续占用已分配到的资源。<br>环路等待条件：在发生死锁时必然存在一个进程等待队列{P1,P2,…,Pn},其中P1等待P2占有的资源，P2等待P3占有的资源，…，Pn等待P1占有的资源，形成一个进程等待环路，环路中每一个进程所占有的资源同时被另一个进程申请，也就是前一个进程占有后一个进程所申请的资源。</p>
+    <content><![CDATA[<h3 id="1-分段与分页的区别"><a href="#1-分段与分页的区别" class="headerlink" title="1 分段与分页的区别"></a>1 分段与分页的区别</h3><p>段是信息的逻辑单位，它是根据用户的需要划分的，因此段对用户是可见的；<br>页是信息的物理单位，是为了管理主存的方便而划分的，对用户是不可见的；<br>段的大小不固定，由它所完成的功能决定；<br>页面大小固定，由系统决定；<br>段向用户提供二维地址空间；<br>页向用户提供一维地址空间；</p>
+<h3 id="2-死锁产生的必要条件"><a href="#2-死锁产生的必要条件" class="headerlink" title="2 死锁产生的必要条件"></a>2 死锁产生的必要条件</h3><p>互斥条件：资源是独占的且排它使用，进程互斥使用资源，即任意时刻一个资源只能给一个进程使用。其他进程若申请一个资源，而该资源被另一进程占有时，申请者等待直到资源被占有者释放。<br>不可剥夺条件：进程所获得的资源在未使用完毕之前，不能被其他进程强行剥夺，而只能由获得该资源的进程释放。<br>请求和保持条件：进程每次申请它所需要的一部分资源，在申请新的资源的同时，继续占用已分配到的资源。<br>环路等待条件：在发生死锁时必然存在一个进程等待队列{P1,P2,…,Pn},其中P1等待P2占有的资源，P2等待P3占有的资源，…，Pn等待P1占有的资源，形成一个进程等待环路，环路中每一个进程所占有的资源同时被另一个进程申请，也就是前一个进程占有后一个进程所申请的资源。</p>
 <h3 id="3-页面置换算法"><a href="#3-页面置换算法" class="headerlink" title="3 页面置换算法"></a>3 页面置换算法</h3><p>缺页中断：要访问的页不在主存，需要操作系统将其调入主存后再进行访问。<br>当发生缺页中断时，如果操作系统内存中没有空闲页面，则操作系统必须在内存中选择一个页面将其移出，以便为即将调入的页面让出空间，而用来选择淘汰哪一页的规则叫做页面置换算法。</p>
 <p><strong>先进先出置换算法（FIFO）</strong><br>总是选择在主存中停留时间最长（即最老）的一页置换，即先进入内存的页先退出内存。理由是：最早调入内存的页，其不再被使用的可能性比刚调入内存的可能性大。建立一个FIFO队列，收容所有在内存中的页。被置换页面总是在队列头上进行。当一个页面被放入内存时，就把它插入到队尾。性能较差，调出的页面可能是要经常访问的页面（驻留时间长，本身就说明可能常用）</p>
 <p><strong>最佳置换算法（OPT）</strong><br>这是一种理想情况下的页面置换算法，但实际上不可能实现。该算法的基本思想是：发生缺页中断时，计算每个逻辑页面的下一次访问时间，选择未来最长时间不访问的页面进行置换。<br>这个算法唯一的一个问题就是它无法实现。当缺页发生时，操作系统无法知道各个页面下一次是在什么时候被访问。虽然这个算法不可能实现，但是最佳页面置换算法可以用于对可实现算法的性能进行衡量比较。</p>
@@ -835,48 +913,13 @@
 <p><strong>时钟算法</strong><br>需要用到页表项的访问位（access bit），当一个页面被装入内存时，把该位初始化为0，然后如果这个页被访问（读/写），把它置为1。把各个页面组织成环形链表，指针指向最老的页面（最先进来）。<br>当发生一个缺页中断，考察指针所指向的最老的页面。若它的访问位为0，则立即淘汰。若访问为1，则置为0，然后指针往下移动一格。如此下去，直到找到被淘汰的页面，然后把指针移动到它的下一格。</p>
 <h3 id="4-动态链接库和静态链接库"><a href="#4-动态链接库和静态链接库" class="headerlink" title="4 动态链接库和静态链接库"></a>4 动态链接库和静态链接库</h3><p>本质上来说库是一种可执行代码的二进制形式，可以被操作系统载入内存执行。静态库（.a、.lib）和动态库（.so、.dll）。windows上对应的是.lib、.dll；linux上对应的是.a、.so。</p>
 <p>静态库对函数库的链接是放在编译时期完成的。<br>浪费空间和资源，因为所有相关的目标文件与牵涉到的函数库被链接形成一个可执行文件。</p>
-<p>动态库在程序编译时并不会被链接到目标代码中，而是在程序运行时才被载入。<br>动态库在程序运行时才被载入，解决了静态库对程序的更新、部署和发布页会带来麻烦。用户只需要更新动态库即可，增量更新。</p>
+<p>动态库在程序编译时并不会被链接到目标代码中，而是在程序运行时才被载入。<br>动态库在程序运行时才被载入，解决了静态库对程序的更新、部署和发布带来的麻烦。用户只需要更新动态库即可，增量更新。</p>
 ]]></content>
       <categories>
         <category>操作系统</category>
       </categories>
       <tags>
         <tag>段页</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>12_18_OS</title>
-    <url>/2021/12/18/12-18-OS/</url>
-    <content><![CDATA[<h3 id="1-进程状态"><a href="#1-进程状态" class="headerlink" title="1 进程状态"></a>1 进程状态</h3><img src="/2021/12/18/12-18-OS/process.png" class="">
-
-<p>就绪状态：进程已处于准备运行状态，即进程获得了除了处理器之外的一切所需资源，一旦得到处理器资源(处理器分配的时间片)即可运行。</p>
-<p>运行状态：进程正在处理器上运行(单核 CPU 下任意时刻只有一个进程处于运行状态)。</p>
-<p>阻塞状态：又称为等待状态，进程正在等待某一事件而暂停运行。例如等待某资源为可用或等待 IO 操作完成。即使处理器空闲，该进程也不能运行。</p>
-<h3 id="2-进程间通信（InterProcess-Communication）方式有哪些？"><a href="#2-进程间通信（InterProcess-Communication）方式有哪些？" class="headerlink" title="2 进程间通信（InterProcess Communication）方式有哪些？"></a>2 进程间通信（InterProcess Communication）方式有哪些？</h3><p>每个进程都有不同的用户地址空间，任何一个进程的全局变量对另一个进程是不可见的，所以进程之间要交换数据必须通过内核。在内核中开辟一块缓冲区，进程1把数据从用户空间拷到内核缓冲区，进程2再从内核缓冲区把数据读走，内核提供的这种机制称为进程间通信（IPC，InterProcess Communication）。</p>
-<p><strong>管道（无名管道）</strong><br>管道是半双工的，数据只能向一个方向流动；双方通信时，需要建立起两个管道；<br>只能用于父子进程或者兄弟进程之间(具有亲缘关系的进程)的通信；<br>单独构成一种独立的文件系统：管道对于管道两端的进程而言，就是一个文件，但它不是普通的文件，它不属于某种文件系统，而是单独构成一种文件系统，并且只存在于内存中；<br>数据的读出和写入：一个进程向管道中写的内容被管道另一端的进程读出。写入的内容每次都添加在管道缓冲区的末尾，并且每次都是从管道缓冲区的头部读出数据。<br>局限：<br>只支持单向数据流；<br>只能用于具有亲缘关系的进程之间；<br>没有名字；<br>管道的缓冲区是有限的；<br>管道所传送的是无格式字节流，这就要求管道的双方必须事先约定好数据的格式。</p>
-<p><strong>有名管道（FIFO）</strong><br>有名管道提供了一个路径名与之关联，以有名管道的文件形式存在于文件系统中。这样，即使与有名管道的创建进程不存在亲缘关系的进程，只要可以访问该路径，就能够彼此通过有名管道相互通信。因此，通过有名管道不相关的进程也能交换数据。有名管道的名字存在于文件系统中，内容存放在内存中。</p>
-<p><strong>消息队列</strong><br>消息队列是存放在内核中的消息链表，每个消息队列由消息队列标识符表示；<br>消息队列是面向记录的，其中的消息具有特定的格式以及特定的优先级；<br>消息队列独立于发送与接收进程。进程终止时，消息队列及其内容并不会被删除。只有在内核重启(操作系统重启)或者显示地删除一个消息队列时，该消息队列才会被真正的删除；<br>消息队列可以实现消息的随机查询,消息不一定要以先进先出的次序读取,也可以按消息的类型读取。</p>
-<p><strong>信号量</strong><br>信号量是一个计数器，用于多进程对共享数据的访问，信号量的意图在于进程间同步。<br>信号量用于进程间同步，若要在进程间传递数据需要结合共享内存；<br>信号量基于操作系统的 PV 操作，程序对信号量的操作都是原子操作；<br>每次对信号量的 PV 操作不仅限于对信号量值加 1 或减 1，而是可以加减任意正整数。</p>
-<p><strong>共享内存</strong><br>指两个或多个进程可以直接（共享）读写同一块内存空间；<br>共享内存是最快的一种 IPC，因为进程是直接对内存进行存取；<br>由于多个进程共享一段内存，因此需要依靠某种同步机制（如信号量）来达到进程间的同步。</p>
-<p><strong>信号</strong><br>信号是一种比较复杂的通信方式，用于通知接收进程某个事件已经发生。</p>
-<p><strong>套接字（socket）</strong><br>主要用于在客户端和服务器之间通过网络进行通信。套接字是支持 TCP/IP 的网络通信的基本操作单元，可以看做是不同主机之间的进程进行双向通信的端点，简单说就是通信双方的一种约定，用套接字中的相关函数来完成通信过程。</p>
-<h3 id="3-进程调度算法"><a href="#3-进程调度算法" class="headerlink" title="3 进程调度算法"></a>3 进程调度算法</h3><p>为了确定首先执行哪个进程以及最后执行哪个进程以实现最大 CPU 利用率。</p>
-<p><strong>先来先服务(FCFS)调度算法</strong><br>每个进程就绪后加入就绪队列，从就绪队列中选择一个最先进入该队列的进程并为之分配资源，然后立即执行。FCFS是非抢占式的，易于实现，但效率不高，性能不好。有利于长作业（CPU繁忙性）而不利于短作业（I/O繁忙性）。</p>
-<p><strong>短作业优先（SJF）调度算法</strong><br>每次从后备队列中选择一个或若干个估计运行时间最短的作业，将它们调入内存运行。SJF是非抢占式的，优先照顾短作业，具有很好的性能，降低平均等待时间，提高吞吐量。<br>但不利于长作业，长作业可能一直处于等待状态，出现饥饿现象；完全未考虑作业的优先紧迫程度，不能用于实时系统。</p>
-<p><strong>时间片轮转调度算法</strong><br>时间片轮转调度是一种最古老，最简单，最公平且使用最广泛的算法。每个进程被分配一个时间段，称作它的时间片，即该进程允许运行的时间。进程调度程序总是选择就绪队列中第一个进程执行，即先来先服务的原则，但仅能运行一个时间片。适用于分时系统。</p>
-<p><strong>最短剩余时间优先调度算法</strong><br>最短剩余时间优先是针对短作业优先增加了抢占机制的版本。进程调度程序总是选择预期剩余时间最短的进程。当一个进程加入到就绪队列，它可能比当前运行的进程具有更短的剩余时间，因此调度程序就很可能抢占当前正在运行的进程。</p>
-<p><strong>高响应比优先调度算法</strong><br>高响应比优先调度算法（Highest Reponse Ratio First, HRRF）是非抢占式的，主要用于作业调度。每次进行作业调度时，先计算后备队列中每个作业的响应比，选择响应比最高的作业调度运行。<br>响应比 = （等待时间 + 服务时间） / 服务时间 = 等待时间 / 服务时间 + 1<br>该算法介于FCFS和SJF之间，但是每次需要计算每个作业的响应比，增加系统开销。</p>
-<p><strong>优先级调度算法</strong><br>为每个进程分配一个优先级，首先执行具有最高优先级的进程，依此类推。具有相同优先级的进程以 FCFS 方式执行。</p>
-<p><strong>多级反馈队列调度算法</strong><br>设置多个就绪队列，并为各个队列赋予不同的优先级。在优先级越高的队列中，每个进程所规定的执行时间片就越小。<br>当一个新进程进入内存后，首先放入第一队列的末尾，按照先来先去原则排队等候调度。如果它能在一个时间片中完成，便可撤离；如果未完成，就转入第二队列的末尾，等待调度。依此类推。<br>仅当第一队列空闲的时候，调度程序才调度第二队列中的进程运行。<br>如果处理机正在处理第i队列中的进程，又有新进程进入优先级更高的队列，则此新队列抢占正在运行的处理机，并把正在运行的进程放在第i队列的队尾。</p>
-<h3 id="4-作业调度与进程调度"><a href="#4-作业调度与进程调度" class="headerlink" title="4 作业调度与进程调度"></a>4 作业调度与进程调度</h3><p>作业调度又称为高级调度，频率较低。其主要任务就是将位于外存后备队列中的某个（或某些）作业调入内存，排在就绪队列上。但仅仅是将作业调入内存，并为作业创建进程、分配资源，此时进程处于就绪状态，并没有执行。</p>
-<p>进程调度又称为低级调度，是最基本的、频率最高的调度方式。其主要任务是从就绪队列中选取一个（或几个）进程，并为之分配处理机，这时候才可以理解为“执行”。</p>
-<p>区别：作业调度是为作业建立进程的过程，是将作业由外存调入内存的过程；<br>而进程调度整个过程并没有跑出内存的范围，而是将就绪态的进程变为运行态的过程。</p>
-]]></content>
-      <categories>
-        <category>操作系统</category>
-      </categories>
-      <tags>
-        <tag>进程调度</tag>
       </tags>
   </entry>
   <entry>
@@ -942,63 +985,22 @@
       </tags>
   </entry>
   <entry>
-    <title>12_16_Network</title>
-    <url>/2021/12/16/12-16-Network/</url>
-    <content><![CDATA[<h3 id="1-每一层对应的网络协议"><a href="#1-每一层对应的网络协议" class="headerlink" title="1 每一层对应的网络协议"></a>1 每一层对应的网络协议</h3><img src="/2021/12/16/12-16-Network/protocol.png" class="">
-
-<h3 id="2-ARP协议"><a href="#2-ARP协议" class="headerlink" title="2 ARP协议"></a>2 ARP协议</h3><p>地址解析协议，即ARP（Address Resolution Protocol），是根据IP地址获取物理地址的一个TCP/IP协议。</p>
-<p>首先，每台主机都会在自己的 ARP 缓冲区中建立一个 ARP 列表，以表示 IP 地址和 MAC 地址的对应关系。当源主机需要将一个数据包发送到目的主机时，会首先检查自己 ARP 列表中是否存在该 IP 地址对应的 MAC 地址。如果有，就直接将数据包发送到这个 MAC 地址；如果没有，就向本地网段发起一个 ARP 请求的广播包，查询此目的主机对应的 MAC 地址。</p>
-<p>ARP请求数据包中包括源主机的 IP 地址、硬件地址、以及目的主机的 IP 地址。网络中所有的主机收到这个 ARP 请求后，会检查数据包中的目的 IP 是否和自己的 IP 地址一致。如果不相同就忽略此数据包；如果相同，该主机首先将发送端的 MAC 地址和 IP 地址添加到自己的 ARP 列表中，如果 ARP 表中已经存在该 IP 的信息，则将其覆盖，然后给源主机发送一个 ARP 响应数据包，告诉对方自己是它需要查找的 MAC 地址；源主机收到这个 ARP 响应数据包后，将得到的目的主机的 IP 地址和 MAC 地址添加到自己的 ARP 列表中，并利用此信息开始数据的传输。如果源主机一直没有收到 ARP 响应数据包，表示 ARP 查询失败。</p>
-<h3 id="3-粘包"><a href="#3-粘包" class="headerlink" title="3 粘包"></a>3 粘包</h3><p>客户端连续不断的向服务端发送数据包时，服务端接收的数据会出现两个数据包粘在一起的情况。</p>
-<ol>
-<li>TCP是基于字节流的，虽然应用层和传输层之间的数据交互是大小不等的数据块，但是TCP把这些数据块仅仅看成是一连串无结构的字节流，没有边界；</li>
-<li>从 TCP 的帧结构也可以看出，在 TCP 的首部没有表示数据长度的字段。<br>基于上面两点，在使用 TCP 传输数据时，才有粘包或者拆包现象发生的可能。</li>
-</ol>
-<p>一个数据包中包含了发送端发送的两个数据包的信息，这种现象称为粘包。<br>接收端收到了两个数据包，但是这两个数据包要么是不完整的，要么就是多出来一块，这种情况即发生了拆包和粘包。拆包和粘包的问题导致接收端在处理的时候会非常困难，因为无法区分一个完整的数据包。</p>
-<p>TCP粘包的产生：<br>发送方产生粘包：采用 TCP 协议传输数据的客户端与服务器经常是保持一个长连接的状态，双方在连接不断开的情况下，可以一直传输数据。当发送的数据包太小时，那么 TCP 协议默认会启用 Nagle 算法，将这些较小的数据包进行合并（缓冲区数据发送是一个堆压的过程）；这个合并过程就是在发送缓冲区中进行的，也就是说数据发送出来时它已经是粘包的状态了。</p>
-<p>接收方产生粘包：由于tcp是面向字节流的协议，即协议的内容是像流水一样的字节流，内容与内容之间没有明确的分界标志，需要我们人为地去给这些协议划分边界。</p>
-<p>解决办法：<br>以指定字符（串）作为包的结束标志；<br>包头定长（在包头的首部添加数据包的长度）。</p>
-<h3 id="4-在浏览器中输入-URL-地址到显示网页的过程"><a href="#4-在浏览器中输入-URL-地址到显示网页的过程" class="headerlink" title="4 在浏览器中输入 URL 地址到显示网页的过程"></a>4 在浏览器中输入 URL 地址到显示网页的过程</h3><ol>
-<li>DNS解析<br>如果输入ip地址表示直接从主机上调用内容。如果输入域名，则是通过域名解析服务器指向对应主机的IP地址，再从主机上调用网址的内容。<br>DNS解析过程：<br>查询<strong>浏览器缓存</strong>，如果没有查到会进入<strong>系统缓存</strong>进行查询，此时主要查询host文件，这个文件主要保存以前访问过的域名和IP地址，类似本地数据库。如果找到，可直接获取目标主机的IP地址，如果没找到，进入<strong>路由器缓存</strong>，路由器有自己的DNS缓存，如果查到就返回，否则进入<strong>ISP DNS缓存</strong>。从根域名服务器 –&gt; 顶级域名服务器 –&gt; 极限域名服务器，依次搜索查找对应目标域名的IP，找到以后，会建立TCP连接。</li>
-<li>TCP连接<br>浏览器获得域名对应的 IP 地址以后，会向服务器请求建立连接，发起三次握手。</li>
-<li>发送HTTP请求<br>TCP连接建立后，浏览器向服务器发送 HTTP 请求。<br>一个HTTP请求报文由请求行（request line）、请求头部（headers）、空行（blank line）和请求数据（request body）4个部分组成。</li>
-<li>服务器响应HTTP请求<br>服务器在收到http请求后，会根据路径参数映射到特定的请求处理器进行处理，并将处理结果及相应的视图返回给浏览器。</li>
-<li>浏览器解析渲染页面<br>这是一个边解析边渲染的过程。首先浏览器解析HTML文件构建DOM树，然后解析CSS文件构建渲染树，等到渲染树构建完成后，浏览器开始布局渲染树并将其绘制到屏幕上。JS的解析是由浏览器中的JS解析引擎完成的。</li>
-<li>连接结束<br>TCP四次挥手。</li>
-</ol>
-<h3 id="5-HTTPS工作过程"><a href="#5-HTTPS工作过程" class="headerlink" title="5 HTTPS工作过程"></a>5 HTTPS工作过程</h3><p>HTTPS是一种通过计算机网络进行安全通信的传输协议，经由HTTP进行通信，利用SSL/TLS建立安全信道，加密数据包。HTTPS的主要目的是提供对网站服务器的身份认证，同时保护交换数据的隐私与完整性。</p>
-<p>1.客户端向服务器发起HTTPS请求，连接到服务器的443端口。<br>2.服务器端有一个密钥对，即公钥和私钥，用来进行非对称加密的。服务器端保存着私钥，不能将其泄露，公钥可以发送给任何人。服务器将自己的公钥发送给客户端（以证书的形式）。<br>3.客户端收到服务器端的证书之后，会对证书进行检查，验证其合法性，如果发现证书有问题，那么HTTPS传输就无法继续。如果验证通过，那么客户端会生成一个随机值，这个随机值就是用于对称加密的密钥，我们将该密钥称之为client key，即客户端密钥。然后用服务器的公钥对客户端密钥进行非对称加密，这样客户端密钥就变成密文了。至此，HTTPS中的第一次HTTP请求结束。<br>4.客户端发起HTTPS中的第二次HTTP请求，将加密之后的客户端密钥发送给服务器。<br>5.服务器接收到客户端发来的密文之后，会用自己的私钥对其进行非对称解密，解密之后的明文就是客户端密钥，然后用客户端密钥对数据进行对称加密，这样数据就变成了密文。最后服务器将加密后的密文发送给客户端。<br>6.客户端收到服务器发来的密文，用客户端密钥对其进行解密，得到服务器发送的数据。这样HTTPS中的第二个HTTP请求结束，整个HTTPS传输完成。</p>
-<p>优点：<br>使用HTTPS协议可认证用户和服务器，确保数据发送到正确的客户端和服务器。<br>HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议。它比http协议更安全，可防止数据在传输过程中被窃取、篡改，确保了数据的完整性。<br>HTTPS是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</p>
-<p>缺点：<br>HTTPS协议握手阶段比较费时，会使页面的加载时间延长近50%，增加10%到20%的耗电。<br>HTTPS连接缓存不如HTTP高效，会增加数据开销和功耗，甚至已有的安全措施也会因此而受到影响。</p>
-<h3 id="6-HTTP与HTTPS"><a href="#6-HTTP与HTTPS" class="headerlink" title="6 HTTP与HTTPS"></a>6 HTTP与HTTPS</h3><p>安全性不同：HTTP协议是无状态、无连接的。<br>无状态的意思是协议对于交互性场景没有记忆能力。服务器中没有保存客户端的状态，每次的请求都是独立的。<br>无连接的含义是限制每次连接只处理一个请求。服务器处理完客户端的请求，并收到客户端的应答后，立即断开连接。<br>HTTPS协议是由 TSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 HTTP 协议安全。</p>
-<p>默认端口不同：http和https使用的是完全不同的连接方式，同时使用的端口也不同。http使用的是80端口，https使用的是443端口。在网络模型中，HTTP工作于应用层，而HTTPS工作在传输层。</p>
-<p>网站申请流程不同：https协议需要到CA申请证书，一般免费证书很少，需要交费。Web服务器启用SSL需要获得一个服务器证书并将该证书与要使用SSL的服务器进行绑定。</p>
-<h3 id="7-数字签名与数字证书"><a href="#7-数字签名与数字证书" class="headerlink" title="7 数字签名与数字证书"></a>7 数字签名与数字证书</h3><p>为了避免数据在传输过程中被替换，发送端做一个数字签名。把数据的摘要消息进行加密，得到一个签名，它和数据一起发送。接收端把数据摘要进行加密，如果和签名一样，则说明数据确实是真的。</p>
-<p>虽然数字签名可以保证数据不被替换，但是数据是由公钥加密的，如果公钥也被替换，则仍然可以伪造数据。<br>为了保证发送方的公钥是真的，CA证书机构会负责颁发一个证书，里面的公钥保证是真的，用户请求服务器时，服务器将证书发给用户。</p>
-]]></content>
-      <categories>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络协议</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>12_27_desgin_mode</title>
     <url>/2021/12/27/12-27-desgin-mode/</url>
     <content><![CDATA[<h3 id="1-设计模式分类"><a href="#1-设计模式分类" class="headerlink" title="1 设计模式分类"></a>1 设计模式分类</h3><p>设计模式可分为三类：</p>
 <p>创建型模式（五种）：工厂方法模式、抽象工厂模式、单例模式、建造者模式、原型模式。</p>
 <p>结构型模式（七种）：适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。</p>
 <p>行为型模式（十一种）：策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。</p>
-<h3 id="2-工厂模式"><a href="#2-工厂模式" class="headerlink" title="2 工厂模式"></a>2 工厂模式</h3><p>工厂模式有 3 种不同的实现方式，分别是简单工厂模式、工厂方法模式和抽象工厂模式。</p>
-<p><strong>简单工厂模式</strong><br>我们把被创建的对象称为“产品”，把创建产品的对象称为“工厂”。如果要创建的产品不多，只要一个工厂类就可以完成，这种模式叫“简单工厂模式”。<br>简单工厂模式有一个具体的工厂类，可以生成多个不同的产品。<br>简单工厂模式有一个问题就是，类的创建依赖工厂类。也就是说，如果想要拓展程序（增加一个产品），必须对工厂类进行修改，这违背了开闭原则。</p>
+<h3 id="2-工厂模式"><a href="#2-工厂模式" class="headerlink" title="2 工厂模式"></a>2 工厂模式</h3><p>工厂模式有3种不同的实现方式，分别是简单工厂模式、工厂方法模式和抽象工厂模式。</p>
+<p><strong>简单工厂模式</strong><br>我们把被创建的对象称为“产品”，把创建产品的对象称为“工厂”。如果要创建的产品不多，只需要一个工厂类就可以完成，这种模式叫“简单工厂模式”。<br>简单工厂模式有一个具体的工厂类，可以生成多个不同的产品。<br>简单工厂模式有一个问题就是，类的创建依赖工厂类。也就是说，如果想要拓展程序（增加一个产品），必须对工厂类进行修改，这违背了开闭原则。</p>
 <p><strong>工厂方法模式</strong><br>定义了一个创建对象的抽象方法，由子类决定要实例化的类。工厂方法模式将对象的实例化推迟到子类。<br>“工厂方法模式”是对简单工厂模式的进一步抽象化，其好处是可以使系统在不修改原来代码的情况下引进新的产品，即满足开闭原则。如果想增加一个产品，只要扩展一个工厂类就可以。<br>缺点：每次增加一个产品时，都需要增加一个具体类和对象实现工厂，使得系统中类的个数成倍增加，在一定程度上增加了系统的复杂度。<br>工厂方法模式只考虑生产同等级的产品（比如不同牌子的电视机）。不能生产多等级产品（比如电视机和空调）。抽象工厂模式可以解决。</p>
 <p><strong>抽象工厂模式</strong><br>一种为访问类提供一个创建一组相关或相互依赖对象的接口，且访问类无须指定所要产品的具体类就能得到同族的不同等级的产品的模式结构。<br>工厂方法模式只生产一个等级的产品，而抽象工厂模式可生产多个等级的产品。</p>
-<h3 id="3-单例模式"><a href="#3-单例模式" class="headerlink" title="3 单例模式"></a>3 单例模式</h3><p>一个类只有一个实例，且该类能自行创建这个实例的一种模式。<br>单例类只有一个实例对象；该单例对象必须由单例类自行创建；对外提供一个访问该单例的全局访问点。<br>单例模式有2种实现方式：懒汉式和饿汉式。</p>
+<h3 id="3-单例模式"><a href="#3-单例模式" class="headerlink" title="3 单例模式"></a>3 单例模式</h3><p>一个类只有一个实例，且该类能自行创建这个实例的一种模式。<br>单例类只有一个实例对象；该单例对象必须由单例类自行创建；对外提供一个访问该单例的全局访问点。<br>单例模式有2种实现方式：懒汉式和饿汉式。<br><strong>懒汉式</strong></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LazySingleton &#123;</span><br><span class="line">    private static volatile LazySingleton instance &#x3D; null;    &#x2F;&#x2F;保证 instance 在所有线程中同步</span><br><span class="line">    private LazySingleton() &#123;</span><br><span class="line">    &#125;    &#x2F;&#x2F;private 避免类在外部被实例化</span><br><span class="line">    public static synchronized LazySingleton getInstance() &#123;</span><br><span class="line">        &#x2F;&#x2F;getInstance 方法前加同步</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            instance &#x3D; new LazySingleton();</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>如果编写的是多线程程序，则不要删除上例代码中的关键字 volatile 和 synchronized，否则将存在线程不安全的问题。如果不删除这两个关键字就能保证线程安全，但是每次访问时都要同步，会影响性能，且消耗更多的资源，这是懒汉式单例的缺点。<br>优点：第一次调用才初始化，避免内存浪费。</p>
+<p>如果编写的是多线程程序，则不要删除上例代码中的关键字volatile和synchronized，否则将存在线程不安全的问题。如果不删除这两个关键字就能保证线程安全，但是每次访问时都要同步，会影响性能，且消耗更多的资源，这是懒汉式单例的缺点。<br>优点：第一次调用才初始化，避免了内存浪费。</p>
+<p><strong>饿汉式</strong></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class HungrySingleton &#123;</span><br><span class="line">    private static final HungrySingleton instance &#x3D; new HungrySingleton();</span><br><span class="line">    private HungrySingleton() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    public static HungrySingleton getInstance() &#123;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>该模式的特点是类一旦加载就创建一个单例，保证在调用 getInstance 方法之前单例已经存在了。</p>
+<p>该模式的特点是类一旦加载就创建一个单例，保证在调用getInstance方法之前单例已经存在了。</p>
 <h3 id="4-代理模式"><a href="#4-代理模式" class="headerlink" title="4 代理模式"></a>4 代理模式</h3><p>给某对象提供一个代理以控制对该对象的访问。这时，访问对象不适合或者不能直接引用目标对象，代理对象作为访问对象和目标对象之间的中介。</p>
 <p>优点：<br>代理对象可以扩展目标对象的功能；<br>代理模式能将客户端与目标对象分离，在一定程度上降低了系统的耦合度，增加了程序的可扩展性；</p>
 <p>缺点：<br>代理模式会造成系统设计中类的数量增加；<br>在客户端和目标对象之间增加一个代理对象，会造成请求处理速度变慢；</p>
@@ -1015,6 +1017,29 @@
       </categories>
       <tags>
         <tag>designmode</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>12_29_Tree</title>
+    <url>/2021/12/29/12-29-Tree/</url>
+    <content><![CDATA[<h3 id="1-二叉树"><a href="#1-二叉树" class="headerlink" title="1 二叉树"></a>1 二叉树</h3><p>1）每个结点最多有两颗子树，所以二叉树中不存在度大于2的结点。<br>2）左子树和右子树是有顺序的，次序不能颠倒。<br>3）即使树中某结点只有一棵子树，也要区分它是左子树还是右子树。</p>
+<p>性质：<br>1）在二叉树的第i层上最多有2^(i-1)个节点。（i&gt;=1）<br>2）二叉树深度为k，那么最多有2^k-1个节点。(k&gt;=1）<br>3）n0=n2+1。n0表示度数为0的节点个数（叶子节点个数），n2表示度数为2的节点个数。<br>4）在完全二叉树中，具有n个节点的完全二叉树的深度为[log2n]+1，其中[log2n]是向下取整。<br>5）若对含n个结点的完全二叉树从上到下且从左至右进行 1 至 n 的编号，则对完全二叉树中任意一个编号为 i 的结点有如下特性：<br>(1) 若i=1，则该结点是二叉树的根，无双亲，否则，编号为 [i/2] 的结点为其双亲结点;<br>(2) 若2i&gt;n，则该结点无左孩子，否则，编号为 2i 的结点为其左孩子结点；<br>(3) 若2i+1&gt;n，则该结点无右孩子结点，否则，编号为2i+1的结点为其右孩子结点。</p>
+<h3 id="2-满二叉树"><a href="#2-满二叉树" class="headerlink" title="2 满二叉树"></a>2 满二叉树</h3><p>高度为h，由2^h-1个节点构成的二叉树称为满二叉树。</p>
+<h3 id="3-完全二叉树"><a href="#3-完全二叉树" class="headerlink" title="3 完全二叉树"></a>3 完全二叉树</h3><p>完全二叉树是由满二叉树引出来的，若设二叉树的高度为h，则除第 h 层外，其它各层 (1～h-1) 的结点个数都达到最大值(即1~h-1层为一个满二叉树)，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。</p>
+<h3 id="4-平衡二叉树（AVL树）"><a href="#4-平衡二叉树（AVL树）" class="headerlink" title="4 平衡二叉树（AVL树）"></a>4 平衡二叉树（AVL树）</h3><p>它是一棵空树或者它的左右两个子树的高度差的绝对值不超过1，并且左右两个子树都是一棵平衡二叉树。</p>
+<h3 id="5-二叉排序树（二叉搜索树-二叉查找树）BST"><a href="#5-二叉排序树（二叉搜索树-二叉查找树）BST" class="headerlink" title="5 二叉排序树（二叉搜索树/二叉查找树）BST"></a>5 二叉排序树（二叉搜索树/二叉查找树）BST</h3><p>它是一棵空树，或者是具有下列性质的二叉树：<br>（1）若左子树不空，则左子树上所有结点的值均小于它的根结点的值；<br>（2）若右子树不空，则右子树上所有结点的值均大于它的根结点的值；<br>（3）左、右子树也分别为二叉排序树；<br>（4）没有键值相等的结点。</p>
+<h3 id="6-红黑树"><a href="#6-红黑树" class="headerlink" title="6 红黑树"></a>6 红黑树</h3><p>红黑树（Red Black Tree）是一种自平衡二叉查找树。红黑树是一种含有红黑结点并能自平衡的二叉查找树。它必须满足下面性质：<br>性质1：每个结点要么是黑色，要么是红色。<br>性质2：根结点是黑色。<br>性质3：每个叶子结点（NIL）都是黑色。<br>性质4：每个红色结点的两个子结点一定都是黑色。<br>性质5：任意一个结点到每个叶子结点的路径都包含数量相同的黑色结点。<br>如果一个结点存在黑色结点，那么该结点肯定有两个子结点。</p>
+<p>应用：TreeMap、TreeSet、JDK1.8 HashMap</p>
+<p>红黑树vs平衡二叉树<br>红黑树不追求”完全平衡”，即不像AVL树那样要求节点的|balFact| &lt;= 1，它只要求部分达到平衡。红黑树是用非严格的平衡来换取增删节点时旋转次数的降低，任何不平衡都会在三次旋转之内解决，而AVL树是严格的平衡树，因此在增加或者删除节点的时候，旋转的次数比红黑树要多。<br>红黑树的查询性能略微逊色于AVL树，但是，红黑树在插入和删除上优于AVL树，AVL树每次插入删除会进行大量的平衡度计算，而红黑树为了维持红黑性质所做的红黑变换和旋转的开销，相较于AVL树为了维持平衡的开销要小得多。<br>实际应用中，若搜索的次数远远大于插入和删除，那么选择AVL树；如果搜索，插入，删除次数几乎差不多，应该选择RB树。</p>
+<h3 id="7-B树、B-树、B-树"><a href="#7-B树、B-树、B-树" class="headerlink" title="7 B树、B+树、B*树"></a>7 B树、B+树、B*树</h3><p><strong>B树</strong><br>一棵m阶B树是一棵平衡的m路搜索树。它或者是空树，或者是满足下列性质的树：<br>1、根结点至少有两棵子树；<br>2、树中每个结点至多有m棵子树；<br>3、除根结点以外的所有结点（不包括叶子结点）的度数正好是关键字总数加一，即有k-1个关键字和K棵子树。<br>4、所有结点都包含如下形式的数据：(n,A0 ,K1 ,A1 ,K2 ,A2 , … ,Kn,An )<br>其中n为关键字的个数，Ki(i=1, … , n)为关键字，且满足K1&lt;K2&lt;…&lt;Kn。Ai( i=0,1, … , n)为指向子树根结点的指针，且对于i=1,2, … , n-1，Ai所指子树上各结点的一切关键字均大于Ki，而小于Ki+1。A0所指子树上各结点的一切关键字均小于K1，An所指子树上各结点的一切关键字均大于Kn。<br>对于叶子结点，所有指针Ai皆为空。对于具有 n 个关键字的非叶结点，将有 n+1 棵子树。</p>
+<p><strong>B+树</strong><br>1.有n棵子树的结点中含有n个关键字；<br>2.根节点最少有一棵子树，除根节点外，其他结点至少有 [ m/2 ] 棵子树；<br>3.所有的叶子结点中包含了全部关键字的信息，及指向含有这些关键字记录的指针，且叶子结点依关键字的大小自小而大顺序链接。(而B树的叶子节点并没有包括全部需要查找的信息)<br>4.所有的非叶子结点可以看成是索引部分，结点中仅含有其子树根结点中最大（或最小）关键字。</p>
+<p>B+树的搜索与B树基本相同，区别是B+树只有到达叶子结点才能命中（B树可以在非叶子结点命中）<br>B树的优势是当你要查找的值恰好处在一个非叶子节点时，查找到该节点就成功返回并结束查询。而B+树由于非叶子节点只是索引部分，这些节点中只含有其子树中的最大(或最小)关键字，当非终端节点上的关键字等于给点值时，查找并不终止，而是继续向下直到叶子节点。因此在B+树中，无论查找成功与否，都是走了一条从根到叶子节点的路径。</p>
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>二叉树</tag>
       </tags>
   </entry>
   <entry>
@@ -1150,29 +1175,6 @@
       </tags>
   </entry>
   <entry>
-    <title>12_29_Tree</title>
-    <url>/2021/12/29/12-29-Tree/</url>
-    <content><![CDATA[<h3 id="1-二叉树"><a href="#1-二叉树" class="headerlink" title="1 二叉树"></a>1 二叉树</h3><p>1）每个结点最多有两颗子树，所以二叉树中不存在度大于2的结点。<br>2）左子树和右子树是有顺序的，次序不能颠倒。<br>3）即使树中某结点只有一棵子树，也要区分它是左子树还是右子树。</p>
-<p>性质：<br>1）在二叉树的第i层上最多有2^(i-1)个节点。（i&gt;=1）<br>2）二叉树中如果深度为k,那么最多有2^k-1个节点。(k&gt;=1）<br>3）n0=n2+1。n0表示度数为0的节点个数（叶子节点个数），n2表示度数为2的节点个数。<br>4）在完全二叉树中，具有n个节点的完全二叉树的深度为[log2n]+1，其中[log2n]是向下取整。<br>5）若对含 n 个结点的完全二叉树从上到下且从左至右进行 1 至 n 的编号，则对完全二叉树中任意一个编号为 i 的结点有如下特性：<br>(1) 若 i=1，则该结点是二叉树的根，无双亲，否则，编号为 [i/2] 的结点为其双亲结点;<br>(2) 若 2i&gt;n，则该结点无左孩子，否则，编号为 2i 的结点为其左孩子结点；<br>(3) 若 2i+1&gt;n，则该结点无右孩子结点，否则，编号为2i+1 的结点为其右孩子结点。</p>
-<h3 id="2-满二叉树"><a href="#2-满二叉树" class="headerlink" title="2 满二叉树"></a>2 满二叉树</h3><p>高度为h，由2^h-1个节点构成的二叉树称为满二叉树。</p>
-<h3 id="3-完全二叉树"><a href="#3-完全二叉树" class="headerlink" title="3 完全二叉树"></a>3 完全二叉树</h3><p>完全二叉树是由满二叉树引出来的，若设二叉树的高度为h，则除第 h 层外，其它各层 (1～h-1) 的结点个数都达到最大值(即1~h-1层为一个满二叉树)，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。</p>
-<h3 id="4-平衡二叉树（AVL树）"><a href="#4-平衡二叉树（AVL树）" class="headerlink" title="4 平衡二叉树（AVL树）"></a>4 平衡二叉树（AVL树）</h3><p>它是一棵空树或者它的左右两个子树的高度差的绝对值不超过1，并且左右两个子树都是一棵平衡二叉树。</p>
-<h3 id="5-二叉排序树（二叉搜索树-二叉查找树）BST"><a href="#5-二叉排序树（二叉搜索树-二叉查找树）BST" class="headerlink" title="5 二叉排序树（二叉搜索树/二叉查找树）BST"></a>5 二叉排序树（二叉搜索树/二叉查找树）BST</h3><p>它是一棵空树，或者是具有下列性质的二叉树：<br>（1）若左子树不空，则左子树上所有结点的值均小于它的根结点的值；<br>（2）若右子树不空，则右子树上所有结点的值均大于它的根结点的值；<br>（3）左、右子树也分别为二叉排序树；<br>（4）没有键值相等的结点。</p>
-<h3 id="6-红黑树"><a href="#6-红黑树" class="headerlink" title="6 红黑树"></a>6 红黑树</h3><p>红黑树（Red Black Tree） 是一种自平衡二叉查找树。红黑树是一种含有红黑结点并能自平衡的二叉查找树。它必须满足下面性质：<br>性质1：每个结点要么是黑色，要么是红色。<br>性质2：根结点是黑色。<br>性质3：每个叶子结点（NIL）都是黑色。<br>性质4：每个红色结点的两个子结点一定都是黑色。<br>性质5：任意一个结点到每个叶子结点的路径都包含数量相同的黑色结点。<br>如果一个结点存在黑色结点，那么该结点肯定有两个子结点。</p>
-<p>应用：TreeMap、TreeSet、JDK1.8 HashMap</p>
-<p>红黑树vs平衡二叉树<br>红黑树不追求”完全平衡”，即不像AVL那样要求节点的|balFact| &lt;= 1，它只要求部分达到平衡。红黑树是用非严格的平衡来换取增删节点时候旋转次数的降低，任何不平衡都会在三次旋转之内解决，而AVL是严格平衡树，因此在增加或者删除节点的时候，旋转的次数比红黑树要多。<br>红黑树的查询性能略微逊色于AVL树，但是，红黑树在插入和删除上优于AVL树，AVL树每次插入删除会进行大量的平衡度计算，而红黑树为了维持红黑性质所做的红黑变换和旋转的开销，相较于AVL树为了维持平衡的开销要小得多。<br>实际应用中，若搜索的次数远远大于插入和删除，那么选择AVL；如果搜索，插入，删除次数几乎差不多，应该选择RB。</p>
-<h3 id="7-B树、B-树、B-树"><a href="#7-B树、B-树、B-树" class="headerlink" title="7 B树、B+树、B*树"></a>7 B树、B+树、B*树</h3><p><strong>B树</strong><br>一棵m阶B树是一棵平衡的m路搜索树。它或者是空树，或者是满足下列性质的树：<br>1、根结点至少有两棵子树；<br>2、树中每个结点至多有m棵子树；<br>3、除根结点以外的所有结点（不包括叶子结点）的度数正好是关键字总数加一，即有k-1个关键字和K棵子树。<br>4、所有结点都包含如下形式的数据：(n,A0 ,K1 ,A1 ,K2 ,A2 , … ,Kn,An )<br>其中 n 为关键字的个数，Ki(i=1, … , n)为关键字，且满足 K1&lt;K2&lt;…&lt;Kn。Ai( i=0,1, … , n)为指向子树根结点的指针，且对于i=1,2, … , n-1，Ai所指子树上各结点的一切关键字均大于Ki，而小于Ki+1。A0所指子树上各结点的一切关键字均小于K1，An所指子树上各结点的一切关键字均大于Kn。<br>对于叶子结点，所有指针Ai皆为空。对于具有 n 个关键字的非叶结点，将有 n+1 棵子树。</p>
-<p><strong>B+树</strong><br>1.有n棵子树的结点中含有n个关键字；<br>2.根节点最少有一棵子树，除根节点外，其他结点至少有 [ m/2 ] 棵子树；<br>3.所有的叶子结点中包含了全部关键字的信息，及指向含有这些关键字记录的指针，且叶子结点依关键字的大小自小而大顺序链接。(而B树的叶子节点并没有包括全部需要查找的信息)<br>4.所有的非叶子结点可以看成是索引部分，结点中仅含有其子树根结点中最大（或最小）关键字。</p>
-<p>B+树的搜索与B树基本相同，区别是B+树只有到达叶子结点才能命中（B树可以在非叶子结点命中）<br>B树的优势是当你要查找的值恰好处在一个非叶子节点时，查找到该节点就成功返回并结束查询。而B+树由于非叶子节点只是索引部分，这些节点中只含有其子树中的最大(或最小)关键字，当非终端节点上的关键字等于给点值时，查找并不终止，而是继续向下直到叶子节点。因此在B+树中，无论查找成功与否，都是走了一条从根到叶子节点的路径。</p>
-]]></content>
-      <categories>
-        <category>数据结构</category>
-      </categories>
-      <tags>
-        <tag>二叉树</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>copy constructor</title>
     <url>/2021/04/04/copy/</url>
     <content><![CDATA[<h3 id="浅拷贝简介"><a href="#浅拷贝简介" class="headerlink" title="浅拷贝简介"></a>浅拷贝简介</h3><p>浅拷贝会创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。如果属性是基本数据类型，拷贝的就是值；如果属性是引用数据类型，拷贝的就是内存地址。<br>基本数据类型是值传递，所以修改一个对象的值不会影响另一个对象。<br>引用数据类型是引用传递，浅拷贝只是把内存地址赋值给了新对象，它们指向同一内存空间。所以改变其中一个也会影响另一个。</p>
@@ -1211,6 +1213,54 @@
       </categories>
       <tags>
         <tag>差分时间链</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>evening</title>
+    <url>/2021/08/25/evening/</url>
+    <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
+<p>农历七月十八</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>郁</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>human</title>
+    <url>/2021/10/25/human/</url>
+    <content><![CDATA[<p><strong>人性经得起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
+<p>农历九月二十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>humanity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>firstblog</title>
+    <url>/2020/09/20/firstblog/</url>
+    <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
+<h3 id="启程出发"><a href="#启程出发" class="headerlink" title="启程出发"></a>启程出发</h3><p>收拾戎装，准备出发。第一次体验了磁悬浮与飞机的我不得不感叹中国科技发展之迅速。知识的力量是无穷的，希望我国在芯片领域也能更进一步。</p>
+<img src="/2020/09/20/firstblog/plane.jpg" class="">
+
+<h3 id="中蓝公寓"><a href="#中蓝公寓" class="headerlink" title="中蓝公寓"></a>中蓝公寓</h3><p>北京工业大学的研究生基本都住在中蓝公寓，不过中蓝公寓离校内还有一段距离，一般大家都是骑车上课。寝室是四人间，上下铺。厕所和澡堂都是公共的，不过令人疑惑的澡堂周六是不开放的。</p>
+<img src="/2020/09/20/firstblog/navigation.jpg" class="">
+
+<p>我所在的公寓是蓝悦园，在宿舍的阳台上放眼望去满是高大而豪华的建筑。其实我更想看的是充满历史又能反应北京特色的胡同儿。期待国庆能去转转。</p>
+<img src="/2020/09/20/firstblog/scene.jpg" class="">
+
+<h3 id="校内一角"><a href="#校内一角" class="headerlink" title="校内一角"></a>校内一角</h3><p>在这个举办过奥运会的城市，最不缺的就是运动的气息。工大各色各样的运动场馆似乎都有，其中羽毛球场馆还是08年奥运会羽毛球比赛场地。许多人都说研究生的生活充满了枯燥与压力，或许运动就是最好的良药。确实，我非常赞同这个观点，毕竟身体才是革命的本钱。</p>
+<img src="/2020/09/20/firstblog/basketball.jpg" class="">]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>初入北京</tag>
       </tags>
   </entry>
   <entry>
@@ -1268,54 +1318,6 @@
       </categories>
       <tags>
         <tag>双指针</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>evening</title>
-    <url>/2021/08/25/evening/</url>
-    <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
-<p>农历七月十八</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>郁</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>firstblog</title>
-    <url>/2020/09/20/firstblog/</url>
-    <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
-<h3 id="启程出发"><a href="#启程出发" class="headerlink" title="启程出发"></a>启程出发</h3><p>收拾戎装，准备出发。第一次体验了磁悬浮与飞机的我不得不感叹中国科技发展之迅速。知识的力量是无穷的，希望我国在芯片领域也能更进一步。</p>
-<img src="/2020/09/20/firstblog/plane.jpg" class="">
-
-<h3 id="中蓝公寓"><a href="#中蓝公寓" class="headerlink" title="中蓝公寓"></a>中蓝公寓</h3><p>北京工业大学的研究生基本都住在中蓝公寓，不过中蓝公寓离校内还有一段距离，一般大家都是骑车上课。寝室是四人间，上下铺。厕所和澡堂都是公共的，不过令人疑惑的澡堂周六是不开放的。</p>
-<img src="/2020/09/20/firstblog/navigation.jpg" class="">
-
-<p>我所在的公寓是蓝悦园，在宿舍的阳台上放眼望去满是高大而豪华的建筑。其实我更想看的是充满历史又能反应北京特色的胡同儿。期待国庆能去转转。</p>
-<img src="/2020/09/20/firstblog/scene.jpg" class="">
-
-<h3 id="校内一角"><a href="#校内一角" class="headerlink" title="校内一角"></a>校内一角</h3><p>在这个举办过奥运会的城市，最不缺的就是运动的气息。工大各色各样的运动场馆似乎都有，其中羽毛球场馆还是08年奥运会羽毛球比赛场地。许多人都说研究生的生活充满了枯燥与压力，或许运动就是最好的良药。确实，我非常赞同这个观点，毕竟身体才是革命的本钱。</p>
-<img src="/2020/09/20/firstblog/basketball.jpg" class="">]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>初入北京</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>human</title>
-    <url>/2021/10/25/human/</url>
-    <content><![CDATA[<p><strong>人性经得起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
-<p>农历九月二十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>humanity</tag>
       </tags>
   </entry>
   <entry>
@@ -1435,6 +1437,24 @@
       </categories>
       <tags>
         <tag>密码学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>memory</title>
+    <url>/2021/03/21/memory/</url>
+    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
+<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
+<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
+<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
+<img src="/2021/03/21/memory/memory.jpg" class="">
+
+<p>辛丑牛年农历二月初十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>旅行</tag>
       </tags>
   </entry>
   <entry>
@@ -1701,21 +1721,17 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>memory</title>
-    <url>/2021/03/21/memory/</url>
-    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
-<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
-<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
-<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
-<img src="/2021/03/21/memory/memory.jpg" class="">
-
-<p>辛丑牛年农历二月初十</p>
+    <title>new_day</title>
+    <url>/2021/10/24/new-day/</url>
+    <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
+<p>下午呆坐在实验室的我静静的听着歌，一首记忆发光让我想起了18年，三年了，《我的青春遇见你》这部电视剧又在脑海里回忆。直接看了最后一集，羡慕陈也与李招娣的爱情。一路走来，嫁给爱情是多么美好啊！不知不觉自己竟然流泪了，是啊，就像招娣拒绝贾方舟所说的，这座城市很大，坐在车里看外面的世界，灯红酒绿的，给人很美好的感觉。但你下车之后，漫步在雨中，发现这才是我的生活。是啊，生活中大多数人是陈也，不是贾方舟。那时的街道没有车水马龙，也没有太多的钢筋水泥，我们的生活却充实有趣。</p>
+<p>农历九月十九</p>
 ]]></content>
       <categories>
         <category>生活</category>
       </categories>
       <tags>
-        <tag>旅行</tag>
+        <tag>程序员节</tag>
       </tags>
   </entry>
   <entry>
@@ -1732,20 +1748,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>new_day</title>
-    <url>/2021/10/24/new-day/</url>
-    <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
-<p>下午呆坐在实验室的我静静的听着歌，一首记忆发光让我想起了18年，三年了，《我的青春遇见你》这部电视剧又在脑海里回忆。直接看了最后一集，羡慕陈也与李招娣的爱情。一路走来，嫁给爱情是多么美好啊！不知不觉自己竟然流泪了，是啊，就像招娣拒绝贾方舟所说的，这座城市很大，坐在车里看外面的世界，灯红酒绿的，给人很美好的感觉。但你下车之后，漫步在雨中，发现这才是我的生活。是啊，生活中大多数人是陈也，不是贾方舟。那时的街道没有车水马龙，也没有太多的钢筋水泥，我们的生活却充实有趣。</p>
-<p>农历九月十九</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>程序员节</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>now_do_it</title>
     <url>/2021/10/29/now-do-it/</url>
     <content><![CDATA[<p>不知不觉已经10月29号了，时间如白驹过隙，还有一个月就要开题答辩了。昨天老师腾讯会议聊完开题的事情，我的上一届师兄师姐在这个时候或多或少都有一定的研究成果了。但我的研究成果似乎还停滞在了2个月之前，安全多方计算、区块链、物联网。一个热门又新的领域，但似乎对我不太友好，可能我就不适合做科研工作者吧！但是没办法，你必须得硬着头皮往前冲，科研就是这样，培养的就是解决未知问题的能力。就是找没有答案的问题，如果是有答案的问题，那用部着进行科学研究。科研的道路注定充满艰辛、孤独。科研工作者就像勇士一样，必须连续作战，保持胜利战果，所以他是孤独的，同时也是令人敬佩的。加油吧，年轻人！</p>
@@ -1756,6 +1758,22 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>十月的尾巴</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>rain</title>
+    <url>/2021/03/26/rain/</url>
+    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
+<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
+<p>辛丑年农历二月十四</p>
+<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
+<p>辛丑年农历二月十五</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>如晴似雨</tag>
       </tags>
   </entry>
   <entry>
@@ -1797,22 +1815,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>shiro</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>rain</title>
-    <url>/2021/03/26/rain/</url>
-    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
-<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
-<p>辛丑年农历二月十四</p>
-<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
-<p>辛丑年农历二月十五</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>如晴似雨</tag>
       </tags>
   </entry>
   <entry>
