@@ -1,6 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>1030_java</title>
+    <url>/2021/10/30/1030-java/</url>
+    <content><![CDATA[<h3 id="1-深克隆和浅克隆的区别？"><a href="#1-深克隆和浅克隆的区别？" class="headerlink" title="1 深克隆和浅克隆的区别？"></a>1 深克隆和浅克隆的区别？</h3><p>浅克隆：<strong>简单复制了原始对象的引用地址，两个对象指向同一个内存地址</strong>。所以任意修改一个的值，另一个都会随之变化。<br>深克隆：将原始对象及值复制过来，任意修改其中一个的值，另一个不会改变。<br>深克隆就是所在类实现Cloneable接口，并使用public修饰符重写clone方法。但Java中clone没有深浅之分，都是统一调用Object的clone方法。只是我们刻意的重写了clone方法。</p>
+<h3 id="2-Java序列化，怎样实现？"><a href="#2-Java序列化，怎样实现？" class="headerlink" title="2 Java序列化，怎样实现？"></a>2 Java序列化，怎样实现？</h3><p>序列化是将对象转换为字节流的过程，可以将其保存到磁盘文件或进行网络传输。序列化为了解决在对象流进行读写操作时所引发的问题。所有可在网络上传输的对象都必须是可序列化的。比如RMI（remote method invoke）。<br>如果要将某个对象保存到磁盘上或者通过网络传输，那么这个类应该实现Serializable接口。<br>反序列化则是相反的过程。</p>
+<p><strong>注意</strong><br>Java序列化过程：<br>所有保存到磁盘的对象都有一个序列化编码，当程序试图序列化一个对象时，会先检查此对象是否已经序列化过，只有此对象未（在此虚拟机）被序列化过，才会将此对象序列化为字节流输出。<br>如果此对象已经序列化过，则直接输出编号。<br>如果想让某个变量不被序列化，使用transient修饰。</p>
+<h3 id="3-Java泛型、类型擦除"><a href="#3-Java泛型、类型擦除" class="headerlink" title="3 Java泛型、类型擦除"></a>3 Java泛型、类型擦除</h3><p>泛型通过在编译时检测到更多错误来增加代码的稳定性。简而言之，<strong>泛型使类型（类和接口）在定义类、接口和方法时成为参数</strong>。类型参数为您提供了一种对不同输入重复使用相同代码的方法。<br>区别在于形式参数的输入是值，而类型参数的输入是类型。<br>泛型的使用：泛型类、泛型接口和泛型方法。</p>
+<p>类型擦除：泛型信息只存在于代码编译阶段，在进入JVM之前，与泛型相关的信息会被擦除掉。类型擦除确保不会为参数化类型创建新类，因此，泛型不会产生运行时开销。<br>在类型擦除过程中，Java编译器擦除所有类型参数，如果类型参数有界，则用其第一个边界替换每个参数，如果类型参数无界，则用Object替换。</p>
+<p>上限通配符，&lt;? extends Foo&gt;，其中Foo是任何类型，匹配Foo和Foo的任何子类型。<br>下限通配符将未知类型限制为特定类型或该类型的超类型。下限通配符使用通配符(‘?’)表示，后跟super关键字，最后跟其下限。即&lt;? super A&gt;。</p>
+<h3 id="4-Java反射、应用场景、优缺点"><a href="#4-Java反射、应用场景、优缺点" class="headerlink" title="4 Java反射、应用场景、优缺点"></a>4 Java反射、应用场景、优缺点</h3><p>反射：<strong>在程序运行时动态的获取信息以及动态的调用对象方法的一种机制</strong>。<br>一般来说，程序中对象是new出来的，程序相当于写死了给jvm去跑。假如这时需要用到某个类，但这个类还没加载进jvm，此时就需要动态的加载这个类。<br>举个例子：假如我们的项目数据库用到了mysql和oracle，需要动态地根据实际情况加载驱动类。</p>
+<ul>
+<li>根据类名创建实例（类名可以从配置文件读取，不用new，达到解耦）</li>
+<li>调用Method.invoke执行方法</li>
+</ul>
+<p>Reflection可以在运行时加载、探知、使用编译期间完全未知的classes。即Java程序可以加载一个运行时才得知名称的class，获取其完整构造，并生成其对象实体、或对其fields设值、或唤起其methods。<br>java.lang.reflect包中的主要类：Class、Field、Method、Constructor、Array。</p>
+<p>应用：工厂模式，使用了反射机制。</p>
+<p>优点：运行时类型的判断，class.forName()动态加载类，提高代码灵活度。<br>缺点：性能开销；安全限制；内部暴露。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>反射</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>1031_java</title>
     <url>/2021/10/31/1031-java/</url>
     <content><![CDATA[<h3 id="1-Java创建对象的方法"><a href="#1-Java创建对象的方法" class="headerlink" title="1 Java创建对象的方法"></a>1 Java创建对象的方法</h3><p>new、反射newInstance()、clone()、反序列化。</p>
@@ -32,31 +57,6 @@
       </categories>
       <tags>
         <tag>动态代理</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>1030_java</title>
-    <url>/2021/10/30/1030-java/</url>
-    <content><![CDATA[<h3 id="1-深克隆和浅克隆的区别？"><a href="#1-深克隆和浅克隆的区别？" class="headerlink" title="1 深克隆和浅克隆的区别？"></a>1 深克隆和浅克隆的区别？</h3><p>浅克隆：<strong>简单复制了原始对象的引用地址，两个对象指向同一个内存地址</strong>。所以任意修改一个的值，另一个都会随之变化。<br>深克隆：将原始对象及值复制过来，任意修改其中一个的值，另一个不会改变。<br>深克隆就是所在类实现Cloneable接口，并使用public修饰符重写clone方法。但Java中clone没有深浅之分，都是统一调用Object的clone方法。只是我们刻意的重写了clone方法。</p>
-<h3 id="2-Java序列化，怎样实现？"><a href="#2-Java序列化，怎样实现？" class="headerlink" title="2 Java序列化，怎样实现？"></a>2 Java序列化，怎样实现？</h3><p>序列化是将对象转换为字节流的过程，可以将其保存到磁盘文件或进行网络传输。序列化为了解决在对象流进行读写操作时所引发的问题。所有可在网络上传输的对象都必须是可序列化的。比如RMI（remote method invoke）。<br>如果要将某个对象保存到磁盘上或者通过网络传输，那么这个类应该实现Serializable接口。<br>反序列化则是相反的过程。</p>
-<p><strong>注意</strong><br>Java序列化过程：<br>所有保存到磁盘的对象都有一个序列化编码，当程序试图序列化一个对象时，会先检查此对象是否已经序列化过，只有此对象未（在此虚拟机）被序列化过，才会将此对象序列化为字节流输出。<br>如果此对象已经序列化过，则直接输出编号。<br>如果想让某个变量不被序列化，使用transient修饰。</p>
-<h3 id="3-Java泛型、类型擦除"><a href="#3-Java泛型、类型擦除" class="headerlink" title="3 Java泛型、类型擦除"></a>3 Java泛型、类型擦除</h3><p>泛型通过在编译时检测到更多错误来增加代码的稳定性。简而言之，<strong>泛型使类型（类和接口）在定义类、接口和方法时成为参数</strong>。类型参数为您提供了一种对不同输入重复使用相同代码的方法。<br>区别在于形式参数的输入是值，而类型参数的输入是类型。<br>泛型的使用：泛型类、泛型接口和泛型方法。</p>
-<p>类型擦除：泛型信息只存在于代码编译阶段，在进入JVM之前，与泛型相关的信息会被擦除掉。类型擦除确保不会为参数化类型创建新类，因此，泛型不会产生运行时开销。<br>在类型擦除过程中，Java编译器擦除所有类型参数，如果类型参数有界，则用其第一个边界替换每个参数，如果类型参数无界，则用Object替换。</p>
-<p>上限通配符，&lt;? extends Foo&gt;，其中Foo是任何类型，匹配Foo和Foo的任何子类型。<br>下限通配符将未知类型限制为特定类型或该类型的超类型。下限通配符使用通配符(‘?’)表示，后跟super关键字，最后跟其下限。即&lt;? super A&gt;。</p>
-<h3 id="4-Java反射、应用场景、优缺点"><a href="#4-Java反射、应用场景、优缺点" class="headerlink" title="4 Java反射、应用场景、优缺点"></a>4 Java反射、应用场景、优缺点</h3><p>反射：<strong>在程序运行时动态的获取信息以及动态的调用对象方法的一种机制</strong>。<br>一般来说，程序中对象是new出来的，程序相当于写死了给jvm去跑。假如这时需要用到某个类，但这个类还没加载进jvm，此时就需要动态的加载这个类。<br>举个例子：假如我们的项目数据库用到了mysql和oracle，需要动态地根据实际情况加载驱动类。</p>
-<ul>
-<li>根据类名创建实例（类名可以从配置文件读取，不用new，达到解耦）</li>
-<li>调用Method.invoke执行方法</li>
-</ul>
-<p>Reflection可以在运行时加载、探知、使用编译期间完全未知的classes。即Java程序可以加载一个运行时才得知名称的class，获取其完整构造，并生成其对象实体、或对其fields设值、或唤起其methods。<br>java.lang.reflect包中的主要类：Class、Field、Method、Constructor、Array。</p>
-<p>应用：工厂模式，使用了反射机制。</p>
-<p>优点：运行时类型的判断，class.forName()动态加载类，提高代码灵活度。<br>缺点：性能开销；安全限制；内部暴露。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>反射</tag>
       </tags>
   </entry>
   <entry>
@@ -192,26 +192,26 @@
   <entry>
     <title>11_19_Java</title>
     <url>/2021/11/19/11-19-Java/</url>
-    <content><![CDATA[<h3 id="1-HashMap的底层实现原理？"><a href="#1-HashMap的底层实现原理？" class="headerlink" title="1 HashMap的底层实现原理？"></a>1 HashMap的底层实现原理？</h3><p>JDK1.7：entry数组+链表<br>JDK1.8：node数组+链表+红黑树。当链表上的元素个数超过8个并且数组长度&gt;=64时自动转化成红黑树，节点变成树节点，以提高搜索效率和插入效率至O(logN)。<br>Entry和Node都包含key、value、hash、next属性。</p>
-<p>1.7数组+链表 ==&gt;  1.8数组+链表+红黑树；<br>链表的插入方式从头插法改成了尾插法，头插法会使链表发生反转，多线程环境下会产生环。<br>扩容的时候1.7需要对原数组中的元素进行重新hash以定位在新数组的位置，1.8采用更简单的判断逻辑，位置不变或索引+旧容量大小；<br>在插入时，1.7先判断是否需要扩容，再插入；1.8先进行插入，插入完成再判断是否需要扩容。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</span><br><span class="line">        final int hash;</span><br><span class="line">        final K key;</span><br><span class="line">        V value;</span><br><span class="line">        Node&lt;K,V&gt; next;</span><br><span class="line"></span><br><span class="line">        Node(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            this.hash &#x3D; hash;</span><br><span class="line">            this.key &#x3D; key;</span><br><span class="line">            this.value &#x3D; value;</span><br><span class="line">            this.next &#x3D; next;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+    <content><![CDATA[<h3 id="1-HashMap的底层实现原理？"><a href="#1-HashMap的底层实现原理？" class="headerlink" title="1 HashMap的底层实现原理？"></a>1 HashMap的底层实现原理？</h3><p>JDK1.7：HashMap采用数组（桶）+ 链表的实现，使用链表来处理冲突，同一 hash 值的链表都存储在一个数组中。但是当位于一个桶中的元素较多，即 hash 值相等的元素较多时，通过 key 值依次查找的效率较低。<br>JDK1.8：数组+链表+红黑树。当每个数组（桶）中元素大于 8 的时候，会转变为红黑树，目的就是优化查询效率，JDK1.8重写了 resize() 方法。</p>
+<p>1.7数组+链表 ==&gt;  1.8数组+链表+红黑树；<br>链表的插入方式从头插法改成了尾插法，头插法会使链表发生反转，多线程环境下会产生环。<br>扩容的时候1.7需要对原数组中的元素进行重新hash以定位在新数组的位置，1.8采用更简单的判断逻辑，位置不变或索引+旧容量大小；<br>在插入时，1.7先判断是否需要扩容，再插入；1.8先进行插入，插入完成再判断是否需要扩容。<br>在进行添加元素时，当一个桶中存储元素的数量 &gt; 8 时，会自动转换为红黑树。<br>在进行删除元素时，如果一个桶中存储元素的数量 &lt; 6 后，会自动转换为链表。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; Node节点是用来存储HashMap的一个个实例，它实现了Map.Entry接口。</span><br><span class="line">static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</span><br><span class="line">        final int hash;</span><br><span class="line">        final K key;</span><br><span class="line">        V value;</span><br><span class="line">        Node&lt;K,V&gt; next;</span><br><span class="line"></span><br><span class="line">        Node(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            this.hash &#x3D; hash;</span><br><span class="line">            this.key &#x3D; key;</span><br><span class="line">            this.value &#x3D; value;</span><br><span class="line">            this.next &#x3D; next;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
 <p>默认初始容量 - 必须是2的幂<br>static final int DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4;  // aka 16<br>使用树而不是列表的bin计数阈值，将元素添加到至少具有这么多节点的 bin 时，bin会转换为树。<br>static final int TREEIFY_THRESHOLD = 8;<br>可以将bin树化的最小表容量。（否则，如果bin中的节点过多，则表将调整大小）应至少为 4 * TREEIFY_THRESHOLD，以避免调整大小和树化阈值之间发生冲突。<br>static final int MIN_TREEIFY_CAPACITY = 64;<br>Node数组，在第一次使用时初始化，并根据需要调整大小。分配时，长度始终是2的幂。（我们还在某些操作中容忍长度为零，以允许当前不需要的引导机制）<br>transient Node&lt;K,V&gt;[] table;<br>此映射中包含的键值映射数<br>transient int size;</p>
 <h3 id="2-HashMap的put和get方法实现原理"><a href="#2-HashMap的put和get方法实现原理" class="headerlink" title="2 HashMap的put和get方法实现原理"></a>2 HashMap的put和get方法实现原理</h3><p><strong>put</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public V put(K key, V value) &#123;</span><br><span class="line">        return putVal(hash(key), key, value, false, true);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">实现Map.put和相关方法。</span><br><span class="line">   hash – hash for key</span><br><span class="line">   key – the key</span><br><span class="line">   value – the value to put</span><br><span class="line">   onlyIfAbsent – 如果为true，则不更改现有值。</span><br><span class="line">   evict – 如果为false，则表处于创建模式。</span><br><span class="line">   返回：前一个值，如果没有，则返回null。</span><br><span class="line">final V putVal(int hash, K key, V value, boolean onlyIfAbsent,</span><br><span class="line">                   boolean evict) &#123;</span><br><span class="line">        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;</span><br><span class="line">        if ((tab &#x3D; table) &#x3D;&#x3D; null || (n &#x3D; tab.length) &#x3D;&#x3D; 0)</span><br><span class="line">            n &#x3D; (tab &#x3D; resize()).length;</span><br><span class="line">        if ((p &#x3D; tab[i &#x3D; (n - 1) &amp; hash]) &#x3D;&#x3D; null)</span><br><span class="line">            tab[i] &#x3D; newNode(hash, key, value, null);</span><br><span class="line">        else &#123;</span><br><span class="line">            Node&lt;K,V&gt; e; K k;</span><br><span class="line">            if (p.hash &#x3D;&#x3D; hash &amp;&amp;</span><br><span class="line">                ((k &#x3D; p.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                e &#x3D; p;</span><br><span class="line">            else if (p instanceof TreeNode)</span><br><span class="line">                e &#x3D; ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);</span><br><span class="line">            else &#123;</span><br><span class="line">                for (int binCount &#x3D; 0; ; ++binCount) &#123;</span><br><span class="line">                    if ((e &#x3D; p.next) &#x3D;&#x3D; null) &#123;</span><br><span class="line">                        p.next &#x3D; newNode(hash, key, value, null);</span><br><span class="line">                        if (binCount &gt;&#x3D; TREEIFY_THRESHOLD - 1) &#x2F;&#x2F; -1 for 1st</span><br><span class="line">                            treeifyBin(tab, hash);</span><br><span class="line">                        break;</span><br><span class="line">                    &#125;</span><br><span class="line">                    if (e.hash &#x3D;&#x3D; hash &amp;&amp;</span><br><span class="line">                        ((k &#x3D; e.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                        break;</span><br><span class="line">                    p &#x3D; e;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (e !&#x3D; null) &#123; &#x2F;&#x2F; existing mapping for key</span><br><span class="line">                V oldValue &#x3D; e.value;</span><br><span class="line">                if (!onlyIfAbsent || oldValue &#x3D;&#x3D; null)</span><br><span class="line">                    e.value &#x3D; value;</span><br><span class="line">                afterNodeAccess(e);</span><br><span class="line">                return oldValue;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        ++modCount;</span><br><span class="line">        if (++size &gt; threshold)</span><br><span class="line">            resize();</span><br><span class="line">        afterNodeInsertion(evict);</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>当我们往HashMap中添加key-value时，系统会先计算key的hash值，然后根据hash值确认在table中的存储位置。若该位置没有元素，则直接插入。否则迭代该处元素链表并依次比较其key的hash值。<br>如果两个hash值相等且key值相等，则用新value覆盖原来节点的value。如果两个 hash 值相等但 key 值不等 ，则将该节点插入该链表的链头（1.7）。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public V put(K key, V value) &#123;</span><br><span class="line">        return putVal(hash(key), key, value, false, true);</span><br><span class="line">    &#125;</span><br><span class="line">   hash – hash for key</span><br><span class="line">   key – the key</span><br><span class="line">   value – the value to put</span><br><span class="line">   onlyIfAbsent – 如果为true，则不更改现有值。</span><br><span class="line">   evict – 如果为false，则表处于创建模式。</span><br><span class="line">final V putVal(int hash, K key, V value, boolean onlyIfAbsent,</span><br><span class="line">                   boolean evict) &#123;</span><br><span class="line">        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;</span><br><span class="line">        if ((tab &#x3D; table) &#x3D;&#x3D; null || (n &#x3D; tab.length) &#x3D;&#x3D; 0)</span><br><span class="line">            n &#x3D; (tab &#x3D; resize()).length;</span><br><span class="line">        if ((p &#x3D; tab[i &#x3D; (n - 1) &amp; hash]) &#x3D;&#x3D; null)</span><br><span class="line">            tab[i] &#x3D; newNode(hash, key, value, null);</span><br><span class="line">        else &#123;</span><br><span class="line">            Node&lt;K,V&gt; e; K k;</span><br><span class="line">            if (p.hash &#x3D;&#x3D; hash &amp;&amp;</span><br><span class="line">                ((k &#x3D; p.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                e &#x3D; p;</span><br><span class="line">            else if (p instanceof TreeNode)</span><br><span class="line">                e &#x3D; ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);</span><br><span class="line">            else &#123;</span><br><span class="line">                for (int binCount &#x3D; 0; ; ++binCount) &#123;</span><br><span class="line">                    if ((e &#x3D; p.next) &#x3D;&#x3D; null) &#123;</span><br><span class="line">                        p.next &#x3D; newNode(hash, key, value, null);</span><br><span class="line">                        if (binCount &gt;&#x3D; TREEIFY_THRESHOLD - 1) &#x2F;&#x2F; -1 for 1st</span><br><span class="line">                            treeifyBin(tab, hash);</span><br><span class="line">                        break;</span><br><span class="line">                    &#125;</span><br><span class="line">                    if (e.hash &#x3D;&#x3D; hash &amp;&amp;</span><br><span class="line">                        ((k &#x3D; e.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                        break;</span><br><span class="line">                    p &#x3D; e;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (e !&#x3D; null) &#123; &#x2F;&#x2F; existing mapping for key</span><br><span class="line">                V oldValue &#x3D; e.value;</span><br><span class="line">                if (!onlyIfAbsent || oldValue &#x3D;&#x3D; null)</span><br><span class="line">                    e.value &#x3D; value;</span><br><span class="line">                afterNodeAccess(e);</span><br><span class="line">                return oldValue;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        ++modCount;</span><br><span class="line">        if (++size &gt; threshold)</span><br><span class="line">            resize();</span><br><span class="line">        afterNodeInsertion(evict);</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>当我们往HashMap中添加key-value时，系统会先计算key的hash值，然后根据hash值确认在table中的存储位置。若该位置没有元素，则直接插入。如果对应bucket已经有 Node 节点，会对链表长度进行分析，判断长度是否大于8，如果链表长度小于8，在JDK1.7前会使用头插法，在JDK1.8之后更改为尾插法。如果链表长度大于8会进行树化操作，把链表转换为红黑树，在红黑树上进行存储。<br>如果两个hash值相等且key值相等，则用新value覆盖原来节点的value。</p>
 <p><strong>get</strong></p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public V get(Object key) &#123;</span><br><span class="line">        Node&lt;K,V&gt; e;</span><br><span class="line">        return (e &#x3D; getNode(hash(key), key)) &#x3D;&#x3D; null ? null : e.value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">final Node&lt;K,V&gt; getNode(int hash, Object key) &#123;</span><br><span class="line">        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; int n; K k;</span><br><span class="line">        if ((tab &#x3D; table) !&#x3D; null &amp;&amp; (n &#x3D; tab.length) &gt; 0 &amp;&amp;</span><br><span class="line">            (first &#x3D; tab[(n - 1) &amp; hash]) !&#x3D; null) &#123;</span><br><span class="line">            if (first.hash &#x3D;&#x3D; hash &amp;&amp; &#x2F;&#x2F; always check first node</span><br><span class="line">                ((k &#x3D; first.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                return first;</span><br><span class="line">            if ((e &#x3D; first.next) !&#x3D; null) &#123;</span><br><span class="line">                if (first instanceof TreeNode)</span><br><span class="line">                    return ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);</span><br><span class="line">                do &#123;</span><br><span class="line">                    if (e.hash &#x3D;&#x3D; hash &amp;&amp;</span><br><span class="line">                        ((k &#x3D; e.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                        return e;</span><br><span class="line">                &#125; while ((e &#x3D; e.next) !&#x3D; null);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>通过key的hash值找到在table数组中的索引处的Entry，然后返回该 key 对应的 value 即可。在这里能够根据 key 快速的取到 value 除了和 HashMap 的数据结构密不可分外，还和 Entry 有莫大的关系。<br>HashMap在存储过程中并没有将key，value分开来存储，而是当做一个整体 key-value 来处理的，这个整体就是Entry对象。同时 value 也只相当于 key 的附属而已。<br>在存储的过程中，系统根据 key 的 HashCode 来决定Entry在 table 数组中的存储位置，在取的过程中同样根据 key 的 HashCode 取出相对应的 Entry 对象。</p>
+<p>通过key的hash值找到在table数组中的索引处的Node，然后返回该 key 对应的 value 即可。在这里能够根据key快速的取到 value 除了和 HashMap 的数据结构密不可分外，还和 Node 有莫大的关系。<br>HashMap在存储过程中并没有将key，value分开来存储，而是当做一个整体key-value来处理的，这个整体就是Node对象。同时 value 也只相当于 key 的附属而已。<br>在存储的过程中，系统根据 key 的 HashCode 来决定Node在 table 数组中的存储位置，在取的过程中同样根据 key 的 HashCode 取出相对应的 Node 对象。</p>
 <h3 id="3-HashMap的resize方法"><a href="#3-HashMap的resize方法" class="headerlink" title="3 HashMap的resize方法"></a>3 HashMap的resize方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">初始化或加倍表大小。如果为空，则根据字段阈值中持有的初始容量目标进行分配。否则，因为我们使用的是二次幂扩展，所以每个 bin 中的元素必须保持相同的索引，或者在新表中以二次幂的偏移量移动。</span><br><span class="line">final Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">        Node&lt;K,V&gt;[] oldTab &#x3D; table;</span><br><span class="line">        int oldCap &#x3D; (oldTab &#x3D;&#x3D; null) ? 0 : oldTab.length;</span><br><span class="line">        int oldThr &#x3D; threshold;</span><br><span class="line">        int newCap, newThr &#x3D; 0;</span><br><span class="line">        if (oldCap &gt; 0) &#123;</span><br><span class="line">            if (oldCap &gt;&#x3D; MAXIMUM_CAPACITY) &#123;</span><br><span class="line">                threshold &#x3D; Integer.MAX_VALUE;</span><br><span class="line">                return oldTab;</span><br><span class="line">            &#125;</span><br><span class="line">            else if ((newCap &#x3D; oldCap &lt;&lt; 1) &lt; MAXIMUM_CAPACITY &amp;&amp;</span><br><span class="line">                     oldCap &gt;&#x3D; DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">                newThr &#x3D; oldThr &lt;&lt; 1; &#x2F;&#x2F; double threshold</span><br><span class="line">        &#125;</span><br><span class="line">        else if (oldThr &gt; 0) &#x2F;&#x2F; initial capacity was placed in threshold</span><br><span class="line">            newCap &#x3D; oldThr;</span><br><span class="line">        else &#123;               &#x2F;&#x2F; zero initial threshold signifies using defaults</span><br><span class="line">            newCap &#x3D; DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">            newThr &#x3D; (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">        &#125;</span><br><span class="line">        if (newThr &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            float ft &#x3D; (float)newCap * loadFactor;</span><br><span class="line">            newThr &#x3D; (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (float)MAXIMUM_CAPACITY ?</span><br><span class="line">                      (int)ft : Integer.MAX_VALUE);</span><br><span class="line">        &#125;</span><br><span class="line">        threshold &#x3D; newThr;</span><br><span class="line">        @SuppressWarnings(&#123;&quot;rawtypes&quot;,&quot;unchecked&quot;&#125;)</span><br><span class="line">        Node&lt;K,V&gt;[] newTab &#x3D; (Node&lt;K,V&gt;[])new Node[newCap];</span><br><span class="line">        table &#x3D; newTab;</span><br><span class="line">        if (oldTab !&#x3D; null) &#123;</span><br><span class="line">            for (int j &#x3D; 0; j &lt; oldCap; ++j) &#123;</span><br><span class="line">                Node&lt;K,V&gt; e;</span><br><span class="line">                if ((e &#x3D; oldTab[j]) !&#x3D; null) &#123;</span><br><span class="line">                    oldTab[j] &#x3D; null;</span><br><span class="line">                    if (e.next &#x3D;&#x3D; null)</span><br><span class="line">                        newTab[e.hash &amp; (newCap - 1)] &#x3D; e;</span><br><span class="line">                    else if (e instanceof TreeNode)</span><br><span class="line">                        ((TreeNode&lt;K,V&gt;)e).split(this, newTab, j, oldCap);</span><br><span class="line">                    else &#123; &#x2F;&#x2F; preserve order</span><br><span class="line">                        Node&lt;K,V&gt; loHead &#x3D; null, loTail &#x3D; null;</span><br><span class="line">                        Node&lt;K,V&gt; hiHead &#x3D; null, hiTail &#x3D; null;</span><br><span class="line">                        Node&lt;K,V&gt; next;</span><br><span class="line">                        do &#123;</span><br><span class="line">                            next &#x3D; e.next;</span><br><span class="line">                            if ((e.hash &amp; oldCap) &#x3D;&#x3D; 0) &#123;</span><br><span class="line">                                if (loTail &#x3D;&#x3D; null)</span><br><span class="line">                                    loHead &#x3D; e;</span><br><span class="line">                                else</span><br><span class="line">                                    loTail.next &#x3D; e;</span><br><span class="line">                                loTail &#x3D; e;</span><br><span class="line">                            &#125;</span><br><span class="line">                            else &#123;</span><br><span class="line">                                if (hiTail &#x3D;&#x3D; null)</span><br><span class="line">                                    hiHead &#x3D; e;</span><br><span class="line">                                else</span><br><span class="line">                                    hiTail.next &#x3D; e;</span><br><span class="line">                                hiTail &#x3D; e;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125; while ((e &#x3D; next) !&#x3D; null);</span><br><span class="line">                        if (loTail !&#x3D; null) &#123;</span><br><span class="line">                            loTail.next &#x3D; null;</span><br><span class="line">                            newTab[j] &#x3D; loHead;</span><br><span class="line">                        &#125;</span><br><span class="line">                        if (hiTail !&#x3D; null) &#123;</span><br><span class="line">                            hiTail.next &#x3D; null;</span><br><span class="line">                            newTab[j + oldCap] &#x3D; hiHead;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return newTab;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>有两种情况会调用 resize 方法：</p>
 <ol>
 <li>第一次调用 HashMap 的 put 方法时，会调用 resize 方法对 table 数组进行初始化，如果不传入指定值，默认大小为16。</li>
-<li>扩容时会调用resize，即 size &gt; threshold 时，table数组大小翻倍。</li>
+<li>扩容时会调用resize，即 size &gt; threshold（容量*0.75）时，table数组大小翻倍。</li>
 </ol>
-<p>当我们把 table[i] 位置的所有 Node 迁移到 newtab 中去的时候，node要么在 newtab 的 i 位置（不变），要么在 newtab 的 i + n 位置。<br>也就是我们可以这样处理：把 table[i] 这个桶中的 node 拆分为两个链表l1和l2：如果 hash &amp; n == 0，那么当前这个 node 被连接到 l1 链表；否则连接到 l2 链表。这样下来，当遍历完table[i]处的所有node的时候，我们得到两个链表l1和l2，这时我们令 newtab[i] = l1，newtab[i + n] = l2，这就完成了 table[i] 位置所有 node 的迁移（rehash），这也是 HashMap 中容量一定的是 2 的整数次幂带来的方便之处。</p>
-<h3 id="4-HashMap的size为什么必须是2的整数次幂"><a href="#4-HashMap的size为什么必须是2的整数次幂" class="headerlink" title="4 HashMap的size为什么必须是2的整数次幂"></a>4 HashMap的size为什么必须是2的整数次幂</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">static final int hash(Object key) &#123;</span><br><span class="line">        int h;</span><br><span class="line">        return (key &#x3D;&#x3D; null) ? 0 : (h &#x3D; key.hashCode()) ^ (h &gt;&gt;&gt; 16);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">int n;</span><br><span class="line">        if (tab &#x3D;&#x3D; null || (n &#x3D; tab.length) &#x3D;&#x3D; 0)</span><br><span class="line">            return;</span><br><span class="line">        int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
-<p>1、能够保证 HashMap 的底层数组长度为 2 的 n 次幂。当 length 为 2 的 n 次幂时，h &amp; (length - 1)就相当于对 length 取模，而且速度比直接取模快得多，这是 HashMap 在速度上的一个优化。而且每次扩容时都是翻倍。<br>2、如果 length 为 2 的次幂，则 length - 1 转化为二进制必定是11111……的形式，在与 h 的二进制进行&amp;操作时效率会非常的快，而且不浪费空间。这些都是1的二进制码跟hash值进行‘&amp;’操作后，就可以确保每一个位置发生hash冲突的概率是相同的。<br>如果 length 不是 2 的次幂，比如：length 为 15，则 length - 1 为14，对应的二进制为1110，在与 h 进行&amp;操作，最后一位都为0，而0001，0011，0101，1001，1011，0111，1101这几个位置永远都不能存放元素了，空间浪费相当大，更糟的是这种情况中，数组可以使用的位置比数组长度小了很多，这意味着进一步增加了碰撞的概率，减慢了查询的效率，这样就会造成空间的浪费。</p>
-<p>HashMap的 get 函数的返回值不能判断一个 key 是否包含在 map 中，因为 get 返回 null 有可能是不包含该key，也有可能该 key 对应的 value 为null。因为 HashMap 中允许 key 为null，也允许 value 为null。</p>
+<p>当我们把 table[i] 位置的所有 Node 迁移到 newtab 中去的时候，node要么在 newtab 的 i 位置（不变），要么在 newtab 的 i + n 位置。<br>也就是我们可以这样处理：把 table[i] 这个桶中的 node 拆分为两个链表l1和l2：如果 hash &amp; n == 0，那么当前这个 node 被连接到 l1 链表；否则连接到 l2 链表。这样下来，当遍历完table[i]处的所有node的时候，我们得到两个链表l1和l2，这时我们令 newtab[i] = l1，newtab[i + n] = l2，这就完成了table[i]位置所有 node 的迁移（rehash），这也是 HashMap 中容量一定的是 2 的整数次幂带来的方便之处。</p>
+<h3 id="4-HashMap的size为什么必须是2的整数次幂"><a href="#4-HashMap的size为什么必须是2的整数次幂" class="headerlink" title="4 HashMap的size为什么必须是2的整数次幂"></a>4 HashMap的size为什么必须是2的整数次幂</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">static final int hash(Object key) &#123;</span><br><span class="line">        int h;</span><br><span class="line">        return (key &#x3D;&#x3D; null) ? 0 : (h &#x3D; key.hashCode()) ^ (h &gt;&gt;&gt; 16);</span><br><span class="line">    &#125;</span><br><span class="line">        int n;</span><br><span class="line">        if (tab &#x3D;&#x3D; null || (n &#x3D; tab.length) &#x3D;&#x3D; 0)</span><br><span class="line">            return;</span><br><span class="line">        int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
+<p>1、能够保证 HashMap 的底层数组长度为 2 的 n 次幂。当 length 为 2 的 n 次幂时，h &amp; (length - 1)就相当于对 length 取模，而且速度比直接取模快得多，这是 HashMap 在速度上的一个优化。而且每次扩容时都是翻倍。<br>2、如果 length 为 2 的次幂，则 length - 1 转化为二进制必定是11111……的形式，在与 h 的二进制进行&amp;操作时效率会非常的快，而且不浪费空间。这些都是1的二进制码跟hash值进行‘&amp;’操作，就可以确保每一个位置发生hash冲突的概率是相同的。<br>如果 length 不是 2 的次幂，比如：length为15，则 length - 1 为14，对应的二进制为1110，在与h进行&amp;操作，最后一位都为0，而0001，0011，0101，1001，1011，0111，1101这几个位置永远都不能存放元素了，空间浪费相当大，更糟的是这种情况中，数组可以使用的位置比数组长度小了很多，这意味着进一步增加了碰撞的概率，减慢了查询的效率，这样就会造成空间的浪费。</p>
+<p>HashMap的 get 函数的返回值不能判断一个 key 是否包含在 map 中，因为 get 返回 null 有可能是不包含该key，也有可能该 key 对应的 value 为null。因为 HashMap 中允许 key 为null，也允许 value 为null。<br>可以使用 Collections.synchronizedMap(new HashMap) 来创建一个线程安全的Map。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -221,57 +221,15 @@
       </tags>
   </entry>
   <entry>
-    <title>11_22_Java</title>
-    <url>/2021/11/22/11-22-Java/</url>
-    <content><![CDATA[<h3 id="1-ThreadLocal"><a href="#1-ThreadLocal" class="headerlink" title="1 ThreadLocal"></a>1 ThreadLocal</h3><p>此类提供thread-local变量。<br>ThreadLocal 提供 get 和 set 方法，为每一个使用这个变量的线程都保存一份独立初始化的变量副本。只要线程处于活动状态并且可以访问 ThreadLocal 实例，每个线程都持有对其线程局部变量副本的隐式引用；线程消失后，它的所有线程本地实例副本都将进行垃圾回收。<br>ThreadLocal保证了各个线程的数据互不干扰。<br>每个线程中都有一个ThreadLocalMap数据结构，当执行set方法时，其值是保存在当前线程的threadLocals变量中，当执行set方法时，是从当前线程的threadLocals变量获取。<br>ThreadLocalMap 是一种定制的哈希映射，仅适用于维护线程本地值。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">返回thread-local变量的当前线程副本中的值。</span><br><span class="line">如果该变量对于当前线程没有值，则首先将其初始化为调用 initialValue 方法返回的值。</span><br><span class="line">public T get() &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null) &#123;</span><br><span class="line">            ThreadLocalMap.Entry e &#x3D; map.getEntry(this);</span><br><span class="line">            if (e !&#x3D; null) &#123;</span><br><span class="line">                @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">                T result &#x3D; (T)e.value;</span><br><span class="line">                return result;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return setInitialValue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">将thread-local变量的当前线程副本设置为指定值。</span><br><span class="line">public void set(T value) &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null)</span><br><span class="line">            map.set(this, value);</span><br><span class="line">        else</span><br><span class="line">            createMap(t, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">删除thread-local变量的当前线程值。</span><br><span class="line">public void remove() &#123;</span><br><span class="line">         ThreadLocalMap m &#x3D; getMap(Thread.currentThread());</span><br><span class="line">         if (m !&#x3D; null)</span><br><span class="line">             m.remove(this);</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-ThreadLocal使用场景"><a href="#2-ThreadLocal使用场景" class="headerlink" title="2 ThreadLocal使用场景"></a>2 ThreadLocal使用场景</h3><p>Spring实现事务隔离<br>Spring采用Threadlocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。</p>
-<h3 id="3-synchronized"><a href="#3-synchronized" class="headerlink" title="3 synchronized"></a>3 synchronized</h3><p>Synchronized同步方法可以支持使用一种简单的策略来防止线程干扰和内存一致性错误：如果一个对象对多个线程可见，则对该对象变量的所有读取或写入都是通过同步方法完成的。它是一种基本的同步锁。<br>synchronized底层是借助操作系统的Mutex Lock(互斥锁)来实现的线程同步。</p>
-<p>Synchronized的作用就是解决Java并发问题的一种最常用最简单的方法，它可以确保同一个时刻最多只有一个线程执行同步代码，从而保证多线程环境下并发安全的效果。如果有一段代码被Synchronized所修饰，那么这段代码就会以原子的方式执行，当多个线程在执行这段代码的时候，它们是互斥的，不会相互干扰，不会同时执行。</p>
-<p>Synchronized工作机制就是在多线程环境中使用一把锁，在第一个线程去执行的时候去获取这把锁，一旦获取就独占这把锁直到执行完毕或者在一定条件下释放这把锁，但在这把锁释放之前其他的线程只能阻塞等待。</p>
-<p>JVM 基于进入和退出Monitor对象来实现方法同步 和 代码块同步。</p>
-<p>synchronized同步代码块的实现使用的是 monitorenter 和 monitorexit 指令，其中 monitorenter 指令指向同步代码块的开始位置，monitorexit 指令则指向同步代码块的结束位置。</p>
-<p>当执行 monitorenter 指令时，线程试图获取锁也就是获取 监视器锁（monitor）的持有权。monitor 对象存在于每个 Java 对象的对象头中，synchronized 锁便是通过这种方式获取锁的，也是为什么 Java 中任意对象可以作为锁的原因。当计数器为 0 则可以成功获取，获取后将锁计数器设为 1。相应的在执行 monitorexit 指令后，将锁计数器设为 0，表明锁被释放。如果获取对象锁失败，那当前线程就要阻塞，直到锁被另外一个线程释放为止。</p>
-<p>synchronized 修饰的方法用 ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。</p>
-<h3 id="4-synchronized使用"><a href="#4-synchronized使用" class="headerlink" title="4 synchronized使用"></a>4 synchronized使用</h3><p>修饰实例方法：给当前实例对象加锁，进入同步代码前要获得当前实例对象的锁；</p>
-<p>修饰静态方法：给当前类对象加锁，进入同步代码前要获得当前类对象的锁。访问静态 synchronized 方法占用的锁是当前类的锁，而访问非静态 synchronized方法占用的锁是当前实例对象锁；</p>
-<p>修饰代码块：对给定对象加锁，进入同步代码前要获得给定对象的锁。和 synchronized方法一样，synchronized(this) 代码块也是锁定当前对象的。synchronized 关键字加到 static 静态方法和<br>synchronized(class) 代码块上都是是给 Class 类上锁。synchronized 关键字加到非 static 静态方法上是给实例对象上锁。</p>
-<p>双重校验锁实现单例模式</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    private volatile static SingletonDemo uniqueInstance;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line">    public static SingletonDemo getUniqueInstance() &#123;</span><br><span class="line">        &#x2F;&#x2F; 先判断对象是否已经实例化，没有实例化过才进⼊加锁代码</span><br><span class="line">        if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            &#x2F;&#x2F; 类对象加锁</span><br><span class="line">            synchronized (SingletonDemo.class) &#123;</span><br><span class="line">                if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    uniqueInstance &#x3D; new SingletonDemo();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>代码执行顺序：</p>
-<ol>
-<li>为 uniqueInstance 分配内存空间</li>
-<li>初始化 uniqueInstance</li>
-<li>将 uniqueInstance 指向分配的内存地址</li>
-</ol>
-<p>但是由于 JVM 具有指令重排的特性，执行顺序有可能变成 1 -&gt; 3 -&gt; 2。指令重排在单线程环境下不会出现问题，但是在多线程环境下会导致一个线程获得还没有初始化的实例。<br>volatile常用于<strong>保持内存可见性</strong>和<strong>防止指令重排序</strong>。</p>
-<h3 id="5-JDK1-6之后synchronized关键字所做的优化"><a href="#5-JDK1-6之后synchronized关键字所做的优化" class="headerlink" title="5 JDK1.6之后synchronized关键字所做的优化"></a>5 JDK1.6之后synchronized关键字所做的优化</h3><p>JDK1.6对锁的实现引入了大量的优化，如自旋锁、适应性自旋锁、锁消除、锁粗化、偏向锁、轻量级锁等技术来减少锁操作的开销。</p>
-<p>优化后synchronized锁的分类：无锁状态、偏向锁状态、轻量级锁状态、重量级锁状态。锁可以升级，但是不能降级，即无锁状态 –&gt; 偏向锁状态 –&gt; 轻量级锁状态 –&gt; 重量级锁状态。这种策略是为了提高获得锁和释放锁的效率。</p>
-<p><strong>偏向锁</strong><br>偏向于第一个获得它的线程，如果在接下来的执行中，该锁没有被其他线程获取，那么持有偏向锁的线程就不需要进行同步。偏向锁是针对于一个线程而言的。<br>但是对于锁竞争比较激烈的场景，偏向锁就失效了，因为极有可能每次申请锁的线程都是不相同的，因此这种场景下不应该使用偏向锁。需要注意的是，偏向锁失败后，并不会立即膨胀为重量级锁，而是先升级为轻量级锁。</p>
-<p><strong>轻量级锁</strong><br>当出现有两个线程来竞争锁的话，那么偏向锁就失效了，此时锁就会膨胀，升级为轻量级锁。<br>在没有多线程竞争的前提下，减少传统的重量级锁使用操作系统互斥量产生的性能消耗，因为使用轻量级锁时，不需要申请互斥量。另外，轻量级锁的加锁和解锁都用到了CAS操作。<br>“对于绝大部分锁，在整个同步周期内都是不存在竞争的”。如果没有竞争，轻量级锁使用 CAS 操作避免了使用互斥操作的开销。但如果存在锁竞争，除了互斥量开销外，还会额外发生 CAS 操作，因此在有锁竞争的情况下，轻量级锁比传统的重量级锁更慢！如果锁竞争激烈，那么轻量级将很快膨胀为重量级锁！</p>
-<p><strong>自旋锁</strong><br>轻量级锁失败后，虚拟机为了避免线程真实地在操作系统层面挂起，还会进行一项称为自旋锁的优化手段。<br>一般线程持有锁的时间都不是太久，所以仅仅为了这一点时间去挂起线程/恢复线程是得不偿失的。<br>思想：让一个线程在请求一个共享数据的锁时执行忙循环（自旋）一段时间，如果在这段时间内能获得锁，就可以避免进入阻塞状态。<br>自旋等待不能完全替代阻塞，因为它还是要占用处理器时间。如果锁被占用的时间短，那么效果当然就很好了。反之，自旋等待的时间必须要有限度。如果自旋超过了限定次数任然没有获得锁，就应该挂起线程。</p>
-<p><strong>自适应自旋锁</strong><br>自旋的时间不再固定了，而是由前一次在同一个锁上的自旋时间以及锁的拥有者的状态来决定。</p>
-<p><strong>重量级锁</strong><br>阻塞所有等待竞争的线程，防止CPU空转。</p>
-<p><strong>锁消除</strong><br>虚拟机的JIT在运行时如果检测到一些要求同步的代码上不可能发生共享数据竞争，则会去掉这些锁。</p>
-<p><strong>锁粗化</strong><br>减少不必要的紧连在一起的 lock，unlock 操作，将多个连续的锁扩展成一个范围更大的锁。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>threadlocal</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>11_20_Java</title>
     <url>/2021/11/20/11-20-Java/</url>
-    <content><![CDATA[<h3 id="1-HashMap多线程死循环问题"><a href="#1-HashMap多线程死循环问题" class="headerlink" title="1 HashMap多线程死循环问题"></a>1 HashMap多线程死循环问题</h3><p>当多线程同时 put 时，如果同时触发了 rehash 操作，会导致 HashMap 的链表中出现循环节点，使得后面 get 的时候，会死循环。</p>
-<p>resize方法：<br>条件：size &gt; capacity * loadFactor<br>创建一个新的Entry空数组，长度是原数组的2倍。<br>rehash：遍历原Entry数组，把所有的Entry重新Hash到新数组。为什么要重新Hash呢？因为长度扩大以后，Hash的规则也随之改变。</p>
+    <content><![CDATA[<h3 id="1-HashMap多线程死循环问题"><a href="#1-HashMap多线程死循环问题" class="headerlink" title="1 HashMap多线程死循环问题"></a>1 HashMap多线程死循环问题</h3><p>当多个线程同时 put 时，如果同时触发了 rehash 操作，会导致 HashMap 的链表中出现循环节点，使得后面get的时候会死循环。</p>
+<p>resize方法：<br>条件：size &gt; capacity * loadFactor<br>创建一个新的Node空数组，长度是原数组的2倍。<br>rehash：遍历原Node数组，把所有的Node重新Hash到新数组。为什么要重新Hash呢？因为长度扩大以后，Hash的规则也随之改变。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
 
-<h3 id="2-HashMap与Hashtable"><a href="#2-HashMap与Hashtable" class="headerlink" title="2 HashMap与Hashtable"></a>2 HashMap与Hashtable</h3><p>Hashtable：这个类实现了一个哈希表，它将键映射到值。任何非空对象都可以用作键或值。<br>HashMap 的 key 和 value 都允许为 null，而 Hashtable 的 key 和 value 都不允许为 null。<br>HashMap 遇到key 为 null 的时候，调用 putForNullKey 方法进行处理，但对 value 没有处理；Hashtable 遇到 null，直接返回 NullPointerException。<br>Hashtable是线程安全的，HashMap是非线程安全的。<br>HashMap继承了AbstractMap，Hashtable继承Dictionary抽象类，两者均实现Map接口。</p>
-<p>Java中Hashtable、Collections.synchronizedMap、以及 ConcurrentHashMap 可以实现线程安全的Map。<br>Hashtable 是直接在方法上加 synchronized 关键字，锁住整个数组，粒度比较大；即每次锁住整张表让线程独占，致使效率低下；<br>Collections.synchronizedMap 是使用 Collections 集合工具的内部类，通过传入 Map 封装出一个 SynchronizedMap 对象，内部定义了一个对象锁，方法内通过对象锁实现；<br>ConcurrentHashMap使用分段锁，降低了锁粒度，让并发度大大提高。</p>
+<h3 id="2-HashMap与Hashtable"><a href="#2-HashMap与Hashtable" class="headerlink" title="2 HashMap与Hashtable"></a>2 HashMap与Hashtable</h3><p>Hashtable：基于哈希表实现，它将键映射到值。任何非空对象都可以用作键或值。<br>HashMap的 key 和 value 都允许为null，而 Hashtable 的 key 和 value 都不允许为null。<br>HashMap遇到key为 null 的时候，调用 putForNullKey 方法进行处理，但对 value 没有处理。Hashtable遇到null，直接返回NullPointerException。<br>Hashtable是线程安全的，HashMap是非线程安全的。<br>HashMap继承了AbstractMap，Hashtable继承Dictionary抽象类，两者均实现Map接口。</p>
+<p>虽然 HashMap 和 Hashtable 都是基于单链表的，但是 HashMap 进行 put 或者 get 操作，可以达到常数时间的性能；而 Hashtable 的 put 和 get 操作都是加了 synchronized 锁，所以效率很差。<br>Hashtable的初始长度是11，之后每次扩充容量变为之前的2n+1（n为上一次的长度），而 HashMap 的初始长度为16，之后每次扩充变为原来的两倍。创建时，如果给定了容量初始值，那么Hashtable会直接使用你给定的大小，而HashMap会将其扩充为2的幂次方大小。</p>
+<p>Java中Hashtable、Collections.synchronizedMap、以及 ConcurrentHashMap 可以实现线程安全的Map。<br>Hashtable是直接在方法上加 synchronized 关键字，锁住整个数组，粒度比较大；即每次锁住整张表让线程独占，致使效率低下。<br>Collections.synchronizedMap是使用Collections集合工具的内部类，通过传入Map封装出一个SynchronizedMap对象，内部定义了一个对象锁，方法内通过对象锁实现。<br>ConcurrentHashMap使用分段锁，降低了锁粒度，让并发度大大提高。</p>
 <h3 id="2-ConcurrentHashMap"><a href="#2-ConcurrentHashMap" class="headerlink" title="2 ConcurrentHashMap"></a>2 ConcurrentHashMap</h3><p>ConcurrentHashMap：一个哈希表，支持检索的完全并发性和更新的高预期并发性。该类遵循与Hashtable相同的功能规范，包括与Hashtable的每个方法对应的方法版本。但是，即使所有操作都是线程安全的，检索操作也不需要锁定，并且不支持以防止所有访问的方式锁定整个表。 在依赖其线程安全但不依赖于其同步细节的程序中，此类与 Hashtable 完全可互操作。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bin数组。第一次插入时延迟初始化。大小始终是 2 的幂。由迭代器直接访问。</span><br><span class="line">transient volatile Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
 
@@ -361,6 +319,49 @@
       </tags>
   </entry>
   <entry>
+    <title>11_22_Java</title>
+    <url>/2021/11/22/11-22-Java/</url>
+    <content><![CDATA[<h3 id="1-ThreadLocal"><a href="#1-ThreadLocal" class="headerlink" title="1 ThreadLocal"></a>1 ThreadLocal</h3><p>此类提供thread-local变量。<br>ThreadLocal 提供 get 和 set 方法，为每一个使用这个变量的线程都保存一份独立初始化的变量副本。只要线程处于活动状态并且可以访问 ThreadLocal 实例，每个线程都持有对其线程局部变量副本的隐式引用；线程消失后，它的所有线程本地实例副本都将进行垃圾回收。<br>ThreadLocal保证了各个线程的数据互不干扰。<br>每个线程中都有一个ThreadLocalMap数据结构，当执行set方法时，其值是保存在当前线程的threadLocals变量中，当执行set方法时，是从当前线程的threadLocals变量获取。<br>ThreadLocalMap 是一种定制的哈希映射，仅适用于维护线程本地值。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">返回thread-local变量的当前线程副本中的值。</span><br><span class="line">如果该变量对于当前线程没有值，则首先将其初始化为调用 initialValue 方法返回的值。</span><br><span class="line">public T get() &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null) &#123;</span><br><span class="line">            ThreadLocalMap.Entry e &#x3D; map.getEntry(this);</span><br><span class="line">            if (e !&#x3D; null) &#123;</span><br><span class="line">                @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">                T result &#x3D; (T)e.value;</span><br><span class="line">                return result;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return setInitialValue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">将thread-local变量的当前线程副本设置为指定值。</span><br><span class="line">public void set(T value) &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null)</span><br><span class="line">            map.set(this, value);</span><br><span class="line">        else</span><br><span class="line">            createMap(t, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">删除thread-local变量的当前线程值。</span><br><span class="line">public void remove() &#123;</span><br><span class="line">         ThreadLocalMap m &#x3D; getMap(Thread.currentThread());</span><br><span class="line">         if (m !&#x3D; null)</span><br><span class="line">             m.remove(this);</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-ThreadLocal使用场景"><a href="#2-ThreadLocal使用场景" class="headerlink" title="2 ThreadLocal使用场景"></a>2 ThreadLocal使用场景</h3><p>Spring实现事务隔离<br>Spring采用Threadlocal的方式，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。</p>
+<h3 id="3-synchronized"><a href="#3-synchronized" class="headerlink" title="3 synchronized"></a>3 synchronized</h3><p>Synchronized同步方法可以支持使用一种简单的策略来防止线程干扰和内存一致性错误：如果一个对象对多个线程可见，则对该对象变量的所有读取或写入都是通过同步方法完成的。它是一种基本的同步锁。<br>synchronized底层是借助操作系统的Mutex Lock(互斥锁)来实现的线程同步。</p>
+<p>Synchronized的作用就是解决Java并发问题的一种最常用最简单的方法，它可以确保同一个时刻最多只有一个线程执行同步代码，从而保证多线程环境下并发安全的效果。如果有一段代码被Synchronized所修饰，那么这段代码就会以原子的方式执行，当多个线程在执行这段代码的时候，它们是互斥的，不会相互干扰，不会同时执行。</p>
+<p>Synchronized工作机制就是在多线程环境中使用一把锁，在第一个线程去执行的时候去获取这把锁，一旦获取就独占这把锁直到执行完毕或者在一定条件下释放这把锁，但在这把锁释放之前其他的线程只能阻塞等待。</p>
+<p>JVM 基于进入和退出Monitor对象来实现方法同步 和 代码块同步。</p>
+<p>synchronized同步代码块的实现使用的是 monitorenter 和 monitorexit 指令，其中 monitorenter 指令指向同步代码块的开始位置，monitorexit 指令则指向同步代码块的结束位置。</p>
+<p>当执行 monitorenter 指令时，线程试图获取锁也就是获取 监视器锁（monitor）的持有权。monitor 对象存在于每个 Java 对象的对象头中，synchronized 锁便是通过这种方式获取锁的，也是为什么 Java 中任意对象可以作为锁的原因。当计数器为 0 则可以成功获取，获取后将锁计数器设为 1。相应的在执行 monitorexit 指令后，将锁计数器设为 0，表明锁被释放。如果获取对象锁失败，那当前线程就要阻塞，直到锁被另外一个线程释放为止。</p>
+<p>synchronized 修饰的方法用 ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。</p>
+<h3 id="4-synchronized使用"><a href="#4-synchronized使用" class="headerlink" title="4 synchronized使用"></a>4 synchronized使用</h3><p>修饰实例方法：给当前实例对象加锁，进入同步代码前要获得当前实例对象的锁；</p>
+<p>修饰静态方法：给当前类对象加锁，进入同步代码前要获得当前类对象的锁。访问静态 synchronized 方法占用的锁是当前类的锁，而访问非静态 synchronized方法占用的锁是当前实例对象锁；</p>
+<p>修饰代码块：对给定对象加锁，进入同步代码前要获得给定对象的锁。和 synchronized方法一样，synchronized(this) 代码块也是锁定当前对象的。synchronized 关键字加到 static 静态方法和<br>synchronized(class) 代码块上都是是给 Class 类上锁。synchronized 关键字加到非 static 静态方法上是给实例对象上锁。</p>
+<p>双重校验锁实现单例模式</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    private volatile static SingletonDemo uniqueInstance;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line">    public static SingletonDemo getUniqueInstance() &#123;</span><br><span class="line">        &#x2F;&#x2F; 先判断对象是否已经实例化，没有实例化过才进⼊加锁代码</span><br><span class="line">        if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            &#x2F;&#x2F; 类对象加锁</span><br><span class="line">            synchronized (SingletonDemo.class) &#123;</span><br><span class="line">                if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    uniqueInstance &#x3D; new SingletonDemo();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码执行顺序：</p>
+<ol>
+<li>为 uniqueInstance 分配内存空间</li>
+<li>初始化 uniqueInstance</li>
+<li>将 uniqueInstance 指向分配的内存地址</li>
+</ol>
+<p>但是由于 JVM 具有指令重排的特性，执行顺序有可能变成 1 -&gt; 3 -&gt; 2。指令重排在单线程环境下不会出现问题，但是在多线程环境下会导致一个线程获得还没有初始化的实例。<br>volatile常用于<strong>保持内存可见性</strong>和<strong>防止指令重排序</strong>。</p>
+<h3 id="5-JDK1-6之后synchronized关键字所做的优化"><a href="#5-JDK1-6之后synchronized关键字所做的优化" class="headerlink" title="5 JDK1.6之后synchronized关键字所做的优化"></a>5 JDK1.6之后synchronized关键字所做的优化</h3><p>JDK1.6对锁的实现引入了大量的优化，如自旋锁、适应性自旋锁、锁消除、锁粗化、偏向锁、轻量级锁等技术来减少锁操作的开销。</p>
+<p>优化后synchronized锁的分类：无锁状态、偏向锁状态、轻量级锁状态、重量级锁状态。锁可以升级，但是不能降级，即无锁状态 –&gt; 偏向锁状态 –&gt; 轻量级锁状态 –&gt; 重量级锁状态。这种策略是为了提高获得锁和释放锁的效率。</p>
+<p><strong>偏向锁</strong><br>偏向于第一个获得它的线程，如果在接下来的执行中，该锁没有被其他线程获取，那么持有偏向锁的线程就不需要进行同步。偏向锁是针对于一个线程而言的。<br>但是对于锁竞争比较激烈的场景，偏向锁就失效了，因为极有可能每次申请锁的线程都是不相同的，因此这种场景下不应该使用偏向锁。需要注意的是，偏向锁失败后，并不会立即膨胀为重量级锁，而是先升级为轻量级锁。</p>
+<p><strong>轻量级锁</strong><br>当出现有两个线程来竞争锁的话，那么偏向锁就失效了，此时锁就会膨胀，升级为轻量级锁。<br>在没有多线程竞争的前提下，减少传统的重量级锁使用操作系统互斥量产生的性能消耗，因为使用轻量级锁时，不需要申请互斥量。另外，轻量级锁的加锁和解锁都用到了CAS操作。<br>“对于绝大部分锁，在整个同步周期内都是不存在竞争的”。如果没有竞争，轻量级锁使用 CAS 操作避免了使用互斥操作的开销。但如果存在锁竞争，除了互斥量开销外，还会额外发生 CAS 操作，因此在有锁竞争的情况下，轻量级锁比传统的重量级锁更慢！如果锁竞争激烈，那么轻量级将很快膨胀为重量级锁！</p>
+<p><strong>自旋锁</strong><br>轻量级锁失败后，虚拟机为了避免线程真实地在操作系统层面挂起，还会进行一项称为自旋锁的优化手段。<br>一般线程持有锁的时间都不是太久，所以仅仅为了这一点时间去挂起线程/恢复线程是得不偿失的。<br>思想：让一个线程在请求一个共享数据的锁时执行忙循环（自旋）一段时间，如果在这段时间内能获得锁，就可以避免进入阻塞状态。<br>自旋等待不能完全替代阻塞，因为它还是要占用处理器时间。如果锁被占用的时间短，那么效果当然就很好了。反之，自旋等待的时间必须要有限度。如果自旋超过了限定次数任然没有获得锁，就应该挂起线程。</p>
+<p><strong>自适应自旋锁</strong><br>自旋的时间不再固定了，而是由前一次在同一个锁上的自旋时间以及锁的拥有者的状态来决定。</p>
+<p><strong>重量级锁</strong><br>阻塞所有等待竞争的线程，防止CPU空转。</p>
+<p><strong>锁消除</strong><br>虚拟机的JIT在运行时如果检测到一些要求同步的代码上不可能发生共享数据竞争，则会去掉这些锁。</p>
+<p><strong>锁粗化</strong><br>减少不必要的紧连在一起的 lock，unlock 操作，将多个连续的锁扩展成一个范围更大的锁。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>threadlocal</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>11_24_Java</title>
     <url>/2021/11/24/11-24-Java/</url>
     <content><![CDATA[<h3 id="1-线程池"><a href="#1-线程池" class="headerlink" title="1 线程池"></a>1 线程池</h3><p>线程池提供了一种限制和管理资源的方式。<br><strong>好处</strong><br>降低资源消耗：通过重复利用已创建的线程可以降低线程创建和销毁造成的消耗;<br>提高响应速度：当任务到达时，可以不需要等到线程创建就能立即执行;<br>提高线程的可管理性：线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。</p>
@@ -380,52 +381,6 @@
       </categories>
       <tags>
         <tag>线程池</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>11_26_Java</title>
-    <url>/2021/11/26/11-26-Java/</url>
-    <content><![CDATA[<h3 id="1-创建线程池的方式"><a href="#1-创建线程池的方式" class="headerlink" title="1 创建线程池的方式"></a>1 创建线程池的方式</h3><p>通过<strong>ThreadPoolExecutor</strong>类的构造方法实现</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue) &#123;</span><br><span class="line">        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,</span><br><span class="line">             Executors.defaultThreadFactory(), defaultHandler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              ThreadFactory threadFactory) &#123;</span><br><span class="line">        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,</span><br><span class="line">             threadFactory, defaultHandler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              RejectedExecutionHandler handler) &#123;</span><br><span class="line">        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,</span><br><span class="line">             Executors.defaultThreadFactory(), handler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              ThreadFactory threadFactory,</span><br><span class="line">                              RejectedExecutionHandler handler) &#123;</span><br><span class="line">        if (corePoolSize &lt; 0 ||</span><br><span class="line">            maximumPoolSize &lt;&#x3D; 0 ||</span><br><span class="line">            maximumPoolSize &lt; corePoolSize ||</span><br><span class="line">            keepAliveTime &lt; 0)</span><br><span class="line">            throw new IllegalArgumentException();</span><br><span class="line">        if (workQueue &#x3D;&#x3D; null || threadFactory &#x3D;&#x3D; null || handler &#x3D;&#x3D; null)</span><br><span class="line">            throw new NullPointerException();</span><br><span class="line">        this.acc &#x3D; System.getSecurityManager() &#x3D;&#x3D; null ?</span><br><span class="line">                null :</span><br><span class="line">                AccessController.getContext();</span><br><span class="line">        this.corePoolSize &#x3D; corePoolSize;</span><br><span class="line">        this.maximumPoolSize &#x3D; maximumPoolSize;</span><br><span class="line">        this.workQueue &#x3D; workQueue;</span><br><span class="line">        this.keepAliveTime &#x3D; unit.toNanos(keepAliveTime);</span><br><span class="line">        this.threadFactory &#x3D; threadFactory;</span><br><span class="line">        this.handler &#x3D; handler;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>通过<strong>Executors</strong>类实现<br>可以创建三种类型的ThreadPoolExecutor。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">创建一个线程池，该线程池重用固定数量的线程，这些线程在共享的无界队列中运行，并在需要时使用提供的 ThreadFactory 创建新线程。</span><br><span class="line">在任何时候，最多有 nThreads 个线程是活动的处理任务。如果在所有线程都处于活动状态时提交了额外的任务，它们将在队列中等待，直到有线程可用。如果任何线程在关闭前的执行过程中由于失败而终止，则在需要执行后续任务时，将有一个新线程代替它。池中的线程将一直存在，直到它被明确关闭。</span><br><span class="line">public static ExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) &#123;</span><br><span class="line">        return new ThreadPoolExecutor(nThreads, nThreads,</span><br><span class="line">                                      0L, TimeUnit.MILLISECONDS,</span><br><span class="line">                                      new LinkedBlockingQueue&lt;Runnable&gt;(),</span><br><span class="line">                                      threadFactory);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">创建一个 Executor，它使用单个工作线程在无界队列中运行。（但是请注意，如果这个单线程在关闭之前的执行过程中由于失败而终止，如果需要执行后续任务，一个新线程将取而代之。）任务保证按顺序执行，并且在任何给定时间不会有超过一个任务处于活动状态。</span><br><span class="line">public static ExecutorService newSingleThreadExecutor() &#123;</span><br><span class="line">        return new FinalizableDelegatedExecutorService</span><br><span class="line">            (new ThreadPoolExecutor(1, 1,</span><br><span class="line">                                    0L, TimeUnit.MILLISECONDS,</span><br><span class="line">                                    new LinkedBlockingQueue&lt;Runnable&gt;()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">创建一个线程池，根据需要创建新线程，但在可用时将重用先前构造的线程。这些池通常会提高执行许多短期异步任务的程序的性能。如果可用，调用 execute 将重用先前构造的线程。如果没有可用的现有线程，则会创建一个新线程并将其添加到池中。 60 秒内未使用的线程将被终止并从缓存中删除。因此，保持空闲足够长时间的池不会消耗任何资源。</span><br><span class="line">public static ExecutorService newCachedThreadPool() &#123;</span><br><span class="line">        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,</span><br><span class="line">                                      60L, TimeUnit.SECONDS,</span><br><span class="line">                                      new SynchronousQueue&lt;Runnable&gt;());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式。<br>Executors 创建并返回的线程池对象的弊端如下：<br>FixedThreadPool 和 SingleThreadPool: 允许的请求队列长度为Integer.MAX_VALUE，可能会堆积大量的请求，从而导致OOM（out of memory）。<br>CachedThreadPool和 ScheduledThreadPool: 允许的创建线程数量为 Integer.MAX_VALUE，可能会创建大量的线程，从而导致OOM。</p>
-<h3 id="2-execute方法与submit方法"><a href="#2-execute方法与submit方法" class="headerlink" title="2 execute方法与submit方法"></a>2 execute方法与submit方法</h3><p>execute() 方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功。<br>submit() 方法用于提交需要返回值的任务。线程池会返回一个 Future 类型的对象，通过这个 Future 对象可以判断任务是否执行成功，并且可以通过 Future 的 get() 方法来获取返回值，get() 方法会阻塞当前线程直到任务完成。</p>
-<h3 id="3-Fork-Join并行计算框架"><a href="#3-Fork-Join并行计算框架" class="headerlink" title="3 Fork/Join并行计算框架"></a>3 Fork/Join并行计算框架</h3><p>Fork/Join 并行计算框架主要解决的是分治任务。分治的核心思想是“分而治之”。分治分为两个阶段，第一个阶段分解任务，把任务分解为一个个小任务直至小任务可以简单的计算返回结果。第二阶段合并结果，把每个小任务的结果合并返回得到最终结果。而Fork就是分解任务，Join就是合并结果。<br>Fork/Join框架的核心是ForkJoinPool。<br>ForkJoinPool 支持任务窃取机制，能够让所有的线程的工作量基本均衡，不会出现有的线程很忙，有的线程很闲的情况，所以性能很好。<br>ForkJoinPool中的任务队列采用的是双端队列，工作线程正常获取任务和“窃取任务”分别是从任务队列不同的端消费，这样能避免很多不必要的数据竞争。当某个工作线程对应消费的任务队列空闲的时候它会去别的忙的任务队列的尾部分担(stealing)任务过来执行。</p>
-<h3 id="4-Java提供的并发容器"><a href="#4-Java提供的并发容器" class="headerlink" title="4 Java提供的并发容器"></a>4 Java提供的并发容器</h3><p><strong>ConcurrentHashMap</strong></p>
-<p><strong>CopyOnWriteArrayList</strong><br>java.util.ArrayList 的线程安全变体，其中所有可变操作（添加、设置等）都是通过创建底层数组的新副本来实现的。允许所有元素，包括 null。<br>在很多应用场景中，读操作可能会远远大于写操作。由于读操作根本不会修改原有的数据，因此如果每次读取都进行加锁操作，其实是一种资源浪费。我们应该允许多个线程同时访问 List 的内部数据，毕竟读操作是线程安全的。<br>当 List 需要被修改的时候，并不直接修改原有数组对象，而是对原有数据进行一次拷贝，将修改的内容写入副本中。写完之后，再将修改完的副本替换成原来的数据，这样就可以保证写操作不会影响读操作了。<br>CopyOnWrite：对一块内存进行修改时，不直接在原有内存块中进行写操作，而是将内存拷贝一份，在新的内存中进行写操作，写完之后，再将原来指向的内存指针指到新的内存，原来的内存就可以被回收。<br>读取操作没有任何同步控制和锁操作，理由就是内部数组 array 不会发生修改，只会被另外一个 array 替换，因此可以保证数据安全。<br>CopyOnWriteArrayList 写入操作 add() 方法在添加集合的时候加了锁，保证同步，避免多线程写的时候会 copy 出多个副本。</p>
-<p><strong>ConcurrentLinkedQueue</strong><br>基于链接节点的无界线程安全队列。此队列对元素 FIFO（先进先出）进行排序。 队列的头部是在队列中停留时间最长的那个元素。 队列的尾部是在队列中停留时间最短的那个元素。 新元素插入队列尾部，队列检索操作获取队列头部元素。<br>当许多线程将共享对公共集合的访问时， ConcurrentLinkedQueue 是合适的选择。与大多数其他并发集合实现一样，此类不允许使用空元素。</p>
-<p><strong>BlockingQueue</strong><br>一个 Queue 额外支持在检索元素时等待队列变为非空的操作，并在存储元素时等待队列中有可用空间。<br>在队列为空时，获取元素的线程会等待队列变为非空。当队列满时，存储元素的线程会等待队列有可用空间。阻塞队列常用于生产者-消费者的场景，生产者是往队列里添加元素的线程，消费者是从队列里拿元素的线程。<br>BlockingQueue是一个接口，继承了Queue。<br>BlockingQueue的实现类有ArrayBlockingQueue、DelayQueue、LinkedBlockingDeque、LinkedBlockingQueue、PriorityBlockingQueue、SynchronousQueue。</p>
-<p><strong>ConcurrentSkipListMap</strong><br>一个可扩展的并发 ConcurrentNavigableMap 实现。映射根据其键的自然顺序进行排序，或者通过映射创建时提供的 Comparator 进行排序，具体取决于使用的构造函数。<br>此类实现了 SkipLists 的并发变体，为 containsKey、get、put 和 remove 操作及其变体提供预期的平均 log(n) 时间成本。插入、移除、更新和访问操作由多个线程安全地并发执行。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>线程池</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>11_27_Java</title>
-    <url>/2021/11/27/11-27-Java/</url>
-    <content><![CDATA[<h3 id="1-JVM主要组成部分及其作用"><a href="#1-JVM主要组成部分及其作用" class="headerlink" title="1 JVM主要组成部分及其作用"></a>1 JVM主要组成部分及其作用</h3><p>1 类加载器（ClassLoader）<br>2 运行时数据区（Runtime Data Area)<br>3 执行引擎（Execution Engine）<br>4 本地库接口（Native Interface）</p>
-<p>首先通过类加载器（ClassLoader）会把 Java 代码转换成字节码，运行时数据区（Runtime Data Area）会把字节码加载到内存中，而字节码文件只是 JVM 的一套指令集规范，并不能直接交给底层操作系统去执行，因此需要特定的命令解析器执行引擎（Execution Engine），将字节码翻译成底层系统指令，再交由 CPU 去执行，而这个过程中需要调用其他语言的本地库接口（Native Interface）来实现整个程序的功能。</p>
-<h3 id="2-运行时数据区"><a href="#2-运行时数据区" class="headerlink" title="2 运行时数据区"></a>2 运行时数据区</h3><p>1 <strong>程序计数器</strong><br>程序计数器（Program Counter Register）：是一块较小的内存空间，它可以看作是当前线程所执行的字节码的行号指示器。<br>字节码解释器执作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令。程序的分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。<br>由于 Java 虚拟机的多线程是通过线程轮流切换并分配处理器执行时间的方式来实现的，在任何一个确定的时刻，每个处理器都只会执行一条线程中的命令。因此，为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器，各线程之间的计数器互不影响，独立存储，我们程这块内存区域为“线程私有”的内存。<br>此区域是唯一一个虚拟机规范中没有规定任何 OutOfMemoryError 情况的区域。</p>
-<p>2 <strong>Java虚拟机栈</strong><br>Java 虚拟机栈（Java Virtual Machine Stacks）：描述的是Java方法执行的内存模型：每个方法在执行的同时都会创建一个帧栈（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中入栈到出栈的过程。它的线程也是私有的，生命周期与线程相同。<br>局部变量表存放了编译期可知的各种基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用和 returnAddress 类型（指向了一条字节码指令的地址）。<br>Java 虚拟机栈的局部变量表的空间单位是槽（Slot），其中 64 位长度的 double 和long 类型会占用两个 Slot。局部变量表所需内存空间在编译期完成分配，当进入一个方法时，该方法需要在帧中分配多大的局部变量是完全确定的，在方法运行期间不会改变局部变量表的大小。<br>Java虚拟机栈有两种异常状况：如果线程请求的栈的深度大于虚拟机所允许的深度，将抛出 StackOverflowError异常；如果扩展时无法申请到足够的内存，就会抛出 OutOfMemoryError 异常。</p>
-<p>3 <strong>本地方法栈</strong><br>本地方法栈（Native Method Stack）：与虚拟机栈所发挥的作用是非常相似的，它们之间的区别只不过是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则为虚拟机使用到的 Native 方法服务。<br>Java 虚拟机规范没有对本地方法栈中方法使用的语言、使用的方式和数据结构做出强制规定，因此具体的虚拟机可以自由地实现它。例如：Sun HotSpot 虚拟机直接把Java虚拟机栈和本地方法栈合二为一。<br>与Java虚拟机栈一样，本地方法栈也会抛出StackOverflowError和 OutOfMemoryError 异常。</p>
-<p>4 <strong>Java堆</strong><br>Java堆（Java Heap）：是被所有线程所共享的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是：存放对象实例，几乎所有的对象实例都在这里分配内存。<br>Java 堆是垃圾收集器管理的主要区域，因此很多时候也被称做“GC”堆（Garbage Collected Heap）。从内存回收的角度看，由于现在收集器基本都采用分代收集算法，所以 Java 堆中还可以细分为：新生代和老年代。从内存分配角度来看，线程共享的 Java 堆中可能划分出多个线程私有的分配缓冲区（Thread Local Allocation Buffer,TLAB）。不过无论如何划分，都与存放的内容无关，无论哪个区域，存储的都仍然是对象实例，进一步划分的目的是为了更好地回收内存，或者更快地分配内存。<br>Java 虚拟机规定，Java 堆可以处于物理上不连续的内存空间中，只要逻辑上是连续的即可。在实现时，可以是固定大小的，也可以是可扩展的。如果在堆中没有完成实例分配。并且堆也无法扩展时，将会抛出OutOfMemoryError 异常。</p>
-<p>5 <strong>方法区</strong><br>方法区（Method Area）：与 Java 堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。<br>虽然 Java 虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做 Non-Heap（非堆），其目的应该就是与Java堆区分开来。<br>Java 虚拟机规范对方法区的限制非常宽松，除了和 Java 堆一样不需要连续的内存和可以选择固定大小或者可扩展外，还可以选择不实现垃圾收集。这个区域的内存回收目标主要是针对常量池的回收和对类型的卸载。<br>根据Java虚拟机规范规定，当方法区无法满足内存分配需求时，将抛出OutOfMemoryError异常。</p>
-<p>运行时常量池（Runtime Constant Pool）：是方法区的一部分。Class 文件中除了有类的版本、字段、方法、接口等描述信息外，还有一些信息是常量池，用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后进入方法区的运行时常量池中存放。<br>Java 虚拟机对 Class 文件每一部分（当然也包括常量池）的格式都有严格的规定，每一个字节用于存储哪种数据都必须符合规范上的要求才会被虚拟机认可、装载和执行。</p>
-<p>直接内存（Direct Memory）：并不是虚拟机运行时数据区的一部分，也不是 Java 虚拟机规范中定义的内存区域。但是这部分内存也频繁地使用，而且也可能导致OutOfMemoryError 异常。本地直接内存的分配不会受到 Java 堆大小的限制，但是，既然是内存，肯定还是会受到本机总内存大小以及处理器寻址空间的限制。如果各个内存区域总和大于物理内存限制，从而导致动态扩展时出现OutOfMemoryError 异常。</p>
-<p>3 <strong>堆与栈</strong><br>堆和栈（虚拟机栈）是完全不同的两块内存区域，一个是线程独享的，一个是线程共享的。二者之间最大的区别就是存储的内容不同：堆中主要存放对象实例。栈（局部变量表）中主要存放各种基本数据类型、对象的引用。<br>从作用来说，栈是运行时的单位，堆是存储的单位。栈解决程序的运行问题，即程序如何执行，或者说如何处理数据。堆解决的是数据存储的问题，即数据怎么放、放在哪儿。在 Java 中一个线程就会相应有一个线程栈与之对应，因为不同的线程执行逻辑有所不同，因此需要一个独立的线程栈。而堆则是所有线程共享的。栈因为是运行时的单位，因此里面存储的信息都是跟当前线程（或程序）相关的信息。包括局部变量、程序运行状态、方法返回值等等；堆只负责存储对象实例。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>jvm</tag>
       </tags>
   </entry>
   <entry>
@@ -459,6 +414,52 @@
       </categories>
       <tags>
         <tag>redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>11_27_Java</title>
+    <url>/2021/11/27/11-27-Java/</url>
+    <content><![CDATA[<h3 id="1-JVM主要组成部分及其作用"><a href="#1-JVM主要组成部分及其作用" class="headerlink" title="1 JVM主要组成部分及其作用"></a>1 JVM主要组成部分及其作用</h3><p>1 类加载器（ClassLoader）<br>2 运行时数据区（Runtime Data Area)<br>3 执行引擎（Execution Engine）<br>4 本地库接口（Native Interface）</p>
+<p>首先通过类加载器（ClassLoader）会把 Java 代码转换成字节码，运行时数据区（Runtime Data Area）会把字节码加载到内存中，而字节码文件只是 JVM 的一套指令集规范，并不能直接交给底层操作系统去执行，因此需要特定的命令解析器执行引擎（Execution Engine），将字节码翻译成底层系统指令，再交由 CPU 去执行，而这个过程中需要调用其他语言的本地库接口（Native Interface）来实现整个程序的功能。</p>
+<h3 id="2-运行时数据区"><a href="#2-运行时数据区" class="headerlink" title="2 运行时数据区"></a>2 运行时数据区</h3><p>1 <strong>程序计数器</strong><br>程序计数器（Program Counter Register）：是一块较小的内存空间，它可以看作是当前线程所执行的字节码的行号指示器。<br>字节码解释器执作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令。程序的分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。<br>由于 Java 虚拟机的多线程是通过线程轮流切换并分配处理器执行时间的方式来实现的，在任何一个确定的时刻，每个处理器都只会执行一条线程中的命令。因此，为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器，各线程之间的计数器互不影响，独立存储，我们程这块内存区域为“线程私有”的内存。<br>此区域是唯一一个虚拟机规范中没有规定任何 OutOfMemoryError 情况的区域。</p>
+<p>2 <strong>Java虚拟机栈</strong><br>Java 虚拟机栈（Java Virtual Machine Stacks）：描述的是Java方法执行的内存模型：每个方法在执行的同时都会创建一个帧栈（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中入栈到出栈的过程。它的线程也是私有的，生命周期与线程相同。<br>局部变量表存放了编译期可知的各种基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用和 returnAddress 类型（指向了一条字节码指令的地址）。<br>Java 虚拟机栈的局部变量表的空间单位是槽（Slot），其中 64 位长度的 double 和long 类型会占用两个 Slot。局部变量表所需内存空间在编译期完成分配，当进入一个方法时，该方法需要在帧中分配多大的局部变量是完全确定的，在方法运行期间不会改变局部变量表的大小。<br>Java虚拟机栈有两种异常状况：如果线程请求的栈的深度大于虚拟机所允许的深度，将抛出 StackOverflowError异常；如果扩展时无法申请到足够的内存，就会抛出 OutOfMemoryError 异常。</p>
+<p>3 <strong>本地方法栈</strong><br>本地方法栈（Native Method Stack）：与虚拟机栈所发挥的作用是非常相似的，它们之间的区别只不过是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则为虚拟机使用到的 Native 方法服务。<br>Java 虚拟机规范没有对本地方法栈中方法使用的语言、使用的方式和数据结构做出强制规定，因此具体的虚拟机可以自由地实现它。例如：Sun HotSpot 虚拟机直接把Java虚拟机栈和本地方法栈合二为一。<br>与Java虚拟机栈一样，本地方法栈也会抛出StackOverflowError和 OutOfMemoryError 异常。</p>
+<p>4 <strong>Java堆</strong><br>Java堆（Java Heap）：是被所有线程所共享的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是：存放对象实例，几乎所有的对象实例都在这里分配内存。<br>Java 堆是垃圾收集器管理的主要区域，因此很多时候也被称做“GC”堆（Garbage Collected Heap）。从内存回收的角度看，由于现在收集器基本都采用分代收集算法，所以 Java 堆中还可以细分为：新生代和老年代。从内存分配角度来看，线程共享的 Java 堆中可能划分出多个线程私有的分配缓冲区（Thread Local Allocation Buffer,TLAB）。不过无论如何划分，都与存放的内容无关，无论哪个区域，存储的都仍然是对象实例，进一步划分的目的是为了更好地回收内存，或者更快地分配内存。<br>Java 虚拟机规定，Java 堆可以处于物理上不连续的内存空间中，只要逻辑上是连续的即可。在实现时，可以是固定大小的，也可以是可扩展的。如果在堆中没有完成实例分配。并且堆也无法扩展时，将会抛出OutOfMemoryError 异常。</p>
+<p>5 <strong>方法区</strong><br>方法区（Method Area）：与 Java 堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。<br>虽然 Java 虚拟机规范把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做 Non-Heap（非堆），其目的应该就是与Java堆区分开来。<br>Java 虚拟机规范对方法区的限制非常宽松，除了和 Java 堆一样不需要连续的内存和可以选择固定大小或者可扩展外，还可以选择不实现垃圾收集。这个区域的内存回收目标主要是针对常量池的回收和对类型的卸载。<br>根据Java虚拟机规范规定，当方法区无法满足内存分配需求时，将抛出OutOfMemoryError异常。</p>
+<p>运行时常量池（Runtime Constant Pool）：是方法区的一部分。Class 文件中除了有类的版本、字段、方法、接口等描述信息外，还有一些信息是常量池，用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后进入方法区的运行时常量池中存放。<br>Java 虚拟机对 Class 文件每一部分（当然也包括常量池）的格式都有严格的规定，每一个字节用于存储哪种数据都必须符合规范上的要求才会被虚拟机认可、装载和执行。</p>
+<p>直接内存（Direct Memory）：并不是虚拟机运行时数据区的一部分，也不是 Java 虚拟机规范中定义的内存区域。但是这部分内存也频繁地使用，而且也可能导致OutOfMemoryError 异常。本地直接内存的分配不会受到 Java 堆大小的限制，但是，既然是内存，肯定还是会受到本机总内存大小以及处理器寻址空间的限制。如果各个内存区域总和大于物理内存限制，从而导致动态扩展时出现OutOfMemoryError 异常。</p>
+<p>3 <strong>堆与栈</strong><br>堆和栈（虚拟机栈）是完全不同的两块内存区域，一个是线程独享的，一个是线程共享的。二者之间最大的区别就是存储的内容不同：堆中主要存放对象实例。栈（局部变量表）中主要存放各种基本数据类型、对象的引用。<br>从作用来说，栈是运行时的单位，堆是存储的单位。栈解决程序的运行问题，即程序如何执行，或者说如何处理数据。堆解决的是数据存储的问题，即数据怎么放、放在哪儿。在 Java 中一个线程就会相应有一个线程栈与之对应，因为不同的线程执行逻辑有所不同，因此需要一个独立的线程栈。而堆则是所有线程共享的。栈因为是运行时的单位，因此里面存储的信息都是跟当前线程（或程序）相关的信息。包括局部变量、程序运行状态、方法返回值等等；堆只负责存储对象实例。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>11_26_Java</title>
+    <url>/2021/11/26/11-26-Java/</url>
+    <content><![CDATA[<h3 id="1-创建线程池的方式"><a href="#1-创建线程池的方式" class="headerlink" title="1 创建线程池的方式"></a>1 创建线程池的方式</h3><p>通过<strong>ThreadPoolExecutor</strong>类的构造方法实现</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue) &#123;</span><br><span class="line">        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,</span><br><span class="line">             Executors.defaultThreadFactory(), defaultHandler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              ThreadFactory threadFactory) &#123;</span><br><span class="line">        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,</span><br><span class="line">             threadFactory, defaultHandler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              RejectedExecutionHandler handler) &#123;</span><br><span class="line">        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,</span><br><span class="line">             Executors.defaultThreadFactory(), handler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              ThreadFactory threadFactory,</span><br><span class="line">                              RejectedExecutionHandler handler) &#123;</span><br><span class="line">        if (corePoolSize &lt; 0 ||</span><br><span class="line">            maximumPoolSize &lt;&#x3D; 0 ||</span><br><span class="line">            maximumPoolSize &lt; corePoolSize ||</span><br><span class="line">            keepAliveTime &lt; 0)</span><br><span class="line">            throw new IllegalArgumentException();</span><br><span class="line">        if (workQueue &#x3D;&#x3D; null || threadFactory &#x3D;&#x3D; null || handler &#x3D;&#x3D; null)</span><br><span class="line">            throw new NullPointerException();</span><br><span class="line">        this.acc &#x3D; System.getSecurityManager() &#x3D;&#x3D; null ?</span><br><span class="line">                null :</span><br><span class="line">                AccessController.getContext();</span><br><span class="line">        this.corePoolSize &#x3D; corePoolSize;</span><br><span class="line">        this.maximumPoolSize &#x3D; maximumPoolSize;</span><br><span class="line">        this.workQueue &#x3D; workQueue;</span><br><span class="line">        this.keepAliveTime &#x3D; unit.toNanos(keepAliveTime);</span><br><span class="line">        this.threadFactory &#x3D; threadFactory;</span><br><span class="line">        this.handler &#x3D; handler;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过<strong>Executors</strong>类实现<br>可以创建三种类型的ThreadPoolExecutor。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">创建一个线程池，该线程池重用固定数量的线程，这些线程在共享的无界队列中运行，并在需要时使用提供的 ThreadFactory 创建新线程。</span><br><span class="line">在任何时候，最多有 nThreads 个线程是活动的处理任务。如果在所有线程都处于活动状态时提交了额外的任务，它们将在队列中等待，直到有线程可用。如果任何线程在关闭前的执行过程中由于失败而终止，则在需要执行后续任务时，将有一个新线程代替它。池中的线程将一直存在，直到它被明确关闭。</span><br><span class="line">public static ExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) &#123;</span><br><span class="line">        return new ThreadPoolExecutor(nThreads, nThreads,</span><br><span class="line">                                      0L, TimeUnit.MILLISECONDS,</span><br><span class="line">                                      new LinkedBlockingQueue&lt;Runnable&gt;(),</span><br><span class="line">                                      threadFactory);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">创建一个 Executor，它使用单个工作线程在无界队列中运行。（但是请注意，如果这个单线程在关闭之前的执行过程中由于失败而终止，如果需要执行后续任务，一个新线程将取而代之。）任务保证按顺序执行，并且在任何给定时间不会有超过一个任务处于活动状态。</span><br><span class="line">public static ExecutorService newSingleThreadExecutor() &#123;</span><br><span class="line">        return new FinalizableDelegatedExecutorService</span><br><span class="line">            (new ThreadPoolExecutor(1, 1,</span><br><span class="line">                                    0L, TimeUnit.MILLISECONDS,</span><br><span class="line">                                    new LinkedBlockingQueue&lt;Runnable&gt;()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">创建一个线程池，根据需要创建新线程，但在可用时将重用先前构造的线程。这些池通常会提高执行许多短期异步任务的程序的性能。如果可用，调用 execute 将重用先前构造的线程。如果没有可用的现有线程，则会创建一个新线程并将其添加到池中。 60 秒内未使用的线程将被终止并从缓存中删除。因此，保持空闲足够长时间的池不会消耗任何资源。</span><br><span class="line">public static ExecutorService newCachedThreadPool() &#123;</span><br><span class="line">        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,</span><br><span class="line">                                      60L, TimeUnit.SECONDS,</span><br><span class="line">                                      new SynchronousQueue&lt;Runnable&gt;());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>线程池不允许使用 Executors 去创建，而是通过 ThreadPoolExecutor 的方式。<br>Executors 创建并返回的线程池对象的弊端如下：<br>FixedThreadPool 和 SingleThreadPool: 允许的请求队列长度为Integer.MAX_VALUE，可能会堆积大量的请求，从而导致OOM（out of memory）。<br>CachedThreadPool和 ScheduledThreadPool: 允许的创建线程数量为 Integer.MAX_VALUE，可能会创建大量的线程，从而导致OOM。</p>
+<h3 id="2-execute方法与submit方法"><a href="#2-execute方法与submit方法" class="headerlink" title="2 execute方法与submit方法"></a>2 execute方法与submit方法</h3><p>execute() 方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功。<br>submit() 方法用于提交需要返回值的任务。线程池会返回一个 Future 类型的对象，通过这个 Future 对象可以判断任务是否执行成功，并且可以通过 Future 的 get() 方法来获取返回值，get() 方法会阻塞当前线程直到任务完成。</p>
+<h3 id="3-Fork-Join并行计算框架"><a href="#3-Fork-Join并行计算框架" class="headerlink" title="3 Fork/Join并行计算框架"></a>3 Fork/Join并行计算框架</h3><p>Fork/Join 并行计算框架主要解决的是分治任务。分治的核心思想是“分而治之”。分治分为两个阶段，第一个阶段分解任务，把任务分解为一个个小任务直至小任务可以简单的计算返回结果。第二阶段合并结果，把每个小任务的结果合并返回得到最终结果。而Fork就是分解任务，Join就是合并结果。<br>Fork/Join框架的核心是ForkJoinPool。<br>ForkJoinPool 支持任务窃取机制，能够让所有的线程的工作量基本均衡，不会出现有的线程很忙，有的线程很闲的情况，所以性能很好。<br>ForkJoinPool中的任务队列采用的是双端队列，工作线程正常获取任务和“窃取任务”分别是从任务队列不同的端消费，这样能避免很多不必要的数据竞争。当某个工作线程对应消费的任务队列空闲的时候它会去别的忙的任务队列的尾部分担(stealing)任务过来执行。</p>
+<h3 id="4-Java提供的并发容器"><a href="#4-Java提供的并发容器" class="headerlink" title="4 Java提供的并发容器"></a>4 Java提供的并发容器</h3><p><strong>ConcurrentHashMap</strong></p>
+<p><strong>CopyOnWriteArrayList</strong><br>java.util.ArrayList 的线程安全变体，其中所有可变操作（添加、设置等）都是通过创建底层数组的新副本来实现的。允许所有元素，包括 null。<br>在很多应用场景中，读操作可能会远远大于写操作。由于读操作根本不会修改原有的数据，因此如果每次读取都进行加锁操作，其实是一种资源浪费。我们应该允许多个线程同时访问 List 的内部数据，毕竟读操作是线程安全的。<br>当 List 需要被修改的时候，并不直接修改原有数组对象，而是对原有数据进行一次拷贝，将修改的内容写入副本中。写完之后，再将修改完的副本替换成原来的数据，这样就可以保证写操作不会影响读操作了。<br>CopyOnWrite：对一块内存进行修改时，不直接在原有内存块中进行写操作，而是将内存拷贝一份，在新的内存中进行写操作，写完之后，再将原来指向的内存指针指到新的内存，原来的内存就可以被回收。<br>读取操作没有任何同步控制和锁操作，理由就是内部数组 array 不会发生修改，只会被另外一个 array 替换，因此可以保证数据安全。<br>CopyOnWriteArrayList 写入操作 add() 方法在添加集合的时候加了锁，保证同步，避免多线程写的时候会 copy 出多个副本。</p>
+<p><strong>ConcurrentLinkedQueue</strong><br>基于链接节点的无界线程安全队列。此队列对元素 FIFO（先进先出）进行排序。 队列的头部是在队列中停留时间最长的那个元素。 队列的尾部是在队列中停留时间最短的那个元素。 新元素插入队列尾部，队列检索操作获取队列头部元素。<br>当许多线程将共享对公共集合的访问时， ConcurrentLinkedQueue 是合适的选择。与大多数其他并发集合实现一样，此类不允许使用空元素。</p>
+<p><strong>BlockingQueue</strong><br>一个 Queue 额外支持在检索元素时等待队列变为非空的操作，并在存储元素时等待队列中有可用空间。<br>在队列为空时，获取元素的线程会等待队列变为非空。当队列满时，存储元素的线程会等待队列有可用空间。阻塞队列常用于生产者-消费者的场景，生产者是往队列里添加元素的线程，消费者是从队列里拿元素的线程。<br>BlockingQueue是一个接口，继承了Queue。<br>BlockingQueue的实现类有ArrayBlockingQueue、DelayQueue、LinkedBlockingDeque、LinkedBlockingQueue、PriorityBlockingQueue、SynchronousQueue。</p>
+<p><strong>ConcurrentSkipListMap</strong><br>一个可扩展的并发 ConcurrentNavigableMap 实现。映射根据其键的自然顺序进行排序，或者通过映射创建时提供的 Comparator 进行排序，具体取决于使用的构造函数。<br>此类实现了 SkipLists 的并发变体，为 containsKey、get、put 和 remove 操作及其变体提供预期的平均 log(n) 时间成本。插入、移除、更新和访问操作由多个线程安全地并发执行。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>线程池</tag>
       </tags>
   </entry>
   <entry>
@@ -518,6 +519,49 @@
 <p><strong>复制算法</strong>copying<br>复制算法的提出是为了克服句柄开销和解决内存碎片问题。把堆分成 一个对象面和多个空闲面， 程序从对象面为对象分配空间，当对象满了，基于 copying 算法的垃圾收集就从根集合（GC Roots）中扫描活动对象，并将每个活动对象复制到空闲面，这样空闲面变成了对象面，原来的对象面变成了空闲面，程序会在新的对象面中分配内存。</p>
 <p><strong>标记-整理算法</strong>ark-compact<br>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但在清除时不同，在回收不存活的对象占用的空间后，会将所有的存活对象往左端空闲空间移动，并更新对应的指针。标记-整理算法是在标记-清除算法的基础上，又进行了对象的移动，因此成本更高，但是却解决了内存碎片的问题。</p>
 <p><strong>分代收集算法</strong><br>分代收集算法是目前大部分 JVM 的垃圾收集器采用的算法。它的核心思想是根据对象存活的生命周期将内存划分为若干个不同的区域。一般情况下将堆划分为老年代（Tenured Generation）和新生代（Young Generation），在堆之外还有一个代就是永久代（Permanet Generation）。<br>老年代的特点是每次垃圾收集时只有少量对象需要被回收，而新生代的特点是每次垃圾回收时都有大量的对象需要被回收，那么就可以根据不同代的特点采取最适合的收集算法。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>12_04_Java</title>
+    <url>/2021/12/04/12-04-Java/</url>
+    <content><![CDATA[<h3 id="1-分代收集中年轻代和老年代采用的收集算法"><a href="#1-分代收集中年轻代和老年代采用的收集算法" class="headerlink" title="1 分代收集中年轻代和老年代采用的收集算法"></a>1 分代收集中年轻代和老年代采用的收集算法</h3><p>年轻代（Young Generation）的回收算法 (主要以 Copying 为主)</p>
+<ol>
+<li>所有新生成的对象首先都是放在年轻代的。年轻代的目标就是尽可能快速的收集掉那些生命周期短的对象。</li>
+<li>新生代内存按照 8:1:1 的比例分为一个 eden 区和两个 survivor（survivor0、 survivor1）区。大部分对象在eden 区中生成。回收时先将 eden 区存活对象复制到 survivor0 区，然后清空 eden 区，当survivor0 区也存放满了，则将 eden 区和 survivor0 区存活对象复制到 survivor1 区，然后清空 eden 区 和 survivor0 区，此时 survivor0 区是空的，然后将survivor0 区和 survivor1 区交换，即保持survivor1 区为空，如此往复。</li>
+<li>当 survivor1 区不足以存放 eden 区和 survivor0 区的存活对象时，就将存活对象直接存放到老年代。若是老年代也满了就会触发一次Full GC（Major GC），也就是新生代、老年代都进行回收。</li>
+<li>新生代发生的 GC 也叫做 Minor GC，MinorGC 发生频率比较高（不一定等 eden 区满了才触发）。</li>
+</ol>
+<p>老年代（Old Generation）的回收算法（主要以 Mark-Compact 为主）</p>
+<ol>
+<li>在年轻代中经历了 N 次垃圾回收后仍然存活的对象，就会被放到老年代中。因此，可以认为老年代中存放的都是一些生命周期比较长的对象。</li>
+<li>内存比新生代也大很多（1 : 2），当老年代内存满时触发 Major GC 即 Full GC，Full GC 发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
+</ol>
+<h3 id="2-常用的垃圾收集器"><a href="#2-常用的垃圾收集器" class="headerlink" title="2 常用的垃圾收集器"></a>2 常用的垃圾收集器</h3><ol>
+<li>Serial GC，它是最古老的垃圾收集器，“Serial”体现在其收集工作是单线程的，并且在进行垃圾收集过程中，会进入臭名昭著的“Stop-The-World”状态。当然，其单线程设计也意味着精简的 GC 实现，无需维护复杂的数据结构，初始化也简单，所以一直是 Client 模式下 JVM 的默认选项。</li>
+<li>从年代的角度，通常将其老年代实现单独称作 Serial Old，它采用了标记 - 整理（Mark-Compact）算法，区别于新生代的复制算法。</li>
+<li>ParNew GC，很明显是个新生代 GC 实现，它实际是 Serial GC 的多线程版本，最常见的应用场景是配合老年代的 CMS GC 工作。</li>
+<li>CMS（Concurrent Mark Sweep） GC，基于标记 - 清除（Mark-Sweep）算法，设计目标是尽量减少停顿时间，这一点对于 Web 等反应时间敏感的应用非常重要，一直到今天，仍然有很多系统使用 CMS GC。但是，CMS 采用的标记 - 清除算法，存在着内存碎片化问题，所以难以避免在长时间运行等情况下发生 full GC，导致恶劣的停顿。另外，既然强调了并发（Concurrent），CMS 会占用更多 CPU 资源，并和用户线程争抢。</li>
+<li>Parrallel GC，在早期 JDK 8 等版本中，它是 server 模式 JVM 的默认 GC 选择，也被称作是吞吐量优先的 GC。它的算法和 Serial GC 比较相似，尽管实现要复杂的多，其特点是新生代和老年代 GC 都是并行进行的，在常见的服务器环境中更加高效。</li>
+<li>G1 GC 这是一种兼顾吞吐量和停顿时间的 GC 实现，是 Oracle JDK 9 以后的默认 GC 选项。G1 可以直观的设定停顿时间的目标，相比于 CMS GC，G1 未必能做到 CMS 在最好情况下的延时停顿，但是最差情况要好很多。G1 GC内存结构为一个个region。Region 之间是复制算法，但整体上实际可看作是标记 - 整理（Mark-Compact）算法，可以有效地避免内存碎片，尤其是当 Java 堆非常大的时候，G1 的优势更加明显。G1 吞吐量和停顿表现都非常不错，并且仍然在不断地完善，与此同时 CMS 已经在 JDK 9 中被标记为废弃（deprecated）。</li>
+</ol>
+<h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>G1 GC是一种兼顾吞吐量和停顿时间的GC实现，是Oracle JDK 9以后的默认 GC 选项。<br>与以往的收集器不同，G1引入region（区间）的概念，它也分年轻代和老年代。年轻代依然有Eden区和Survivor区。从实际的物理角度看Eden，Survivor等不需要连续只需要保证逻辑上的连续即可。在G1中，堆被分成若干大小相等的区域（region），内存的回收和划分都以region为单位；同时，它吸取了 CMS 的特点，把整个垃圾回收过程分为几个阶段，分散一个垃圾回收过程；而且，G1 也认同分代垃圾回收的思想，认为不同对象的生命周期不同，可以采取不同收集方式，因此，它也支持分代的垃圾回收。为了达到对回收时间的可预计性，G1 在扫描了 region 以后，对其中的活跃对象的大小进行排序，首先会收集那些活跃对象小的 region，以便快速回收空间（要复制的活跃对象少了），因为活跃对象小，里面可以认为多数都是垃圾，所以这种方式被称为 Garbage First（G1）的垃圾回收算法。</p>
+<h3 id="4-内存分配的理解？大对象怎么分配？空间分配担保？"><a href="#4-内存分配的理解？大对象怎么分配？空间分配担保？" class="headerlink" title="4 内存分配的理解？大对象怎么分配？空间分配担保？"></a>4 内存分配的理解？大对象怎么分配？空间分配担保？</h3><ol>
+<li>对象优先在 Eden 区分配：大多数情况下，对象在新生代 Eden 区分配，当 Eden 区空间不够时，发起 MinorGC。</li>
+<li>大对象直接进入老年代：大对象是指需要连续内存空间的对象，最典型的大对象是那种很长的字符串以及数组。经常出现大对象会提前触发垃圾收集以获取足够的连续空间分配给大对象。PretenureSizeThreshold，大于此值的对象直接在老年代分配，避免在 Eden 区和 Survivor 区之间的大量内存复制。</li>
+<li>长期存活的对象将进入老年代：为对象定义年龄计数器，对象在 Eden 出生并经过 Minor GC 依然存活，将移动到 Survivor 中，年龄就增加 1 岁，增加到一定年龄则移动到老年代中。MaxTenuringThreshold 用来定义年龄的阈值。</li>
+<li>动态对象年龄判定：为了更好的适应不同程序的内存情况，虚拟机不是永远要求对象年龄必须达到了某个值才能进入老年代，如果 Survivor 空间中相同年龄所有对象大小的总和大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需达到要求的年龄。</li>
+</ol>
+<p>在发生 Minor GC 之前，虚拟机先检查老年代最大可用的连续空间是否大于新生代所有对象总空间，如果大于的话，那么 Minor GC 可以确认是安全的。</p>
+<h3 id="5-jvm监控工具"><a href="#5-jvm监控工具" class="headerlink" title="5 jvm监控工具"></a>5 jvm监控工具</h3><p>jvisualvm：虚拟机监视和故障处理平台<br>jps ：查看当前 Java 进程<br>jstat：显示虚拟机运⾏数据<br>jmap：内存监控<br>jhat：分析 heapdump ⽂件<br>jstack：线程快照<br>jinfo：虚拟机配置信息</p>
+<h3 id="6-class文件结构"><a href="#6-class文件结构" class="headerlink" title="6 class文件结构"></a>6 class文件结构</h3><p>Class文件结构采用类似C语言的结构体来存储数据的，主要有两类数据项，无符号数和表，无符号数用来表述数字，索引引用以及字符串等，比如 u1，u2，u4，u8分别代表1个字节，2个字节，4个字节，8个字节的无符号数，而表是有多个无符号数以及其它的表组成的复合结构，习惯地以_info结尾。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic;</span><br><span class="line">    u2             minor_version;</span><br><span class="line">    u2             major_version;</span><br><span class="line">    u2             constant_pool_count;</span><br><span class="line">    cp_info        constant_pool[constant_pool_count-1];</span><br><span class="line">    u2             access_flags;</span><br><span class="line">    u2             this_class;</span><br><span class="line">    u2             super_class;</span><br><span class="line">    u2             interfaces_count;</span><br><span class="line">    u2             interfaces[interfaces_count];</span><br><span class="line">    u2             fields_count;</span><br><span class="line">    field_info     fields[fields_count];</span><br><span class="line">    u2             methods_count;</span><br><span class="line">    method_info    methods[methods_count];</span><br><span class="line">    u2             attributes_count;</span><br><span class="line">    attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每个 Class 文件的头 4 个字节称为魔数（magic），它的值固定为 0xCAFEBABE，表示文件类型是能够被JVM处理的Class文件。紧接着magic之后的四个字节存储的是 Class 文件的次版本号和主版本号。<br>在主次版本号之后是常量池。常量池主要存储了字面量以及符号引用。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -619,6 +663,33 @@
       </tags>
   </entry>
   <entry>
+    <title>12_11_Network</title>
+    <url>/2021/12/11/12-11-Network/</url>
+    <content><![CDATA[<h3 id="1-三次握手"><a href="#1-三次握手" class="headerlink" title="1 三次握手"></a>1 三次握手</h3><p>为什么只有三次握手才能确认双方的接收与发送能力是否正常，而两次握手却不可以。<br>第一次握手：客户端发送网络包，服务端收到了。此时服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>第二次握手：服务端发包，客户端收到了。此时客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务端并不能确认客户端的接收能力是否正常。<br>第三次握手：客户端发包，服务端收到了。此时服务端就能得出结论：客户端的接收、发送能力正常，服务端的发送、接收能力也正常。<br>因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
+<p>三次握手过程：刚开始客户端处于 closed 的状态，服务端处于 listen 状态。</p>
+<p>SYN，ACK都是标志位，可置为0或1，三次握手时为1。<br>在TCP报文段中，字段ACK=1时，确认号字段（ack）才有效。TCP规定，在连接建立后所有传送的报文段都必须把ACK置1。<br>确认号字段：该字段存放的信息为期望收到对方下一个报文段的第一个数据字节的序号。</p>
+<ol>
+<li>第一次握手：客户端给服务端发一个 SYN 报文，并指明客户端的初始化序列号ISN(c)。此时客户端处于 SYN_Send 状态。</li>
+<li>第二次握手：服务端收到客户端的 SYN 报文之后，会以自己的 SYN 报文作为应答，并且也是指定了自己的初始化序列号ISN(s)，同时会把客户端的 ISN + 1 作为 确认号字段 的值，表示自己已经收到了客户端的SYN，此时服务端处于 SYN_RCVD 的状态。</li>
+<li>第三次握手：客户端收到 SYN 报文之后，会发送一个 ACK 报文，当然，也是同样把服务端的 ISN + 1 作为 确认号字段 的值，表示已经收到了服务端的 SYN 报文，此时客户端处于 establised 状态。<br>服务器收到 ACK 报文之后，也处于 establised 状态，此时，双方建立起了连接。</li>
+</ol>
+<p>三次握手好处：<br>确认双方的接收能力、发送能力是否正常。<br>指定自己的初始化序列号，为后面的可靠传送做准备。</p>
+<p>ISN不是固定的<br>三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。<br>如果ISN是固定的，攻击者很容易猜出后续的确认号(acknowledgement number)，因此 ISN 是动态生成的。</p>
+<p>半连接队列<br>服务端第一次收到客户端的 SYN(Synchronize Sequence Numbers) 之后，就会处于 SYN_RCVD 状态，此时双方还没有完全建立连接，服务端会把此种状态下的请求连接放在一个队列里，称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列里。如果队列满了就有可能会出现丢包现象。</p>
+<p>SYN-ACK重传次数问题<br>服务器发送完SYN－ACK包，如果未收到客户端的确认包，服务器进行首次重传，等待一段时间仍未收到客户端确认包，进行第二次重传，如果重传次数超过系统规定的最大重传次数，系统会将该连接信息从半连接队列中删除。</p>
+<p>三次握手过程中可以携带数据吗？<br>第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。<br>第三次握手时，客户端已经处于 established 状态，已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的，所以能携带数据。</p>
+<p>SYN洪泛攻击<br>服务器端的资源分配是在第二次握手时分配的，而客户端的资源是在完成三次握手后分配的，所以服务器容易受到SYN洪泛攻击。</p>
+<p>SYN攻击就是Client在短时间内伪造大量不存在的IP地址，并向Server不断地发送SYN包，Server回复确认包，并等待Client确认。由于源地址不存在，因此Server需要不断重发直至超时，这些伪造的SYN包将长时间占用未连接队列，导致正常的SYN请求因为队列满而被丢弃，从而引起网络拥塞甚至系统瘫痪。SYN攻击是一种典型的 DoS/DDoS 攻击。</p>
+<p>防御方法：<br>缩短超时时间（SYN Timeout)<br>增加最大半连接数<br>过滤网关防护<br>SYN cookies技术</p>
+]]></content>
+      <categories>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>三次握手</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>12_10_Spring</title>
     <url>/2021/12/10/12-10-Spring/</url>
     <content><![CDATA[<h3 id="1-AOP-Aspect-Oriented-Programming"><a href="#1-AOP-Aspect-Oriented-Programming" class="headerlink" title="1 AOP(Aspect Oriented Programming)"></a>1 AOP(Aspect Oriented Programming)</h3><p>面向方面编程（AOP）通过提供另一种思考程序结构的方式来补充面向对象编程（OOP）。OOP中模块化的关键单元是类，而AOP中模块化的单元是方面。方面支持跨多个类型和对象的关注点（如事务管理）的模块化。（在AOP文献中，此类关注点通常被称为“横切”关注点。）<br>Spring的关键组件之一是AOP框架。虽然Spring IoC容器不依赖于AOP（这意味着如果您不想使用AOP，就不需要使用AOP），但AOP补充了Spring IoC，提供了一个功能非常强大的中间件解决方案。</p>
@@ -657,76 +728,6 @@
       </categories>
       <tags>
         <tag>aop</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>12_11_Network</title>
-    <url>/2021/12/11/12-11-Network/</url>
-    <content><![CDATA[<h3 id="1-三次握手"><a href="#1-三次握手" class="headerlink" title="1 三次握手"></a>1 三次握手</h3><p>为什么只有三次握手才能确认双方的接收与发送能力是否正常，而两次握手却不可以。<br>第一次握手：客户端发送网络包，服务端收到了。此时服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>第二次握手：服务端发包，客户端收到了。此时客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务端并不能确认客户端的接收能力是否正常。<br>第三次握手：客户端发包，服务端收到了。此时服务端就能得出结论：客户端的接收、发送能力正常，服务端的发送、接收能力也正常。<br>因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
-<p>三次握手过程：刚开始客户端处于 closed 的状态，服务端处于 listen 状态。</p>
-<p>SYN，ACK都是标志位，可置为0或1，三次握手时为1。<br>在TCP报文段中，字段ACK=1时，确认号字段（ack）才有效。TCP规定，在连接建立后所有传送的报文段都必须把ACK置1。<br>确认号字段：该字段存放的信息为期望收到对方下一个报文段的第一个数据字节的序号。</p>
-<ol>
-<li>第一次握手：客户端给服务端发一个 SYN 报文，并指明客户端的初始化序列号ISN(c)。此时客户端处于 SYN_Send 状态。</li>
-<li>第二次握手：服务端收到客户端的 SYN 报文之后，会以自己的 SYN 报文作为应答，并且也是指定了自己的初始化序列号ISN(s)，同时会把客户端的 ISN + 1 作为 确认号字段 的值，表示自己已经收到了客户端的SYN，此时服务端处于 SYN_RCVD 的状态。</li>
-<li>第三次握手：客户端收到 SYN 报文之后，会发送一个 ACK 报文，当然，也是同样把服务端的 ISN + 1 作为 确认号字段 的值，表示已经收到了服务端的 SYN 报文，此时客户端处于 establised 状态。<br>服务器收到 ACK 报文之后，也处于 establised 状态，此时，双方建立起了连接。</li>
-</ol>
-<p>三次握手好处：<br>确认双方的接收能力、发送能力是否正常。<br>指定自己的初始化序列号，为后面的可靠传送做准备。</p>
-<p>ISN不是固定的<br>三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。<br>如果ISN是固定的，攻击者很容易猜出后续的确认号(acknowledgement number)，因此 ISN 是动态生成的。</p>
-<p>半连接队列<br>服务端第一次收到客户端的 SYN(Synchronize Sequence Numbers) 之后，就会处于 SYN_RCVD 状态，此时双方还没有完全建立连接，服务端会把此种状态下的请求连接放在一个队列里，称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列里。如果队列满了就有可能会出现丢包现象。</p>
-<p>SYN-ACK重传次数问题<br>服务器发送完SYN－ACK包，如果未收到客户端的确认包，服务器进行首次重传，等待一段时间仍未收到客户端确认包，进行第二次重传，如果重传次数超过系统规定的最大重传次数，系统会将该连接信息从半连接队列中删除。</p>
-<p>三次握手过程中可以携带数据吗？<br>第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。<br>第三次握手时，客户端已经处于 established 状态，已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的，所以能携带数据。</p>
-<p>SYN洪泛攻击<br>服务器端的资源分配是在第二次握手时分配的，而客户端的资源是在完成三次握手后分配的，所以服务器容易受到SYN洪泛攻击。</p>
-<p>SYN攻击就是Client在短时间内伪造大量不存在的IP地址，并向Server不断地发送SYN包，Server回复确认包，并等待Client确认。由于源地址不存在，因此Server需要不断重发直至超时，这些伪造的SYN包将长时间占用未连接队列，导致正常的SYN请求因为队列满而被丢弃，从而引起网络拥塞甚至系统瘫痪。SYN攻击是一种典型的 DoS/DDoS 攻击。</p>
-<p>防御方法：<br>缩短超时时间（SYN Timeout)<br>增加最大半连接数<br>过滤网关防护<br>SYN cookies技术</p>
-]]></content>
-      <categories>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>三次握手</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>12_04_Java</title>
-    <url>/2021/12/04/12-04-Java/</url>
-    <content><![CDATA[<h3 id="1-分代收集中年轻代和老年代采用的收集算法"><a href="#1-分代收集中年轻代和老年代采用的收集算法" class="headerlink" title="1 分代收集中年轻代和老年代采用的收集算法"></a>1 分代收集中年轻代和老年代采用的收集算法</h3><p>年轻代（Young Generation）的回收算法 (主要以 Copying 为主)</p>
-<ol>
-<li>所有新生成的对象首先都是放在年轻代的。年轻代的目标就是尽可能快速的收集掉那些生命周期短的对象。</li>
-<li>新生代内存按照 8:1:1 的比例分为一个 eden 区和两个 survivor（survivor0、 survivor1）区。大部分对象在eden 区中生成。回收时先将 eden 区存活对象复制到 survivor0 区，然后清空 eden 区，当survivor0 区也存放满了，则将 eden 区和 survivor0 区存活对象复制到 survivor1 区，然后清空 eden 区 和 survivor0 区，此时 survivor0 区是空的，然后将survivor0 区和 survivor1 区交换，即保持survivor1 区为空，如此往复。</li>
-<li>当 survivor1 区不足以存放 eden 区和 survivor0 区的存活对象时，就将存活对象直接存放到老年代。若是老年代也满了就会触发一次Full GC（Major GC），也就是新生代、老年代都进行回收。</li>
-<li>新生代发生的 GC 也叫做 Minor GC，MinorGC 发生频率比较高（不一定等 eden 区满了才触发）。</li>
-</ol>
-<p>老年代（Old Generation）的回收算法（主要以 Mark-Compact 为主）</p>
-<ol>
-<li>在年轻代中经历了 N 次垃圾回收后仍然存活的对象，就会被放到老年代中。因此，可以认为老年代中存放的都是一些生命周期比较长的对象。</li>
-<li>内存比新生代也大很多（1 : 2），当老年代内存满时触发 Major GC 即 Full GC，Full GC 发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
-</ol>
-<h3 id="2-常用的垃圾收集器"><a href="#2-常用的垃圾收集器" class="headerlink" title="2 常用的垃圾收集器"></a>2 常用的垃圾收集器</h3><ol>
-<li>Serial GC，它是最古老的垃圾收集器，“Serial”体现在其收集工作是单线程的，并且在进行垃圾收集过程中，会进入臭名昭著的“Stop-The-World”状态。当然，其单线程设计也意味着精简的 GC 实现，无需维护复杂的数据结构，初始化也简单，所以一直是 Client 模式下 JVM 的默认选项。</li>
-<li>从年代的角度，通常将其老年代实现单独称作 Serial Old，它采用了标记 - 整理（Mark-Compact）算法，区别于新生代的复制算法。</li>
-<li>ParNew GC，很明显是个新生代 GC 实现，它实际是 Serial GC 的多线程版本，最常见的应用场景是配合老年代的 CMS GC 工作。</li>
-<li>CMS（Concurrent Mark Sweep） GC，基于标记 - 清除（Mark-Sweep）算法，设计目标是尽量减少停顿时间，这一点对于 Web 等反应时间敏感的应用非常重要，一直到今天，仍然有很多系统使用 CMS GC。但是，CMS 采用的标记 - 清除算法，存在着内存碎片化问题，所以难以避免在长时间运行等情况下发生 full GC，导致恶劣的停顿。另外，既然强调了并发（Concurrent），CMS 会占用更多 CPU 资源，并和用户线程争抢。</li>
-<li>Parrallel GC，在早期 JDK 8 等版本中，它是 server 模式 JVM 的默认 GC 选择，也被称作是吞吐量优先的 GC。它的算法和 Serial GC 比较相似，尽管实现要复杂的多，其特点是新生代和老年代 GC 都是并行进行的，在常见的服务器环境中更加高效。</li>
-<li>G1 GC 这是一种兼顾吞吐量和停顿时间的 GC 实现，是 Oracle JDK 9 以后的默认 GC 选项。G1 可以直观的设定停顿时间的目标，相比于 CMS GC，G1 未必能做到 CMS 在最好情况下的延时停顿，但是最差情况要好很多。G1 GC内存结构为一个个region。Region 之间是复制算法，但整体上实际可看作是标记 - 整理（Mark-Compact）算法，可以有效地避免内存碎片，尤其是当 Java 堆非常大的时候，G1 的优势更加明显。G1 吞吐量和停顿表现都非常不错，并且仍然在不断地完善，与此同时 CMS 已经在 JDK 9 中被标记为废弃（deprecated）。</li>
-</ol>
-<h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>G1 GC是一种兼顾吞吐量和停顿时间的GC实现，是Oracle JDK 9以后的默认 GC 选项。<br>与以往的收集器不同，G1引入region（区间）的概念，它也分年轻代和老年代。年轻代依然有Eden区和Survivor区。从实际的物理角度看Eden，Survivor等不需要连续只需要保证逻辑上的连续即可。在G1中，堆被分成若干大小相等的区域（region），内存的回收和划分都以region为单位；同时，它吸取了 CMS 的特点，把整个垃圾回收过程分为几个阶段，分散一个垃圾回收过程；而且，G1 也认同分代垃圾回收的思想，认为不同对象的生命周期不同，可以采取不同收集方式，因此，它也支持分代的垃圾回收。为了达到对回收时间的可预计性，G1 在扫描了 region 以后，对其中的活跃对象的大小进行排序，首先会收集那些活跃对象小的 region，以便快速回收空间（要复制的活跃对象少了），因为活跃对象小，里面可以认为多数都是垃圾，所以这种方式被称为 Garbage First（G1）的垃圾回收算法。</p>
-<h3 id="4-内存分配的理解？大对象怎么分配？空间分配担保？"><a href="#4-内存分配的理解？大对象怎么分配？空间分配担保？" class="headerlink" title="4 内存分配的理解？大对象怎么分配？空间分配担保？"></a>4 内存分配的理解？大对象怎么分配？空间分配担保？</h3><ol>
-<li>对象优先在 Eden 区分配：大多数情况下，对象在新生代 Eden 区分配，当 Eden 区空间不够时，发起 MinorGC。</li>
-<li>大对象直接进入老年代：大对象是指需要连续内存空间的对象，最典型的大对象是那种很长的字符串以及数组。经常出现大对象会提前触发垃圾收集以获取足够的连续空间分配给大对象。PretenureSizeThreshold，大于此值的对象直接在老年代分配，避免在 Eden 区和 Survivor 区之间的大量内存复制。</li>
-<li>长期存活的对象将进入老年代：为对象定义年龄计数器，对象在 Eden 出生并经过 Minor GC 依然存活，将移动到 Survivor 中，年龄就增加 1 岁，增加到一定年龄则移动到老年代中。MaxTenuringThreshold 用来定义年龄的阈值。</li>
-<li>动态对象年龄判定：为了更好的适应不同程序的内存情况，虚拟机不是永远要求对象年龄必须达到了某个值才能进入老年代，如果 Survivor 空间中相同年龄所有对象大小的总和大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需达到要求的年龄。</li>
-</ol>
-<p>在发生 Minor GC 之前，虚拟机先检查老年代最大可用的连续空间是否大于新生代所有对象总空间，如果大于的话，那么 Minor GC 可以确认是安全的。</p>
-<h3 id="5-jvm监控工具"><a href="#5-jvm监控工具" class="headerlink" title="5 jvm监控工具"></a>5 jvm监控工具</h3><p>jvisualvm：虚拟机监视和故障处理平台<br>jps ：查看当前 Java 进程<br>jstat：显示虚拟机运⾏数据<br>jmap：内存监控<br>jhat：分析 heapdump ⽂件<br>jstack：线程快照<br>jinfo：虚拟机配置信息</p>
-<h3 id="6-class文件结构"><a href="#6-class文件结构" class="headerlink" title="6 class文件结构"></a>6 class文件结构</h3><p>Class文件结构采用类似C语言的结构体来存储数据的，主要有两类数据项，无符号数和表，无符号数用来表述数字，索引引用以及字符串等，比如 u1，u2，u4，u8分别代表1个字节，2个字节，4个字节，8个字节的无符号数，而表是有多个无符号数以及其它的表组成的复合结构，习惯地以_info结尾。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic;</span><br><span class="line">    u2             minor_version;</span><br><span class="line">    u2             major_version;</span><br><span class="line">    u2             constant_pool_count;</span><br><span class="line">    cp_info        constant_pool[constant_pool_count-1];</span><br><span class="line">    u2             access_flags;</span><br><span class="line">    u2             this_class;</span><br><span class="line">    u2             super_class;</span><br><span class="line">    u2             interfaces_count;</span><br><span class="line">    u2             interfaces[interfaces_count];</span><br><span class="line">    u2             fields_count;</span><br><span class="line">    field_info     fields[fields_count];</span><br><span class="line">    u2             methods_count;</span><br><span class="line">    method_info    methods[methods_count];</span><br><span class="line">    u2             attributes_count;</span><br><span class="line">    attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>每个 Class 文件的头 4 个字节称为魔数（magic），它的值固定为 0xCAFEBABE，表示文件类型是能够被JVM处理的Class文件。紧接着magic之后的四个字节存储的是 Class 文件的次版本号和主版本号。<br>在主次版本号之后是常量池。常量池主要存储了字面量以及符号引用。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>jvm</tag>
       </tags>
   </entry>
   <entry>
@@ -796,26 +797,6 @@
       </tags>
   </entry>
   <entry>
-    <title>12_14_Mybatis</title>
-    <url>/2021/12/14/12-14-Mybatis/</url>
-    <content><![CDATA[<h3 id="1-mybatis"><a href="#1-mybatis" class="headerlink" title="1 mybatis"></a>1 mybatis</h3><p>MyBatis是一个持久层框架，它内部封装了JDBC，开发者只需要关注SQL语句本身，不需要花费精力去处理加载驱动、创建连接、创建statement等过程。<br>它免除了几乎所有的 JDBC 代码以及设置参数和获取结果集的工作。MyBatis可以通过简单的 XML 或注解来配置和映射原始类型、接口和Java POJO（Plain Old Java Objects，普通老式Java对象）为数据库中的记录。<br>通过 XML 或注解的方式将要执行的各种 statement 配置起来，并通过java对象和statement中sql的动态参数进行映射生成最终执行的 sql 语句，最后由 mybatis 框架执行 sql 并将结果映射为 java 对象并返回。</p>
-<p>优点：<br>基于SQL语句编程，相当灵活，不会对应用程序或者数据库的现有设计造成影响；SQL写在XML中，解除了sql与程序代码的耦合，便于统一管理；提供 XML 标签，支持编写动态 SQL 语句，并可重用。</p>
-<p>缺点：<br>SQL语句的编写工作量较大；且语句依赖于数据库，导致数据库移植性差，不能随意更换数据库。</p>
-<h3 id="2-与"><a href="#2-与" class="headerlink" title="2 #{}与${}"></a>2 #{}与${}</h3><p>${}是字符串替换，#{}是预编译处理。<br>Mybatis在处理#{}时，会将sql中的#{}替换为?号，调用PreparedStatement的set方法来赋值。<br>Mybatis在处理${}时，就是把${}替换成变量的值。<br>使用#{}可以有效的防止SQL注入，提高系统安全性。<br>${}传入值时，sql解析参数是不带引号的，而#{}传入值时，sql解析参数是带引号的。</p>
-<h3 id="3-mybatis延迟加载及原理"><a href="#3-mybatis延迟加载及原理" class="headerlink" title="3 mybatis延迟加载及原理"></a>3 mybatis延迟加载及原理</h3><p>Mybatis仅支持一对一关联查询和一对多关联查询的延迟加载。<br>MyBatis中使用collection标签来解决一对多的关联查询；使用association标签来解决一对一的关联查询。<br>在Mybatis配置文件中，可以配置是否启用延迟加载lazyLoadingEnabled=true|false。</p>
-<p>原理：使用CGLIB创建目标对象的代理对象，当调用目标方法时，进入拦截器方法，比如调用a.getB().getName()，拦截器invoke()方法发现a.getB()是null值，那么就会单独发送事先保存好的查询关联B对象的sql，把B查询上来，然后调用a.setB(b)，于是a的对象b属性就有值了，接着完成a.getB().getName()方法的调用。这就是延迟加载的基本原理。</p>
-<h3 id="4-mybatis的一级和二级缓存"><a href="#4-mybatis的一级和二级缓存" class="headerlink" title="4 mybatis的一级和二级缓存"></a>4 mybatis的一级和二级缓存</h3><p>一级缓存: 基于PerpetualCache的HashMap本地缓存，其存储作用域为Session，当 Session flush 或 close 之后，该 Session 中的所有 Cache 就将被清空，默认打开一级缓存。<br>二级缓存：与一级缓存机制相同，默认也是采用PerpetualCache的HashMap存储，不同点在于其存储作用域为 Mapper(Namespace)，并且可自定义存储源，如Ehcache。默认不打开二级缓存，要开启二级缓存，使用二级缓存属性类需要实现 Serializable 序列化接口(用来保存对象的状态)，在它的映射文件中配置。<br>对于缓存数据更新机制，当某一个作用域(一级缓存Session/二级缓存Namespaces)进行了C/U/D 操作后，默认该作用域下所有 select 中的缓存将被clear。</p>
-<h3 id="5-Mybatis执行器（Executor）"><a href="#5-Mybatis执行器（Executor）" class="headerlink" title="5 Mybatis执行器（Executor）"></a>5 Mybatis执行器（Executor）</h3><p>SimpleExecutor：每执行一次update或select，就开启一个Statement对象，用完立刻关闭Statement对象。<br>ReuseExecutor：执行update或select，以sql作为key查找Statement对象，存在就使用，不存在就创建，用完后，不关闭Statement对象，而是放置于Map内，供下一次使用。简言之，就是重复使用Statement对象。<br>BatchExecutor：执行update（JDBC批处理不支持select），将所有sql都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个Statement对象。</p>
-<h3 id="6-mybatis动态sql"><a href="#6-mybatis动态sql" class="headerlink" title="6 mybatis动态sql"></a>6 mybatis动态sql</h3><p>MyBatis动态 SQL 可以让我们在 XML 映射文件内，以标签的形式编写SQL，并完成逻辑判断和动态拼接SQL的功能。<br>MyBatis提供了9种动态 SQL 标签：trim、where、set、foreach、if、choose、when、otherwise、bind。<br>执行原理：使用OGNL从 SQL 参数对象中计算表达式的值，然后根据表达式的值动态拼接SQL，以此来完成动态SQL的功能。</p>
-]]></content>
-      <categories>
-        <category>Mybatis</category>
-      </categories>
-      <tags>
-        <tag>mybatis</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>12_14_Network</title>
     <url>/2021/12/14/12-14-Network/</url>
     <content><![CDATA[<h3 id="1-http1-0、1-1、2-2"><a href="#1-http1-0、1-1、2-2" class="headerlink" title="1 http1.0、1.1、2.2"></a>1 http1.0、1.1、2.2</h3><p>http1.0：为了提高系统的效率，HTTP1.0规定浏览器与服务器只保持短暂的连接，浏览器的每次请求都需要与服务器建立一个TCP连接，服务器完成请求处理后立即断开TCP连接，服务器不跟踪每个客户也不记录过去的请求。</p>
@@ -837,42 +818,6 @@
       </categories>
       <tags>
         <tag>http</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>12_18_OS</title>
-    <url>/2021/12/18/12-18-OS/</url>
-    <content><![CDATA[<h3 id="1-进程状态"><a href="#1-进程状态" class="headerlink" title="1 进程状态"></a>1 进程状态</h3><img src="/2021/12/18/12-18-OS/process.png" class="">
-
-<p>就绪状态：进程已处于准备运行状态，即进程获得了除了处理器之外的一切所需资源，一旦得到处理器资源(处理器分配的时间片)即可运行。</p>
-<p>运行状态：进程正在处理器上运行(单核CPU下任意时刻只有一个进程处于运行状态)。</p>
-<p>阻塞状态：又称为等待状态，进程正在等待某一事件而暂停运行。例如等待某资源为可用或等待IO操作完成。即使处理器空闲，该进程也不能运行。</p>
-<h3 id="2-进程间通信（InterProcess-Communication）方式有哪些？"><a href="#2-进程间通信（InterProcess-Communication）方式有哪些？" class="headerlink" title="2 进程间通信（InterProcess Communication）方式有哪些？"></a>2 进程间通信（InterProcess Communication）方式有哪些？</h3><p>每个进程都有不同的用户地址空间，任何一个进程的全局变量对另一个进程是不可见的，所以进程之间要交换数据必须通过内核。在内核中开辟一块缓冲区，进程1把数据从用户空间拷到内核缓冲区，进程2再从内核缓冲区把数据读走，内核提供的这种机制称为进程间通信（IPC，InterProcess Communication）。</p>
-<p><strong>管道（无名管道）</strong><br>管道是半双工的，数据只能向一个方向流动；双方通信时，需要建立起两个管道；<br>只能用于父子进程或者兄弟进程之间(具有亲缘关系的进程)的通信；<br>单独构成一种独立的文件系统：管道对于管道两端的进程而言，就是一个文件，但它不是普通的文件，它不属于某种文件系统，而是单独构成一种文件系统，并且只存在于内存中；<br>数据的读出和写入：一个进程向管道中写的内容被管道另一端的进程读出。写入的内容每次都添加在管道缓冲区的末尾，并且每次都是从管道缓冲区的头部读出数据。</p>
-<p>局限：<br>只支持单向数据流；<br>只能用于具有亲缘关系的进程之间；<br>没有名字；<br>管道的缓冲区是有限的；<br>管道所传送的是无格式字节流，这就要求管道的双方必须事先约定好数据的格式。</p>
-<p><strong>有名管道（FIFO）</strong><br>有名管道提供了一个路径名与之关联，以有名管道的文件形式存在于文件系统中。这样，即使与有名管道的创建进程不存在亲缘关系的进程，只要可以访问该路径，就能够彼此通过有名管道相互通信。因此，通过有名管道不相关的进程也能交换数据。有名管道的名字存在于文件系统中，内容存放在内存中。</p>
-<p><strong>消息队列</strong><br>消息队列是存放在内核中的消息链表，每个消息队列由消息队列标识符表示；<br>消息队列是面向记录的，其中的消息具有特定的格式以及特定的优先级；<br>消息队列独立于发送与接收进程。进程终止时，消息队列及其内容并不会被删除。只有在内核重启(操作系统重启)或者显示地删除一个消息队列时，该消息队列才会被真正的删除；<br>消息队列可以实现消息的随机查询,消息不一定要以先进先出的次序读取,也可以按消息的类型读取。</p>
-<p><strong>信号量</strong><br>信号量是一个计数器，用于多进程对共享数据的访问，信号量的意图在于进程间同步。<br>信号量用于进程间同步，若要在进程间传递数据需要结合共享内存；<br>信号量基于操作系统的 PV 操作，程序对信号量的操作都是原子操作；<br>每次对信号量的 PV 操作不仅限于对信号量值加 1 或减1，而是可以加减任意正整数。</p>
-<p><strong>共享内存</strong><br>指两个或多个进程可以直接（共享）读写同一块内存空间；<br>共享内存是最快的一种IPC，因为进程是直接对内存进行存取；<br>由于多个进程共享一段内存，因此需要依靠某种同步机制（如信号量）来达到进程间的同步。</p>
-<p><strong>信号</strong><br>信号是一种比较复杂的通信方式，用于通知接收进程某个事件已经发生。</p>
-<p><strong>套接字（socket）</strong><br>主要用于在客户端和服务器之间通过网络进行通信。套接字是支持 TCP/IP 的网络通信的基本操作单元，可以看做是不同主机之间的进程进行双向通信的端点，简单说就是通信双方的一种约定，用套接字中的相关函数来完成通信过程。</p>
-<h3 id="3-进程调度算法"><a href="#3-进程调度算法" class="headerlink" title="3 进程调度算法"></a>3 进程调度算法</h3><p>为了确定首先执行哪个进程以及最后执行哪个进程以实现最大CPU利用率。</p>
-<p><strong>先来先服务(FCFS)调度算法</strong><br>每个进程就绪后加入就绪队列，从就绪队列中选择一个最先进入该队列的进程并为之分配资源，然后立即执行。FCFS是非抢占式的，易于实现，但效率不高，性能不好。有利于长作业（CPU繁忙性）而不利于短作业（I/O繁忙性）。</p>
-<p><strong>短作业优先（SJF）调度算法</strong><br>每次从后备队列中选择一个或若干个估计运行时间最短的作业，将它们调入内存运行。SJF是非抢占式的，优先照顾短作业，具有很好的性能，降低平均等待时间，提高吞吐量。<br>不利于长作业，长作业可能一直处于等待状态，会出现饥饿现象；完全未考虑作业的优先紧迫程度，不能用于实时系统。</p>
-<p><strong>时间片轮转调度算法</strong><br>时间片轮转调度是一种最古老，最简单，最公平且使用最广泛的算法。每个进程被分配一个时间段，称作它的时间片，即该进程允许运行的时间。进程调度程序总是选择就绪队列中第一个进程执行，即先来先服务的原则，但仅能运行一个时间片。适用于分时系统。</p>
-<p><strong>最短剩余时间优先调度算法</strong><br>最短剩余时间优先是针对短作业优先增加了抢占机制的版本。进程调度程序总是选择预期剩余时间最短的进程。当一个进程加入到就绪队列，它可能比当前运行的进程具有更短的剩余时间，因此调度程序就很可能抢占当前正在运行的进程。</p>
-<p><strong>高响应比优先调度算法</strong><br>高响应比优先调度算法（Highest Reponse Ratio First, HRRF）是非抢占式的，主要用于作业调度。每次进行作业调度时，先计算后备队列中每个作业的响应比，选择响应比最高的作业调度运行。<br>响应比 = （等待时间 + 服务时间） / 服务时间 = 等待时间 / 服务时间 + 1<br>该算法介于FCFS和SJF之间，但是每次需要计算每个作业的响应比，增加系统开销。</p>
-<p><strong>优先级调度算法</strong><br>为每个进程分配一个优先级，首先执行具有最高优先级的进程，依此类推。具有相同优先级的进程以 FCFS 方式执行。</p>
-<p><strong>多级反馈队列调度算法</strong><br>设置多个就绪队列，并为各个队列赋予不同的优先级。在优先级越高的队列中，每个进程所规定的执行时间片就越小。<br>当一个新进程进入内存后，首先放入第一队列的末尾，按照先来先服务原则排队等候调度。如果它能在一个时间片中完成，便可撤离；如果未完成，就转入第二队列的末尾，等待调度。依此类推。<br>仅当第一队列空闲的时候，调度程序才调度第二队列中的进程运行。<br>如果处理机正在处理第i队列中的进程，又有新进程进入优先级更高的队列，则此新队列抢占正在运行的处理机，并把正在运行的进程放在第i队列的队尾。</p>
-<h3 id="4-作业调度与进程调度"><a href="#4-作业调度与进程调度" class="headerlink" title="4 作业调度与进程调度"></a>4 作业调度与进程调度</h3><p>作业调度又称为高级调度，频率较低。其主要任务就是将位于外存后备队列中的某个（或某些）作业调入内存，排在就绪队列上。但仅仅是将作业调入内存，并为作业创建进程、分配资源，此时进程处于就绪状态，并没有执行。</p>
-<p>进程调度又称为低级调度，是最基本的、频率最高的调度方式。其主要任务是从就绪队列中选取一个（或几个）进程，并为之分配处理机，这时候才可以理解为“执行”。</p>
-<p>区别：<br>作业调度是为作业建立进程的过程，是将作业由外存调入内存的过程；<br>而进程调度整个过程并没有跑出内存的范围，而是将就绪态的进程变为运行态的进程。</p>
-]]></content>
-      <categories>
-        <category>操作系统</category>
-      </categories>
-      <tags>
-        <tag>进程调度</tag>
       </tags>
   </entry>
   <entry>
@@ -915,6 +860,62 @@
       </categories>
       <tags>
         <tag>网络协议</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>12_14_Mybatis</title>
+    <url>/2021/12/14/12-14-Mybatis/</url>
+    <content><![CDATA[<h3 id="1-mybatis"><a href="#1-mybatis" class="headerlink" title="1 mybatis"></a>1 mybatis</h3><p>MyBatis是一个持久层框架，它内部封装了JDBC，开发者只需要关注SQL语句本身，不需要花费精力去处理加载驱动、创建连接、创建statement等过程。<br>它免除了几乎所有的 JDBC 代码以及设置参数和获取结果集的工作。MyBatis可以通过简单的 XML 或注解来配置和映射原始类型、接口和Java POJO（Plain Old Java Objects，普通老式Java对象）为数据库中的记录。<br>通过 XML 或注解的方式将要执行的各种 statement 配置起来，并通过java对象和statement中sql的动态参数进行映射生成最终执行的 sql 语句，最后由 mybatis 框架执行 sql 并将结果映射为 java 对象并返回。</p>
+<p>优点：<br>基于SQL语句编程，相当灵活，不会对应用程序或者数据库的现有设计造成影响；SQL写在XML中，解除了sql与程序代码的耦合，便于统一管理；提供 XML 标签，支持编写动态 SQL 语句，并可重用。</p>
+<p>缺点：<br>SQL语句的编写工作量较大；且语句依赖于数据库，导致数据库移植性差，不能随意更换数据库。</p>
+<h3 id="2-与"><a href="#2-与" class="headerlink" title="2 #{}与${}"></a>2 #{}与${}</h3><p>${}是字符串替换，#{}是预编译处理。<br>Mybatis在处理#{}时，会将sql中的#{}替换为?号，调用PreparedStatement的set方法来赋值。<br>Mybatis在处理${}时，就是把${}替换成变量的值。<br>使用#{}可以有效的防止SQL注入，提高系统安全性。<br>${}传入值时，sql解析参数是不带引号的，而#{}传入值时，sql解析参数是带引号的。</p>
+<h3 id="3-mybatis延迟加载及原理"><a href="#3-mybatis延迟加载及原理" class="headerlink" title="3 mybatis延迟加载及原理"></a>3 mybatis延迟加载及原理</h3><p>Mybatis仅支持一对一关联查询和一对多关联查询的延迟加载。<br>MyBatis中使用collection标签来解决一对多的关联查询；使用association标签来解决一对一的关联查询。<br>在Mybatis配置文件中，可以配置是否启用延迟加载lazyLoadingEnabled=true|false。</p>
+<p>原理：使用CGLIB创建目标对象的代理对象，当调用目标方法时，进入拦截器方法，比如调用a.getB().getName()，拦截器invoke()方法发现a.getB()是null值，那么就会单独发送事先保存好的查询关联B对象的sql，把B查询上来，然后调用a.setB(b)，于是a的对象b属性就有值了，接着完成a.getB().getName()方法的调用。这就是延迟加载的基本原理。</p>
+<h3 id="4-mybatis的一级和二级缓存"><a href="#4-mybatis的一级和二级缓存" class="headerlink" title="4 mybatis的一级和二级缓存"></a>4 mybatis的一级和二级缓存</h3><p>一级缓存: 基于PerpetualCache的HashMap本地缓存，其存储作用域为Session，当 Session flush 或 close 之后，该 Session 中的所有 Cache 就将被清空，默认打开一级缓存。<br>二级缓存：与一级缓存机制相同，默认也是采用PerpetualCache的HashMap存储，不同点在于其存储作用域为 Mapper(Namespace)，并且可自定义存储源，如Ehcache。默认不打开二级缓存，要开启二级缓存，使用二级缓存属性类需要实现 Serializable 序列化接口(用来保存对象的状态)，在它的映射文件中配置。<br>对于缓存数据更新机制，当某一个作用域(一级缓存Session/二级缓存Namespaces)进行了C/U/D 操作后，默认该作用域下所有 select 中的缓存将被clear。</p>
+<h3 id="5-Mybatis执行器（Executor）"><a href="#5-Mybatis执行器（Executor）" class="headerlink" title="5 Mybatis执行器（Executor）"></a>5 Mybatis执行器（Executor）</h3><p>SimpleExecutor：每执行一次update或select，就开启一个Statement对象，用完立刻关闭Statement对象。<br>ReuseExecutor：执行update或select，以sql作为key查找Statement对象，存在就使用，不存在就创建，用完后，不关闭Statement对象，而是放置于Map内，供下一次使用。简言之，就是重复使用Statement对象。<br>BatchExecutor：执行update（JDBC批处理不支持select），将所有sql都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个Statement对象。</p>
+<h3 id="6-mybatis动态sql"><a href="#6-mybatis动态sql" class="headerlink" title="6 mybatis动态sql"></a>6 mybatis动态sql</h3><p>MyBatis动态 SQL 可以让我们在 XML 映射文件内，以标签的形式编写SQL，并完成逻辑判断和动态拼接SQL的功能。<br>MyBatis提供了9种动态 SQL 标签：trim、where、set、foreach、if、choose、when、otherwise、bind。<br>执行原理：使用OGNL从 SQL 参数对象中计算表达式的值，然后根据表达式的值动态拼接SQL，以此来完成动态SQL的功能。</p>
+]]></content>
+      <categories>
+        <category>Mybatis</category>
+      </categories>
+      <tags>
+        <tag>mybatis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>12_18_OS</title>
+    <url>/2021/12/18/12-18-OS/</url>
+    <content><![CDATA[<h3 id="1-进程状态"><a href="#1-进程状态" class="headerlink" title="1 进程状态"></a>1 进程状态</h3><img src="/2021/12/18/12-18-OS/process.png" class="">
+
+<p>就绪状态：进程已处于准备运行状态，即进程获得了除了处理器之外的一切所需资源，一旦得到处理器资源(处理器分配的时间片)即可运行。</p>
+<p>运行状态：进程正在处理器上运行(单核CPU下任意时刻只有一个进程处于运行状态)。</p>
+<p>阻塞状态：又称为等待状态，进程正在等待某一事件而暂停运行。例如等待某资源为可用或等待IO操作完成。即使处理器空闲，该进程也不能运行。</p>
+<h3 id="2-进程间通信（InterProcess-Communication）方式有哪些？"><a href="#2-进程间通信（InterProcess-Communication）方式有哪些？" class="headerlink" title="2 进程间通信（InterProcess Communication）方式有哪些？"></a>2 进程间通信（InterProcess Communication）方式有哪些？</h3><p>每个进程都有不同的用户地址空间，任何一个进程的全局变量对另一个进程是不可见的，所以进程之间要交换数据必须通过内核。在内核中开辟一块缓冲区，进程1把数据从用户空间拷到内核缓冲区，进程2再从内核缓冲区把数据读走，内核提供的这种机制称为进程间通信（IPC，InterProcess Communication）。</p>
+<p><strong>管道（无名管道）</strong><br>管道是半双工的，数据只能向一个方向流动；双方通信时，需要建立起两个管道；<br>只能用于父子进程或者兄弟进程之间(具有亲缘关系的进程)的通信；<br>单独构成一种独立的文件系统：管道对于管道两端的进程而言，就是一个文件，但它不是普通的文件，它不属于某种文件系统，而是单独构成一种文件系统，并且只存在于内存中；<br>数据的读出和写入：一个进程向管道中写的内容被管道另一端的进程读出。写入的内容每次都添加在管道缓冲区的末尾，并且每次都是从管道缓冲区的头部读出数据。</p>
+<p>局限：<br>只支持单向数据流；<br>只能用于具有亲缘关系的进程之间；<br>没有名字；<br>管道的缓冲区是有限的；<br>管道所传送的是无格式字节流，这就要求管道的双方必须事先约定好数据的格式。</p>
+<p><strong>有名管道（FIFO）</strong><br>有名管道提供了一个路径名与之关联，以有名管道的文件形式存在于文件系统中。这样，即使与有名管道的创建进程不存在亲缘关系的进程，只要可以访问该路径，就能够彼此通过有名管道相互通信。因此，通过有名管道不相关的进程也能交换数据。有名管道的名字存在于文件系统中，内容存放在内存中。</p>
+<p><strong>消息队列</strong><br>消息队列是存放在内核中的消息链表，每个消息队列由消息队列标识符表示；<br>消息队列是面向记录的，其中的消息具有特定的格式以及特定的优先级；<br>消息队列独立于发送与接收进程。进程终止时，消息队列及其内容并不会被删除。只有在内核重启(操作系统重启)或者显示地删除一个消息队列时，该消息队列才会被真正的删除；<br>消息队列可以实现消息的随机查询,消息不一定要以先进先出的次序读取,也可以按消息的类型读取。</p>
+<p><strong>信号量</strong><br>信号量是一个计数器，用于多进程对共享数据的访问，信号量的意图在于进程间同步。<br>信号量用于进程间同步，若要在进程间传递数据需要结合共享内存；<br>信号量基于操作系统的 PV 操作，程序对信号量的操作都是原子操作；<br>每次对信号量的 PV 操作不仅限于对信号量值加 1 或减1，而是可以加减任意正整数。</p>
+<p><strong>共享内存</strong><br>指两个或多个进程可以直接（共享）读写同一块内存空间；<br>共享内存是最快的一种IPC，因为进程是直接对内存进行存取；<br>由于多个进程共享一段内存，因此需要依靠某种同步机制（如信号量）来达到进程间的同步。</p>
+<p><strong>信号</strong><br>信号是一种比较复杂的通信方式，用于通知接收进程某个事件已经发生。</p>
+<p><strong>套接字（socket）</strong><br>主要用于在客户端和服务器之间通过网络进行通信。套接字是支持 TCP/IP 的网络通信的基本操作单元，可以看做是不同主机之间的进程进行双向通信的端点，简单说就是通信双方的一种约定，用套接字中的相关函数来完成通信过程。</p>
+<h3 id="3-进程调度算法"><a href="#3-进程调度算法" class="headerlink" title="3 进程调度算法"></a>3 进程调度算法</h3><p>为了确定首先执行哪个进程以及最后执行哪个进程以实现最大CPU利用率。</p>
+<p><strong>先来先服务(FCFS)调度算法</strong><br>每个进程就绪后加入就绪队列，从就绪队列中选择一个最先进入该队列的进程并为之分配资源，然后立即执行。FCFS是非抢占式的，易于实现，但效率不高，性能不好。有利于长作业（CPU繁忙性）而不利于短作业（I/O繁忙性）。</p>
+<p><strong>短作业优先（SJF）调度算法</strong><br>每次从后备队列中选择一个或若干个估计运行时间最短的作业，将它们调入内存运行。SJF是非抢占式的，优先照顾短作业，具有很好的性能，降低平均等待时间，提高吞吐量。<br>不利于长作业，长作业可能一直处于等待状态，会出现饥饿现象；完全未考虑作业的优先紧迫程度，不能用于实时系统。</p>
+<p><strong>时间片轮转调度算法</strong><br>时间片轮转调度是一种最古老，最简单，最公平且使用最广泛的算法。每个进程被分配一个时间段，称作它的时间片，即该进程允许运行的时间。进程调度程序总是选择就绪队列中第一个进程执行，即先来先服务的原则，但仅能运行一个时间片。适用于分时系统。</p>
+<p><strong>最短剩余时间优先调度算法</strong><br>最短剩余时间优先是针对短作业优先增加了抢占机制的版本。进程调度程序总是选择预期剩余时间最短的进程。当一个进程加入到就绪队列，它可能比当前运行的进程具有更短的剩余时间，因此调度程序就很可能抢占当前正在运行的进程。</p>
+<p><strong>高响应比优先调度算法</strong><br>高响应比优先调度算法（Highest Reponse Ratio First, HRRF）是非抢占式的，主要用于作业调度。每次进行作业调度时，先计算后备队列中每个作业的响应比，选择响应比最高的作业调度运行。<br>响应比 = （等待时间 + 服务时间） / 服务时间 = 等待时间 / 服务时间 + 1<br>该算法介于FCFS和SJF之间，但是每次需要计算每个作业的响应比，增加系统开销。</p>
+<p><strong>优先级调度算法</strong><br>为每个进程分配一个优先级，首先执行具有最高优先级的进程，依此类推。具有相同优先级的进程以 FCFS 方式执行。</p>
+<p><strong>多级反馈队列调度算法</strong><br>设置多个就绪队列，并为各个队列赋予不同的优先级。在优先级越高的队列中，每个进程所规定的执行时间片就越小。<br>当一个新进程进入内存后，首先放入第一队列的末尾，按照先来先服务原则排队等候调度。如果它能在一个时间片中完成，便可撤离；如果未完成，就转入第二队列的末尾，等待调度。依此类推。<br>仅当第一队列空闲的时候，调度程序才调度第二队列中的进程运行。<br>如果处理机正在处理第i队列中的进程，又有新进程进入优先级更高的队列，则此新队列抢占正在运行的处理机，并把正在运行的进程放在第i队列的队尾。</p>
+<h3 id="4-作业调度与进程调度"><a href="#4-作业调度与进程调度" class="headerlink" title="4 作业调度与进程调度"></a>4 作业调度与进程调度</h3><p>作业调度又称为高级调度，频率较低。其主要任务就是将位于外存后备队列中的某个（或某些）作业调入内存，排在就绪队列上。但仅仅是将作业调入内存，并为作业创建进程、分配资源，此时进程处于就绪状态，并没有执行。</p>
+<p>进程调度又称为低级调度，是最基本的、频率最高的调度方式。其主要任务是从就绪队列中选取一个（或几个）进程，并为之分配处理机，这时候才可以理解为“执行”。</p>
+<p>区别：<br>作业调度是为作业建立进程的过程，是将作业由外存调入内存的过程；<br>而进程调度整个过程并没有跑出内存的范围，而是将就绪态的进程变为运行态的进程。</p>
+]]></content>
+      <categories>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>进程调度</tag>
       </tags>
   </entry>
   <entry>
@@ -1001,29 +1002,6 @@
       </tags>
   </entry>
   <entry>
-    <title>12_29_Tree</title>
-    <url>/2021/12/29/12-29-Tree/</url>
-    <content><![CDATA[<h3 id="1-二叉树"><a href="#1-二叉树" class="headerlink" title="1 二叉树"></a>1 二叉树</h3><p>1）每个结点最多有两颗子树，所以二叉树中不存在度大于2的结点。<br>2）左子树和右子树是有顺序的，次序不能颠倒。<br>3）即使树中某结点只有一棵子树，也要区分它是左子树还是右子树。</p>
-<p>性质：<br>1）在二叉树的第i层上最多有2^(i-1)个节点。（i&gt;=1）<br>2）二叉树深度为k，那么最多有2^k-1个节点。(k&gt;=1）<br>3）n0=n2+1。n0表示度数为0的节点个数（叶子节点个数），n2表示度数为2的节点个数。<br>4）在完全二叉树中，具有n个节点的完全二叉树的深度为[log2n]+1，其中[log2n]是向下取整。<br>5）若对含n个结点的完全二叉树从上到下且从左至右进行 1 至 n 的编号，则对完全二叉树中任意一个编号为 i 的结点有如下特性：<br>(1) 若i=1，则该结点是二叉树的根，无双亲，否则，编号为 [i/2] 的结点为其双亲结点;<br>(2) 若2i&gt;n，则该结点无左孩子，否则，编号为 2i 的结点为其左孩子结点；<br>(3) 若2i+1&gt;n，则该结点无右孩子结点，否则，编号为2i+1的结点为其右孩子结点。</p>
-<h3 id="2-满二叉树"><a href="#2-满二叉树" class="headerlink" title="2 满二叉树"></a>2 满二叉树</h3><p>高度为h，由2^h-1个节点构成的二叉树称为满二叉树。</p>
-<h3 id="3-完全二叉树"><a href="#3-完全二叉树" class="headerlink" title="3 完全二叉树"></a>3 完全二叉树</h3><p>完全二叉树是由满二叉树引出来的，若设二叉树的高度为h，则除第 h 层外，其它各层 (1～h-1) 的结点个数都达到最大值(即1~h-1层为一个满二叉树)，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。</p>
-<h3 id="4-平衡二叉树（AVL树）"><a href="#4-平衡二叉树（AVL树）" class="headerlink" title="4 平衡二叉树（AVL树）"></a>4 平衡二叉树（AVL树）</h3><p>它是一棵空树或者它的左右两个子树的高度差的绝对值不超过1，并且左右两个子树都是一棵平衡二叉树。</p>
-<h3 id="5-二叉排序树（二叉搜索树-二叉查找树）BST"><a href="#5-二叉排序树（二叉搜索树-二叉查找树）BST" class="headerlink" title="5 二叉排序树（二叉搜索树/二叉查找树）BST"></a>5 二叉排序树（二叉搜索树/二叉查找树）BST</h3><p>它是一棵空树，或者是具有下列性质的二叉树：<br>（1）若左子树不空，则左子树上所有结点的值均小于它的根结点的值；<br>（2）若右子树不空，则右子树上所有结点的值均大于它的根结点的值；<br>（3）左、右子树也分别为二叉排序树；<br>（4）没有键值相等的结点。</p>
-<h3 id="6-红黑树"><a href="#6-红黑树" class="headerlink" title="6 红黑树"></a>6 红黑树</h3><p>红黑树（Red Black Tree）是一种自平衡二叉查找树。红黑树是一种含有红黑结点并能自平衡的二叉查找树。它必须满足下面性质：<br>性质1：每个结点要么是黑色，要么是红色。<br>性质2：根结点是黑色。<br>性质3：每个叶子结点（NIL）都是黑色。<br>性质4：每个红色结点的两个子结点一定都是黑色。<br>性质5：任意一个结点到每个叶子结点的路径都包含数量相同的黑色结点。<br>如果一个结点存在黑色子结点，那么该结点肯定有两个子结点。</p>
-<p>应用：TreeMap、TreeSet、JDK1.8 HashMap</p>
-<p><strong>红黑树vs平衡二叉树</strong><br>红黑树不追求”完全平衡”，即不像AVL树那样要求节点的|balFact| &lt;= 1，它只要求部分达到平衡。红黑树是用非严格的平衡来换取增删节点时旋转次数的降低，任何不平衡都会在三次旋转之内解决，而AVL树是严格的平衡树，因此在增加或者删除节点的时候，旋转的次数比红黑树要多。<br>红黑树的查询性能略微逊色于AVL树，但是，红黑树在插入和删除上优于AVL树，AVL树每次插入删除会进行大量的平衡度计算，而红黑树为了维持红黑性质所做的红黑变换和旋转的开销，相较于AVL树为了维持平衡的开销要小得多。<br>实际应用中，若搜索的次数远大于插入和删除，那么选择AVL树；如果搜索，插入，删除次数几乎差不多，应该选择RB树。</p>
-<h3 id="7-B树、B-树、B-树"><a href="#7-B树、B-树、B-树" class="headerlink" title="7 B树、B+树、B*树"></a>7 B树、B+树、B*树</h3><p><strong>B树</strong><br>一棵m阶B树是一棵平衡的m路搜索树。它或者是空树，或者是满足下列性质的树：<br>1、根结点至少有两棵子树；<br>2、树中每个结点至多有m棵子树；<br>3、除根结点以外的所有结点（不包括叶子结点）的度数正好是关键字总数加一，即有k-1个关键字和K棵子树。<br>4、所有结点都包含如下形式的数据：(n,A0 ,K1 ,A1 ,K2 ,A2 , … ,Kn,An )<br>其中n为关键字的个数，Ki(i=1, … , n)为关键字，且满足K1&lt;K2&lt;…&lt;Kn。Ai( i=0,1, … , n)为指向子树根结点的指针，且对于i=1,2, … , n-1，Ai所指子树上各结点的一切关键字均大于Ki，而小于Ki+1。A0所指子树上各结点的一切关键字均小于K1，An所指子树上各结点的一切关键字均大于Kn。<br>对于叶子结点，所有指针Ai皆为空。对于具有 n 个关键字的非叶结点，将有 n+1 棵子树。</p>
-<p><strong>B+树</strong><br>1.有n棵子树的结点中含有n个关键字；<br>2.根节点最少有一棵子树，除根节点外，其他结点至少有 [ m/2 ] 棵子树；<br>3.所有的叶子结点中包含了全部关键字的信息，及指向含有这些关键字记录的指针，且叶子结点依关键字的大小自小而大顺序链接。(而B树的叶子节点并没有包括全部关键字的信息)<br>4.所有的非叶子结点可以看成是索引部分，结点中仅含有其子树根结点中最大（或最小）关键字。</p>
-<p>B+树的搜索与B树基本相同，区别是B+树只有到达叶子结点才能命中（B树可以在非叶子结点命中）<br>B树的优势是当你要查找的值恰好处在一个非叶子节点时，查找到该节点就成功返回并结束查询。而B+树由于非叶子节点只是索引部分，这些节点中只含有其子树中的最大(或最小)关键字，当非终端节点上的关键字等于给点值时，查找并不终止，而是继续向下直到叶子节点。因此在B+树中，无论查找成功与否，都是走了一条从根到叶子节点的路径。</p>
-]]></content>
-      <categories>
-        <category>数据结构</category>
-      </categories>
-      <tags>
-        <tag>二叉树</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>12_27_desgin_mode</title>
     <url>/2021/12/27/12-27-desgin-mode/</url>
     <content><![CDATA[<h3 id="1-设计模式分类"><a href="#1-设计模式分类" class="headerlink" title="1 设计模式分类"></a>1 设计模式分类</h3><p>设计模式可分为三类：</p>
@@ -1059,6 +1037,29 @@
       </tags>
   </entry>
   <entry>
+    <title>12_29_Tree</title>
+    <url>/2021/12/29/12-29-Tree/</url>
+    <content><![CDATA[<h3 id="1-二叉树"><a href="#1-二叉树" class="headerlink" title="1 二叉树"></a>1 二叉树</h3><p>1）每个结点最多有两颗子树，所以二叉树中不存在度大于2的结点。<br>2）左子树和右子树是有顺序的，次序不能颠倒。<br>3）即使树中某结点只有一棵子树，也要区分它是左子树还是右子树。</p>
+<p>性质：<br>1）在二叉树的第i层上最多有2^(i-1)个节点。（i&gt;=1）<br>2）二叉树深度为k，那么最多有2^k-1个节点。(k&gt;=1）<br>3）n0=n2+1。n0表示度数为0的节点个数（叶子节点个数），n2表示度数为2的节点个数。<br>4）在完全二叉树中，具有n个节点的完全二叉树的深度为[log2n]+1，其中[log2n]是向下取整。<br>5）若对含n个结点的完全二叉树从上到下且从左至右进行 1 至 n 的编号，则对完全二叉树中任意一个编号为 i 的结点有如下特性：<br>(1) 若i=1，则该结点是二叉树的根，无双亲，否则，编号为 [i/2] 的结点为其双亲结点;<br>(2) 若2i&gt;n，则该结点无左孩子，否则，编号为 2i 的结点为其左孩子结点；<br>(3) 若2i+1&gt;n，则该结点无右孩子结点，否则，编号为2i+1的结点为其右孩子结点。</p>
+<h3 id="2-满二叉树"><a href="#2-满二叉树" class="headerlink" title="2 满二叉树"></a>2 满二叉树</h3><p>高度为h，由2^h-1个节点构成的二叉树称为满二叉树。</p>
+<h3 id="3-完全二叉树"><a href="#3-完全二叉树" class="headerlink" title="3 完全二叉树"></a>3 完全二叉树</h3><p>完全二叉树是由满二叉树引出来的，若设二叉树的高度为h，则除第 h 层外，其它各层 (1～h-1) 的结点个数都达到最大值(即1~h-1层为一个满二叉树)，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。</p>
+<h3 id="4-平衡二叉树（AVL树）"><a href="#4-平衡二叉树（AVL树）" class="headerlink" title="4 平衡二叉树（AVL树）"></a>4 平衡二叉树（AVL树）</h3><p>它是一棵空树或者它的左右两个子树的高度差的绝对值不超过1，并且左右两个子树都是一棵平衡二叉树。</p>
+<h3 id="5-二叉排序树（二叉搜索树-二叉查找树）BST"><a href="#5-二叉排序树（二叉搜索树-二叉查找树）BST" class="headerlink" title="5 二叉排序树（二叉搜索树/二叉查找树）BST"></a>5 二叉排序树（二叉搜索树/二叉查找树）BST</h3><p>它是一棵空树，或者是具有下列性质的二叉树：<br>（1）若左子树不空，则左子树上所有结点的值均小于它的根结点的值；<br>（2）若右子树不空，则右子树上所有结点的值均大于它的根结点的值；<br>（3）左、右子树也分别为二叉排序树；<br>（4）没有键值相等的结点。</p>
+<h3 id="6-红黑树"><a href="#6-红黑树" class="headerlink" title="6 红黑树"></a>6 红黑树</h3><p>红黑树（Red Black Tree）是一种自平衡二叉查找树。红黑树是一种含有红黑结点并能自平衡的二叉查找树。它必须满足下面性质：<br>性质1：每个结点要么是黑色，要么是红色。<br>性质2：根结点是黑色。<br>性质3：每个叶子结点（NIL）都是黑色。<br>性质4：每个红色结点的两个子结点一定都是黑色。<br>性质5：任意一个结点到每个叶子结点的路径都包含数量相同的黑色结点。<br>如果一个结点存在黑色子结点，那么该结点肯定有两个子结点。</p>
+<p>应用：TreeMap、TreeSet、JDK1.8 HashMap</p>
+<p><strong>红黑树vs平衡二叉树</strong><br>红黑树不追求”完全平衡”，即不像AVL树那样要求节点的|balFact| &lt;= 1，它只要求部分达到平衡。红黑树是用非严格的平衡来换取增删节点时旋转次数的降低，任何不平衡都会在三次旋转之内解决，而AVL树是严格的平衡树，因此在增加或者删除节点的时候，旋转的次数比红黑树要多。<br>红黑树的查询性能略微逊色于AVL树，但是，红黑树在插入和删除上优于AVL树，AVL树每次插入删除会进行大量的平衡度计算，而红黑树为了维持红黑性质所做的红黑变换和旋转的开销，相较于AVL树为了维持平衡的开销要小得多。<br>实际应用中，若搜索的次数远大于插入和删除，那么选择AVL树；如果搜索，插入，删除次数几乎差不多，应该选择RB树。</p>
+<h3 id="7-B树、B-树、B-树"><a href="#7-B树、B-树、B-树" class="headerlink" title="7 B树、B+树、B*树"></a>7 B树、B+树、B*树</h3><p><strong>B树</strong><br>一棵m阶B树是一棵平衡的m路搜索树。它或者是空树，或者是满足下列性质的树：<br>1、根结点至少有两棵子树；<br>2、树中每个结点至多有m棵子树；<br>3、除根结点以外的所有结点（不包括叶子结点）的度数正好是关键字总数加一，即有k-1个关键字和K棵子树。<br>4、所有结点都包含如下形式的数据：(n,A0 ,K1 ,A1 ,K2 ,A2 , … ,Kn,An )<br>其中n为关键字的个数，Ki(i=1, … , n)为关键字，且满足K1&lt;K2&lt;…&lt;Kn。Ai( i=0,1, … , n)为指向子树根结点的指针，且对于i=1,2, … , n-1，Ai所指子树上各结点的一切关键字均大于Ki，而小于Ki+1。A0所指子树上各结点的一切关键字均小于K1，An所指子树上各结点的一切关键字均大于Kn。<br>对于叶子结点，所有指针Ai皆为空。对于具有 n 个关键字的非叶结点，将有 n+1 棵子树。</p>
+<p><strong>B+树</strong><br>1.有n棵子树的结点中含有n个关键字；<br>2.根节点最少有一棵子树，除根节点外，其他结点至少有 [ m/2 ] 棵子树；<br>3.所有的叶子结点中包含了全部关键字的信息，及指向含有这些关键字记录的指针，且叶子结点依关键字的大小自小而大顺序链接。(而B树的叶子节点并没有包括全部关键字的信息)<br>4.所有的非叶子结点可以看成是索引部分，结点中仅含有其子树根结点中最大（或最小）关键字。</p>
+<p>B+树的搜索与B树基本相同，区别是B+树只有到达叶子结点才能命中（B树可以在非叶子结点命中）<br>B树的优势是当你要查找的值恰好处在一个非叶子节点时，查找到该节点就成功返回并结束查询。而B+树由于非叶子节点只是索引部分，这些节点中只含有其子树中的最大(或最小)关键字，当非终端节点上的关键字等于给点值时，查找并不终止，而是继续向下直到叶子节点。因此在B+树中，无论查找成功与否，都是走了一条从根到叶子节点的路径。</p>
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>二叉树</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>12_life</title>
     <url>/2021/12/04/12-life/</url>
     <content><![CDATA[<img src="/2021/12/04/12-life/life.png" class="">
@@ -1071,64 +1072,6 @@
       </categories>
       <tags>
         <tag>爱情</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>binary_search</title>
-    <url>/2021/09/19/binary-search/</url>
-    <content><![CDATA[<h3 id="704-二分查找"><a href="#704-二分查找" class="headerlink" title="704 二分查找"></a>704 二分查找</h3><p>给定一个n个元素有序的（升序）整型数组nums和一个目标值target，写一个函数搜索nums中的target，如果目标值存在返回下标，否则返回-1。<br>tips<br>你可以假设 nums 中的所有元素是不重复的。<br>n 将在 [1, 10000]之间。<br>nums 的每个元素都将在[-9999, 9999]之间。</p>
-<p><strong>代码</strong><br>思路：有序整型数组查找给定的target，标准的二分查找。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int search(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return -1;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>减少内存消耗</strong><br>变量只有在用到它的时候才定义和实例化<br>尽量避免使用static变量，类里面私有常量可以用final来代替<br>StringBuffer代替String进行字符串相加</p>
-<p><strong>小知识</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">System.out.println(8 &gt;&gt; 1);  &#x2F;&#x2F;4  右移1位相当于除以2</span><br><span class="line">System.out.println(32 &gt;&gt; 3); &#x2F;&#x2F; 4 右移3位相当于除以2^3</span><br><span class="line">System.out.println(8 &lt;&lt; 1);  &#x2F;&#x2F;16 左移1位相当于乘以2</span><br><span class="line">System.out.println(2 &lt;&lt; 3);  &#x2F;&#x2F;16 左移3位相当于乘以2^3</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="278-First-Bad-Version"><a href="#278-First-Bad-Version" class="headerlink" title="278 First Bad Version"></a>278 First Bad Version</h3><p>寻找左侧边界的二分查找<br>你是产品经理，目前正在带领一个团队开发新的产品。不幸的是，你的产品的最新版本没有通过质量检测。由于每个版本都是基于之前的版本开发的，所以错误的版本之后的所有版本都是错的。</p>
-<p>假设你有 n 个版本 [1, 2, …, n]，你想找出导致之后所有版本出错的第一个错误的版本。</p>
-<p>你可以通过调用 bool isBadVersion(version) 接口来判断版本号 version 是否在单元测试中出错。实现一个函数来查找第一个错误的版本。你应该尽量减少对调用 API 的次数。</p>
-<p>tips<br>1 &lt;= bad &lt;= n &lt;= 2^31 - 1</p>
-<p><strong>代码</strong><br>思路：因为每个版本都是基于之前的版本开发的，所以正确的版本之前的版本都是正确的，错误的版本之后的版本都是错误的。因此需要找到正确和错误版本的临界点，可以采用二分查找法，每查找一次都可以缩小范围（左边界或右边界），效率高。<br>实现一</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 二分搜索的演化版本</span><br><span class="line">    public int firstBadVersion(int n) &#123;</span><br><span class="line">        int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        &#x2F;&#x2F; 终止条件是low &#x3D;&#x3D; high</span><br><span class="line">        while (low &lt; high) &#123;</span><br><span class="line">            &#x2F;&#x2F; 防止溢出超时,low和high相加超过int表示的最大范围时就会溢出变为负数</span><br><span class="line">            &#x2F;&#x2F; int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            &#x2F;&#x2F; 错误的版本</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 可能这就是第一个错误的版本</span><br><span class="line">                high &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>实现二</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        int firstBadVersion &#x3D; n;  &#x2F;&#x2F; 假设n为第一个错误版本</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &gt;&gt; 1;  &#x2F;&#x2F; 防止溢出</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 错误版本，可能是第一个，也可能不是。继续往左边搜索，同时记录下错误版本位置</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">                firstBadVersion &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                &#x2F;&#x2F; 不是错误版本，往右边搜索</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return firstBadVersion;</span><br></pre></td></tr></table></figure>
-
-<h3 id="35-搜索插入位置"><a href="#35-搜索插入位置" class="headerlink" title="35 搜索插入位置"></a>35 搜索插入位置</h3><p>给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。<br>请必须使用时间复杂度为 O(log n) 的算法。</p>
-<p>tips<br>1 &lt;= nums.length &lt;= 10^4<br>-10^4 &lt;= nums[i] &lt;= 10^4<br>nums 为无重复元素的升序排列数组<br>-10^4 &lt;= target &lt;= 10^4</p>
-<p><strong>代码</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int searchInsert(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &gt; nums[middle]) &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;  &#x2F;&#x2F; 目标值未找到，返回应插入的位置</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="二分查找法详解"><a href="#二分查找法详解" class="headerlink" title="二分查找法详解"></a>二分查找法详解</h3><h4 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h4><p><strong>循环结束条件</strong><br>while（low&lt;=high）还是while（low&lt;high);<br>low&lt;=high意味着循环终止条件为low=high+1;<br>low&lt;high意味着循环终止条件为low==high,具体问题具体分析。</p>
-<p><strong>middle值</strong><br>low=middle or low=middle+1 or high=middle or high=middle-1 and so on</p>
-<p><strong>防止溢出</strong><br>初始化时middle=low+(high-low)/2</p>
-]]></content>
-      <categories>
-        <category>Algorithm</category>
-      </categories>
-      <tags>
-        <tag>二分查找</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Three ways to create Java Multithread</title>
-    <url>/2020/09/23/concurrency/</url>
-    <content><![CDATA[<p>创建Java多线程的三种方式。</p>
-<h3 id="1-Thread"><a href="#1-Thread" class="headerlink" title="1 Thread"></a>1 Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承了Thread类就不能再继承其它类了，这也是一个缺点。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-Runnable"><a href="#2-Runnable" class="headerlink" title="2 Runnable"></a>2 Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下用此方法来创建多线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-Callable"><a href="#3-Callable" class="headerlink" title="3 Callable"></a>3 Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>多线程</tag>
       </tags>
   </entry>
   <entry>
@@ -1191,19 +1134,61 @@
       </tags>
   </entry>
   <entry>
-    <title>diffchain</title>
-    <url>/2020/11/16/difftimechain/</url>
-    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    <title>binary_search</title>
+    <url>/2021/09/19/binary-search/</url>
+    <content><![CDATA[<h3 id="704-二分查找"><a href="#704-二分查找" class="headerlink" title="704 二分查找"></a>704 二分查找</h3><p>给定一个n个元素有序的（升序）整型数组nums和一个目标值target，写一个函数搜索nums中的target，如果目标值存在返回下标，否则返回-1。<br>tips<br>你可以假设 nums 中的所有元素是不重复的。<br>n 将在 [1, 10000]之间。<br>nums 的每个元素都将在[-9999, 9999]之间。</p>
+<p><strong>代码</strong><br>思路：有序整型数组查找给定的target，标准的二分查找。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int search(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return -1;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
+<p><strong>减少内存消耗</strong><br>变量只有在用到它的时候才定义和实例化<br>尽量避免使用static变量，类里面私有常量可以用final来代替<br>StringBuffer代替String进行字符串相加</p>
+<p><strong>小知识</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">System.out.println(8 &gt;&gt; 1);  &#x2F;&#x2F;4  右移1位相当于除以2</span><br><span class="line">System.out.println(32 &gt;&gt; 3); &#x2F;&#x2F; 4 右移3位相当于除以2^3</span><br><span class="line">System.out.println(8 &lt;&lt; 1);  &#x2F;&#x2F;16 左移1位相当于乘以2</span><br><span class="line">System.out.println(2 &lt;&lt; 3);  &#x2F;&#x2F;16 左移3位相当于乘以2^3</span><br></pre></td></tr></table></figure>
 
+
+<h3 id="278-First-Bad-Version"><a href="#278-First-Bad-Version" class="headerlink" title="278 First Bad Version"></a>278 First Bad Version</h3><p>寻找左侧边界的二分查找<br>你是产品经理，目前正在带领一个团队开发新的产品。不幸的是，你的产品的最新版本没有通过质量检测。由于每个版本都是基于之前的版本开发的，所以错误的版本之后的所有版本都是错的。</p>
+<p>假设你有 n 个版本 [1, 2, …, n]，你想找出导致之后所有版本出错的第一个错误的版本。</p>
+<p>你可以通过调用 bool isBadVersion(version) 接口来判断版本号 version 是否在单元测试中出错。实现一个函数来查找第一个错误的版本。你应该尽量减少对调用 API 的次数。</p>
+<p>tips<br>1 &lt;= bad &lt;= n &lt;= 2^31 - 1</p>
+<p><strong>代码</strong><br>思路：因为每个版本都是基于之前的版本开发的，所以正确的版本之前的版本都是正确的，错误的版本之后的版本都是错误的。因此需要找到正确和错误版本的临界点，可以采用二分查找法，每查找一次都可以缩小范围（左边界或右边界），效率高。<br>实现一</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 二分搜索的演化版本</span><br><span class="line">    public int firstBadVersion(int n) &#123;</span><br><span class="line">        int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        &#x2F;&#x2F; 终止条件是low &#x3D;&#x3D; high</span><br><span class="line">        while (low &lt; high) &#123;</span><br><span class="line">            &#x2F;&#x2F; 防止溢出超时,low和high相加超过int表示的最大范围时就会溢出变为负数</span><br><span class="line">            &#x2F;&#x2F; int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            &#x2F;&#x2F; 错误的版本</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 可能这就是第一个错误的版本</span><br><span class="line">                high &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现二</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        int firstBadVersion &#x3D; n;  &#x2F;&#x2F; 假设n为第一个错误版本</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &gt;&gt; 1;  &#x2F;&#x2F; 防止溢出</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 错误版本，可能是第一个，也可能不是。继续往左边搜索，同时记录下错误版本位置</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">                firstBadVersion &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                &#x2F;&#x2F; 不是错误版本，往右边搜索</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return firstBadVersion;</span><br></pre></td></tr></table></figure>
+
+<h3 id="35-搜索插入位置"><a href="#35-搜索插入位置" class="headerlink" title="35 搜索插入位置"></a>35 搜索插入位置</h3><p>给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。<br>请必须使用时间复杂度为 O(log n) 的算法。</p>
+<p>tips<br>1 &lt;= nums.length &lt;= 10^4<br>-10^4 &lt;= nums[i] &lt;= 10^4<br>nums 为无重复元素的升序排列数组<br>-10^4 &lt;= target &lt;= 10^4</p>
+<p><strong>代码</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int searchInsert(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &gt; nums[middle]) &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;  &#x2F;&#x2F; 目标值未找到，返回应插入的位置</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="二分查找法详解"><a href="#二分查找法详解" class="headerlink" title="二分查找法详解"></a>二分查找法详解</h3><h4 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h4><p><strong>循环结束条件</strong><br>while（low&lt;=high）还是while（low&lt;high);<br>low&lt;=high意味着循环终止条件为low=high+1;<br>low&lt;high意味着循环终止条件为low==high,具体问题具体分析。</p>
+<p><strong>middle值</strong><br>low=middle or low=middle+1 or high=middle or high=middle-1 and so on</p>
+<p><strong>防止溢出</strong><br>初始化时middle=low+(high-low)/2</p>
 ]]></content>
       <categories>
-        <category>数据结构</category>
+        <category>Algorithm</category>
       </categories>
       <tags>
-        <tag>差分时间链</tag>
+        <tag>二分查找</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Three ways to create Java Multithread</title>
+    <url>/2020/09/23/concurrency/</url>
+    <content><![CDATA[<p>创建Java多线程的三种方式。</p>
+<h3 id="1-Thread"><a href="#1-Thread" class="headerlink" title="1 Thread"></a>1 Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承了Thread类就不能再继承其它类了，这也是一个缺点。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-Runnable"><a href="#2-Runnable" class="headerlink" title="2 Runnable"></a>2 Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下用此方法来创建多线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-Callable"><a href="#3-Callable" class="headerlink" title="3 Callable"></a>3 Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>多线程</tag>
       </tags>
   </entry>
   <entry>
@@ -1289,6 +1274,22 @@
       </tags>
   </entry>
   <entry>
+    <title>diffchain</title>
+    <url>/2020/11/16/difftimechain/</url>
+    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
+
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>差分时间链</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>evening</title>
     <url>/2021/08/25/evening/</url>
     <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
@@ -1334,31 +1335,6 @@
       </categories>
       <tags>
         <tag>humanity</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>abstract,final,static,this,super</title>
-    <url>/2021/04/07/java-keyword/</url>
-    <content><![CDATA[<h3 id="1-abstract"><a href="#1-abstract" class="headerlink" title="1 abstract"></a>1 abstract</h3><p><strong>abstract</strong>关键字修饰类和方法。</p>
-<p>abstract修饰的类称为抽象类，例如：abstract class xxx{}<br>它可以声明引用但不能创建对象。<br>abstract修饰的方法称为抽象方法，例如：abstract void xxx();<br>它只有声明而没有实现。</p>
-<p>注意：含有抽象方法的类一定是抽象类，但抽象类中也可以有具体方法；抽象方法必须要在其子类中实现，除非子类也是抽象类。</p>
-<p><strong>abstract关键字不能与final、private或static修饰的类放在一起</strong><br>abstract修饰的类必须被继承，修饰的方法应该被重写。<br>final修饰的类、属性和方法不能被改变，因此修饰的方法不能被重写。<br>private只能修饰内部类，修饰的属性和方法只能在类内部调用，重写的方法不能访问被private修饰的方法和属性。<br>static修饰的方法是静态的，可以被类直接调用。但abstract修饰的方法是抽象的，没有实现不能被直接调用，需要通过类继承或接口实现来重写抽象方法方可被调用。</p>
-<h3 id="2-final"><a href="#2-final" class="headerlink" title="2 final"></a>2 final</h3><p><strong>final</strong>关键字是最终的、不可修改的，用来修饰类，方法和属性（或变量）。<br>final修饰的类不能被继承，类中的方法也都被隐式的指定为final。<br>final修饰的方法不能被继承类重写。<br>final修饰的属性(或变量)，其值不能被改变。(即常量)<br>finally是异常处理语句，表示总是执行。<br>finalize()是Object中的方法，在垃圾回收器将要回收对象所占内存之前被调用。</p>
-<h3 id="3-static"><a href="#3-static" class="headerlink" title="3 static"></a>3 static</h3><p><strong>static</strong>关键字可以修饰属性、方法、代码块和类。<br>static修饰的类是静态内部类。非静态内部类在编译完成之后会隐含地保存着一个引用，该引用是指向创建它的外部类，但是静态内部类却没有。所以静态内部类不能访问外部类的非静态成员（变量和方法）。<br>static修饰成员变量和成员方法，它属于类。一般建议通过类名来调用静态成员。类名.静态变量名、对象.静态方法名()。<br>注意：不能在方法体中定义静态变量。<br>static修饰的代码块叫做静态代码块，经常用来初始化静态变量，在类加载时执行，只执行一次。（静态代码块–》非静态代码块–》构造方法）</p>
-<p>一般public、static与final一起用来定义公开静态变量。</p>
-<h3 id="4-this"><a href="#4-this" class="headerlink" title="4 this"></a>4 this</h3><p><strong>this</strong>关键字表示引用类的当前实例</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class What &#123;</span><br><span class="line">  void manage() &#123;</span><br><span class="line">  this.report();  &#x2F;&#x2F;调用类What的当前实例的方法</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  void report() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="5-super"><a href="#5-super" class="headerlink" title="5 super"></a>5 super</h3><p><strong>super</strong>关键字表示从子类访问父类的变量和方法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Father &#123;</span><br><span class="line">  protected int n;</span><br><span class="line"></span><br><span class="line">  protected print() &#123;</span><br><span class="line">    System.out.println(n);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Son extends Father &#123;</span><br><span class="line">  void show() &#123;</span><br><span class="line">    super.n &#x3D; 10;</span><br><span class="line">    super.print();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>this、super不能用在static方法中<br>this代表对本类对象的引用，指向本类对象；super代表对父类对象的引用，指向父类对象。this和super属于对象范畴，静态方法属于类范畴。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>关键字</tag>
       </tags>
   </entry>
   <entry>
@@ -1415,16 +1391,28 @@
       </tags>
   </entry>
   <entry>
-    <title>markdown</title>
-    <url>/2021/04/15/markdown/</url>
-    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
-<p>格式如下图：</p>
-<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
+    <title>abstract,final,static,this,super</title>
+    <url>/2021/04/07/java-keyword/</url>
+    <content><![CDATA[<h3 id="1-abstract"><a href="#1-abstract" class="headerlink" title="1 abstract"></a>1 abstract</h3><p><strong>abstract</strong>关键字修饰类和方法。</p>
+<p>abstract修饰的类称为抽象类，例如：abstract class xxx{}<br>它可以声明引用但不能创建对象。<br>abstract修饰的方法称为抽象方法，例如：abstract void xxx();<br>它只有声明而没有实现。</p>
+<p>注意：含有抽象方法的类一定是抽象类，但抽象类中也可以有具体方法；抽象方法必须要在其子类中实现，除非子类也是抽象类。</p>
+<p><strong>abstract关键字不能与final、private或static修饰的类放在一起</strong><br>abstract修饰的类必须被继承，修饰的方法应该被重写。<br>final修饰的类、属性和方法不能被改变，因此修饰的方法不能被重写。<br>private只能修饰内部类，修饰的属性和方法只能在类内部调用，重写的方法不能访问被private修饰的方法和属性。<br>static修饰的方法是静态的，可以被类直接调用。但abstract修饰的方法是抽象的，没有实现不能被直接调用，需要通过类继承或接口实现来重写抽象方法方可被调用。</p>
+<h3 id="2-final"><a href="#2-final" class="headerlink" title="2 final"></a>2 final</h3><p><strong>final</strong>关键字是最终的、不可修改的，用来修饰类，方法和属性（或变量）。<br>final修饰的类不能被继承，类中的方法也都被隐式的指定为final。<br>final修饰的方法不能被继承类重写。<br>final修饰的属性(或变量)，其值不能被改变。(即常量)<br>finally是异常处理语句，表示总是执行。<br>finalize()是Object中的方法，在垃圾回收器将要回收对象所占内存之前被调用。</p>
+<h3 id="3-static"><a href="#3-static" class="headerlink" title="3 static"></a>3 static</h3><p><strong>static</strong>关键字可以修饰属性、方法、代码块和类。<br>static修饰的类是静态内部类。非静态内部类在编译完成之后会隐含地保存着一个引用，该引用是指向创建它的外部类，但是静态内部类却没有。所以静态内部类不能访问外部类的非静态成员（变量和方法）。<br>static修饰成员变量和成员方法，它属于类。一般建议通过类名来调用静态成员。类名.静态变量名、对象.静态方法名()。<br>注意：不能在方法体中定义静态变量。<br>static修饰的代码块叫做静态代码块，经常用来初始化静态变量，在类加载时执行，只执行一次。（静态代码块–》非静态代码块–》构造方法）</p>
+<p>一般public、static与final一起用来定义公开静态变量。</p>
+<h3 id="4-this"><a href="#4-this" class="headerlink" title="4 this"></a>4 this</h3><p><strong>this</strong>关键字表示引用类的当前实例</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class What &#123;</span><br><span class="line">  void manage() &#123;</span><br><span class="line">  this.report();  &#x2F;&#x2F;调用类What的当前实例的方法</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">  void report() &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-super"><a href="#5-super" class="headerlink" title="5 super"></a>5 super</h3><p><strong>super</strong>关键字表示从子类访问父类的变量和方法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Father &#123;</span><br><span class="line">  protected int n;</span><br><span class="line"></span><br><span class="line">  protected print() &#123;</span><br><span class="line">    System.out.println(n);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Son extends Father &#123;</span><br><span class="line">  void show() &#123;</span><br><span class="line">    super.n &#x3D; 10;</span><br><span class="line">    super.print();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>this、super不能用在static方法中<br>this代表对本类对象的引用，指向本类对象；super代表对父类对象的引用，指向父类对象。this和super属于对象范畴，静态方法属于类范畴。</p>
+]]></content>
       <categories>
-        <category>markdown</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>markdown</tag>
+        <tag>关键字</tag>
       </tags>
   </entry>
   <entry>
@@ -1456,21 +1444,16 @@
       </tags>
   </entry>
   <entry>
-    <title>memory</title>
-    <url>/2021/03/21/memory/</url>
-    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
-<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
-<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
-<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
-<img src="/2021/03/21/memory/memory.jpg" class="">
-
-<p>辛丑牛年农历二月初十</p>
-]]></content>
+    <title>markdown</title>
+    <url>/2021/04/15/markdown/</url>
+    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
+<p>格式如下图：</p>
+<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
       <categories>
-        <category>生活</category>
+        <category>markdown</category>
       </categories>
       <tags>
-        <tag>旅行</tag>
+        <tag>markdown</tag>
       </tags>
   </entry>
   <entry>
@@ -1737,16 +1720,21 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>oct_day</title>
-    <url>/2021/10/30/oct-day/</url>
-    <content><![CDATA[<p>十月的北京可谓是诈寒还暖，十月的倒数第二天竟然有二十多度，比起国庆之后的最低气温，现在不可谓不舒适。后天就是十一月了，日子总是这么轻飘飘的就过去了，明天三年之约也来了。多么令人期待了，等待了数个三年之后，炎帝迎来了他的三年之约。十一月总是给人美好，十一月的自己也要更加自律了，毕竟毕业不是儿戏啊！而且实习经验也没有的自己更要抓紧时间了。</p>
-<p>农历九月二十五日</p>
+    <title>memory</title>
+    <url>/2021/03/21/memory/</url>
+    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
+<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
+<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
+<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
+<img src="/2021/03/21/memory/memory.jpg" class="">
+
+<p>辛丑牛年农历二月初十</p>
 ]]></content>
       <categories>
         <category>生活</category>
       </categories>
       <tags>
-        <tag>十月</tag>
+        <tag>旅行</tag>
       </tags>
   </entry>
   <entry>
@@ -1774,6 +1762,60 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>十月的尾巴</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>oct_day</title>
+    <url>/2021/10/30/oct-day/</url>
+    <content><![CDATA[<p>十月的北京可谓是诈寒还暖，十月的倒数第二天竟然有二十多度，比起国庆之后的最低气温，现在不可谓不舒适。后天就是十一月了，日子总是这么轻飘飘的就过去了，明天三年之约也来了。多么令人期待了，等待了数个三年之后，炎帝迎来了他的三年之约。十一月总是给人美好，十一月的自己也要更加自律了，毕竟毕业不是儿戏啊！而且实习经验也没有的自己更要抓紧时间了。</p>
+<p>农历九月二十五日</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>十月</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>shiro</title>
+    <url>/2020/10/08/shiro-base/</url>
+    <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Apache shiro是一个强大的且容易使用的Java安全框架，执行身份验证（认证）、授权、加密和会话管理。<br>Shiro有三个核心概念，<strong>Subject，SecurityManager，Realms</strong>。<br><strong>shiro顶层图</strong></p>
+<img src="/2020/10/08/shiro-base/shiro-high.png" class="">
+
+<p><strong>shiro详细架构图</strong></p>
+<img src="/2020/10/08/shiro-base/shiro-detail.png" class="">
+
+<h4 id="Subject"><a href="#Subject" class="headerlink" title="Subject"></a>Subject</h4><p>Subject意味着<strong>当前正在执行的用户</strong>，但它不仅仅指代User，还可以是<strong>第三方进程</strong>，<strong>后台账户</strong>或其它类似的任何东西。It simply means ‘the thing that is currently interacting with the software’.</p>
+<h4 id="SecurityManager"><a href="#SecurityManager" class="headerlink" title="SecurityManager"></a>SecurityManager</h4><p>SecurityManager管理所有用户的安全操作，是shiro的核心。</p>
+<h4 id="Realms"><a href="#Realms" class="headerlink" title="Realms"></a>Realms</h4><p>Realm在Shiro和你的应用安全数据之间充当桥或者连接器的角色。</p>
+<h4 id="其它重要概念"><a href="#其它重要概念" class="headerlink" title="其它重要概念"></a>其它重要概念</h4><p><strong>Authentication（认证）</strong><br>认证就是一个验证用户身份的过程，也叫登录。<br><strong>Authorization（授权）</strong><br>授权就是对一个已经登陆的用户授予其访问系统资源的权限。<br><strong>Session Management（会话管理）</strong><br>类似于web中session，这个session是apache shiro特有的。<br><strong>Cryptography（密码学）</strong><br>密码学就是一个混淆或隐藏数据的过程。</p>
+<h3 id="单机版应用"><a href="#单机版应用" class="headerlink" title="单机版应用"></a>单机版应用</h3><h4 id="ini文件"><a href="#ini文件" class="headerlink" title="ini文件"></a>ini文件</h4><p>可以将一些subject对象的数据写到shiro.ini文件中，例如用户名、密码之类的信息。</p>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><p><strong>1.创建安全管理器对象</strong><br><code>DefaultSecurityManager securityManager = new DefaultSecurityManager();</code></p>
+<p><strong>2.给安全管理器设置realm</strong><br><code>securityManager.setRealm(new IniRealm(&quot;classpath:shiro.ini&quot;));</code></p>
+<p><strong>3.SecurityUtils给全局安全工具类设置安全管理器</strong><br><code>SecurityUtils.setSecurityManager(securityManager);</code></p>
+<p><strong>4.关键对象subject（主体）</strong><br><code>Subject subject = SecurityUtils.getSubject();</code></p>
+<p><strong>5.创建令牌</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hejun&quot;,&quot;123456&quot;);</span><br><span class="line"></span><br><span class="line">try&#123;</span><br><span class="line">    subject.login(token);  &#x2F;&#x2F;用户认证</span><br><span class="line">    System.out.println(&quot;认证状态: &quot; + subject.isAuthenticated());</span><br><span class="line">&#125; catch(Exception e) &#123;</span><br><span class="line">    e.printSstackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="自定义realm"><a href="#自定义realm" class="headerlink" title="自定义realm"></a>自定义realm</h3><p>自定义realm的作用就是将认证/授权的数据来源转为数据库，丢掉shiro.ini文件。</p>
+<img src="/2020/10/08/shiro-base/extends-diagram.png" class="">
+<p><strong>1.继承AuthorizingRealm类，重写两个方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 自定义realm  将认证&#x2F;授权数据的来源转为数据库</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CustomRealm extends AuthorizingRealm &#123;</span><br><span class="line">    &#x2F;&#x2F;授权</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;认证</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException &#123;</span><br><span class="line">        &#x2F;&#x2F;token中获取用户名</span><br><span class="line">        String principal &#x3D; (String) authenticationToken.getPrincipal();</span><br><span class="line">        System.out.println(principal);</span><br><span class="line">        &#x2F;&#x2F;根据身份信息使用jdbc mybatis查询相关数据库</span><br><span class="line">        if (&quot;hj&quot;.equals(principal)) &#123;</span><br><span class="line">            &#x2F;&#x2F;参数1，2：返回数据库中的正确用户名和密码</span><br><span class="line">            return new SimpleAuthenticationInfo(principal, &quot;123&quot;, this.getName());</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.测试</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestCustomRealmAuthenticator &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;创建securityManager</span><br><span class="line">        DefaultSecurityManager defaultSecurityManager &#x3D; new DefaultSecurityManager();</span><br><span class="line">        &#x2F;&#x2F;设置自定义realm</span><br><span class="line">        defaultSecurityManager.setRealm(new CustomRealm());</span><br><span class="line">        &#x2F;&#x2F;为全局安全工具类设置securityManager</span><br><span class="line">        SecurityUtils.setSecurityManager(defaultSecurityManager);</span><br><span class="line">        &#x2F;&#x2F;通过全局安全工具类获得subject</span><br><span class="line">        Subject subject &#x3D; SecurityUtils.getSubject();</span><br><span class="line">        &#x2F;&#x2F;创建token</span><br><span class="line">        UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hj&quot;, &quot;123&quot;);</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">            System.out.println(&quot;login success&quot;);</span><br><span class="line">        &#125; catch (AuthenticationException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><strong>最终在SimpleAccountRealm这个类中的doGetAuthenticationInfo方法中完成用户名的校验。</strong></p>
+<p><strong>密码校验在AuthenticatingRealm的assertCredentialsMatch完成。密码校验是自动完成的。</strong></p>
+<p><strong>AuthenticatingRealm 认证realm doGetAuthenticationInfo</strong></p>
+<p><strong>AuthorizingRealm 授权realm doGetAuthorizationInfo</strong></p>
+]]></content>
+      <categories>
+        <category>technology-stack</category>
+      </categories>
+      <tags>
+        <tag>shiro</tag>
       </tags>
   </entry>
   <entry>
@@ -1820,47 +1862,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>arrow</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>shiro</title>
-    <url>/2020/10/08/shiro-base/</url>
-    <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Apache shiro是一个强大的且容易使用的Java安全框架，执行身份验证（认证）、授权、加密和会话管理。<br>Shiro有三个核心概念，<strong>Subject，SecurityManager，Realms</strong>。<br><strong>shiro顶层图</strong></p>
-<img src="/2020/10/08/shiro-base/shiro-high.png" class="">
-
-<p><strong>shiro详细架构图</strong></p>
-<img src="/2020/10/08/shiro-base/shiro-detail.png" class="">
-
-<h4 id="Subject"><a href="#Subject" class="headerlink" title="Subject"></a>Subject</h4><p>Subject意味着<strong>当前正在执行的用户</strong>，但它不仅仅指代User，还可以是<strong>第三方进程</strong>，<strong>后台账户</strong>或其它类似的任何东西。It simply means ‘the thing that is currently interacting with the software’.</p>
-<h4 id="SecurityManager"><a href="#SecurityManager" class="headerlink" title="SecurityManager"></a>SecurityManager</h4><p>SecurityManager管理所有用户的安全操作，是shiro的核心。</p>
-<h4 id="Realms"><a href="#Realms" class="headerlink" title="Realms"></a>Realms</h4><p>Realm在Shiro和你的应用安全数据之间充当桥或者连接器的角色。</p>
-<h4 id="其它重要概念"><a href="#其它重要概念" class="headerlink" title="其它重要概念"></a>其它重要概念</h4><p><strong>Authentication（认证）</strong><br>认证就是一个验证用户身份的过程，也叫登录。<br><strong>Authorization（授权）</strong><br>授权就是对一个已经登陆的用户授予其访问系统资源的权限。<br><strong>Session Management（会话管理）</strong><br>类似于web中session，这个session是apache shiro特有的。<br><strong>Cryptography（密码学）</strong><br>密码学就是一个混淆或隐藏数据的过程。</p>
-<h3 id="单机版应用"><a href="#单机版应用" class="headerlink" title="单机版应用"></a>单机版应用</h3><h4 id="ini文件"><a href="#ini文件" class="headerlink" title="ini文件"></a>ini文件</h4><p>可以将一些subject对象的数据写到shiro.ini文件中，例如用户名、密码之类的信息。</p>
-<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><p><strong>1.创建安全管理器对象</strong><br><code>DefaultSecurityManager securityManager = new DefaultSecurityManager();</code></p>
-<p><strong>2.给安全管理器设置realm</strong><br><code>securityManager.setRealm(new IniRealm(&quot;classpath:shiro.ini&quot;));</code></p>
-<p><strong>3.SecurityUtils给全局安全工具类设置安全管理器</strong><br><code>SecurityUtils.setSecurityManager(securityManager);</code></p>
-<p><strong>4.关键对象subject（主体）</strong><br><code>Subject subject = SecurityUtils.getSubject();</code></p>
-<p><strong>5.创建令牌</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hejun&quot;,&quot;123456&quot;);</span><br><span class="line"></span><br><span class="line">try&#123;</span><br><span class="line">    subject.login(token);  &#x2F;&#x2F;用户认证</span><br><span class="line">    System.out.println(&quot;认证状态: &quot; + subject.isAuthenticated());</span><br><span class="line">&#125; catch(Exception e) &#123;</span><br><span class="line">    e.printSstackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="自定义realm"><a href="#自定义realm" class="headerlink" title="自定义realm"></a>自定义realm</h3><p>自定义realm的作用就是将认证/授权的数据来源转为数据库，丢掉shiro.ini文件。</p>
-<img src="/2020/10/08/shiro-base/extends-diagram.png" class="">
-<p><strong>1.继承AuthorizingRealm类，重写两个方法</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 自定义realm  将认证&#x2F;授权数据的来源转为数据库</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CustomRealm extends AuthorizingRealm &#123;</span><br><span class="line">    &#x2F;&#x2F;授权</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;认证</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException &#123;</span><br><span class="line">        &#x2F;&#x2F;token中获取用户名</span><br><span class="line">        String principal &#x3D; (String) authenticationToken.getPrincipal();</span><br><span class="line">        System.out.println(principal);</span><br><span class="line">        &#x2F;&#x2F;根据身份信息使用jdbc mybatis查询相关数据库</span><br><span class="line">        if (&quot;hj&quot;.equals(principal)) &#123;</span><br><span class="line">            &#x2F;&#x2F;参数1，2：返回数据库中的正确用户名和密码</span><br><span class="line">            return new SimpleAuthenticationInfo(principal, &quot;123&quot;, this.getName());</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>2.测试</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestCustomRealmAuthenticator &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;创建securityManager</span><br><span class="line">        DefaultSecurityManager defaultSecurityManager &#x3D; new DefaultSecurityManager();</span><br><span class="line">        &#x2F;&#x2F;设置自定义realm</span><br><span class="line">        defaultSecurityManager.setRealm(new CustomRealm());</span><br><span class="line">        &#x2F;&#x2F;为全局安全工具类设置securityManager</span><br><span class="line">        SecurityUtils.setSecurityManager(defaultSecurityManager);</span><br><span class="line">        &#x2F;&#x2F;通过全局安全工具类获得subject</span><br><span class="line">        Subject subject &#x3D; SecurityUtils.getSubject();</span><br><span class="line">        &#x2F;&#x2F;创建token</span><br><span class="line">        UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hj&quot;, &quot;123&quot;);</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">            System.out.println(&quot;login success&quot;);</span><br><span class="line">        &#125; catch (AuthenticationException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><strong>最终在SimpleAccountRealm这个类中的doGetAuthenticationInfo方法中完成用户名的校验。</strong></p>
-<p><strong>密码校验在AuthenticatingRealm的assertCredentialsMatch完成。密码校验是自动完成的。</strong></p>
-<p><strong>AuthenticatingRealm 认证realm doGetAuthenticationInfo</strong></p>
-<p><strong>AuthorizingRealm 授权realm doGetAuthorizationInfo</strong></p>
-]]></content>
-      <categories>
-        <category>technology-stack</category>
-      </categories>
-      <tags>
-        <tag>shiro</tag>
       </tags>
   </entry>
   <entry>
