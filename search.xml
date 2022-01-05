@@ -60,6 +60,31 @@
       </tags>
   </entry>
   <entry>
+    <title>11_10_Java</title>
+    <url>/2021/11/10/11-10-Java/</url>
+    <content><![CDATA[<h3 id="1-递归和迭代的区别"><a href="#1-递归和迭代的区别" class="headerlink" title="1 递归和迭代的区别"></a>1 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中, 问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远到近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
+<p>以斐波那契数列为例。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>递归容易产生“栈溢出”问题（stack overflow）。<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
+<h3 id="2-Java中String为什么是final"><a href="#2-Java中String为什么是final" class="headerlink" title="2 Java中String为什么是final"></a>2 Java中String为什么是final</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
+<p>安全性：String被许多的Java类(库)用来当做参数，例如：网络连接地址URL、文件路径path、还有反射机制所需要的String参数等, 假若String不是固定不变的，将会引起各种安全隐患；<br>允许String对象缓存HashCode：Java中String对象的哈希码被频繁地使用，比如在HashMap等容器中。字符串不变性保证了hashcode的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是Java堆内存中一个特殊的存储区域，当创建一个String对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
+<h3 id="3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
+<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量，它的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。此类提供与StringBuffer兼容的API，但不保证同步。此类旨在用作StringBuffer的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。在可能的情况下，建议优先使用此类而不是StringBuffer，因为在大多数实现下它会更快。StringBuilder上的主要操作是append和insert方法，它们被重载以接受任何类型的数据。每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。append方法总是在构建器的末尾添加这些字符；insert方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>string</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>11_14_Java</title>
     <url>/2021/11/14/11-14-Java/</url>
     <content><![CDATA[<h3 id="1-Error和Exception的区别"><a href="#1-Error和Exception的区别" class="headerlink" title="1 Error和Exception的区别"></a>1 Error和Exception的区别</h3><p>Error：一般指与虚拟机相关的问题，如：系统崩溃、虚拟机错误、内存空间不足、栈溢出等。错误导致应用程序中断，仅靠程序本身无法恢复。</p>
@@ -88,31 +113,6 @@
       </categories>
       <tags>
         <tag>stream</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>11_10_Java</title>
-    <url>/2021/11/10/11-10-Java/</url>
-    <content><![CDATA[<h3 id="1-递归和迭代的区别"><a href="#1-递归和迭代的区别" class="headerlink" title="1 递归和迭代的区别"></a>1 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中, 问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远到近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
-<p>以斐波那契数列为例。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>递归容易产生“栈溢出”问题（stack overflow）。<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
-<h3 id="2-Java中String为什么是final"><a href="#2-Java中String为什么是final" class="headerlink" title="2 Java中String为什么是final"></a>2 Java中String为什么是final</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
-<p>安全性：String被许多的Java类(库)用来当做参数，例如：网络连接地址URL、文件路径path、还有反射机制所需要的String参数等, 假若String不是固定不变的，将会引起各种安全隐患；<br>允许String对象缓存HashCode：Java中String对象的哈希码被频繁地使用，比如在HashMap等容器中。字符串不变性保证了hashcode的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是Java堆内存中一个特殊的存储区域，当创建一个String对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
-<h3 id="3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
-<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量，它的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。此类提供与StringBuffer兼容的API，但不保证同步。此类旨在用作StringBuffer的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。在可能的情况下，建议优先使用此类而不是StringBuffer，因为在大多数实现下它会更快。StringBuilder上的主要操作是append和insert方法，它们被重载以接受任何类型的数据。每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。append方法总是在构建器的末尾添加这些字符；insert方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>string</tag>
       </tags>
   </entry>
   <entry>
@@ -481,7 +481,7 @@
 <h3 id="2-运行时数据区"><a href="#2-运行时数据区" class="headerlink" title="2 运行时数据区"></a>2 运行时数据区</h3><img src="/2021/11/27/11-27-Java/jvm.png" class="">
 <p><strong>程序计数器</strong><br>程序计数器（Program Counter Register）是一块较小的内存空间，它可以看作是当前线程所执行的字节码的行号指示器。<br>字节码解释器执作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令。程序的分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。</p>
 <p>由于Java虚拟机的多线程是通过线程轮流切换、分配处理器执行时间的方式来实现的，在任何一个确定的时刻，一个处理器都只会执行一条线程中的命令。因此，为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器，各线程之间的计数器互不影响，独立存储，我们程这块内存区域为“线程私有”的内存。<br>此区域是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。</p>
-<p><strong>Java虚拟机栈</strong><br>与程序计数器一样，Java虚拟机栈（Java Virtual Machine Stacks）也是线程私有的，它的生命周期与线程相同。<br>虚拟机栈描述的是Java方法执行的线程内存模型：每个方法被执行的同时jvm都会创建一个帧栈（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法被调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
+<p><strong>Java虚拟机栈</strong><br>与程序计数器一样，Java虚拟机栈（Java Virtual Machine Stacks）也是线程私有的，它的生命周期与线程相同。<br>虚拟机栈描述的是Java方法执行的线程内存模型：每个方法被执行的时候，jvm都会同步创建一个栈帧（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法被调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
 <p>局部变量表存放了编译期可知的各种基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用和returnAddress类型（指向了一条字节码指令的地址）。<br>Java虚拟机栈的局部变量表的空间单位是槽（Slot），其中64位长度的double和long类型会占用两个Slot。局部变量表所需内存空间在编译期完成分配，当进入一个方法时，该方法需要在帧中分配多大的局部变量是完全确定的，在方法运行期间不会改变局部变量表的大小。</p>
 <p>Java虚拟机栈有两种异常状况：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出StackOverflowErro异常；如果Java虚拟机栈扩展时无法申请到足够的内存，就会抛出OutOfMemoryError异常。</p>
 <p><strong>本地方法栈</strong><br>本地方法栈（Native Method Stack）与虚拟机栈所发挥的作用是非常相似的，其区别只是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的本地（Native）方法服务。</p>
@@ -539,24 +539,32 @@
       </tags>
   </entry>
   <entry>
-    <title>12_01_Java</title>
-    <url>/2021/12/01/12-01-Java/</url>
-    <content><![CDATA[<h3 id="1-Java参数传递"><a href="#1-Java参数传递" class="headerlink" title="1 Java参数传递"></a>1 Java参数传递</h3><p>Java 在方法调用传递参数时，所以它都是进行传值调用。<br>在运行栈中，基本类型和引用的处理是一样的，都是传值。但是当进入被调用方法时，被传递的这个引用的值，被程序解释到堆中的对象，这个时候才对应到真正的对象。如果此时进行修改，修改的是引用对应的对象，而不是引用本身，即：修改的是堆中的数据。所以这个修改是可以保持的。</p>
-<h3 id="2-判断垃圾可以回收的方法"><a href="#2-判断垃圾可以回收的方法" class="headerlink" title="2 判断垃圾可以回收的方法"></a>2 判断垃圾可以回收的方法</h3><p>垃圾收集器在对堆和方法区进行回收前，首先要确定这些区域的对象哪些可以回收，哪些暂时还不能回收，这就要用到判断对象是否存活的算法。<br><strong>引用计数法</strong><br>引用计数是垃圾收集器的早期策略。在这种方法中，堆中每个对象实例都有一个引用计数。当一个对象被创建时，就将该对象实例分配给一个变量，该变量计数设置为 1。当任何其它变量被赋值为这个对象的引用时，计数加1（a = b，则 b 引用的对象实例的计数器加 1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数器减 1。任何引用计数器为 0 的对象实例都可以被当作垃圾收集。当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器减 1。</p>
-<p>优点：引用计数收集器可以很快的执行，交织在程序运行中。对程序需要不被长时间打断的实时环境比较较有利。<br>缺点：无法检测出循环引用。</p>
-<p><strong>可达性分析算法</strong><br>可达性分析算法是从离散数学中的图论引入的，程序把所有的引用关系看作一张图，从一个节点 GC ROOT 开始，寻找对应的引用节点，找到这个节点以后，继续寻找这个节点的引用节点，当所有的引用节点寻找完毕之后，剩余的节点则被认为是没有被引用到的节点，即无用的节点，这些节点将会被判定为是可回收的对象。</p>
-<p>在 Java 语言中，可作为 GC Roots 的对象包括以下几种：<br>虚拟机栈中引用的对象（栈帧中的本地变量表）；<br>方法区中类静态属性引用的对象；<br>方法区中常量引用的对象；<br>本地方法栈中 JNI（Native方法）引用的对象。</p>
-<h3 id="3-被标记为垃圾的对象一定会被回收吗？"><a href="#3-被标记为垃圾的对象一定会被回收吗？" class="headerlink" title="3 被标记为垃圾的对象一定会被回收吗？"></a>3 被标记为垃圾的对象一定会被回收吗？</h3><p>不一定。可达性分析算法中，要真正宣告一个对象死亡，至少要经历两次标记过程。<br>第一次标记：如果对象在进行可达性分析后发现没有与 GC Roots 相连接的引用链，那它将会被第一次标记。<br>第二次标记：第一次标记后接着会进行一次筛选，筛选的条件是此对象是否有必要执行 finalize() 方法。在finalize() 方法中没有重新与引用链建立关联关系的，将被进行第二次标记。第二次标记成功的对象将被回收，如果对象在 finalize() 方法中重新与引用链建立了关联关系，那么将会逃离本次回收，继续存活。</p>
-<h3 id="4-Java引用类型"><a href="#4-Java引用类型" class="headerlink" title="4 Java引用类型"></a>4 Java引用类型</h3><p>强引用<br>强引用是使用最普遍的引用。如果一个对象具有强引用，那么垃圾回收器不会回收它。</p>
-<p>软引用<br>可以通过java.lang.ref.SoftReference使用软引用。一个持有软引用的对象，不会被JVM很快回收，JVM会根据当前堆的使用情况来判断何时回收。当堆使用率临近阈值时，才会去回收软引用的对象。因此，软引用可以用于实现对内存敏感的高速缓存。</p>
-<p>弱引用<br>当垃圾收集器工作时，无论当前内存是否足够，都会回收掉只被弱引用关联的对象。</p>
-<p>虚引用<br>一个对象是否有虚引用的存在，完全不会对其生存时间构成影响，也无法通过虚引用来取得一个对象实例。它的作用是能在这个对象被收集器回收时收到一个系统通知。</p>
-<h3 id="5-Java内存泄露"><a href="#5-Java内存泄露" class="headerlink" title="5 Java内存泄露"></a>5 Java内存泄露</h3><p>内存泄漏就是存在一些不会再被使用却没有被回收的对象，这些对象有下两个特点：<br>这些对象是可达的，即在有向图中，存在通路可以与其相连。<br>这些对象是无用的，即程序以后不会再使用这些对象。<br>这些对象不会被 GC 所回收，然而它却占用内存。</p>
-<p>根本原因：<br>长生命周期的对象持有短生命周期对象的引用就很可能发生内存泄漏，尽管短生命周期对象已经不再需要，但是因为长生命周期持有它的引用而导致不能被回收，这就是 Java 中内存泄漏的发生场景。<br>数据库连接（dataSourse.getConnection()），网络连接(socket) 和 IO 连接，除非其显式的调用了 close() 方法将其连接关闭，否则是不会主动被 GC 回收的；<br>单例对象在初始化后将在 JVM 的整个生命周期中存在（以静态变量的方式），如果单例对象持有外部的引用，那么这个对象将不能被 JVM 正常回收，导致内存泄漏。</p>
-<h3 id="6-常用的垃圾收集算法"><a href="#6-常用的垃圾收集算法" class="headerlink" title="6 常用的垃圾收集算法"></a>6 常用的垃圾收集算法</h3><p><strong>标记-清除算法</strong>mark-sweep<br>标记-清除算法采用从根集合（GC Roots）进行扫描，对存活的对象进行标记，标记完毕后，再扫描整个空间中未被标记的对象，进行回收。标记-清除算法不需要进行对象的移动，只需对不存活的对象进行处理，在存活对象比较多的情况下极为高效，但由于标记-清除算法直接回收不存活的对象，因此会造成内存碎片。</p>
-<p><strong>复制算法</strong>copying<br>复制算法的提出是为了克服句柄开销和解决内存碎片问题。把堆分成 一个对象面和多个空闲面， 程序从对象面为对象分配空间，当对象满了，基于 copying 算法的垃圾收集就从根集合（GC Roots）中扫描活动对象，并将每个活动对象复制到空闲面，这样空闲面变成了对象面，原来的对象面变成了空闲面，程序会在新的对象面中分配内存。</p>
-<p><strong>标记-整理算法</strong>ark-compact<br>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但在清除时不同，在回收不存活的对象占用的空间后，会将所有的存活对象往左端空闲空间移动，并更新对应的指针。标记-整理算法是在标记-清除算法的基础上，又进行了对象的移动，因此成本更高，但是却解决了内存碎片的问题。</p>
-<p><strong>分代收集算法</strong><br>分代收集算法是目前大部分 JVM 的垃圾收集器采用的算法。它的核心思想是根据对象存活的生命周期将内存划分为若干个不同的区域。一般情况下将堆划分为老年代（Tenured Generation）和新生代（Young Generation），在堆之外还有一个代就是永久代（Permanet Generation）。<br>老年代的特点是每次垃圾收集时只有少量对象需要被回收，而新生代的特点是每次垃圾回收时都有大量的对象需要被回收，那么就可以根据不同代的特点采取最适合的收集算法。</p>
+    <title>12_05_Java</title>
+    <url>/2021/12/05/12-05-Java/</url>
+    <content><![CDATA[<h3 id="1-类加载机制"><a href="#1-类加载机制" class="headerlink" title="1 类加载机制"></a>1 类加载机制</h3><p>虚拟机把描述类的数据从 Class 文件加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的 Java 类型，这就是虚拟机的类加载机制。<br>类的生命周期包括7个阶段：<strong>加载、验证、准备、解析、初始化、使用和卸载</strong>。<br>其中解析过程在某些情况下可以在初始化阶段之后再开始，这是为了支持 Java 动态绑定。</p>
+<img src="/2021/12/05/12-05-Java/class.png" class="">
+<ol>
+<li>加载<br>在加载阶段，虚拟机完成三件事：<br>通过一个类的全限定名来获取定义此类的二进制字节流；<br>将二进制字节流所代表的静态存储结构转化为方法区的运行时数据结构；<br>在内存中生成一个代表这个类的 java.lang.Class 对象，作为方法区这个类的各种数据的访问接口。</li>
+<li>验证<br>主要是为了确保 Class 文件的字节流中包含的信息符合当前虚拟机的要求，并且不会危害虚拟机自身的安全。验证阶段大致上分为 4 个阶段的检验动作：文件格式验证、元数据验证、字节码验证、符号引用验证。<br>文件格式校验：验证字节流是否符合 class 文件的规范，并且能被当前版本的虚拟机处理。只有通过这个阶段的验证后，字节流才会进入内存的方法区进行存储，所以后面的3个阶段全部是基于方法区的存储结构进行的，不会再直接操作字节流；<br>元数据验证：对字节码描述的信息进行语义分析，以保证其描述的信息符合Java语言规范的要求；<br>字节码验证：该阶段主要工作是进行数据流和控制流分析，保证被校验类的方法在运行时不会做出危害虚拟机安全的行为；<br>符号引用验证：最后一个阶段的校验发生在虚拟机将符号引用转化为直接引用的时候，这个转化动作将在连接的第三个阶段——解析阶段中发生。</li>
+<li>准备<br>为类变量分配内存并设置类变量的初始值，这些变量所使用的内存都将在方法区中进行分配。这时候进入内存分配的仅包括类变量（被 static 修饰的变量），而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在 Java 堆中。实例化不是类加载的一个过程，类加载发生在所有实例化操作之前，并且类加载只进行一次，实例化可以进行多次。</li>
+<li>解析<br>虚拟机将常量池内的符号引用替换为直接引用。</li>
+<li>初始化<br>在准备阶段，类变量已经赋过一次系统要求的初始值，而在初始化阶段，根据程序员通过程序制定的主观计划去初始化类变量和其它资源。或者说初始化阶段即虚拟机执行类构造器()方法的过程。</li>
+</ol>
+<h3 id="2-类加载器有哪些？"><a href="#2-类加载器有哪些？" class="headerlink" title="2 类加载器有哪些？"></a>2 类加载器有哪些？</h3><p>引导类加载器（Bootstrap ClassLoader）：内嵌在jvm中的一段特殊的用来加载java核心类库的C++代码。它负责将JAVA_HOME/lib下面的核心类库或-X bootclasspath选项指定的jar包等虚拟机识别的类库加载到内存中。</p>
+<p>拓展类加载器（Extension ClassLoader）：由Sun的ExtClassLoader实现的，它负责将JAVA_HOME /lib/ext或者由系统变量-D java.ext.dir指定位置中的类库加载到内存中。</p>
+<p>应用类加载器（Application ClassLoader)：由 sun.misc.Launcher$AppClassLoder 实现。由于应用类加载器是 ClassLoader 中的 getSystemClassLoader() 方法的返回值，所以一般也称之为系统类加载器。它负责加载用户路径（ClassPath）所指定的类库，开发者可以直接使用这个类加载器，如果应用程序中没有自定义过类加载器，一般情况下这个就是程序中默认的类加载器。</p>
+<h3 id="3-双亲委派模型"><a href="#3-双亲委派模型" class="headerlink" title="3 双亲委派模型"></a>3 双亲委派模型</h3><p>双亲委派模式要求除了顶层的bootstrap类加载器外，其余的类加载器都应当有自己的父类加载器，请注意双亲委派模式中的父子关系并非通常所说的类继承关系，而是采用<strong>组合关系</strong>来复用父类加载器的相关代码。</p>
+<img src="/2021/12/05/12-05-Java/classloader.png" class="">
+<p>工作原理：如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，请求最终将到达顶层的引导类加载器。如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载。</p>
+<p>双亲委派模式优势：Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层次关可以避免类的重复加载，当父加载器已经加载了该类时，子类ClassLoader就没有必要再加载一次。</p>
+<p>主要代码实现：loadClass()方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected Class&lt;?&gt; loadClass(String name, boolean resolve)</span><br><span class="line">        throws ClassNotFoundException</span><br><span class="line">    &#123;</span><br><span class="line">        synchronized (getClassLoadingLock(name)) &#123;</span><br><span class="line">            &#x2F;&#x2F; First, check if the class has already been loaded</span><br><span class="line">            Class&lt;?&gt; c &#x3D; findLoadedClass(name);</span><br><span class="line">            if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                long t0 &#x3D; System.nanoTime();</span><br><span class="line">                try &#123;</span><br><span class="line">                    if (parent !&#x3D; null) &#123;</span><br><span class="line">                        c &#x3D; parent.loadClass(name, false);</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        c &#x3D; findBootstrapClassOrNull(name);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">                    &#x2F;&#x2F; ClassNotFoundException thrown if class not found</span><br><span class="line">                    &#x2F;&#x2F; from the non-null parent class loader</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    &#x2F;&#x2F; If still not found, then invoke findClass in order</span><br><span class="line">                    &#x2F;&#x2F; to find the class.</span><br><span class="line">                    long t1 &#x3D; System.nanoTime();</span><br><span class="line">                    c &#x3D; findClass(name);</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; this is the defining class loader; record the stats</span><br><span class="line">                    sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClasses().increment();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (resolve) &#123;</span><br><span class="line">                resolveClass(c);</span><br><span class="line">            &#125;</span><br><span class="line">            return c;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>先检查是否已经被加载过，若没有加载则调用父类加载器的 loadClass() 方法，若父类加载器为空则默认使用bootstrap类加载器作为父类加载器。如果父类加载失败，抛出 ClassNotFoundException 异常后，再调用自己的 findClass() 方法进行加载。</p>
+<p>若要实现自定义类加载器，只需要继承 java.lang.ClassLoader 类，并且重写其 findClass() 方法即可。</p>
+<h3 id="4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"><a href="#4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？" class="headerlink" title="4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"></a>4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？</h3><p>解释器：程序可以迅速启动和执行，消耗内存小（成本低，到后期效率低）；<br>编译器：随着代码频繁执行会将代码编译成本地机器码（成本高，到后期效率高）。</p>
+<p>在整个虚拟机执行架构中，解释器与编译器经常配合工作，两者各有优势：当程序需要迅速启动和执行的时候，解释器可以优先发挥作用，省去编译的时间，立即执行。在程序运行后，随着时间的推移，编译器逐渐发挥作用，把越来越多的代码编译成本地代码之后，可以获取更高的执行效率。当程序运行环境中内存资源限制较大（如部分嵌入式系统），可以使用解释执行来节约内存，反之可以使用编译执行来提升效率。<br>解释执行可以节约内存，而编译执行可以提升效率。因此，在整个虚拟机执行架构中，解释器与编译器经常配合工作。</p>
+<h3 id="5-Java内存模型"><a href="#5-Java内存模型" class="headerlink" title="5 Java内存模型"></a>5 Java内存模型</h3><p>Java内存模型（Java Memory Model，JMM）：屏蔽掉各种硬件和操作系统的内存访问差异，以实现让Java程序在各种平台下都能达到一致的并发效果。<br>Java 内存模型的主要目标是定义程序中各个变量的访问规则，在虚拟机中将变量存储到内存和从内存中取出变量。<br>Java 内存模型规定了所有的变量都存储在主内存（Main Memory）中，每个线程有自己的工作线程（Working Memory），保存主内存副本拷贝和私有变量，不同线程不能访问工作内存中的变量。线程间变量值的传递需要通过主内存来完成。</p>
+<h3 id="6-内存间的交互"><a href="#6-内存间的交互" class="headerlink" title="6 内存间的交互"></a>6 内存间的交互</h3><p>关于主内存与工作内存之间的具体交互协议，即一个变量如何从主内存拷贝到工作内存、如何从工作内存同步到主内存之间的实现细节，Java内存模型定义了以下八种操作来完成：<br>lock（锁定）：作用于主内存的变量，把一个变量标识为一条线程独占状态。<br>unlock（解锁）：作用于主内存变量，把一个处于锁定状态的变量释放出来，释放后的变量才可以被其他线程锁定。<br>read（读取）：作用于主内存变量，把一个变量值从主内存传输到线程的工作内存中，以便随后的load动作使用<br>load（载入）：作用于工作内存的变量，它把read操作从主内存中得到的变量值放入工作内存的变量副本中。<br>use（使用）：作用于工作内存的变量，把工作内存中的一个变量值传递给执行引擎，每当虚拟机遇到一个需要使用变量的值的字节码指令时将会执行这个操作。<br>assign（赋值）：作用于工作内存的变量，它把一个从执行引擎接收到的值赋值给工作内存的变量，每当虚拟机遇到一个给变量赋值的字节码指令时执行这个操作。<br>store（存储）：作用于工作内存的变量，把工作内存中的一个变量的值传送到主内存中，以便随后的write的操作。<br>write（写入）：作用于主内存的变量，它把store操作从工作内存中一个变量的值传送到主内存的变量中。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -600,41 +608,6 @@
 <h3 id="6-class文件结构"><a href="#6-class文件结构" class="headerlink" title="6 class文件结构"></a>6 class文件结构</h3><p>Class文件结构采用类似C语言的结构体来存储数据的，主要有两类数据项，无符号数和表，无符号数用来表述数字，索引引用以及字符串等，比如 u1，u2，u4，u8分别代表1个字节，2个字节，4个字节，8个字节的无符号数，而表是有多个无符号数以及其它的表组成的复合结构，习惯地以_info结尾。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic;</span><br><span class="line">    u2             minor_version;</span><br><span class="line">    u2             major_version;</span><br><span class="line">    u2             constant_pool_count;</span><br><span class="line">    cp_info        constant_pool[constant_pool_count-1];</span><br><span class="line">    u2             access_flags;</span><br><span class="line">    u2             this_class;</span><br><span class="line">    u2             super_class;</span><br><span class="line">    u2             interfaces_count;</span><br><span class="line">    u2             interfaces[interfaces_count];</span><br><span class="line">    u2             fields_count;</span><br><span class="line">    field_info     fields[fields_count];</span><br><span class="line">    u2             methods_count;</span><br><span class="line">    method_info    methods[methods_count];</span><br><span class="line">    u2             attributes_count;</span><br><span class="line">    attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>每个 Class 文件的头 4 个字节称为魔数（magic），它的值固定为 0xCAFEBABE，表示文件类型是能够被JVM处理的Class文件。紧接着magic之后的四个字节存储的是 Class 文件的次版本号和主版本号。<br>在主次版本号之后是常量池。常量池主要存储了字面量以及符号引用。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>12_05_Java</title>
-    <url>/2021/12/05/12-05-Java/</url>
-    <content><![CDATA[<h3 id="1-类加载机制"><a href="#1-类加载机制" class="headerlink" title="1 类加载机制"></a>1 类加载机制</h3><p>虚拟机把描述类的数据从 Class 文件加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的 Java 类型，这就是虚拟机的类加载机制。<br>类的生命周期包括7个阶段：<strong>加载、验证、准备、解析、初始化、使用和卸载</strong>。<br>其中解析过程在某些情况下可以在初始化阶段之后再开始，这是为了支持 Java 动态绑定。</p>
-<img src="/2021/12/05/12-05-Java/class.png" class="">
-<ol>
-<li>加载<br>在加载阶段，虚拟机完成三件事：<br>通过一个类的全限定名来获取定义此类的二进制字节流；<br>将二进制字节流所代表的静态存储结构转化为方法区的运行时数据结构；<br>在内存中生成一个代表这个类的 java.lang.Class 对象，作为方法区这个类的各种数据的访问接口。</li>
-<li>验证<br>主要是为了确保 Class 文件的字节流中包含的信息符合当前虚拟机的要求，并且不会危害虚拟机自身的安全。验证阶段大致上分为 4 个阶段的检验动作：文件格式验证、元数据验证、字节码验证、符号引用验证。<br>文件格式校验：验证字节流是否符合 class 文件的规范，并且能被当前版本的虚拟机处理。只有通过这个阶段的验证后，字节流才会进入内存的方法区进行存储，所以后面的3个阶段全部是基于方法区的存储结构进行的，不会再直接操作字节流；<br>元数据验证：对字节码描述的信息进行语义分析，以保证其描述的信息符合Java语言规范的要求；<br>字节码验证：该阶段主要工作是进行数据流和控制流分析，保证被校验类的方法在运行时不会做出危害虚拟机安全的行为；<br>符号引用验证：最后一个阶段的校验发生在虚拟机将符号引用转化为直接引用的时候，这个转化动作将在连接的第三个阶段——解析阶段中发生。</li>
-<li>准备<br>为类变量分配内存并设置类变量的初始值，这些变量所使用的内存都将在方法区中进行分配。这时候进入内存分配的仅包括类变量（被 static 修饰的变量），而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在 Java 堆中。实例化不是类加载的一个过程，类加载发生在所有实例化操作之前，并且类加载只进行一次，实例化可以进行多次。</li>
-<li>解析<br>虚拟机将常量池内的符号引用替换为直接引用。</li>
-<li>初始化<br>在准备阶段，类变量已经赋过一次系统要求的初始值，而在初始化阶段，根据程序员通过程序制定的主观计划去初始化类变量和其它资源。或者说初始化阶段即虚拟机执行类构造器()方法的过程。</li>
-</ol>
-<h3 id="2-类加载器有哪些？"><a href="#2-类加载器有哪些？" class="headerlink" title="2 类加载器有哪些？"></a>2 类加载器有哪些？</h3><p>引导类加载器（Bootstrap ClassLoader）：内嵌在jvm中的一段特殊的用来加载java核心类库的C++代码。它负责将JAVA_HOME/lib下面的核心类库或-X bootclasspath选项指定的jar包等虚拟机识别的类库加载到内存中。</p>
-<p>拓展类加载器（Extension ClassLoader）：由Sun的ExtClassLoader实现的，它负责将JAVA_HOME /lib/ext或者由系统变量-D java.ext.dir指定位置中的类库加载到内存中。</p>
-<p>应用类加载器（Application ClassLoader)：由 sun.misc.Launcher$AppClassLoder 实现。由于应用类加载器是 ClassLoader 中的 getSystemClassLoader() 方法的返回值，所以一般也称之为系统类加载器。它负责加载用户路径（ClassPath）所指定的类库，开发者可以直接使用这个类加载器，如果应用程序中没有自定义过类加载器，一般情况下这个就是程序中默认的类加载器。</p>
-<h3 id="3-双亲委派模型"><a href="#3-双亲委派模型" class="headerlink" title="3 双亲委派模型"></a>3 双亲委派模型</h3><p>双亲委派模式要求除了顶层的bootstrap类加载器外，其余的类加载器都应当有自己的父类加载器，请注意双亲委派模式中的父子关系并非通常所说的类继承关系，而是采用<strong>组合关系</strong>来复用父类加载器的相关代码。</p>
-<img src="/2021/12/05/12-05-Java/classloader.png" class="">
-<p>工作原理：如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，请求最终将到达顶层的引导类加载器。如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载。</p>
-<p>双亲委派模式优势：Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层次关可以避免类的重复加载，当父加载器已经加载了该类时，子类ClassLoader就没有必要再加载一次。</p>
-<p>主要代码实现：loadClass()方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected Class&lt;?&gt; loadClass(String name, boolean resolve)</span><br><span class="line">        throws ClassNotFoundException</span><br><span class="line">    &#123;</span><br><span class="line">        synchronized (getClassLoadingLock(name)) &#123;</span><br><span class="line">            &#x2F;&#x2F; First, check if the class has already been loaded</span><br><span class="line">            Class&lt;?&gt; c &#x3D; findLoadedClass(name);</span><br><span class="line">            if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                long t0 &#x3D; System.nanoTime();</span><br><span class="line">                try &#123;</span><br><span class="line">                    if (parent !&#x3D; null) &#123;</span><br><span class="line">                        c &#x3D; parent.loadClass(name, false);</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        c &#x3D; findBootstrapClassOrNull(name);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">                    &#x2F;&#x2F; ClassNotFoundException thrown if class not found</span><br><span class="line">                    &#x2F;&#x2F; from the non-null parent class loader</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    &#x2F;&#x2F; If still not found, then invoke findClass in order</span><br><span class="line">                    &#x2F;&#x2F; to find the class.</span><br><span class="line">                    long t1 &#x3D; System.nanoTime();</span><br><span class="line">                    c &#x3D; findClass(name);</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; this is the defining class loader; record the stats</span><br><span class="line">                    sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClasses().increment();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (resolve) &#123;</span><br><span class="line">                resolveClass(c);</span><br><span class="line">            &#125;</span><br><span class="line">            return c;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>先检查是否已经被加载过，若没有加载则调用父类加载器的 loadClass() 方法，若父类加载器为空则默认使用bootstrap类加载器作为父类加载器。如果父类加载失败，抛出 ClassNotFoundException 异常后，再调用自己的 findClass() 方法进行加载。</p>
-<p>若要实现自定义类加载器，只需要继承 java.lang.ClassLoader 类，并且重写其 findClass() 方法即可。</p>
-<h3 id="4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"><a href="#4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？" class="headerlink" title="4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"></a>4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？</h3><p>解释器：程序可以迅速启动和执行，消耗内存小（成本低，到后期效率低）；<br>编译器：随着代码频繁执行会将代码编译成本地机器码（成本高，到后期效率高）。</p>
-<p>在整个虚拟机执行架构中，解释器与编译器经常配合工作，两者各有优势：当程序需要迅速启动和执行的时候，解释器可以优先发挥作用，省去编译的时间，立即执行。在程序运行后，随着时间的推移，编译器逐渐发挥作用，把越来越多的代码编译成本地代码之后，可以获取更高的执行效率。当程序运行环境中内存资源限制较大（如部分嵌入式系统），可以使用解释执行来节约内存，反之可以使用编译执行来提升效率。<br>解释执行可以节约内存，而编译执行可以提升效率。因此，在整个虚拟机执行架构中，解释器与编译器经常配合工作。</p>
-<h3 id="5-Java内存模型"><a href="#5-Java内存模型" class="headerlink" title="5 Java内存模型"></a>5 Java内存模型</h3><p>Java内存模型（Java Memory Model，JMM）：屏蔽掉各种硬件和操作系统的内存访问差异，以实现让Java程序在各种平台下都能达到一致的并发效果。<br>Java 内存模型的主要目标是定义程序中各个变量的访问规则，在虚拟机中将变量存储到内存和从内存中取出变量。<br>Java 内存模型规定了所有的变量都存储在主内存（Main Memory）中，每个线程有自己的工作线程（Working Memory），保存主内存副本拷贝和私有变量，不同线程不能访问工作内存中的变量。线程间变量值的传递需要通过主内存来完成。</p>
-<h3 id="6-内存间的交互"><a href="#6-内存间的交互" class="headerlink" title="6 内存间的交互"></a>6 内存间的交互</h3><p>关于主内存与工作内存之间的具体交互协议，即一个变量如何从主内存拷贝到工作内存、如何从工作内存同步到主内存之间的实现细节，Java内存模型定义了以下八种操作来完成：<br>lock（锁定）：作用于主内存的变量，把一个变量标识为一条线程独占状态。<br>unlock（解锁）：作用于主内存变量，把一个处于锁定状态的变量释放出来，释放后的变量才可以被其他线程锁定。<br>read（读取）：作用于主内存变量，把一个变量值从主内存传输到线程的工作内存中，以便随后的load动作使用<br>load（载入）：作用于工作内存的变量，它把read操作从主内存中得到的变量值放入工作内存的变量副本中。<br>use（使用）：作用于工作内存的变量，把工作内存中的一个变量值传递给执行引擎，每当虚拟机遇到一个需要使用变量的值的字节码指令时将会执行这个操作。<br>assign（赋值）：作用于工作内存的变量，它把一个从执行引擎接收到的值赋值给工作内存的变量，每当虚拟机遇到一个给变量赋值的字节码指令时执行这个操作。<br>store（存储）：作用于工作内存的变量，把工作内存中的一个变量的值传送到主内存中，以便随后的write的操作。<br>write（写入）：作用于主内存的变量，它把store操作从工作内存中一个变量的值传送到主内存的变量中。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -789,6 +762,36 @@
       </tags>
   </entry>
   <entry>
+    <title>12_01_Java</title>
+    <url>/2021/12/01/12-01-Java/</url>
+    <content><![CDATA[<h3 id="1-Java参数传递"><a href="#1-Java参数传递" class="headerlink" title="1 Java参数传递"></a>1 Java参数传递</h3><p>值传递（pass by value）是指在调用函数时将实际参数<strong>复制</strong>一份传递到函数中，这样在函数中如果对参数进行修改，将不会影响到实际参数。<br>引用传递（pass by reference）是指在调用函数时将实际参数的<strong>地址直接</strong>传递到函数中，那么在函数中对参数所进行的修改，将影响到实际参数。<br>传递|值传递|引用传递<br>—|:—:|:—:|<br>区别|会创建副本|不会创建副本<br>结果|函数中无法改变原始对象|函数中可以改变原始对象</p>
+<p>Java在方法调用传递参数时，都是值传递。只不过对于对象参数，值的内容是对象的引用。<br>在运行栈中，基本类型和引用类型的处理是一样的，都是传值。但是当进入被调用方法时，传递的引用值被程序解释到堆中，这个时候才对应到真正的对象。如果此时进行修改，修改的是引用对应的对象，而不是引用本身。即修改的是堆中的数据，所以这个修改是可以保持的。</p>
+<h3 id="2-判断对象存活的算法"><a href="#2-判断对象存活的算法" class="headerlink" title="2 判断对象存活的算法"></a>2 判断对象存活的算法</h3><p>垃圾收集器在对堆和方法区进行回收前，首先要确定这些区域的对象哪些可以回收，哪些暂时还不能回收，这就要用到判断对象是否存活的算法。</p>
+<p><strong>引用计数算法</strong><br>引用计数算法是垃圾收集器的早期策略。在这种方法中，堆中每个对象实例都有一个引用计数器。当一个对象被创建时，就将该对象实例分配给一个变量，该变量计数设置为1。当任何其它变量被赋值为这个对象的引用时，计数加1（a = b，则 b 引用的对象实例的计数器加1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数器减1。任何引用计数器为0的对象实例都可以被当作垃圾收集。当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器减1。</p>
+<p>缺点：无法检测出循环引用。</p>
+<p><strong>可达性分析算法</strong><br>可达性分析（Reachability Analysis）算法的基本思路就是通过一系列称为“GC Roots”的根对象作为起始节点集，从这些节点开始，根据引用关系向下搜索，搜索过程所走过的路径称为“引用链”，如果某个对象到GC Roots间没有任何引用链相连，则证明此对象是不可能再被使用的，会被判定为可回收的对象。</p>
+<p>在Java语言中，固定可作为GC Roots的对象包括以下几种：<br>在虚拟机栈（栈帧中的本地变量表）中引用的对象；<br>在方法区中类静态属性引用的对象；<br>在方法区中常量引用的对象；<br>在本地方法栈中JNI（Native方法）引用的对象；<br>Java虚拟机内部的引用；<br>所有被同步锁（synchronized关键字）持有的对象。</p>
+<h3 id="3-被标记为垃圾的对象一定会被回收吗？"><a href="#3-被标记为垃圾的对象一定会被回收吗？" class="headerlink" title="3 被标记为垃圾的对象一定会被回收吗？"></a>3 被标记为垃圾的对象一定会被回收吗？</h3><p>不一定！<br>即使在可达性分析算法中判定为不可达的对象，也不是“非死不可”，要真正宣告一个对象死亡，至少要经历两次标记过程。<br>如果对象在进行可达性分析后发现没有与GC Roots相连接的引用链，那它将会被第一次标记。随后进行一次筛选，筛选的条件是此对象是否有必要执行finalize()方法。<br>在finalize()方法中没有重新与引用链建立关联关系的，将被进行第二次标记。第二次标记后的对象将被回收，如果对象在finalize()方法中重新与引用链建立了关联关系，那么将会逃离本次回收，继续存活。</p>
+<h3 id="4-Java引用类型"><a href="#4-Java引用类型" class="headerlink" title="4 Java引用类型"></a>4 Java引用类型</h3><p><strong>强引用</strong><br>强引用是指在程序代码之中普遍存在的引用赋值。如果一个对象具有强引用，那么垃圾回收器不会回收它。</p>
+<p><strong>软引用</strong><br>可以通过java.lang.ref.SoftReference使用软引用。一个持有软引用的对象，不会被JVM很快回收，JVM会根据当前堆的使用情况来判断何时回收。当堆使用率临近阈值时，才会去回收软引用的对象。因此，软引用可以用于实现对内存敏感的高速缓存。</p>
+<p><strong>弱引用</strong><br>当垃圾收集器工作时，无论当前内存是否足够，都会回收掉只被弱引用关联的对象。</p>
+<p><strong>虚引用</strong><br>一个对象是否有虚引用的存在，完全不会对其生存时间构成影响，也无法通过虚引用来取得一个对象实例。为一个对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</p>
+<h3 id="5-Java内存泄露"><a href="#5-Java内存泄露" class="headerlink" title="5 Java内存泄露"></a>5 Java内存泄露</h3><p>内存泄漏就是存在一些不会再被使用却没有被回收的对象，这些对象有下两个特点：<br>这些对象是可达的，即在有向图中，存在通路可以与其相连。<br>这些对象是无用的，即程序以后不会再使用这些对象。<br>这些对象不会被GC所回收，然而它却占用内存。</p>
+<p>根本原因：<br>长生命周期的对象持有短生命周期对象的引用就很可能发生内存泄漏，尽管短生命周期对象已经不再需要，但是因为长生命周期对象持有它的引用而导致不能被回收，这就是Java中内存泄漏的发生场景。<br>数据库连接（dataSourse.getConnection()），网络连接(socket)和IO连接，除非其显式的调用了close()方法将其连接关闭，否则是不会主动被GC回收的。<br>单例对象在初始化后将在JVM的整个生命周期中存在（以静态变量的方式），如果单例对象持有外部的引用，那么这个对象将不能被JVM正常回收，导致内存泄漏。</p>
+<h3 id="6-常用的垃圾收集算法"><a href="#6-常用的垃圾收集算法" class="headerlink" title="6 常用的垃圾收集算法"></a>6 常用的垃圾收集算法</h3><p><strong>标记-清除（mark-sweep）算法</strong><br>算法分为“标记”和“清除”两个阶段：首先标记出所有需要回收的对象，在标记完成后，统一回收掉所有被标记的对象。也可以反过来，标记存活的对象，统一回收所有未被标记的对象。标记-清除算法采用可达性分析算法进行对象是否存活的判断。</p>
+<p>缺点：执行效率不稳定；内存空间的碎片化问题。</p>
+<p><strong>复制算法</strong><br>复制算法的提出是为了克服句柄开销和解决内存碎片问题。把堆分成 一个对象面和多个空闲面， 程序从对象面为对象分配空间，当对象满了，基于 copying 算法的垃圾收集就从根集合（GC Roots）中扫描活动对象，并将每个活动对象复制到空闲面，这样空闲面变成了对象面，原来的对象面变成了空闲面，程序会在新的对象面中分配内存。</p>
+<p><strong>标记-整理（mark-compact）算法</strong><br>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但在清除时不同，在回收不存活的对象占用的空间后，会将所有的存活对象往左端空闲空间移动，并更新对应的指针。标记-整理算法是在标记-清除算法的基础上，又进行了对象的移动，因此成本更高，但是却解决了内存碎片的问题。</p>
+<p><strong>分代收集算法</strong><br>分代收集算法是目前大部分 JVM 的垃圾收集器采用的算法。它的核心思想是根据对象存活的生命周期将内存划分为若干个不同的区域。一般情况下将堆划分为老年代（Tenured Generation）和新生代（Young Generation），在堆之外还有一个代就是永久代（Permanet Generation）。<br>老年代的特点是每次垃圾收集时只有少量对象需要被回收，而新生代的特点是每次垃圾回收时都有大量的对象需要被回收，那么就可以根据不同代的特点采取最适合的收集算法。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>12_12_SpringMVC</title>
     <url>/2021/12/12/12-12-SpringMVC/</url>
     <content><![CDATA[<h3 id="1-MVC模式"><a href="#1-MVC模式" class="headerlink" title="1 MVC模式"></a>1 MVC模式</h3><p>模型－视图－控制器（MVC）。M指业务模型，V指用户界面，C则是控制器，使用MVC的目的是将M和V实现代码分离，从而使同一个程序可以使用不同的表现形式。</p>
@@ -835,6 +838,26 @@
       </tags>
   </entry>
   <entry>
+    <title>12_14_Mybatis</title>
+    <url>/2021/12/14/12-14-Mybatis/</url>
+    <content><![CDATA[<h3 id="1-mybatis"><a href="#1-mybatis" class="headerlink" title="1 mybatis"></a>1 mybatis</h3><p>MyBatis是一个持久层框架，它内部封装了JDBC，开发者只需要关注SQL语句本身，不需要花费精力去处理加载驱动、创建连接、创建statement等过程。<br>它免除了几乎所有的 JDBC 代码以及设置参数和获取结果集的工作。MyBatis可以通过简单的 XML 或注解来配置和映射原始类型、接口和Java POJO（Plain Old Java Objects，普通老式Java对象）为数据库中的记录。<br>通过 XML 或注解的方式将要执行的各种 statement 配置起来，并通过java对象和statement中sql的动态参数进行映射生成最终执行的 sql 语句，最后由 mybatis 框架执行 sql 并将结果映射为 java 对象并返回。</p>
+<p>优点：<br>基于SQL语句编程，相当灵活，不会对应用程序或者数据库的现有设计造成影响；SQL写在XML中，解除了sql与程序代码的耦合，便于统一管理；提供 XML 标签，支持编写动态 SQL 语句，并可重用。</p>
+<p>缺点：<br>SQL语句的编写工作量较大；且语句依赖于数据库，导致数据库移植性差，不能随意更换数据库。</p>
+<h3 id="2-与"><a href="#2-与" class="headerlink" title="2 #{}与${}"></a>2 #{}与${}</h3><p>${}是字符串替换，#{}是预编译处理。<br>Mybatis在处理#{}时，会将sql中的#{}替换为?号，调用PreparedStatement的set方法来赋值。<br>Mybatis在处理${}时，就是把${}替换成变量的值。<br>使用#{}可以有效的防止SQL注入，提高系统安全性。<br>${}传入值时，sql解析参数是不带引号的，而#{}传入值时，sql解析参数是带引号的。</p>
+<h3 id="3-mybatis延迟加载及原理"><a href="#3-mybatis延迟加载及原理" class="headerlink" title="3 mybatis延迟加载及原理"></a>3 mybatis延迟加载及原理</h3><p>Mybatis仅支持一对一关联查询和一对多关联查询的延迟加载。<br>MyBatis中使用collection标签来解决一对多的关联查询；使用association标签来解决一对一的关联查询。<br>在Mybatis配置文件中，可以配置是否启用延迟加载lazyLoadingEnabled=true|false。</p>
+<p>原理：使用CGLIB创建目标对象的代理对象，当调用目标方法时，进入拦截器方法，比如调用a.getB().getName()，拦截器invoke()方法发现a.getB()是null值，那么就会单独发送事先保存好的查询关联B对象的sql，把B查询上来，然后调用a.setB(b)，于是a的对象b属性就有值了，接着完成a.getB().getName()方法的调用。这就是延迟加载的基本原理。</p>
+<h3 id="4-mybatis的一级和二级缓存"><a href="#4-mybatis的一级和二级缓存" class="headerlink" title="4 mybatis的一级和二级缓存"></a>4 mybatis的一级和二级缓存</h3><p>一级缓存: 基于PerpetualCache的HashMap本地缓存，其存储作用域为Session，当 Session flush 或 close 之后，该 Session 中的所有 Cache 就将被清空，默认打开一级缓存。<br>二级缓存：与一级缓存机制相同，默认也是采用PerpetualCache的HashMap存储，不同点在于其存储作用域为 Mapper(Namespace)，并且可自定义存储源，如Ehcache。默认不打开二级缓存，要开启二级缓存，使用二级缓存属性类需要实现 Serializable 序列化接口(用来保存对象的状态)，在它的映射文件中配置。<br>对于缓存数据更新机制，当某一个作用域(一级缓存Session/二级缓存Namespaces)进行了C/U/D 操作后，默认该作用域下所有 select 中的缓存将被clear。</p>
+<h3 id="5-Mybatis执行器（Executor）"><a href="#5-Mybatis执行器（Executor）" class="headerlink" title="5 Mybatis执行器（Executor）"></a>5 Mybatis执行器（Executor）</h3><p>SimpleExecutor：每执行一次update或select，就开启一个Statement对象，用完立刻关闭Statement对象。<br>ReuseExecutor：执行update或select，以sql作为key查找Statement对象，存在就使用，不存在就创建，用完后，不关闭Statement对象，而是放置于Map内，供下一次使用。简言之，就是重复使用Statement对象。<br>BatchExecutor：执行update（JDBC批处理不支持select），将所有sql都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个Statement对象。</p>
+<h3 id="6-mybatis动态sql"><a href="#6-mybatis动态sql" class="headerlink" title="6 mybatis动态sql"></a>6 mybatis动态sql</h3><p>MyBatis动态 SQL 可以让我们在 XML 映射文件内，以标签的形式编写SQL，并完成逻辑判断和动态拼接SQL的功能。<br>MyBatis提供了9种动态 SQL 标签：trim、where、set、foreach、if、choose、when、otherwise、bind。<br>执行原理：使用OGNL从 SQL 参数对象中计算表达式的值，然后根据表达式的值动态拼接SQL，以此来完成动态SQL的功能。</p>
+]]></content>
+      <categories>
+        <category>Mybatis</category>
+      </categories>
+      <tags>
+        <tag>mybatis</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>12_14_Network</title>
     <url>/2021/12/14/12-14-Network/</url>
     <content><![CDATA[<h3 id="1-http1-0、1-1、2-2"><a href="#1-http1-0、1-1、2-2" class="headerlink" title="1 http1.0、1.1、2.2"></a>1 http1.0、1.1、2.2</h3><p>http1.0：为了提高系统的效率，HTTP1.0规定浏览器与服务器只保持短暂的连接，浏览器的每次请求都需要与服务器建立一个TCP连接，服务器完成请求处理后立即断开TCP连接，服务器不跟踪每个客户也不记录过去的请求。</p>
@@ -856,26 +879,6 @@
       </categories>
       <tags>
         <tag>http</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>12_14_Mybatis</title>
-    <url>/2021/12/14/12-14-Mybatis/</url>
-    <content><![CDATA[<h3 id="1-mybatis"><a href="#1-mybatis" class="headerlink" title="1 mybatis"></a>1 mybatis</h3><p>MyBatis是一个持久层框架，它内部封装了JDBC，开发者只需要关注SQL语句本身，不需要花费精力去处理加载驱动、创建连接、创建statement等过程。<br>它免除了几乎所有的 JDBC 代码以及设置参数和获取结果集的工作。MyBatis可以通过简单的 XML 或注解来配置和映射原始类型、接口和Java POJO（Plain Old Java Objects，普通老式Java对象）为数据库中的记录。<br>通过 XML 或注解的方式将要执行的各种 statement 配置起来，并通过java对象和statement中sql的动态参数进行映射生成最终执行的 sql 语句，最后由 mybatis 框架执行 sql 并将结果映射为 java 对象并返回。</p>
-<p>优点：<br>基于SQL语句编程，相当灵活，不会对应用程序或者数据库的现有设计造成影响；SQL写在XML中，解除了sql与程序代码的耦合，便于统一管理；提供 XML 标签，支持编写动态 SQL 语句，并可重用。</p>
-<p>缺点：<br>SQL语句的编写工作量较大；且语句依赖于数据库，导致数据库移植性差，不能随意更换数据库。</p>
-<h3 id="2-与"><a href="#2-与" class="headerlink" title="2 #{}与${}"></a>2 #{}与${}</h3><p>${}是字符串替换，#{}是预编译处理。<br>Mybatis在处理#{}时，会将sql中的#{}替换为?号，调用PreparedStatement的set方法来赋值。<br>Mybatis在处理${}时，就是把${}替换成变量的值。<br>使用#{}可以有效的防止SQL注入，提高系统安全性。<br>${}传入值时，sql解析参数是不带引号的，而#{}传入值时，sql解析参数是带引号的。</p>
-<h3 id="3-mybatis延迟加载及原理"><a href="#3-mybatis延迟加载及原理" class="headerlink" title="3 mybatis延迟加载及原理"></a>3 mybatis延迟加载及原理</h3><p>Mybatis仅支持一对一关联查询和一对多关联查询的延迟加载。<br>MyBatis中使用collection标签来解决一对多的关联查询；使用association标签来解决一对一的关联查询。<br>在Mybatis配置文件中，可以配置是否启用延迟加载lazyLoadingEnabled=true|false。</p>
-<p>原理：使用CGLIB创建目标对象的代理对象，当调用目标方法时，进入拦截器方法，比如调用a.getB().getName()，拦截器invoke()方法发现a.getB()是null值，那么就会单独发送事先保存好的查询关联B对象的sql，把B查询上来，然后调用a.setB(b)，于是a的对象b属性就有值了，接着完成a.getB().getName()方法的调用。这就是延迟加载的基本原理。</p>
-<h3 id="4-mybatis的一级和二级缓存"><a href="#4-mybatis的一级和二级缓存" class="headerlink" title="4 mybatis的一级和二级缓存"></a>4 mybatis的一级和二级缓存</h3><p>一级缓存: 基于PerpetualCache的HashMap本地缓存，其存储作用域为Session，当 Session flush 或 close 之后，该 Session 中的所有 Cache 就将被清空，默认打开一级缓存。<br>二级缓存：与一级缓存机制相同，默认也是采用PerpetualCache的HashMap存储，不同点在于其存储作用域为 Mapper(Namespace)，并且可自定义存储源，如Ehcache。默认不打开二级缓存，要开启二级缓存，使用二级缓存属性类需要实现 Serializable 序列化接口(用来保存对象的状态)，在它的映射文件中配置。<br>对于缓存数据更新机制，当某一个作用域(一级缓存Session/二级缓存Namespaces)进行了C/U/D 操作后，默认该作用域下所有 select 中的缓存将被clear。</p>
-<h3 id="5-Mybatis执行器（Executor）"><a href="#5-Mybatis执行器（Executor）" class="headerlink" title="5 Mybatis执行器（Executor）"></a>5 Mybatis执行器（Executor）</h3><p>SimpleExecutor：每执行一次update或select，就开启一个Statement对象，用完立刻关闭Statement对象。<br>ReuseExecutor：执行update或select，以sql作为key查找Statement对象，存在就使用，不存在就创建，用完后，不关闭Statement对象，而是放置于Map内，供下一次使用。简言之，就是重复使用Statement对象。<br>BatchExecutor：执行update（JDBC批处理不支持select），将所有sql都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个Statement对象。</p>
-<h3 id="6-mybatis动态sql"><a href="#6-mybatis动态sql" class="headerlink" title="6 mybatis动态sql"></a>6 mybatis动态sql</h3><p>MyBatis动态 SQL 可以让我们在 XML 映射文件内，以标签的形式编写SQL，并完成逻辑判断和动态拼接SQL的功能。<br>MyBatis提供了9种动态 SQL 标签：trim、where、set、foreach、if、choose、when、otherwise、bind。<br>执行原理：使用OGNL从 SQL 参数对象中计算表达式的值，然后根据表达式的值动态拼接SQL，以此来完成动态SQL的功能。</p>
-]]></content>
-      <categories>
-        <category>Mybatis</category>
-      </categories>
-      <tags>
-        <tag>mybatis</tag>
       </tags>
   </entry>
   <entry>
@@ -1040,29 +1043,6 @@
       </tags>
   </entry>
   <entry>
-    <title>12_29_Tree</title>
-    <url>/2021/12/29/12-29-Tree/</url>
-    <content><![CDATA[<h3 id="1-二叉树"><a href="#1-二叉树" class="headerlink" title="1 二叉树"></a>1 二叉树</h3><p>1）每个结点最多有两颗子树，所以二叉树中不存在度大于2的结点。<br>2）左子树和右子树是有顺序的，次序不能颠倒。<br>3）即使树中某结点只有一棵子树，也要区分它是左子树还是右子树。</p>
-<p>性质：<br>1）在二叉树的第i层上最多有2^(i-1)个节点。（i&gt;=1）<br>2）二叉树深度为k，那么最多有2^k-1个节点。(k&gt;=1）<br>3）n0=n2+1。n0表示度数为0的节点个数（叶子节点个数），n2表示度数为2的节点个数。<br>4）在完全二叉树中，具有n个节点的完全二叉树的深度为[log2n]+1，其中[log2n]是向下取整。<br>5）若对含n个结点的完全二叉树从上到下且从左至右进行 1 至 n 的编号，则对完全二叉树中任意一个编号为 i 的结点有如下特性：<br>(1) 若i=1，则该结点是二叉树的根，无双亲，否则，编号为 [i/2] 的结点为其双亲结点;<br>(2) 若2i&gt;n，则该结点无左孩子，否则，编号为 2i 的结点为其左孩子结点；<br>(3) 若2i+1&gt;n，则该结点无右孩子结点，否则，编号为2i+1的结点为其右孩子结点。</p>
-<h3 id="2-满二叉树"><a href="#2-满二叉树" class="headerlink" title="2 满二叉树"></a>2 满二叉树</h3><p>高度为h，由2^h-1个节点构成的二叉树称为满二叉树。</p>
-<h3 id="3-完全二叉树"><a href="#3-完全二叉树" class="headerlink" title="3 完全二叉树"></a>3 完全二叉树</h3><p>完全二叉树是由满二叉树引出来的，若设二叉树的高度为h，则除第 h 层外，其它各层 (1～h-1) 的结点个数都达到最大值(即1~h-1层为一个满二叉树)，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。</p>
-<h3 id="4-平衡二叉树（AVL树）"><a href="#4-平衡二叉树（AVL树）" class="headerlink" title="4 平衡二叉树（AVL树）"></a>4 平衡二叉树（AVL树）</h3><p>它是一棵空树或者它的左右两个子树的高度差的绝对值不超过1，并且左右两个子树都是一棵平衡二叉树。</p>
-<h3 id="5-二叉排序树（二叉搜索树-二叉查找树）BST"><a href="#5-二叉排序树（二叉搜索树-二叉查找树）BST" class="headerlink" title="5 二叉排序树（二叉搜索树/二叉查找树）BST"></a>5 二叉排序树（二叉搜索树/二叉查找树）BST</h3><p>它是一棵空树，或者是具有下列性质的二叉树：<br>（1）若左子树不空，则左子树上所有结点的值均小于它的根结点的值；<br>（2）若右子树不空，则右子树上所有结点的值均大于它的根结点的值；<br>（3）左、右子树也分别为二叉排序树；<br>（4）没有键值相等的结点。</p>
-<h3 id="6-红黑树"><a href="#6-红黑树" class="headerlink" title="6 红黑树"></a>6 红黑树</h3><p>红黑树（Red Black Tree）是一种自平衡二叉查找树。红黑树是一种含有红黑结点并能自平衡的二叉查找树。它必须满足下面性质：<br>性质1：每个结点要么是黑色，要么是红色。<br>性质2：根结点是黑色。<br>性质3：每个叶子结点（NIL）都是黑色。<br>性质4：每个红色结点的两个子结点一定都是黑色。<br>性质5：任意一个结点到每个叶子结点的路径都包含数量相同的黑色结点。<br>如果一个结点存在黑色子结点，那么该结点肯定有两个子结点。</p>
-<p>应用：TreeMap、TreeSet、JDK1.8 HashMap</p>
-<p><strong>红黑树vs平衡二叉树</strong><br>红黑树不追求”完全平衡”，即不像AVL树那样要求节点的|balFact| &lt;= 1，它只要求部分达到平衡。红黑树是用非严格的平衡来换取增删节点时旋转次数的降低，任何不平衡都会在三次旋转之内解决，而AVL树是严格的平衡树，因此在增加或者删除节点的时候，旋转的次数比红黑树要多。<br>红黑树的查询性能略微逊色于AVL树，但是，红黑树在插入和删除上优于AVL树，AVL树每次插入删除会进行大量的平衡度计算，而红黑树为了维持红黑性质所做的红黑变换和旋转的开销，相较于AVL树为了维持平衡的开销要小得多。<br>实际应用中，若搜索的次数远大于插入和删除，那么选择AVL树；如果搜索，插入，删除次数几乎差不多，应该选择RB树。</p>
-<h3 id="7-B树、B-树、B-树"><a href="#7-B树、B-树、B-树" class="headerlink" title="7 B树、B+树、B*树"></a>7 B树、B+树、B*树</h3><p><strong>B树</strong><br>一棵m阶B树是一棵平衡的m路搜索树。它或者是空树，或者是满足下列性质的树：<br>1、根结点至少有两棵子树；<br>2、树中每个结点至多有m棵子树；<br>3、除根结点以外的所有结点（不包括叶子结点）的度数正好是关键字总数加一，即有k-1个关键字和K棵子树。<br>4、所有结点都包含如下形式的数据：(n,A0 ,K1 ,A1 ,K2 ,A2 , … ,Kn,An )<br>其中n为关键字的个数，Ki(i=1, … , n)为关键字，且满足K1&lt;K2&lt;…&lt;Kn。Ai( i=0,1, … , n)为指向子树根结点的指针，且对于i=1,2, … , n-1，Ai所指子树上各结点的一切关键字均大于Ki，而小于Ki+1。A0所指子树上各结点的一切关键字均小于K1，An所指子树上各结点的一切关键字均大于Kn。<br>对于叶子结点，所有指针Ai皆为空。对于具有 n 个关键字的非叶结点，将有 n+1 棵子树。</p>
-<p><strong>B+树</strong><br>1.有n棵子树的结点中含有n个关键字；<br>2.根节点最少有一棵子树，除根节点外，其他结点至少有 [ m/2 ] 棵子树；<br>3.所有的叶子结点中包含了全部关键字的信息，及指向含有这些关键字记录的指针，且叶子结点依关键字的大小自小而大顺序链接。(而B树的叶子节点并没有包括全部关键字的信息)<br>4.所有的非叶子结点可以看成是索引部分，结点中仅含有其子树根结点中最大（或最小）关键字。</p>
-<p>B+树的搜索与B树基本相同，区别是B+树只有到达叶子结点才能命中（B树可以在非叶子结点命中）<br>B树的优势是当你要查找的值恰好处在一个非叶子节点时，查找到该节点就成功返回并结束查询。而B+树由于非叶子节点只是索引部分，这些节点中只含有其子树中的最大(或最小)关键字，当非终端节点上的关键字等于给点值时，查找并不终止，而是继续向下直到叶子节点。因此在B+树中，无论查找成功与否，都是走了一条从根到叶子节点的路径。</p>
-]]></content>
-      <categories>
-        <category>数据结构</category>
-      </categories>
-      <tags>
-        <tag>二叉树</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>12_27_desgin_mode</title>
     <url>/2021/12/27/12-27-desgin-mode/</url>
     <content><![CDATA[<h3 id="1-设计模式分类"><a href="#1-设计模式分类" class="headerlink" title="1 设计模式分类"></a>1 设计模式分类</h3><p>设计模式可分为三类：</p>
@@ -1110,6 +1090,29 @@
       </categories>
       <tags>
         <tag>爱情</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>12_29_Tree</title>
+    <url>/2021/12/29/12-29-Tree/</url>
+    <content><![CDATA[<h3 id="1-二叉树"><a href="#1-二叉树" class="headerlink" title="1 二叉树"></a>1 二叉树</h3><p>1）每个结点最多有两颗子树，所以二叉树中不存在度大于2的结点。<br>2）左子树和右子树是有顺序的，次序不能颠倒。<br>3）即使树中某结点只有一棵子树，也要区分它是左子树还是右子树。</p>
+<p>性质：<br>1）在二叉树的第i层上最多有2^(i-1)个节点。（i&gt;=1）<br>2）二叉树深度为k，那么最多有2^k-1个节点。(k&gt;=1）<br>3）n0=n2+1。n0表示度数为0的节点个数（叶子节点个数），n2表示度数为2的节点个数。<br>4）在完全二叉树中，具有n个节点的完全二叉树的深度为[log2n]+1，其中[log2n]是向下取整。<br>5）若对含n个结点的完全二叉树从上到下且从左至右进行 1 至 n 的编号，则对完全二叉树中任意一个编号为 i 的结点有如下特性：<br>(1) 若i=1，则该结点是二叉树的根，无双亲，否则，编号为 [i/2] 的结点为其双亲结点;<br>(2) 若2i&gt;n，则该结点无左孩子，否则，编号为 2i 的结点为其左孩子结点；<br>(3) 若2i+1&gt;n，则该结点无右孩子结点，否则，编号为2i+1的结点为其右孩子结点。</p>
+<h3 id="2-满二叉树"><a href="#2-满二叉树" class="headerlink" title="2 满二叉树"></a>2 满二叉树</h3><p>高度为h，由2^h-1个节点构成的二叉树称为满二叉树。</p>
+<h3 id="3-完全二叉树"><a href="#3-完全二叉树" class="headerlink" title="3 完全二叉树"></a>3 完全二叉树</h3><p>完全二叉树是由满二叉树引出来的，若设二叉树的高度为h，则除第 h 层外，其它各层 (1～h-1) 的结点个数都达到最大值(即1~h-1层为一个满二叉树)，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。</p>
+<h3 id="4-平衡二叉树（AVL树）"><a href="#4-平衡二叉树（AVL树）" class="headerlink" title="4 平衡二叉树（AVL树）"></a>4 平衡二叉树（AVL树）</h3><p>它是一棵空树或者它的左右两个子树的高度差的绝对值不超过1，并且左右两个子树都是一棵平衡二叉树。</p>
+<h3 id="5-二叉排序树（二叉搜索树-二叉查找树）BST"><a href="#5-二叉排序树（二叉搜索树-二叉查找树）BST" class="headerlink" title="5 二叉排序树（二叉搜索树/二叉查找树）BST"></a>5 二叉排序树（二叉搜索树/二叉查找树）BST</h3><p>它是一棵空树，或者是具有下列性质的二叉树：<br>（1）若左子树不空，则左子树上所有结点的值均小于它的根结点的值；<br>（2）若右子树不空，则右子树上所有结点的值均大于它的根结点的值；<br>（3）左、右子树也分别为二叉排序树；<br>（4）没有键值相等的结点。</p>
+<h3 id="6-红黑树"><a href="#6-红黑树" class="headerlink" title="6 红黑树"></a>6 红黑树</h3><p>红黑树（Red Black Tree）是一种自平衡二叉查找树。红黑树是一种含有红黑结点并能自平衡的二叉查找树。它必须满足下面性质：<br>性质1：每个结点要么是黑色，要么是红色。<br>性质2：根结点是黑色。<br>性质3：每个叶子结点（NIL）都是黑色。<br>性质4：每个红色结点的两个子结点一定都是黑色。<br>性质5：任意一个结点到每个叶子结点的路径都包含数量相同的黑色结点。<br>如果一个结点存在黑色子结点，那么该结点肯定有两个子结点。</p>
+<p>应用：TreeMap、TreeSet、JDK1.8 HashMap</p>
+<p><strong>红黑树vs平衡二叉树</strong><br>红黑树不追求”完全平衡”，即不像AVL树那样要求节点的|balFact| &lt;= 1，它只要求部分达到平衡。红黑树是用非严格的平衡来换取增删节点时旋转次数的降低，任何不平衡都会在三次旋转之内解决，而AVL树是严格的平衡树，因此在增加或者删除节点的时候，旋转的次数比红黑树要多。<br>红黑树的查询性能略微逊色于AVL树，但是，红黑树在插入和删除上优于AVL树，AVL树每次插入删除会进行大量的平衡度计算，而红黑树为了维持红黑性质所做的红黑变换和旋转的开销，相较于AVL树为了维持平衡的开销要小得多。<br>实际应用中，若搜索的次数远大于插入和删除，那么选择AVL树；如果搜索，插入，删除次数几乎差不多，应该选择RB树。</p>
+<h3 id="7-B树、B-树、B-树"><a href="#7-B树、B-树、B-树" class="headerlink" title="7 B树、B+树、B*树"></a>7 B树、B+树、B*树</h3><p><strong>B树</strong><br>一棵m阶B树是一棵平衡的m路搜索树。它或者是空树，或者是满足下列性质的树：<br>1、根结点至少有两棵子树；<br>2、树中每个结点至多有m棵子树；<br>3、除根结点以外的所有结点（不包括叶子结点）的度数正好是关键字总数加一，即有k-1个关键字和K棵子树。<br>4、所有结点都包含如下形式的数据：(n,A0 ,K1 ,A1 ,K2 ,A2 , … ,Kn,An )<br>其中n为关键字的个数，Ki(i=1, … , n)为关键字，且满足K1&lt;K2&lt;…&lt;Kn。Ai( i=0,1, … , n)为指向子树根结点的指针，且对于i=1,2, … , n-1，Ai所指子树上各结点的一切关键字均大于Ki，而小于Ki+1。A0所指子树上各结点的一切关键字均小于K1，An所指子树上各结点的一切关键字均大于Kn。<br>对于叶子结点，所有指针Ai皆为空。对于具有 n 个关键字的非叶结点，将有 n+1 棵子树。</p>
+<p><strong>B+树</strong><br>1.有n棵子树的结点中含有n个关键字；<br>2.根节点最少有一棵子树，除根节点外，其他结点至少有 [ m/2 ] 棵子树；<br>3.所有的叶子结点中包含了全部关键字的信息，及指向含有这些关键字记录的指针，且叶子结点依关键字的大小自小而大顺序链接。(而B树的叶子节点并没有包括全部关键字的信息)<br>4.所有的非叶子结点可以看成是索引部分，结点中仅含有其子树根结点中最大（或最小）关键字。</p>
+<p>B+树的搜索与B树基本相同，区别是B+树只有到达叶子结点才能命中（B树可以在非叶子结点命中）<br>B树的优势是当你要查找的值恰好处在一个非叶子节点时，查找到该节点就成功返回并结束查询。而B+树由于非叶子节点只是索引部分，这些节点中只含有其子树中的最大(或最小)关键字，当非终端节点上的关键字等于给点值时，查找并不终止，而是继续向下直到叶子节点。因此在B+树中，无论查找成功与否，都是走了一条从根到叶子节点的路径。</p>
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>二叉树</tag>
       </tags>
   </entry>
   <entry>
@@ -1513,20 +1516,6 @@
       </tags>
   </entry>
   <entry>
-    <title>new_day</title>
-    <url>/2021/10/24/new-day/</url>
-    <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
-<p>下午呆坐在实验室的我静静的听着歌，一首记忆发光让我想起了18年，三年了，《我的青春遇见你》这部电视剧又在脑海里回忆。直接看了最后一集，羡慕陈也与李招娣的爱情。一路走来，嫁给爱情是多么美好啊！不知不觉自己竟然流泪了，是啊，就像招娣拒绝贾方舟所说的，这座城市很大，坐在车里看外面的世界，灯红酒绿的，给人很美好的感觉。但你下车之后，漫步在雨中，发现这才是我的生活。是啊，生活中大多数人是陈也，不是贾方舟。那时的街道没有车水马龙，也没有太多的钢筋水泥，我们的生活却充实有趣。</p>
-<p>农历九月十九</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>程序员节</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>mpc</title>
     <url>/2021/08/26/mpc/</url>
     <content><![CDATA[<h1 id="SmartBid"><a href="#SmartBid" class="headerlink" title="SmartBid"></a>SmartBid</h1><h2 id="Getting-started"><a href="#Getting-started" class="headerlink" title="Getting started"></a>Getting started</h2><h3 id="Requirements"><a href="#Requirements" class="headerlink" title="Requirements"></a>Requirements</h3><p>Work with Hyperledger Fabric v. 1.1.1-mpc (WARNING you need to install 1.1.1-mpc as described below)</p>
@@ -1787,6 +1776,20 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
 ]]></content>
       <tags>
         <tag>安全多方计算</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>new_day</title>
+    <url>/2021/10/24/new-day/</url>
+    <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
+<p>下午呆坐在实验室的我静静的听着歌，一首记忆发光让我想起了18年，三年了，《我的青春遇见你》这部电视剧又在脑海里回忆。直接看了最后一集，羡慕陈也与李招娣的爱情。一路走来，嫁给爱情是多么美好啊！不知不觉自己竟然流泪了，是啊，就像招娣拒绝贾方舟所说的，这座城市很大，坐在车里看外面的世界，灯红酒绿的，给人很美好的感觉。但你下车之后，漫步在雨中，发现这才是我的生活。是啊，生活中大多数人是陈也，不是贾方舟。那时的街道没有车水马龙，也没有太多的钢筋水泥，我们的生活却充实有趣。</p>
+<p>农历九月十九</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>程序员节</tag>
       </tags>
   </entry>
   <entry>
