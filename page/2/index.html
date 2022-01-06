@@ -781,10 +781,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-12-05 11:07:26 / 修改时间：14:54:07" itemprop="dateCreated datePublished" datetime="2021-12-05T11:07:26+08:00">2021-12-05</time>
+              <time title="创建时间：2021-12-05 11:07:26" itemprop="dateCreated datePublished" datetime="2021-12-05T11:07:26+08:00">2021-12-05</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-06 11:57:15" itemprop="dateModified" datetime="2022-01-06T11:57:15+08:00">2022-01-06</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -820,26 +826,33 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="1-类加载机制"><a href="#1-类加载机制" class="headerlink" title="1 类加载机制"></a>1 类加载机制</h3><p>虚拟机把描述类的数据从 Class 文件加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的 Java 类型，这就是虚拟机的类加载机制。<br>类的生命周期包括7个阶段：<strong>加载、验证、准备、解析、初始化、使用和卸载</strong>。<br>其中解析过程在某些情况下可以在初始化阶段之后再开始，这是为了支持 Java 动态绑定。</p>
+          <h3 id="1-类加载机制"><a href="#1-类加载机制" class="headerlink" title="1 类加载机制"></a>1 类加载机制</h3><p>Java虚拟机把描述类的数据从Class文件加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这个过程被称作虚拟机的类加载机制。<br>一个类型从被加载到虚拟机内存中开始，到卸载出内存为止，他的整个生命周期会经历7个阶段：<strong>加载、验证、准备、解析、初始化、使用和卸载</strong>。其中验证、准备和解析三个部分统称为连接。解析阶段在某些情况下可以在初始化阶段之后再开始，这是为了支持Java语言的运行时绑定特性（动态绑定）。</p>
 <img src="/2021/12/05/12-05-Java/class.png" class="">
-<ol>
-<li>加载<br>在加载阶段，虚拟机完成三件事：<br>通过一个类的全限定名来获取定义此类的二进制字节流；<br>将二进制字节流所代表的静态存储结构转化为方法区的运行时数据结构；<br>在内存中生成一个代表这个类的 java.lang.Class 对象，作为方法区这个类的各种数据的访问接口。</li>
-<li>验证<br>主要是为了确保 Class 文件的字节流中包含的信息符合当前虚拟机的要求，并且不会危害虚拟机自身的安全。验证阶段大致上分为 4 个阶段的检验动作：文件格式验证、元数据验证、字节码验证、符号引用验证。<br>文件格式校验：验证字节流是否符合 class 文件的规范，并且能被当前版本的虚拟机处理。只有通过这个阶段的验证后，字节流才会进入内存的方法区进行存储，所以后面的3个阶段全部是基于方法区的存储结构进行的，不会再直接操作字节流；<br>元数据验证：对字节码描述的信息进行语义分析，以保证其描述的信息符合Java语言规范的要求；<br>字节码验证：该阶段主要工作是进行数据流和控制流分析，保证被校验类的方法在运行时不会做出危害虚拟机安全的行为；<br>符号引用验证：最后一个阶段的校验发生在虚拟机将符号引用转化为直接引用的时候，这个转化动作将在连接的第三个阶段——解析阶段中发生。</li>
-<li>准备<br>为类变量分配内存并设置类变量的初始值，这些变量所使用的内存都将在方法区中进行分配。这时候进入内存分配的仅包括类变量（被 static 修饰的变量），而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在 Java 堆中。实例化不是类加载的一个过程，类加载发生在所有实例化操作之前，并且类加载只进行一次，实例化可以进行多次。</li>
-<li>解析<br>虚拟机将常量池内的符号引用替换为直接引用。</li>
-<li>初始化<br>在准备阶段，类变量已经赋过一次系统要求的初始值，而在初始化阶段，根据程序员通过程序制定的主观计划去初始化类变量和其它资源。或者说初始化阶段即虚拟机执行类构造器()方法的过程。</li>
-</ol>
-<h3 id="2-类加载器有哪些？"><a href="#2-类加载器有哪些？" class="headerlink" title="2 类加载器有哪些？"></a>2 类加载器有哪些？</h3><p>引导类加载器（Bootstrap ClassLoader）：内嵌在jvm中的一段特殊的用来加载java核心类库的C++代码。它负责将JAVA_HOME/lib下面的核心类库或-X bootclasspath选项指定的jar包等虚拟机识别的类库加载到内存中。</p>
-<p>拓展类加载器（Extension ClassLoader）：由Sun的ExtClassLoader实现的，它负责将JAVA_HOME /lib/ext或者由系统变量-D java.ext.dir指定位置中的类库加载到内存中。</p>
-<p>应用类加载器（Application ClassLoader)：由 sun.misc.Launcher$AppClassLoder 实现。由于应用类加载器是 ClassLoader 中的 getSystemClassLoader() 方法的返回值，所以一般也称之为系统类加载器。它负责加载用户路径（ClassPath）所指定的类库，开发者可以直接使用这个类加载器，如果应用程序中没有自定义过类加载器，一般情况下这个就是程序中默认的类加载器。</p>
-<h3 id="3-双亲委派模型"><a href="#3-双亲委派模型" class="headerlink" title="3 双亲委派模型"></a>3 双亲委派模型</h3><p>双亲委派模式要求除了顶层的bootstrap类加载器外，其余的类加载器都应当有自己的父类加载器，请注意双亲委派模式中的父子关系并非通常所说的类继承关系，而是采用<strong>组合关系</strong>来复用父类加载器的相关代码。</p>
+<p><strong>加载</strong><br>在加载阶段，Java虚拟机需要完成以下三件事情：</p>
+<ul>
+<li>通过一个类的全限定名来获取定义此类的二进制字节流；</li>
+<li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构；</li>
+<li>在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问接口。</li>
+</ul>
+<p><strong>验证</strong><br>验证是连接阶段的第一步，目的是确保Class文件的字节流中包含的信息符合Java虚拟机规范的全部约束要求，保证这些信息被当作代码运行后不会危害虚拟机自身的安全。</p>
+<p>验证阶段大致上会完成下面4个阶段的检验动作：文件格式验证、元数据验证、字节码验证、符号引用验证。<br>文件格式验证：验证字节流是否符合class文件格式的规范，并且能被当前版本的虚拟机处理。这阶段验证是基于二进制字节流进行的，只有通过了这个阶段的验证后，这段字节流才被允许进入Java虚拟机内存的方法区中进行存储，所以后面的3个验证阶段全部是基于方法区的存储结构上进行的，不会再直接读取、操作字节流。</p>
+<p>元数据验证：对字节码描述的信息进行语义分析，以保证其描述的信息符合Java语言规范的要求。</p>
+<p>字节码验证：该阶段主要目的是通过数据流分析和控制流分析，确定程序语义是合法的、符合逻辑的。对类的方法体进行校验分析，保证被校验类的方法在运行时不会做出危害虚拟机安全的行为。</p>
+<p>符号引用验证：最后一个阶段的校验行为发生在虚拟机将符号引用转化为直接引用的时候，这个转化动作将在连接的第三个阶段——解析阶段中发生。符号引用验证主要目的是确保解析行为能正常执行。</p>
+<p><strong>准备</strong><br>为类中定义的变量（静态变量）分配内存并设置类变量初始值的阶段，这些变量所使用的内存都将在方法区中进行分配。这时候进入内存分配的仅包括类变量（被static修饰的变量），而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在Java堆中。<br>实例化不是类加载的一个过程，类加载发生在所有实例化操作之前，并且类加载只进行一次，实例化可以进行多次。</p>
+<p><strong>解析</strong><br>Java虚拟机将常量池内的符号引用替换为直接引用。</p>
+<p><strong>初始化</strong><br>进行准备阶段时，变量已经赋过一次系统要求的初始零值，而在初始化阶段，则会根据程序员通过程序编码制定的主观计划去初始化类变量和其它资源。或者说初始化阶段就是执行类构造器<clinit>()方法的过程。</p>
+<h3 id="2-类加载器"><a href="#2-类加载器" class="headerlink" title="2 类加载器"></a>2 类加载器</h3><p>启动类加载器（Bootstrap ClassLoader）：使用C++语言实现，是虚拟机自身的一部分。它负责加载存放在<JAVA_HOME>\lib目录，或者被-Xbootclasspath参数所指定的路径下存放的，而且是Java虚拟机能够识别的类库加载到虚拟机的内存中。</p>
+<p>拓展类加载器（Extension ClassLoader）：它是在类sun.misc.Launcher$ExtClassLoader中以Java代码的形式实现的。它负责加载<JAVA_HOME>\lib\ext目录中，或者被java.ext.dirs系统变量所指定的路径中所有的类库。</p>
+<p>应用程序类加载器（Application Class Loader)：由sun.misc.Launcher$AppClassLoder实现。由于应用程序类加载器是ClassLoader类中的getSystemClassLoader()方法的返回值，所以也称为“系统类加载器”。它负责加载用户类路径（ClassPath）上所有的类库，开发者可以直接使用这个类加载器，如果应用程序中没有自定义过类加载器，一般情况下这个就是程序中默认的类加载器。</p>
+<h3 id="3-双亲委派模型"><a href="#3-双亲委派模型" class="headerlink" title="3 双亲委派模型"></a>3 双亲委派模型</h3><p>双亲委派模型要求除了顶层的bootstrap类加载器外，其余的类加载器都应当有自己的父类加载器。不过这里类加载器之间的父子关系一般不是以继承的方式来实现的，，而是通常使用<strong>组合关系</strong>来复用父加载器的相关代码。</p>
 <img src="/2021/12/05/12-05-Java/classloader.png" class="">
-<p>工作原理：如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，请求最终将到达顶层的引导类加载器。如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载。</p>
-<p>双亲委派模式优势：Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层次关可以避免类的重复加载，当父加载器已经加载了该类时，子类ClassLoader就没有必要再加载一次。</p>
+<p>工作原理：如果一个类加载器收到了类加载请求，它首先不会自己去尝试加载这个类，而是把这个请求委派给父类的加载器去完成，如果父类加载器还存在它的父类加载器，则进一步向上委派，因此所有的加载请求最终都将到达顶层的启动类加载器。如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载。</p>
+<p>双亲委派模式优势：Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层次关可以避免类的重复加载，当父加载器已经加载了该类时，子类ClassLoader就没有必要再加载一次。<br>Object类在程序的各种类加载器环境中都能保证是同一个类。</p>
 <p>主要代码实现：loadClass()方法。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">protected Class&lt;?&gt; loadClass(String name, boolean resolve)</span><br><span class="line">        throws ClassNotFoundException</span><br><span class="line">    &#123;</span><br><span class="line">        synchronized (getClassLoadingLock(name)) &#123;</span><br><span class="line">            &#x2F;&#x2F; First, check if the class has already been loaded</span><br><span class="line">            Class&lt;?&gt; c &#x3D; findLoadedClass(name);</span><br><span class="line">            if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                long t0 &#x3D; System.nanoTime();</span><br><span class="line">                try &#123;</span><br><span class="line">                    if (parent !&#x3D; null) &#123;</span><br><span class="line">                        c &#x3D; parent.loadClass(name, false);</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        c &#x3D; findBootstrapClassOrNull(name);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">                    &#x2F;&#x2F; ClassNotFoundException thrown if class not found</span><br><span class="line">                    &#x2F;&#x2F; from the non-null parent class loader</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    &#x2F;&#x2F; If still not found, then invoke findClass in order</span><br><span class="line">                    &#x2F;&#x2F; to find the class.</span><br><span class="line">                    long t1 &#x3D; System.nanoTime();</span><br><span class="line">                    c &#x3D; findClass(name);</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; this is the defining class loader; record the stats</span><br><span class="line">                    sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClasses().increment();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (resolve) &#123;</span><br><span class="line">                resolveClass(c);</span><br><span class="line">            &#125;</span><br><span class="line">            return c;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>先检查是否已经被加载过，若没有加载则调用父类加载器的 loadClass() 方法，若父类加载器为空则默认使用bootstrap类加载器作为父类加载器。如果父类加载失败，抛出 ClassNotFoundException 异常后，再调用自己的 findClass() 方法进行加载。</p>
-<p>若要实现自定义类加载器，只需要继承 java.lang.ClassLoader 类，并且重写其 findClass() 方法即可。</p>
+<p>先检查请求加载的类型是否已经被加载过，若没有则调用父加载器的loadClass()方法，若父加载器为空则默认使用bootstrap类加载器作为父加载器。假如父加载器加载失败，抛出ClassNotFoundException异常的话，子加载器才调用自己的findClass()方法尝试进行加载。</p>
+<p>若要实现自定义类加载器，只需要继承java.lang.ClassLoader类，并且重写findClass()方法即可。</p>
 <h3 id="4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"><a href="#4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？" class="headerlink" title="4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"></a>4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？</h3><p>解释器：程序可以迅速启动和执行，消耗内存小（成本低，到后期效率低）；<br>编译器：随着代码频繁执行会将代码编译成本地机器码（成本高，到后期效率高）。</p>
 <p>在整个虚拟机执行架构中，解释器与编译器经常配合工作，两者各有优势：当程序需要迅速启动和执行的时候，解释器可以优先发挥作用，省去编译的时间，立即执行。在程序运行后，随着时间的推移，编译器逐渐发挥作用，把越来越多的代码编译成本地代码之后，可以获取更高的执行效率。当程序运行环境中内存资源限制较大（如部分嵌入式系统），可以使用解释执行来节约内存，反之可以使用编译执行来提升效率。<br>解释执行可以节约内存，而编译执行可以提升效率。因此，在整个虚拟机执行架构中，解释器与编译器经常配合工作。</p>
 <h3 id="5-Java内存模型"><a href="#5-Java内存模型" class="headerlink" title="5 Java内存模型"></a>5 Java内存模型</h3><p>Java内存模型（Java Memory Model，JMM）：屏蔽掉各种硬件和操作系统的内存访问差异，以实现让Java程序在各种平台下都能达到一致的并发效果。<br>Java 内存模型的主要目标是定义程序中各个变量的访问规则，在虚拟机中将变量存储到内存和从内存中取出变量。<br>Java 内存模型规定了所有的变量都存储在主内存（Main Memory）中，每个线程有自己的工作线程（Working Memory），保存主内存副本拷贝和私有变量，不同线程不能访问工作内存中的变量。线程间变量值的传递需要通过主内存来完成。</p>
@@ -977,10 +990,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-12-04 10:44:49 / 修改时间：11:48:49" itemprop="dateCreated datePublished" datetime="2021-12-04T10:44:49+08:00">2021-12-04</time>
+              <time title="创建时间：2021-12-04 10:44:49" itemprop="dateCreated datePublished" datetime="2021-12-04T10:44:49+08:00">2021-12-04</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-06 10:50:27" itemprop="dateModified" datetime="2022-01-06T10:50:27+08:00">2022-01-06</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -1016,29 +1035,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="1-分代收集中年轻代和老年代采用的收集算法"><a href="#1-分代收集中年轻代和老年代采用的收集算法" class="headerlink" title="1 分代收集中年轻代和老年代采用的收集算法"></a>1 分代收集中年轻代和老年代采用的收集算法</h3><p>年轻代（Young Generation）的回收算法 (主要以 Copying 为主)</p>
+          <h3 id="1-分代收集理论中新生代和老年代采用的收集算法"><a href="#1-分代收集理论中新生代和老年代采用的收集算法" class="headerlink" title="1 分代收集理论中新生代和老年代采用的收集算法"></a>1 分代收集理论中新生代和老年代采用的收集算法</h3><p>新生代(主要是复制算法)</p>
 <ol>
-<li>所有新生成的对象首先都是放在年轻代的。年轻代的目标就是尽可能快速的收集掉那些生命周期短的对象。</li>
-<li>新生代内存按照 8:1:1 的比例分为一个 eden 区和两个 survivor（survivor0、 survivor1）区。大部分对象在eden 区中生成。回收时先将 eden 区存活对象复制到 survivor0 区，然后清空 eden 区，当survivor0 区也存放满了，则将 eden 区和 survivor0 区存活对象复制到 survivor1 区，然后清空 eden 区 和 survivor0 区，此时 survivor0 区是空的，然后将survivor0 区和 survivor1 区交换，即保持survivor1 区为空，如此往复。</li>
-<li>当 survivor1 区不足以存放 eden 区和 survivor0 区的存活对象时，就将存活对象直接存放到老年代。若是老年代也满了就会触发一次Full GC（Major GC），也就是新生代、老年代都进行回收。</li>
-<li>新生代发生的 GC 也叫做 Minor GC，MinorGC 发生频率比较高（不一定等 eden 区满了才触发）。</li>
+<li>把新生代分为一块较大的Eden空间和两块较小的Survivor（Survivor0，Survivor1）空间，每次分配内存只使用Eden和其中一块Survivor。</li>
+<li>HotSpot虚拟机默认Eden和Survivor的大小比例为8：1。垃圾收集时，将Eden和Survivor0中仍然存活的对象一次性复制到Survivor1空间上，然后直接清理掉Eden和Survivor0空间。</li>
+<li>当Survivor1区域不足以存放Eden和Survivor0区域的存活对象时，就将存活对象直接存放到老年代。若是老年代也满了就会触发一次Full GC，也就是新生代、老年代都进行回收。</li>
 </ol>
-<p>老年代（Old Generation）的回收算法（主要以 Mark-Compact 为主）</p>
+<p>老年代（主要是Mark-Compact算法）</p>
 <ol>
-<li>在年轻代中经历了 N 次垃圾回收后仍然存活的对象，就会被放到老年代中。因此，可以认为老年代中存放的都是一些生命周期比较长的对象。</li>
-<li>内存比新生代也大很多（1 : 2），当老年代内存满时触发 Major GC 即 Full GC，Full GC 发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
+<li>在新生代中经历了N次垃圾回收后仍然存活的对象，就会被放到老年代中。因此，可以认为老年代中存放的都是一些生命周期比较长的对象。</li>
+<li>当老年代内存满时触发Full GC，Full GC发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
 </ol>
 <h3 id="2-常用的垃圾收集器"><a href="#2-常用的垃圾收集器" class="headerlink" title="2 常用的垃圾收集器"></a>2 常用的垃圾收集器</h3><ol>
-<li>Serial GC，它是最古老的垃圾收集器，“Serial”体现在其收集工作是单线程的，并且在进行垃圾收集过程中，会进入臭名昭著的“Stop-The-World”状态。当然，其单线程设计也意味着精简的 GC 实现，无需维护复杂的数据结构，初始化也简单，所以一直是 Client 模式下 JVM 的默认选项。</li>
-<li>从年代的角度，通常将其老年代实现单独称作 Serial Old，它采用了标记 - 整理（Mark-Compact）算法，区别于新生代的复制算法。</li>
-<li>ParNew GC，很明显是个新生代 GC 实现，它实际是 Serial GC 的多线程版本，最常见的应用场景是配合老年代的 CMS GC 工作。</li>
-<li>CMS（Concurrent Mark Sweep） GC，基于标记 - 清除（Mark-Sweep）算法，设计目标是尽量减少停顿时间，这一点对于 Web 等反应时间敏感的应用非常重要，一直到今天，仍然有很多系统使用 CMS GC。但是，CMS 采用的标记 - 清除算法，存在着内存碎片化问题，所以难以避免在长时间运行等情况下发生 full GC，导致恶劣的停顿。另外，既然强调了并发（Concurrent），CMS 会占用更多 CPU 资源，并和用户线程争抢。</li>
-<li>Parrallel GC，在早期 JDK 8 等版本中，它是 server 模式 JVM 的默认 GC 选择，也被称作是吞吐量优先的 GC。它的算法和 Serial GC 比较相似，尽管实现要复杂的多，其特点是新生代和老年代 GC 都是并行进行的，在常见的服务器环境中更加高效。</li>
-<li>G1 GC 这是一种兼顾吞吐量和停顿时间的 GC 实现，是 Oracle JDK 9 以后的默认 GC 选项。G1 可以直观的设定停顿时间的目标，相比于 CMS GC，G1 未必能做到 CMS 在最好情况下的延时停顿，但是最差情况要好很多。G1 GC内存结构为一个个region。Region 之间是复制算法，但整体上实际可看作是标记 - 整理（Mark-Compact）算法，可以有效地避免内存碎片，尤其是当 Java 堆非常大的时候，G1 的优势更加明显。G1 吞吐量和停顿表现都非常不错，并且仍然在不断地完善，与此同时 CMS 已经在 JDK 9 中被标记为废弃（deprecated）。</li>
+<li>Serial GC，它是最古老的垃圾收集器，“Serial”体现在其收集工作是单线程的，“单线程”强调的是在它进行垃圾收集时，必须暂停其它所有工作线程，直到它收集结束。即会进入臭名昭著的“Stop The World”状态。当然，其单线程设计也意味着精简的GC实现，无需维护复杂的数据结构，初始化也简单，所以一直是Client模式下默认新生代收集器。</li>
+<li>Serial Old GC，它是Serial收集器的老年代版本，同样是一个单线程收集器，使用了标记-整理（Mark-Compact）算法。</li>
+<li>ParNew GC，是一个新生代收集器，它实际是Serial GC的多线程并行版本，最常见的应用场景是配合老年代的CMS GC工作。</li>
+<li>Parrallel Scavenge GC，它是一款新生代收集器，基于复制算法实现的收集器。它的目标是达到一个可扩展的吞吐量，也被称为“吞吐量优先收集器”。</li>
+<li>Parrallel Old GC，它是Parrallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法实现。</li>
+<li>CMS（Concurrent Mark Sweep）GC，基于标记-清除（Mark-Sweep）算法实现，设计目标是尽量缩短停顿时间，这一点对于Web等反应时间敏感的应用非常重要。一直到今天，仍然有很多系统使用CMS GC。但是，CMS 采用的标记-清除算法，存在着内存碎片化问题，所以难以避免在长时间运行情况下发生full GC，导致恶劣的停顿。另外，既然强调了并发（Concurrent），CMS会占用更多CPU资源，并和用户线程争抢。</li>
+<li>G1（Garbage First）GC，这是一种兼顾吞吐量和停顿时间的GC实现，是Oracle JDK 9以后的默认GC选项，主要面向服务端应用的垃圾收集器。</li>
 </ol>
-<h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>G1 GC是一种兼顾吞吐量和停顿时间的GC实现，是Oracle JDK 9以后的默认 GC 选项。<br>与以往的收集器不同，G1引入region（区间）的概念，它也分年轻代和老年代。年轻代依然有Eden区和Survivor区。从实际的物理角度看Eden，Survivor等不需要连续只需要保证逻辑上的连续即可。在G1中，堆被分成若干大小相等的区域（region），内存的回收和划分都以region为单位；同时，它吸取了 CMS 的特点，把整个垃圾回收过程分为几个阶段，分散一个垃圾回收过程；而且，G1 也认同分代垃圾回收的思想，认为不同对象的生命周期不同，可以采取不同收集方式，因此，它也支持分代的垃圾回收。为了达到对回收时间的可预计性，G1 在扫描了 region 以后，对其中的活跃对象的大小进行排序，首先会收集那些活跃对象小的 region，以便快速回收空间（要复制的活跃对象少了），因为活跃对象小，里面可以认为多数都是垃圾，所以这种方式被称为 Garbage First（G1）的垃圾回收算法。</p>
+<h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>它开创了收集器面向<strong>局部收集</strong>的设计思路和基于<strong>Region</strong>的内存布局形式。<br>与以往的收集器不同，G1引入region（区间）的概念，它也分年轻代和老年代。年轻代依然有Eden区和Survivor区。从实际的物理角度看Eden，Survivor等不需要连续只需要保证逻辑上的连续即可。在G1中，堆被分成若干大小相等的区域（region），内存的回收和划分都以region为单位；同时，它吸取了 CMS 的特点，把整个垃圾回收过程分为几个阶段，分散一个垃圾回收过程；而且，G1 也认同分代垃圾回收的思想，认为不同对象的生命周期不同，可以采取不同收集方式，因此，它也支持分代的垃圾回收。为了达到对回收时间的可预计性，G1 在扫描了 region 以后，对其中的活跃对象的大小进行排序，首先会收集那些活跃对象小的 region，以便快速回收空间（要复制的活跃对象少了），因为活跃对象小，里面可以认为多数都是垃圾，所以这种方式被称为 Garbage First（G1）的垃圾回收算法。</p>
 <h3 id="4-内存分配的理解？大对象怎么分配？空间分配担保？"><a href="#4-内存分配的理解？大对象怎么分配？空间分配担保？" class="headerlink" title="4 内存分配的理解？大对象怎么分配？空间分配担保？"></a>4 内存分配的理解？大对象怎么分配？空间分配担保？</h3><ol>
-<li>对象优先在 Eden 区分配：大多数情况下，对象在新生代 Eden 区分配，当 Eden 区空间不够时，发起 MinorGC。</li>
+<li>对象优先在Eden中分配：大多数情况下，对象在新生代 Eden 区分配，当 Eden 区空间不够时，发起 MinorGC。</li>
 <li>大对象直接进入老年代：大对象是指需要连续内存空间的对象，最典型的大对象是那种很长的字符串以及数组。经常出现大对象会提前触发垃圾收集以获取足够的连续空间分配给大对象。PretenureSizeThreshold，大于此值的对象直接在老年代分配，避免在 Eden 区和 Survivor 区之间的大量内存复制。</li>
 <li>长期存活的对象将进入老年代：为对象定义年龄计数器，对象在 Eden 出生并经过 Minor GC 依然存活，将移动到 Survivor 中，年龄就增加 1 岁，增加到一定年龄则移动到老年代中。MaxTenuringThreshold 用来定义年龄的阈值。</li>
 <li>动态对象年龄判定：为了更好的适应不同程序的内存情况，虚拟机不是永远要求对象年龄必须达到了某个值才能进入老年代，如果 Survivor 空间中相同年龄所有对象大小的总和大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需达到要求的年龄。</li>
@@ -1098,7 +1117,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-05 22:43:28" itemprop="dateModified" datetime="2022-01-05T22:43:28+08:00">2022-01-05</time>
+                <time title="修改时间：2022-01-06 09:46:58" itemprop="dateModified" datetime="2022-01-06T09:46:58+08:00">2022-01-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1135,10 +1154,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="1-Java参数传递"><a href="#1-Java参数传递" class="headerlink" title="1 Java参数传递"></a>1 Java参数传递</h3><p>值传递（pass by value）是指在调用函数时将实际参数<strong>复制</strong>一份传递到函数中，这样在函数中如果对参数进行修改，将不会影响到实际参数。<br>引用传递（pass by reference）是指在调用函数时将实际参数的<strong>地址直接</strong>传递到函数中，那么在函数中对参数所进行的修改，将影响到实际参数。<br>传递|值传递|引用传递<br>—|:—:|:—:|<br>区别|会创建副本|不会创建副本<br>结果|函数中无法改变原始对象|函数中可以改变原始对象</p>
+          <h3 id="1-Java参数传递"><a href="#1-Java参数传递" class="headerlink" title="1 Java参数传递"></a>1 Java参数传递</h3><p>值传递（pass by value）是指在调用函数时将实际参数<strong>复制</strong>一份传递到函数中，这样在函数中如果对参数进行修改，将不会影响到实际参数。<br>引用传递（pass by reference）是指在调用函数时将实际参数的<strong>地址直接</strong>传递到函数中，那么在函数中对参数所进行的修改，将影响到实际参数。</p>
+<table>
+<thead>
+<tr>
+<th>传递</th>
+<th align="center">值传递</th>
+<th align="center">引用传递</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>区别</td>
+<td align="center">会创建副本</td>
+<td align="center">不会创建副本</td>
+</tr>
+<tr>
+<td>结果</td>
+<td align="center">函数中无法改变原始对象</td>
+<td align="center">函数中可以改变原始对象</td>
+</tr>
+</tbody></table>
 <p>Java在方法调用传递参数时，都是值传递。只不过对于对象参数，值的内容是对象的引用。<br>在运行栈中，基本类型和引用类型的处理是一样的，都是传值。但是当进入被调用方法时，传递的引用值被程序解释到堆中，这个时候才对应到真正的对象。如果此时进行修改，修改的是引用对应的对象，而不是引用本身。即修改的是堆中的数据，所以这个修改是可以保持的。</p>
 <h3 id="2-判断对象存活的算法"><a href="#2-判断对象存活的算法" class="headerlink" title="2 判断对象存活的算法"></a>2 判断对象存活的算法</h3><p>垃圾收集器在对堆和方法区进行回收前，首先要确定这些区域的对象哪些可以回收，哪些暂时还不能回收，这就要用到判断对象是否存活的算法。</p>
-<p><strong>引用计数算法</strong><br>引用计数算法是垃圾收集器的早期策略。在这种方法中，堆中每个对象实例都有一个引用计数器。当一个对象被创建时，就将该对象实例分配给一个变量，该变量计数设置为1。当任何其它变量被赋值为这个对象的引用时，计数加1（a = b，则 b 引用的对象实例的计数器加1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数器减1。任何引用计数器为0的对象实例都可以被当作垃圾收集。当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器减1。</p>
+<p><strong>引用计数算法</strong><br>引用计数算法是垃圾收集器的早期策略。在这种方法中，堆中每个对象实例都有一个引用计数器。当一个对象被创建时，就将该对象实例分配给一个变量，该变量计数设置为1。当任何其它变量被赋值为这个对象的引用时，计数加1（a=b，则b引用的对象实例的计数器加1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数器减1。任何引用计数器为0的对象实例都可以被当作垃圾收集。当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器减1。</p>
 <p>缺点：无法检测出循环引用。</p>
 <p><strong>可达性分析算法</strong><br>可达性分析（Reachability Analysis）算法的基本思路就是通过一系列称为“GC Roots”的根对象作为起始节点集，从这些节点开始，根据引用关系向下搜索，搜索过程所走过的路径称为“引用链”，如果某个对象到GC Roots间没有任何引用链相连，则证明此对象是不可能再被使用的，会被判定为可回收的对象。</p>
 <p>在Java语言中，固定可作为GC Roots的对象包括以下几种：<br>在虚拟机栈（栈帧中的本地变量表）中引用的对象；<br>在方法区中类静态属性引用的对象；<br>在方法区中常量引用的对象；<br>在本地方法栈中JNI（Native方法）引用的对象；<br>Java虚拟机内部的引用；<br>所有被同步锁（synchronized关键字）持有的对象。</p>
@@ -1151,9 +1189,10 @@
 <p>根本原因：<br>长生命周期的对象持有短生命周期对象的引用就很可能发生内存泄漏，尽管短生命周期对象已经不再需要，但是因为长生命周期对象持有它的引用而导致不能被回收，这就是Java中内存泄漏的发生场景。<br>数据库连接（dataSourse.getConnection()），网络连接(socket)和IO连接，除非其显式的调用了close()方法将其连接关闭，否则是不会主动被GC回收的。<br>单例对象在初始化后将在JVM的整个生命周期中存在（以静态变量的方式），如果单例对象持有外部的引用，那么这个对象将不能被JVM正常回收，导致内存泄漏。</p>
 <h3 id="6-常用的垃圾收集算法"><a href="#6-常用的垃圾收集算法" class="headerlink" title="6 常用的垃圾收集算法"></a>6 常用的垃圾收集算法</h3><p><strong>标记-清除（mark-sweep）算法</strong><br>算法分为“标记”和“清除”两个阶段：首先标记出所有需要回收的对象，在标记完成后，统一回收掉所有被标记的对象。也可以反过来，标记存活的对象，统一回收所有未被标记的对象。标记-清除算法采用可达性分析算法进行对象是否存活的判断。</p>
 <p>缺点：执行效率不稳定；内存空间的碎片化问题。</p>
-<p><strong>复制算法</strong><br>复制算法的提出是为了克服句柄开销和解决内存碎片问题。把堆分成 一个对象面和多个空闲面， 程序从对象面为对象分配空间，当对象满了，基于 copying 算法的垃圾收集就从根集合（GC Roots）中扫描活动对象，并将每个活动对象复制到空闲面，这样空闲面变成了对象面，原来的对象面变成了空闲面，程序会在新的对象面中分配内存。</p>
-<p><strong>标记-整理（mark-compact）算法</strong><br>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但在清除时不同，在回收不存活的对象占用的空间后，会将所有的存活对象往左端空闲空间移动，并更新对应的指针。标记-整理算法是在标记-清除算法的基础上，又进行了对象的移动，因此成本更高，但是却解决了内存碎片的问题。</p>
-<p><strong>分代收集算法</strong><br>分代收集算法是目前大部分 JVM 的垃圾收集器采用的算法。它的核心思想是根据对象存活的生命周期将内存划分为若干个不同的区域。一般情况下将堆划分为老年代（Tenured Generation）和新生代（Young Generation），在堆之外还有一个代就是永久代（Permanet Generation）。<br>老年代的特点是每次垃圾收集时只有少量对象需要被回收，而新生代的特点是每次垃圾回收时都有大量的对象需要被回收，那么就可以根据不同代的特点采取最适合的收集算法。</p>
+<p><strong>复制算法</strong><br>它将可用内存按容量划分为大小相等的两块，每次只使用其中的一块。当这一块的内存用完了，就将还存活着的对象复制到另外一块上面，然后再把已使用过的内存空间一次清理掉。</p>
+<p>优点：解决了内存空间的碎片化问题。<br>缺点：内存利用率不高，空间浪费严重；对象存活率较高时需要进行较多的复制操作，效率会降低。</p>
+<p><strong>标记-整理（mark-compact）算法</strong><br>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但后序步骤不是直接对可回收对象进行清理。而是让所有存活的对象都向内存空间一端移动，然后直接清理掉边界以外的内存。</p>
+<h3 id="7-分代收集理论"><a href="#7-分代收集理论" class="headerlink" title="7 分代收集理论"></a>7 分代收集理论</h3><p>它的核心思想是根据对象存活的生命周期将Java堆划分出不同的区域，然后将回收对象依据其年龄分配到不同的区域之中存储。一般情况下将Java堆划分为新生代（Young Generation）和老年代（Old Generation）两个区域。在堆之外还有一个代就是永久代（Permanet Generation）。<br>新生代的特点是每次垃圾回收时都有大量的对象需要被回收，而老年代的特点是每次垃圾收集时只有少量对象需要被回收，那么就可以根据不同代的特点采取最适合的收集算法。</p>
 
       
     </div>

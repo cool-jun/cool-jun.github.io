@@ -285,6 +285,44 @@
       </tags>
   </entry>
   <entry>
+    <title>11_23_Java</title>
+    <url>/2021/11/23/11-23-Java/</url>
+    <content><![CDATA[<h3 id="1-synchronized与ReentrantLock"><a href="#1-synchronized与ReentrantLock" class="headerlink" title="1 synchronized与ReentrantLock"></a>1 synchronized与ReentrantLock</h3><p>synchronized是Java中的关键字，ReentrantLock是一个类。<br>ReentrantLock提供了比synchronized更多更灵活的特性，比如等待可中断、可实现公平锁、锁绑定多个条件。<br>synchronized依赖于JVM，ReenTrantLock依赖于API。<br>JDK1.6为synchronized关键字进行了很多优化，但是这些优化都是在虚拟机层面实现的。<br>ReenTrantLock是API层面实现的（需要lock()和unlock方法配合try/finally语句块来完成）。</p>
+<p>很明显Synchronized的使用比较方便简洁，并且由编译器去保证加锁和释放锁，而ReenTrantLock需要手动声明来加锁和释放锁，为了避免忘记释放锁造成死锁，所以最好在finally中声明释放锁。<br>ReenTrantLock的实现是一种自旋锁，通过循环调用CAS操作来实现加锁。它的性能比较好也是因为避免了使线程进入内核态的阻塞状态。想尽办法避免线程进入内核的阻塞状态是我们去分析和理解锁设计的关键钥匙。</p>
+<h3 id="2-synchronized与volatile"><a href="#2-synchronized与volatile" class="headerlink" title="2 synchronized与volatile"></a>2 synchronized与volatile</h3><p>synchronized锁定当前变量，只有当前线程可以访问该变量，其他线程被阻塞。<br>volatile本质是在告诉JVM当前变量在寄存器中的值是不确定的，需要从主存中读取。保证了不同线程对该变量操作的内存可见性，禁止指令重排序。<br>synchronized可以作用于变量、方法、对象；volatile只能作用于变量。<br>volatile不会造成线程的阻塞；synchronized可能会造成线程的阻塞。<br>volatile标记的变量不会被编译器优化；synchronized标记的变量可以被编译器优化。</p>
+<h3 id="3-ReentrantReadWriteLock"><a href="#3-ReentrantReadWriteLock" class="headerlink" title="3 ReentrantReadWriteLock"></a>3 ReentrantReadWriteLock</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;** Inner class providing readlock *&#x2F;</span><br><span class="line">private final ReentrantReadWriteLock.ReadLock readerLock;</span><br><span class="line">&#x2F;** Inner class providing writelock *&#x2F;</span><br><span class="line">private final ReentrantReadWriteLock.WriteLock writerLock;</span><br></pre></td></tr></table></figure>
+<p>ReentrantReadWriteLock允许多个读线程同时访问，但是不允许写线程和读线程、写线程和写线程同时访问。<br>ReentrantReadWriteLock维护了两个锁：ReadLock，WriteLock。<br>ReentrantReadWriteLock可以保证多个线程同时读，所以在读操作远大于写操作的时候，读写锁就非常有用了。</p>
+<p>在写线程持有的所有写锁都被释放之前，不允许非可重入读者。<br>重入还允许从写锁降级到读锁，通过获取写锁，然后是读锁，然后释放写锁。<br>读锁和写锁都支持锁获取过程中的中断。</p>
+<h3 id="4-悲观锁与乐观锁"><a href="#4-悲观锁与乐观锁" class="headerlink" title="4 悲观锁与乐观锁"></a>4 悲观锁与乐观锁</h3><p><strong>悲观锁</strong><br>当你要对数据进行操作时，为了避免同时被其他人修改，最好的办法就是直接对该数据进行加锁。这样别人想拿这个数据就会阻塞直到它拿到锁。</p>
+<p>悲观锁分为共享锁和排他锁。<br>共享锁又称为读锁，简称S锁。共享锁就是多个事务对于同一数据可以共享一把锁，都能访问到数据，但是只能读不能修改。<br>排他锁又称为写锁，简称X锁。排他锁就是不能与其他锁并存，如果一个事务获取了一个数据行的排他锁，其他事务就不能再获取该数据行的锁（包括共享锁和排他锁）。获取排他锁的事务可以对数据行读取和修改。</p>
+<p>传统的关系型数据库使用悲观锁机制，比如行锁、表锁、读锁、写锁等，都是在操作之前先上锁。<br>Java中synchronized和ReentrantLock等独占锁也是悲观锁思想的实现。</p>
+<p><strong>乐观锁</strong><br>当你要对数据进行操作时，假设不会被其他人修改，所以不用上锁。但是在更新的时候会判断一下在此期间别人有没有去更新这个数据。乐观锁适用于读多写少的场景，这样可以提高程序的吞吐量。<br>数据库提供的类似于write_condition机制，其实就是提供的乐观锁。<br>Java中java.util.concurrent.atomic包下面的原子变量类就是使用了乐观锁的一种实现方式CAS来实现的。</p>
+<h3 id="5-乐观锁的两种实现方式"><a href="#5-乐观锁的两种实现方式" class="headerlink" title="5 乐观锁的两种实现方式"></a>5 乐观锁的两种实现方式</h3><p><strong>版本号机制</strong><br>在数据中加上一个version字段，表示数据被修改的次数。当数据被修改时，version值加一。当线程A要更新数据时，在读取数据的同时也会读取version值，在提交更新时，只有刚读取到的version值与当前数据库中的version值相等时才更新，否则重试，直到更新成功。</p>
+<p><strong>CAS</strong><br>compare and swap（比较与交换），是一种有名的无锁算法。在不使用锁的情况下实现多线程之间的变量同步，也就是在没有线程被阻塞的情况下实现变量的同步，所以也叫非阻塞同步。<br>CAS本质上很简单，一般至少有3个参数：V表示要更新的变量、E表示预期值、N表示新值变量。<br>如果V值等于E值，则将V的值设为N。若V值和E值不同，则说明已经有其他线程做了更新，则当前线程什么都不做。</p>
+<p>通俗的理解就是CAS操作需要我们提供一个期望值，当期望值与当前线程的变量值相同时，说明还没有线程修改该值，则当前线程可以进行修改，也就是执行CAS操作。但如果期望值与当前线程的变量值不等，则说明该值已被其他线程修改，此时不执行更新操作，但可以选择重新读取该变量再次尝试修改该变量，也可以放弃操作。</p>
+<p><strong>缺点</strong><br>ABA问题<br>如果一个变量V初次读取的时候是A值，并且在准备赋值的时候检查到它仍然是A值，那我们就能说明它的值没有被其他线程修改过了吗？很明显是不能的，因为在这段时间它的值可能被改为其它值，然后又改回A，但CAS操作就会误认为它从来没有被修改过。<br>JDK1.5 AtomicStampedReference类中的compareAndSet方法就是首先检查当前引用是否等于预期引用，并且当前标志是否等于预期标志，如果全部相等，则以原子方式将该引用和该标志的值设置为给定的更新值。</p>
+<p>循环时间长，开销大<br>自旋CAS（也就是不成功就一直循环执行直到成功），如果长时间不成功，会给CPU带来非常大的执行开销。</p>
+<p>只能保证一个共享变量的原子操作<br>CAS只对单个共享变量有效，当操作涉及多个共享变量时CAS无效。<br>但是从JDK1.5开始，提供了AtomicReference类来保证引用对象之间的原子性，你可以把多个变量放在一个对象里来进行CAS操作。所以我们可以使用锁或者利用AtomicReference类把多个共享变量合并成一个共享变量来操作。</p>
+<p>CAS适用于写比较少的情况下（多读场景，冲突一般较少），synchronized适用于写比较多的情况下（多写场景，冲突一般较多）。</p>
+<h3 id="6-atomic原理"><a href="#6-atomic原理" class="headerlink" title="6 atomic原理"></a>6 atomic原理</h3><p>java.util.concurrent.atomic包中类的基本特性就是在多线程环境下，当有多个线程同时对单个（包括基本类型及引用类型）变量进行操作时，具有排他性，即当多个线程同时对该变量的值进行更新时，仅有一个线程能成功，而未成功的线程可以向自旋锁一样，继续尝试，直到执行成功。</p>
+<h3 id="7-AQS"><a href="#7-AQS" class="headerlink" title="7 AQS"></a>7 AQS</h3><p>AbstractQueuedSynchronizer（抽象队列同步器）：提供一个框架，用于实现依赖先进先出(FIFO)等待队列的阻塞锁和相关同步器（信号量、事件等）。</p>
+<p>核心思想是：如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制AQS是用CLH队列锁实现的，将暂时获取不到锁的线程加入到队列中。</p>
+<p>AQS将每一条请求共享资源的线程封装成一个CLH队列锁的一个结点（Node），来实现锁的分配。<br>private volatile int state;<br>AQS使用一个int成员变量(state)来表示同步状态，通过内置的FIFO队列来完成获取资源线程的排队工作。AQS使用CAS对该同步状态进行原子操作实现对其值的修改。</p>
+<p>AQS对资源的共享方式：<br>Exclusive（独占）：只有一个线程能执行，如ReentrantLock，又可分为公平锁和非公平锁。<br>公平锁：按照线程在队列中的排队顺序，先到者先拿到锁。<br>非公平锁：当线程要获取锁时，先通过两次CAS操作去抢锁，如果没抢到，当前线程再加入到队列中等待唤醒。<br>Share（共享）：多个线程可同时执行，如Semaphore/CountDownLatch、Semaphore、CountDownLatCh、CyclicBarrier、ReadWriteLock。</p>
+<h3 id="8-AQS的几个模板方法"><a href="#8-AQS的几个模板方法" class="headerlink" title="8 AQS的几个模板方法"></a>8 AQS的几个模板方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">如果与当前（调用）线程独占同步，则返回true。</span><br><span class="line">protected boolean isHeldExclusively() &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试以独占模式获取。该方法应该查询对象的状态是否允许以独占模式获取它，如果允许则获取它。</span><br><span class="line">protected boolean tryAcquire(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试设置状态以反映独占模式下的释放</span><br><span class="line">protected boolean tryRelease(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试以共享模式获取。该方法应该查询对象的状态是否允许在共享模式下获取它，如果允许则获取它。</span><br><span class="line">protected int tryAcquireShared(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试设置状态以反映共享模式下的释放。此方法始终由执行释放的线程调用。</span><br><span class="line">protected boolean tryReleaseShared(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="9-信号量Semaphore"><a href="#9-信号量Semaphore" class="headerlink" title="9 信号量Semaphore"></a>9 信号量Semaphore</h3><p>synchronized和ReentrantLock都是一次只允许一个线程访问某个资源，Semaphore(信号量)可以指定多个线程同时访问某个资源。<br>计数信号量。从概念上讲，信号量维护一组许可。如有必要，每个获取块直到许可可用，然后获取它。每个版本都会增加一个许可，可能会释放一个阻塞的收单方。但是，没有使用实际的许可对象；信号量只是计算可用的数量并相应地采取行动。<br>信号量通常用于限制可以访问某些（物理或逻辑）资源的线程数。</p>
+<h3 id="10-CountDownLatch与CyclicBarrier"><a href="#10-CountDownLatch与CyclicBarrier" class="headerlink" title="10 CountDownLatch与CyclicBarrier"></a>10 CountDownLatch与CyclicBarrier</h3><p>CountDownLatch：一种同步辅助，允许一个或多个线程等待，直到在其他线程中执行的一组操作完成。<br>CountDownLatch使用给定的计数进行初始化。由于调用了 countDown 方法，await方法会阻塞，直到当前计数达到零，然后释放所有等待线程，并且任何后续的 await 调用都会立即返回。这是一种一次性现象——无法重置计数。如果您需要重置计数的版本，请考虑使用CyclicBarrier。</p>
+<p>CyclicBarrier：一种同步辅助工具，它允许一组线程全部等待彼此到达公共屏障点。CyclicBarriers在涉及固定大小的线程组的程序中很有用，这些线程必须偶尔相互等待。屏障被称为循环的，因为它可以在等待线程被释放后重新使用。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>锁</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>11_22_Java</title>
     <url>/2021/11/22/11-22-Java/</url>
     <content><![CDATA[<h3 id="1-ThreadLocal"><a href="#1-ThreadLocal" class="headerlink" title="1 ThreadLocal"></a>1 ThreadLocal</h3><p>此类提供thread-local变量。<br>ThreadLocal提供get和set方法，为每一个使用这个变量的线程都保存一份独立初始化的变量副本。只要线程处于活动状态并且可以访问ThreadLocal实例，每个线程都持有对其线程局部变量副本的隐式引用；线程消失后，它的所有线程本地实例副本都将进行垃圾回收。</p>
@@ -332,44 +370,6 @@
       </categories>
       <tags>
         <tag>threadlocal</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>11_23_Java</title>
-    <url>/2021/11/23/11-23-Java/</url>
-    <content><![CDATA[<h3 id="1-synchronized与ReentrantLock"><a href="#1-synchronized与ReentrantLock" class="headerlink" title="1 synchronized与ReentrantLock"></a>1 synchronized与ReentrantLock</h3><p>synchronized是Java中的关键字，ReentrantLock是一个类。<br>ReentrantLock提供了比synchronized更多更灵活的特性，比如等待可中断、可实现公平锁、锁绑定多个条件。<br>synchronized依赖于JVM，ReenTrantLock依赖于API。<br>JDK1.6为synchronized关键字进行了很多优化，但是这些优化都是在虚拟机层面实现的。<br>ReenTrantLock是API层面实现的（需要lock()和unlock方法配合try/finally语句块来完成）。</p>
-<p>很明显Synchronized的使用比较方便简洁，并且由编译器去保证加锁和释放锁，而ReenTrantLock需要手动声明来加锁和释放锁，为了避免忘记释放锁造成死锁，所以最好在finally中声明释放锁。<br>ReenTrantLock的实现是一种自旋锁，通过循环调用CAS操作来实现加锁。它的性能比较好也是因为避免了使线程进入内核态的阻塞状态。想尽办法避免线程进入内核的阻塞状态是我们去分析和理解锁设计的关键钥匙。</p>
-<h3 id="2-synchronized与volatile"><a href="#2-synchronized与volatile" class="headerlink" title="2 synchronized与volatile"></a>2 synchronized与volatile</h3><p>synchronized锁定当前变量，只有当前线程可以访问该变量，其他线程被阻塞。<br>volatile本质是在告诉JVM当前变量在寄存器中的值是不确定的，需要从主存中读取。保证了不同线程对该变量操作的内存可见性，禁止指令重排序。<br>synchronized可以作用于变量、方法、对象；volatile只能作用于变量。<br>volatile不会造成线程的阻塞；synchronized可能会造成线程的阻塞。<br>volatile标记的变量不会被编译器优化；synchronized标记的变量可以被编译器优化。</p>
-<h3 id="3-ReentrantReadWriteLock"><a href="#3-ReentrantReadWriteLock" class="headerlink" title="3 ReentrantReadWriteLock"></a>3 ReentrantReadWriteLock</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;** Inner class providing readlock *&#x2F;</span><br><span class="line">private final ReentrantReadWriteLock.ReadLock readerLock;</span><br><span class="line">&#x2F;** Inner class providing writelock *&#x2F;</span><br><span class="line">private final ReentrantReadWriteLock.WriteLock writerLock;</span><br></pre></td></tr></table></figure>
-<p>ReentrantReadWriteLock允许多个读线程同时访问，但是不允许写线程和读线程、写线程和写线程同时访问。<br>ReentrantReadWriteLock维护了两个锁：ReadLock，WriteLock。<br>ReentrantReadWriteLock可以保证多个线程同时读，所以在读操作远大于写操作的时候，读写锁就非常有用了。</p>
-<p>在写线程持有的所有写锁都被释放之前，不允许非可重入读者。<br>重入还允许从写锁降级到读锁，通过获取写锁，然后是读锁，然后释放写锁。<br>读锁和写锁都支持锁获取过程中的中断。</p>
-<h3 id="4-悲观锁与乐观锁"><a href="#4-悲观锁与乐观锁" class="headerlink" title="4 悲观锁与乐观锁"></a>4 悲观锁与乐观锁</h3><p><strong>悲观锁</strong><br>当你要对数据进行操作时，为了避免同时被其他人修改，最好的办法就是直接对该数据进行加锁。这样别人想拿这个数据就会阻塞直到它拿到锁。</p>
-<p>悲观锁分为共享锁和排他锁。<br>共享锁又称为读锁，简称S锁。共享锁就是多个事务对于同一数据可以共享一把锁，都能访问到数据，但是只能读不能修改。<br>排他锁又称为写锁，简称X锁。排他锁就是不能与其他锁并存，如果一个事务获取了一个数据行的排他锁，其他事务就不能再获取该数据行的锁（包括共享锁和排他锁）。获取排他锁的事务可以对数据行读取和修改。</p>
-<p>传统的关系型数据库使用悲观锁机制，比如行锁、表锁、读锁、写锁等，都是在操作之前先上锁。<br>Java中synchronized和ReentrantLock等独占锁也是悲观锁思想的实现。</p>
-<p><strong>乐观锁</strong><br>当你要对数据进行操作时，假设不会被其他人修改，所以不用上锁。但是在更新的时候会判断一下在此期间别人有没有去更新这个数据。乐观锁适用于读多写少的场景，这样可以提高程序的吞吐量。<br>数据库提供的类似于write_condition机制，其实就是提供的乐观锁。<br>Java中java.util.concurrent.atomic包下面的原子变量类就是使用了乐观锁的一种实现方式CAS来实现的。</p>
-<h3 id="5-乐观锁的两种实现方式"><a href="#5-乐观锁的两种实现方式" class="headerlink" title="5 乐观锁的两种实现方式"></a>5 乐观锁的两种实现方式</h3><p><strong>版本号机制</strong><br>在数据中加上一个version字段，表示数据被修改的次数。当数据被修改时，version值加一。当线程A要更新数据时，在读取数据的同时也会读取version值，在提交更新时，只有刚读取到的version值与当前数据库中的version值相等时才更新，否则重试，直到更新成功。</p>
-<p><strong>CAS</strong><br>compare and swap（比较与交换），是一种有名的无锁算法。在不使用锁的情况下实现多线程之间的变量同步，也就是在没有线程被阻塞的情况下实现变量的同步，所以也叫非阻塞同步。<br>CAS本质上很简单，一般至少有3个参数：V表示要更新的变量、E表示预期值、N表示新值变量。<br>如果V值等于E值，则将V的值设为N。若V值和E值不同，则说明已经有其他线程做了更新，则当前线程什么都不做。</p>
-<p>通俗的理解就是CAS操作需要我们提供一个期望值，当期望值与当前线程的变量值相同时，说明还没有线程修改该值，则当前线程可以进行修改，也就是执行CAS操作。但如果期望值与当前线程的变量值不等，则说明该值已被其他线程修改，此时不执行更新操作，但可以选择重新读取该变量再次尝试修改该变量，也可以放弃操作。</p>
-<p><strong>缺点</strong><br>ABA问题<br>如果一个变量V初次读取的时候是A值，并且在准备赋值的时候检查到它仍然是A值，那我们就能说明它的值没有被其他线程修改过了吗？很明显是不能的，因为在这段时间它的值可能被改为其它值，然后又改回A，但CAS操作就会误认为它从来没有被修改过。<br>JDK1.5 AtomicStampedReference类中的compareAndSet方法就是首先检查当前引用是否等于预期引用，并且当前标志是否等于预期标志，如果全部相等，则以原子方式将该引用和该标志的值设置为给定的更新值。</p>
-<p>循环时间长，开销大<br>自旋CAS（也就是不成功就一直循环执行直到成功），如果长时间不成功，会给CPU带来非常大的执行开销。</p>
-<p>只能保证一个共享变量的原子操作<br>CAS只对单个共享变量有效，当操作涉及多个共享变量时CAS无效。<br>但是从JDK1.5开始，提供了AtomicReference类来保证引用对象之间的原子性，你可以把多个变量放在一个对象里来进行CAS操作。所以我们可以使用锁或者利用AtomicReference类把多个共享变量合并成一个共享变量来操作。</p>
-<p>CAS适用于写比较少的情况下（多读场景，冲突一般较少），synchronized适用于写比较多的情况下（多写场景，冲突一般较多）。</p>
-<h3 id="6-atomic原理"><a href="#6-atomic原理" class="headerlink" title="6 atomic原理"></a>6 atomic原理</h3><p>java.util.concurrent.atomic包中类的基本特性就是在多线程环境下，当有多个线程同时对单个（包括基本类型及引用类型）变量进行操作时，具有排他性，即当多个线程同时对该变量的值进行更新时，仅有一个线程能成功，而未成功的线程可以向自旋锁一样，继续尝试，直到执行成功。</p>
-<h3 id="7-AQS"><a href="#7-AQS" class="headerlink" title="7 AQS"></a>7 AQS</h3><p>AbstractQueuedSynchronizer（抽象队列同步器）：提供一个框架，用于实现依赖先进先出(FIFO)等待队列的阻塞锁和相关同步器（信号量、事件等）。</p>
-<p>核心思想是：如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制AQS是用CLH队列锁实现的，将暂时获取不到锁的线程加入到队列中。</p>
-<p>AQS将每一条请求共享资源的线程封装成一个CLH队列锁的一个结点（Node），来实现锁的分配。<br>private volatile int state;<br>AQS使用一个int成员变量(state)来表示同步状态，通过内置的FIFO队列来完成获取资源线程的排队工作。AQS使用CAS对该同步状态进行原子操作实现对其值的修改。</p>
-<p>AQS对资源的共享方式：<br>Exclusive（独占）：只有一个线程能执行，如ReentrantLock，又可分为公平锁和非公平锁。<br>公平锁：按照线程在队列中的排队顺序，先到者先拿到锁。<br>非公平锁：当线程要获取锁时，先通过两次CAS操作去抢锁，如果没抢到，当前线程再加入到队列中等待唤醒。<br>Share（共享）：多个线程可同时执行，如Semaphore/CountDownLatch、Semaphore、CountDownLatCh、CyclicBarrier、ReadWriteLock。</p>
-<h3 id="8-AQS的几个模板方法"><a href="#8-AQS的几个模板方法" class="headerlink" title="8 AQS的几个模板方法"></a>8 AQS的几个模板方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">如果与当前（调用）线程独占同步，则返回true。</span><br><span class="line">protected boolean isHeldExclusively() &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试以独占模式获取。该方法应该查询对象的状态是否允许以独占模式获取它，如果允许则获取它。</span><br><span class="line">protected boolean tryAcquire(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试设置状态以反映独占模式下的释放</span><br><span class="line">protected boolean tryRelease(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试以共享模式获取。该方法应该查询对象的状态是否允许在共享模式下获取它，如果允许则获取它。</span><br><span class="line">protected int tryAcquireShared(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试设置状态以反映共享模式下的释放。此方法始终由执行释放的线程调用。</span><br><span class="line">protected boolean tryReleaseShared(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="9-信号量Semaphore"><a href="#9-信号量Semaphore" class="headerlink" title="9 信号量Semaphore"></a>9 信号量Semaphore</h3><p>synchronized和ReentrantLock都是一次只允许一个线程访问某个资源，Semaphore(信号量)可以指定多个线程同时访问某个资源。<br>计数信号量。从概念上讲，信号量维护一组许可。如有必要，每个获取块直到许可可用，然后获取它。每个版本都会增加一个许可，可能会释放一个阻塞的收单方。但是，没有使用实际的许可对象；信号量只是计算可用的数量并相应地采取行动。<br>信号量通常用于限制可以访问某些（物理或逻辑）资源的线程数。</p>
-<h3 id="10-CountDownLatch与CyclicBarrier"><a href="#10-CountDownLatch与CyclicBarrier" class="headerlink" title="10 CountDownLatch与CyclicBarrier"></a>10 CountDownLatch与CyclicBarrier</h3><p>CountDownLatch：一种同步辅助，允许一个或多个线程等待，直到在其他线程中执行的一组操作完成。<br>CountDownLatch使用给定的计数进行初始化。由于调用了 countDown 方法，await方法会阻塞，直到当前计数达到零，然后释放所有等待线程，并且任何后续的 await 调用都会立即返回。这是一种一次性现象——无法重置计数。如果您需要重置计数的版本，请考虑使用CyclicBarrier。</p>
-<p>CyclicBarrier：一种同步辅助工具，它允许一组线程全部等待彼此到达公共屏障点。CyclicBarriers在涉及固定大小的线程组的程序中很有用，这些线程必须偶尔相互等待。屏障被称为循环的，因为它可以在等待线程被释放后重新使用。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>锁</tag>
       </tags>
   </entry>
   <entry>
@@ -501,6 +501,56 @@
       </tags>
   </entry>
   <entry>
+    <title>12_01_Java</title>
+    <url>/2021/12/01/12-01-Java/</url>
+    <content><![CDATA[<h3 id="1-Java参数传递"><a href="#1-Java参数传递" class="headerlink" title="1 Java参数传递"></a>1 Java参数传递</h3><p>值传递（pass by value）是指在调用函数时将实际参数<strong>复制</strong>一份传递到函数中，这样在函数中如果对参数进行修改，将不会影响到实际参数。<br>引用传递（pass by reference）是指在调用函数时将实际参数的<strong>地址直接</strong>传递到函数中，那么在函数中对参数所进行的修改，将影响到实际参数。</p>
+<table>
+<thead>
+<tr>
+<th>传递</th>
+<th align="center">值传递</th>
+<th align="center">引用传递</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>区别</td>
+<td align="center">会创建副本</td>
+<td align="center">不会创建副本</td>
+</tr>
+<tr>
+<td>结果</td>
+<td align="center">函数中无法改变原始对象</td>
+<td align="center">函数中可以改变原始对象</td>
+</tr>
+</tbody></table>
+<p>Java在方法调用传递参数时，都是值传递。只不过对于对象参数，值的内容是对象的引用。<br>在运行栈中，基本类型和引用类型的处理是一样的，都是传值。但是当进入被调用方法时，传递的引用值被程序解释到堆中，这个时候才对应到真正的对象。如果此时进行修改，修改的是引用对应的对象，而不是引用本身。即修改的是堆中的数据，所以这个修改是可以保持的。</p>
+<h3 id="2-判断对象存活的算法"><a href="#2-判断对象存活的算法" class="headerlink" title="2 判断对象存活的算法"></a>2 判断对象存活的算法</h3><p>垃圾收集器在对堆和方法区进行回收前，首先要确定这些区域的对象哪些可以回收，哪些暂时还不能回收，这就要用到判断对象是否存活的算法。</p>
+<p><strong>引用计数算法</strong><br>引用计数算法是垃圾收集器的早期策略。在这种方法中，堆中每个对象实例都有一个引用计数器。当一个对象被创建时，就将该对象实例分配给一个变量，该变量计数设置为1。当任何其它变量被赋值为这个对象的引用时，计数加1（a=b，则b引用的对象实例的计数器加1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数器减1。任何引用计数器为0的对象实例都可以被当作垃圾收集。当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器减1。</p>
+<p>缺点：无法检测出循环引用。</p>
+<p><strong>可达性分析算法</strong><br>可达性分析（Reachability Analysis）算法的基本思路就是通过一系列称为“GC Roots”的根对象作为起始节点集，从这些节点开始，根据引用关系向下搜索，搜索过程所走过的路径称为“引用链”，如果某个对象到GC Roots间没有任何引用链相连，则证明此对象是不可能再被使用的，会被判定为可回收的对象。</p>
+<p>在Java语言中，固定可作为GC Roots的对象包括以下几种：<br>在虚拟机栈（栈帧中的本地变量表）中引用的对象；<br>在方法区中类静态属性引用的对象；<br>在方法区中常量引用的对象；<br>在本地方法栈中JNI（Native方法）引用的对象；<br>Java虚拟机内部的引用；<br>所有被同步锁（synchronized关键字）持有的对象。</p>
+<h3 id="3-被标记为垃圾的对象一定会被回收吗？"><a href="#3-被标记为垃圾的对象一定会被回收吗？" class="headerlink" title="3 被标记为垃圾的对象一定会被回收吗？"></a>3 被标记为垃圾的对象一定会被回收吗？</h3><p>不一定！<br>即使在可达性分析算法中判定为不可达的对象，也不是“非死不可”，要真正宣告一个对象死亡，至少要经历两次标记过程。<br>如果对象在进行可达性分析后发现没有与GC Roots相连接的引用链，那它将会被第一次标记。随后进行一次筛选，筛选的条件是此对象是否有必要执行finalize()方法。<br>在finalize()方法中没有重新与引用链建立关联关系的，将被进行第二次标记。第二次标记后的对象将被回收，如果对象在finalize()方法中重新与引用链建立了关联关系，那么将会逃离本次回收，继续存活。</p>
+<h3 id="4-Java引用类型"><a href="#4-Java引用类型" class="headerlink" title="4 Java引用类型"></a>4 Java引用类型</h3><p><strong>强引用</strong><br>强引用是指在程序代码之中普遍存在的引用赋值。如果一个对象具有强引用，那么垃圾回收器不会回收它。</p>
+<p><strong>软引用</strong><br>可以通过java.lang.ref.SoftReference使用软引用。一个持有软引用的对象，不会被JVM很快回收，JVM会根据当前堆的使用情况来判断何时回收。当堆使用率临近阈值时，才会去回收软引用的对象。因此，软引用可以用于实现对内存敏感的高速缓存。</p>
+<p><strong>弱引用</strong><br>当垃圾收集器工作时，无论当前内存是否足够，都会回收掉只被弱引用关联的对象。</p>
+<p><strong>虚引用</strong><br>一个对象是否有虚引用的存在，完全不会对其生存时间构成影响，也无法通过虚引用来取得一个对象实例。为一个对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</p>
+<h3 id="5-Java内存泄露"><a href="#5-Java内存泄露" class="headerlink" title="5 Java内存泄露"></a>5 Java内存泄露</h3><p>内存泄漏就是存在一些不会再被使用却没有被回收的对象，这些对象有下两个特点：<br>这些对象是可达的，即在有向图中，存在通路可以与其相连。<br>这些对象是无用的，即程序以后不会再使用这些对象。<br>这些对象不会被GC所回收，然而它却占用内存。</p>
+<p>根本原因：<br>长生命周期的对象持有短生命周期对象的引用就很可能发生内存泄漏，尽管短生命周期对象已经不再需要，但是因为长生命周期对象持有它的引用而导致不能被回收，这就是Java中内存泄漏的发生场景。<br>数据库连接（dataSourse.getConnection()），网络连接(socket)和IO连接，除非其显式的调用了close()方法将其连接关闭，否则是不会主动被GC回收的。<br>单例对象在初始化后将在JVM的整个生命周期中存在（以静态变量的方式），如果单例对象持有外部的引用，那么这个对象将不能被JVM正常回收，导致内存泄漏。</p>
+<h3 id="6-常用的垃圾收集算法"><a href="#6-常用的垃圾收集算法" class="headerlink" title="6 常用的垃圾收集算法"></a>6 常用的垃圾收集算法</h3><p><strong>标记-清除（mark-sweep）算法</strong><br>算法分为“标记”和“清除”两个阶段：首先标记出所有需要回收的对象，在标记完成后，统一回收掉所有被标记的对象。也可以反过来，标记存活的对象，统一回收所有未被标记的对象。标记-清除算法采用可达性分析算法进行对象是否存活的判断。</p>
+<p>缺点：执行效率不稳定；内存空间的碎片化问题。</p>
+<p><strong>复制算法</strong><br>它将可用内存按容量划分为大小相等的两块，每次只使用其中的一块。当这一块的内存用完了，就将还存活着的对象复制到另外一块上面，然后再把已使用过的内存空间一次清理掉。</p>
+<p>优点：解决了内存空间的碎片化问题。<br>缺点：内存利用率不高，空间浪费严重；对象存活率较高时需要进行较多的复制操作，效率会降低。</p>
+<p><strong>标记-整理（mark-compact）算法</strong><br>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但后序步骤不是直接对可回收对象进行清理。而是让所有存活的对象都向内存空间一端移动，然后直接清理掉边界以外的内存。</p>
+<h3 id="7-分代收集理论"><a href="#7-分代收集理论" class="headerlink" title="7 分代收集理论"></a>7 分代收集理论</h3><p>它的核心思想是根据对象存活的生命周期将Java堆划分出不同的区域，然后将回收对象依据其年龄分配到不同的区域之中存储。一般情况下将Java堆划分为新生代（Young Generation）和老年代（Old Generation）两个区域。在堆之外还有一个代就是永久代（Permanet Generation）。<br>新生代的特点是每次垃圾回收时都有大量的对象需要被回收，而老年代的特点是每次垃圾收集时只有少量对象需要被回收，那么就可以根据不同代的特点采取最适合的收集算法。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>11_27_Mysql</title>
     <url>/2021/11/27/11-27-Mysql/</url>
     <content><![CDATA[<h3 id="1-mysql架构"><a href="#1-mysql架构" class="headerlink" title="1 mysql架构"></a>1 mysql架构</h3><img src="/2021/11/27/11-27-Mysql/mysql.png" class="">
@@ -539,66 +589,31 @@
       </tags>
   </entry>
   <entry>
-    <title>12_05_Java</title>
-    <url>/2021/12/05/12-05-Java/</url>
-    <content><![CDATA[<h3 id="1-类加载机制"><a href="#1-类加载机制" class="headerlink" title="1 类加载机制"></a>1 类加载机制</h3><p>虚拟机把描述类的数据从 Class 文件加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的 Java 类型，这就是虚拟机的类加载机制。<br>类的生命周期包括7个阶段：<strong>加载、验证、准备、解析、初始化、使用和卸载</strong>。<br>其中解析过程在某些情况下可以在初始化阶段之后再开始，这是为了支持 Java 动态绑定。</p>
-<img src="/2021/12/05/12-05-Java/class.png" class="">
-<ol>
-<li>加载<br>在加载阶段，虚拟机完成三件事：<br>通过一个类的全限定名来获取定义此类的二进制字节流；<br>将二进制字节流所代表的静态存储结构转化为方法区的运行时数据结构；<br>在内存中生成一个代表这个类的 java.lang.Class 对象，作为方法区这个类的各种数据的访问接口。</li>
-<li>验证<br>主要是为了确保 Class 文件的字节流中包含的信息符合当前虚拟机的要求，并且不会危害虚拟机自身的安全。验证阶段大致上分为 4 个阶段的检验动作：文件格式验证、元数据验证、字节码验证、符号引用验证。<br>文件格式校验：验证字节流是否符合 class 文件的规范，并且能被当前版本的虚拟机处理。只有通过这个阶段的验证后，字节流才会进入内存的方法区进行存储，所以后面的3个阶段全部是基于方法区的存储结构进行的，不会再直接操作字节流；<br>元数据验证：对字节码描述的信息进行语义分析，以保证其描述的信息符合Java语言规范的要求；<br>字节码验证：该阶段主要工作是进行数据流和控制流分析，保证被校验类的方法在运行时不会做出危害虚拟机安全的行为；<br>符号引用验证：最后一个阶段的校验发生在虚拟机将符号引用转化为直接引用的时候，这个转化动作将在连接的第三个阶段——解析阶段中发生。</li>
-<li>准备<br>为类变量分配内存并设置类变量的初始值，这些变量所使用的内存都将在方法区中进行分配。这时候进入内存分配的仅包括类变量（被 static 修饰的变量），而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在 Java 堆中。实例化不是类加载的一个过程，类加载发生在所有实例化操作之前，并且类加载只进行一次，实例化可以进行多次。</li>
-<li>解析<br>虚拟机将常量池内的符号引用替换为直接引用。</li>
-<li>初始化<br>在准备阶段，类变量已经赋过一次系统要求的初始值，而在初始化阶段，根据程序员通过程序制定的主观计划去初始化类变量和其它资源。或者说初始化阶段即虚拟机执行类构造器()方法的过程。</li>
-</ol>
-<h3 id="2-类加载器有哪些？"><a href="#2-类加载器有哪些？" class="headerlink" title="2 类加载器有哪些？"></a>2 类加载器有哪些？</h3><p>引导类加载器（Bootstrap ClassLoader）：内嵌在jvm中的一段特殊的用来加载java核心类库的C++代码。它负责将JAVA_HOME/lib下面的核心类库或-X bootclasspath选项指定的jar包等虚拟机识别的类库加载到内存中。</p>
-<p>拓展类加载器（Extension ClassLoader）：由Sun的ExtClassLoader实现的，它负责将JAVA_HOME /lib/ext或者由系统变量-D java.ext.dir指定位置中的类库加载到内存中。</p>
-<p>应用类加载器（Application ClassLoader)：由 sun.misc.Launcher$AppClassLoder 实现。由于应用类加载器是 ClassLoader 中的 getSystemClassLoader() 方法的返回值，所以一般也称之为系统类加载器。它负责加载用户路径（ClassPath）所指定的类库，开发者可以直接使用这个类加载器，如果应用程序中没有自定义过类加载器，一般情况下这个就是程序中默认的类加载器。</p>
-<h3 id="3-双亲委派模型"><a href="#3-双亲委派模型" class="headerlink" title="3 双亲委派模型"></a>3 双亲委派模型</h3><p>双亲委派模式要求除了顶层的bootstrap类加载器外，其余的类加载器都应当有自己的父类加载器，请注意双亲委派模式中的父子关系并非通常所说的类继承关系，而是采用<strong>组合关系</strong>来复用父类加载器的相关代码。</p>
-<img src="/2021/12/05/12-05-Java/classloader.png" class="">
-<p>工作原理：如果一个类加载器收到了类加载请求，它并不会自己先去加载，而是把这个请求委托给父类的加载器去执行，如果父类加载器还存在其父类加载器，则进一步向上委托，请求最终将到达顶层的引导类加载器。如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载。</p>
-<p>双亲委派模式优势：Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层次关可以避免类的重复加载，当父加载器已经加载了该类时，子类ClassLoader就没有必要再加载一次。</p>
-<p>主要代码实现：loadClass()方法。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected Class&lt;?&gt; loadClass(String name, boolean resolve)</span><br><span class="line">        throws ClassNotFoundException</span><br><span class="line">    &#123;</span><br><span class="line">        synchronized (getClassLoadingLock(name)) &#123;</span><br><span class="line">            &#x2F;&#x2F; First, check if the class has already been loaded</span><br><span class="line">            Class&lt;?&gt; c &#x3D; findLoadedClass(name);</span><br><span class="line">            if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                long t0 &#x3D; System.nanoTime();</span><br><span class="line">                try &#123;</span><br><span class="line">                    if (parent !&#x3D; null) &#123;</span><br><span class="line">                        c &#x3D; parent.loadClass(name, false);</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        c &#x3D; findBootstrapClassOrNull(name);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">                    &#x2F;&#x2F; ClassNotFoundException thrown if class not found</span><br><span class="line">                    &#x2F;&#x2F; from the non-null parent class loader</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    &#x2F;&#x2F; If still not found, then invoke findClass in order</span><br><span class="line">                    &#x2F;&#x2F; to find the class.</span><br><span class="line">                    long t1 &#x3D; System.nanoTime();</span><br><span class="line">                    c &#x3D; findClass(name);</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; this is the defining class loader; record the stats</span><br><span class="line">                    sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClasses().increment();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (resolve) &#123;</span><br><span class="line">                resolveClass(c);</span><br><span class="line">            &#125;</span><br><span class="line">            return c;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>先检查是否已经被加载过，若没有加载则调用父类加载器的 loadClass() 方法，若父类加载器为空则默认使用bootstrap类加载器作为父类加载器。如果父类加载失败，抛出 ClassNotFoundException 异常后，再调用自己的 findClass() 方法进行加载。</p>
-<p>若要实现自定义类加载器，只需要继承 java.lang.ClassLoader 类，并且重写其 findClass() 方法即可。</p>
-<h3 id="4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"><a href="#4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？" class="headerlink" title="4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"></a>4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？</h3><p>解释器：程序可以迅速启动和执行，消耗内存小（成本低，到后期效率低）；<br>编译器：随着代码频繁执行会将代码编译成本地机器码（成本高，到后期效率高）。</p>
-<p>在整个虚拟机执行架构中，解释器与编译器经常配合工作，两者各有优势：当程序需要迅速启动和执行的时候，解释器可以优先发挥作用，省去编译的时间，立即执行。在程序运行后，随着时间的推移，编译器逐渐发挥作用，把越来越多的代码编译成本地代码之后，可以获取更高的执行效率。当程序运行环境中内存资源限制较大（如部分嵌入式系统），可以使用解释执行来节约内存，反之可以使用编译执行来提升效率。<br>解释执行可以节约内存，而编译执行可以提升效率。因此，在整个虚拟机执行架构中，解释器与编译器经常配合工作。</p>
-<h3 id="5-Java内存模型"><a href="#5-Java内存模型" class="headerlink" title="5 Java内存模型"></a>5 Java内存模型</h3><p>Java内存模型（Java Memory Model，JMM）：屏蔽掉各种硬件和操作系统的内存访问差异，以实现让Java程序在各种平台下都能达到一致的并发效果。<br>Java 内存模型的主要目标是定义程序中各个变量的访问规则，在虚拟机中将变量存储到内存和从内存中取出变量。<br>Java 内存模型规定了所有的变量都存储在主内存（Main Memory）中，每个线程有自己的工作线程（Working Memory），保存主内存副本拷贝和私有变量，不同线程不能访问工作内存中的变量。线程间变量值的传递需要通过主内存来完成。</p>
-<h3 id="6-内存间的交互"><a href="#6-内存间的交互" class="headerlink" title="6 内存间的交互"></a>6 内存间的交互</h3><p>关于主内存与工作内存之间的具体交互协议，即一个变量如何从主内存拷贝到工作内存、如何从工作内存同步到主内存之间的实现细节，Java内存模型定义了以下八种操作来完成：<br>lock（锁定）：作用于主内存的变量，把一个变量标识为一条线程独占状态。<br>unlock（解锁）：作用于主内存变量，把一个处于锁定状态的变量释放出来，释放后的变量才可以被其他线程锁定。<br>read（读取）：作用于主内存变量，把一个变量值从主内存传输到线程的工作内存中，以便随后的load动作使用<br>load（载入）：作用于工作内存的变量，它把read操作从主内存中得到的变量值放入工作内存的变量副本中。<br>use（使用）：作用于工作内存的变量，把工作内存中的一个变量值传递给执行引擎，每当虚拟机遇到一个需要使用变量的值的字节码指令时将会执行这个操作。<br>assign（赋值）：作用于工作内存的变量，它把一个从执行引擎接收到的值赋值给工作内存的变量，每当虚拟机遇到一个给变量赋值的字节码指令时执行这个操作。<br>store（存储）：作用于工作内存的变量，把工作内存中的一个变量的值传送到主内存中，以便随后的write的操作。<br>write（写入）：作用于主内存的变量，它把store操作从工作内存中一个变量的值传送到主内存的变量中。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>12_04_Java</title>
     <url>/2021/12/04/12-04-Java/</url>
-    <content><![CDATA[<h3 id="1-分代收集中年轻代和老年代采用的收集算法"><a href="#1-分代收集中年轻代和老年代采用的收集算法" class="headerlink" title="1 分代收集中年轻代和老年代采用的收集算法"></a>1 分代收集中年轻代和老年代采用的收集算法</h3><p>年轻代（Young Generation）的回收算法 (主要以 Copying 为主)</p>
+    <content><![CDATA[<h3 id="1-分代收集理论中新生代和老年代采用的收集算法"><a href="#1-分代收集理论中新生代和老年代采用的收集算法" class="headerlink" title="1 分代收集理论中新生代和老年代采用的收集算法"></a>1 分代收集理论中新生代和老年代采用的收集算法</h3><p>新生代(主要是复制算法)</p>
 <ol>
-<li>所有新生成的对象首先都是放在年轻代的。年轻代的目标就是尽可能快速的收集掉那些生命周期短的对象。</li>
-<li>新生代内存按照 8:1:1 的比例分为一个 eden 区和两个 survivor（survivor0、 survivor1）区。大部分对象在eden 区中生成。回收时先将 eden 区存活对象复制到 survivor0 区，然后清空 eden 区，当survivor0 区也存放满了，则将 eden 区和 survivor0 区存活对象复制到 survivor1 区，然后清空 eden 区 和 survivor0 区，此时 survivor0 区是空的，然后将survivor0 区和 survivor1 区交换，即保持survivor1 区为空，如此往复。</li>
-<li>当 survivor1 区不足以存放 eden 区和 survivor0 区的存活对象时，就将存活对象直接存放到老年代。若是老年代也满了就会触发一次Full GC（Major GC），也就是新生代、老年代都进行回收。</li>
-<li>新生代发生的 GC 也叫做 Minor GC，MinorGC 发生频率比较高（不一定等 eden 区满了才触发）。</li>
+<li>把新生代分为一块较大的Eden空间和两块较小的Survivor（Survivor0，Survivor1）空间，每次分配内存只使用Eden和其中一块Survivor。</li>
+<li>HotSpot虚拟机默认Eden和Survivor的大小比例为8：1。垃圾收集时，将Eden和Survivor0中仍然存活的对象一次性复制到Survivor1空间上，然后直接清理掉Eden和Survivor0空间。</li>
+<li>当Survivor1区域不足以存放Eden和Survivor0区域的存活对象时，就将存活对象直接存放到老年代。若是老年代也满了就会触发一次Full GC，也就是新生代、老年代都进行回收。</li>
 </ol>
-<p>老年代（Old Generation）的回收算法（主要以 Mark-Compact 为主）</p>
+<p>老年代（主要是Mark-Compact算法）</p>
 <ol>
-<li>在年轻代中经历了 N 次垃圾回收后仍然存活的对象，就会被放到老年代中。因此，可以认为老年代中存放的都是一些生命周期比较长的对象。</li>
-<li>内存比新生代也大很多（1 : 2），当老年代内存满时触发 Major GC 即 Full GC，Full GC 发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
+<li>在新生代中经历了N次垃圾回收后仍然存活的对象，就会被放到老年代中。因此，可以认为老年代中存放的都是一些生命周期比较长的对象。</li>
+<li>当老年代内存满时触发Full GC，Full GC发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
 </ol>
 <h3 id="2-常用的垃圾收集器"><a href="#2-常用的垃圾收集器" class="headerlink" title="2 常用的垃圾收集器"></a>2 常用的垃圾收集器</h3><ol>
-<li>Serial GC，它是最古老的垃圾收集器，“Serial”体现在其收集工作是单线程的，并且在进行垃圾收集过程中，会进入臭名昭著的“Stop-The-World”状态。当然，其单线程设计也意味着精简的 GC 实现，无需维护复杂的数据结构，初始化也简单，所以一直是 Client 模式下 JVM 的默认选项。</li>
-<li>从年代的角度，通常将其老年代实现单独称作 Serial Old，它采用了标记 - 整理（Mark-Compact）算法，区别于新生代的复制算法。</li>
-<li>ParNew GC，很明显是个新生代 GC 实现，它实际是 Serial GC 的多线程版本，最常见的应用场景是配合老年代的 CMS GC 工作。</li>
-<li>CMS（Concurrent Mark Sweep） GC，基于标记 - 清除（Mark-Sweep）算法，设计目标是尽量减少停顿时间，这一点对于 Web 等反应时间敏感的应用非常重要，一直到今天，仍然有很多系统使用 CMS GC。但是，CMS 采用的标记 - 清除算法，存在着内存碎片化问题，所以难以避免在长时间运行等情况下发生 full GC，导致恶劣的停顿。另外，既然强调了并发（Concurrent），CMS 会占用更多 CPU 资源，并和用户线程争抢。</li>
-<li>Parrallel GC，在早期 JDK 8 等版本中，它是 server 模式 JVM 的默认 GC 选择，也被称作是吞吐量优先的 GC。它的算法和 Serial GC 比较相似，尽管实现要复杂的多，其特点是新生代和老年代 GC 都是并行进行的，在常见的服务器环境中更加高效。</li>
-<li>G1 GC 这是一种兼顾吞吐量和停顿时间的 GC 实现，是 Oracle JDK 9 以后的默认 GC 选项。G1 可以直观的设定停顿时间的目标，相比于 CMS GC，G1 未必能做到 CMS 在最好情况下的延时停顿，但是最差情况要好很多。G1 GC内存结构为一个个region。Region 之间是复制算法，但整体上实际可看作是标记 - 整理（Mark-Compact）算法，可以有效地避免内存碎片，尤其是当 Java 堆非常大的时候，G1 的优势更加明显。G1 吞吐量和停顿表现都非常不错，并且仍然在不断地完善，与此同时 CMS 已经在 JDK 9 中被标记为废弃（deprecated）。</li>
+<li>Serial GC，它是最古老的垃圾收集器，“Serial”体现在其收集工作是单线程的，“单线程”强调的是在它进行垃圾收集时，必须暂停其它所有工作线程，直到它收集结束。即会进入臭名昭著的“Stop The World”状态。当然，其单线程设计也意味着精简的GC实现，无需维护复杂的数据结构，初始化也简单，所以一直是Client模式下默认新生代收集器。</li>
+<li>Serial Old GC，它是Serial收集器的老年代版本，同样是一个单线程收集器，使用了标记-整理（Mark-Compact）算法。</li>
+<li>ParNew GC，是一个新生代收集器，它实际是Serial GC的多线程并行版本，最常见的应用场景是配合老年代的CMS GC工作。</li>
+<li>Parrallel Scavenge GC，它是一款新生代收集器，基于复制算法实现的收集器。它的目标是达到一个可扩展的吞吐量，也被称为“吞吐量优先收集器”。</li>
+<li>Parrallel Old GC，它是Parrallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法实现。</li>
+<li>CMS（Concurrent Mark Sweep）GC，基于标记-清除（Mark-Sweep）算法实现，设计目标是尽量缩短停顿时间，这一点对于Web等反应时间敏感的应用非常重要。一直到今天，仍然有很多系统使用CMS GC。但是，CMS 采用的标记-清除算法，存在着内存碎片化问题，所以难以避免在长时间运行情况下发生full GC，导致恶劣的停顿。另外，既然强调了并发（Concurrent），CMS会占用更多CPU资源，并和用户线程争抢。</li>
+<li>G1（Garbage First）GC，这是一种兼顾吞吐量和停顿时间的GC实现，是Oracle JDK 9以后的默认GC选项，主要面向服务端应用的垃圾收集器。</li>
 </ol>
-<h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>G1 GC是一种兼顾吞吐量和停顿时间的GC实现，是Oracle JDK 9以后的默认 GC 选项。<br>与以往的收集器不同，G1引入region（区间）的概念，它也分年轻代和老年代。年轻代依然有Eden区和Survivor区。从实际的物理角度看Eden，Survivor等不需要连续只需要保证逻辑上的连续即可。在G1中，堆被分成若干大小相等的区域（region），内存的回收和划分都以region为单位；同时，它吸取了 CMS 的特点，把整个垃圾回收过程分为几个阶段，分散一个垃圾回收过程；而且，G1 也认同分代垃圾回收的思想，认为不同对象的生命周期不同，可以采取不同收集方式，因此，它也支持分代的垃圾回收。为了达到对回收时间的可预计性，G1 在扫描了 region 以后，对其中的活跃对象的大小进行排序，首先会收集那些活跃对象小的 region，以便快速回收空间（要复制的活跃对象少了），因为活跃对象小，里面可以认为多数都是垃圾，所以这种方式被称为 Garbage First（G1）的垃圾回收算法。</p>
+<h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>它开创了收集器面向<strong>局部收集</strong>的设计思路和基于<strong>Region</strong>的内存布局形式。<br>与以往的收集器不同，G1引入region（区间）的概念，它也分年轻代和老年代。年轻代依然有Eden区和Survivor区。从实际的物理角度看Eden，Survivor等不需要连续只需要保证逻辑上的连续即可。在G1中，堆被分成若干大小相等的区域（region），内存的回收和划分都以region为单位；同时，它吸取了 CMS 的特点，把整个垃圾回收过程分为几个阶段，分散一个垃圾回收过程；而且，G1 也认同分代垃圾回收的思想，认为不同对象的生命周期不同，可以采取不同收集方式，因此，它也支持分代的垃圾回收。为了达到对回收时间的可预计性，G1 在扫描了 region 以后，对其中的活跃对象的大小进行排序，首先会收集那些活跃对象小的 region，以便快速回收空间（要复制的活跃对象少了），因为活跃对象小，里面可以认为多数都是垃圾，所以这种方式被称为 Garbage First（G1）的垃圾回收算法。</p>
 <h3 id="4-内存分配的理解？大对象怎么分配？空间分配担保？"><a href="#4-内存分配的理解？大对象怎么分配？空间分配担保？" class="headerlink" title="4 内存分配的理解？大对象怎么分配？空间分配担保？"></a>4 内存分配的理解？大对象怎么分配？空间分配担保？</h3><ol>
-<li>对象优先在 Eden 区分配：大多数情况下，对象在新生代 Eden 区分配，当 Eden 区空间不够时，发起 MinorGC。</li>
+<li>对象优先在Eden中分配：大多数情况下，对象在新生代 Eden 区分配，当 Eden 区空间不够时，发起 MinorGC。</li>
 <li>大对象直接进入老年代：大对象是指需要连续内存空间的对象，最典型的大对象是那种很长的字符串以及数组。经常出现大对象会提前触发垃圾收集以获取足够的连续空间分配给大对象。PretenureSizeThreshold，大于此值的对象直接在老年代分配，避免在 Eden 区和 Survivor 区之间的大量内存复制。</li>
 <li>长期存活的对象将进入老年代：为对象定义年龄计数器，对象在 Eden 出生并经过 Minor GC 依然存活，将移动到 Survivor 中，年龄就增加 1 岁，增加到一定年龄则移动到老年代中。MaxTenuringThreshold 用来定义年龄的阈值。</li>
 <li>动态对象年龄判定：为了更好的适应不同程序的内存情况，虚拟机不是永远要求对象年龄必须达到了某个值才能进入老年代，如果 Survivor 空间中相同年龄所有对象大小的总和大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需达到要求的年龄。</li>
@@ -608,6 +623,48 @@
 <h3 id="6-class文件结构"><a href="#6-class文件结构" class="headerlink" title="6 class文件结构"></a>6 class文件结构</h3><p>Class文件结构采用类似C语言的结构体来存储数据的，主要有两类数据项，无符号数和表，无符号数用来表述数字，索引引用以及字符串等，比如 u1，u2，u4，u8分别代表1个字节，2个字节，4个字节，8个字节的无符号数，而表是有多个无符号数以及其它的表组成的复合结构，习惯地以_info结尾。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic;</span><br><span class="line">    u2             minor_version;</span><br><span class="line">    u2             major_version;</span><br><span class="line">    u2             constant_pool_count;</span><br><span class="line">    cp_info        constant_pool[constant_pool_count-1];</span><br><span class="line">    u2             access_flags;</span><br><span class="line">    u2             this_class;</span><br><span class="line">    u2             super_class;</span><br><span class="line">    u2             interfaces_count;</span><br><span class="line">    u2             interfaces[interfaces_count];</span><br><span class="line">    u2             fields_count;</span><br><span class="line">    field_info     fields[fields_count];</span><br><span class="line">    u2             methods_count;</span><br><span class="line">    method_info    methods[methods_count];</span><br><span class="line">    u2             attributes_count;</span><br><span class="line">    attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>每个 Class 文件的头 4 个字节称为魔数（magic），它的值固定为 0xCAFEBABE，表示文件类型是能够被JVM处理的Class文件。紧接着magic之后的四个字节存储的是 Class 文件的次版本号和主版本号。<br>在主次版本号之后是常量池。常量池主要存储了字面量以及符号引用。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>12_05_Java</title>
+    <url>/2021/12/05/12-05-Java/</url>
+    <content><![CDATA[<h3 id="1-类加载机制"><a href="#1-类加载机制" class="headerlink" title="1 类加载机制"></a>1 类加载机制</h3><p>Java虚拟机把描述类的数据从Class文件加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这个过程被称作虚拟机的类加载机制。<br>一个类型从被加载到虚拟机内存中开始，到卸载出内存为止，他的整个生命周期会经历7个阶段：<strong>加载、验证、准备、解析、初始化、使用和卸载</strong>。其中验证、准备和解析三个部分统称为连接。解析阶段在某些情况下可以在初始化阶段之后再开始，这是为了支持Java语言的运行时绑定特性（动态绑定）。</p>
+<img src="/2021/12/05/12-05-Java/class.png" class="">
+<p><strong>加载</strong><br>在加载阶段，Java虚拟机需要完成以下三件事情：</p>
+<ul>
+<li>通过一个类的全限定名来获取定义此类的二进制字节流；</li>
+<li>将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构；</li>
+<li>在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问接口。</li>
+</ul>
+<p><strong>验证</strong><br>验证是连接阶段的第一步，目的是确保Class文件的字节流中包含的信息符合Java虚拟机规范的全部约束要求，保证这些信息被当作代码运行后不会危害虚拟机自身的安全。</p>
+<p>验证阶段大致上会完成下面4个阶段的检验动作：文件格式验证、元数据验证、字节码验证、符号引用验证。<br>文件格式验证：验证字节流是否符合class文件格式的规范，并且能被当前版本的虚拟机处理。这阶段验证是基于二进制字节流进行的，只有通过了这个阶段的验证后，这段字节流才被允许进入Java虚拟机内存的方法区中进行存储，所以后面的3个验证阶段全部是基于方法区的存储结构上进行的，不会再直接读取、操作字节流。</p>
+<p>元数据验证：对字节码描述的信息进行语义分析，以保证其描述的信息符合Java语言规范的要求。</p>
+<p>字节码验证：该阶段主要目的是通过数据流分析和控制流分析，确定程序语义是合法的、符合逻辑的。对类的方法体进行校验分析，保证被校验类的方法在运行时不会做出危害虚拟机安全的行为。</p>
+<p>符号引用验证：最后一个阶段的校验行为发生在虚拟机将符号引用转化为直接引用的时候，这个转化动作将在连接的第三个阶段——解析阶段中发生。符号引用验证主要目的是确保解析行为能正常执行。</p>
+<p><strong>准备</strong><br>为类中定义的变量（静态变量）分配内存并设置类变量初始值的阶段，这些变量所使用的内存都将在方法区中进行分配。这时候进入内存分配的仅包括类变量（被static修饰的变量），而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在Java堆中。<br>实例化不是类加载的一个过程，类加载发生在所有实例化操作之前，并且类加载只进行一次，实例化可以进行多次。</p>
+<p><strong>解析</strong><br>Java虚拟机将常量池内的符号引用替换为直接引用。</p>
+<p><strong>初始化</strong><br>进行准备阶段时，变量已经赋过一次系统要求的初始零值，而在初始化阶段，则会根据程序员通过程序编码制定的主观计划去初始化类变量和其它资源。或者说初始化阶段就是执行类构造器<clinit>()方法的过程。</p>
+<h3 id="2-类加载器"><a href="#2-类加载器" class="headerlink" title="2 类加载器"></a>2 类加载器</h3><p>启动类加载器（Bootstrap ClassLoader）：使用C++语言实现，是虚拟机自身的一部分。它负责加载存放在<JAVA_HOME>\lib目录，或者被-Xbootclasspath参数所指定的路径下存放的，而且是Java虚拟机能够识别的类库加载到虚拟机的内存中。</p>
+<p>拓展类加载器（Extension ClassLoader）：它是在类sun.misc.Launcher$ExtClassLoader中以Java代码的形式实现的。它负责加载<JAVA_HOME>\lib\ext目录中，或者被java.ext.dirs系统变量所指定的路径中所有的类库。</p>
+<p>应用程序类加载器（Application Class Loader)：由sun.misc.Launcher$AppClassLoder实现。由于应用程序类加载器是ClassLoader类中的getSystemClassLoader()方法的返回值，所以也称为“系统类加载器”。它负责加载用户类路径（ClassPath）上所有的类库，开发者可以直接使用这个类加载器，如果应用程序中没有自定义过类加载器，一般情况下这个就是程序中默认的类加载器。</p>
+<h3 id="3-双亲委派模型"><a href="#3-双亲委派模型" class="headerlink" title="3 双亲委派模型"></a>3 双亲委派模型</h3><p>双亲委派模型要求除了顶层的bootstrap类加载器外，其余的类加载器都应当有自己的父类加载器。不过这里类加载器之间的父子关系一般不是以继承的方式来实现的，，而是通常使用<strong>组合关系</strong>来复用父加载器的相关代码。</p>
+<img src="/2021/12/05/12-05-Java/classloader.png" class="">
+<p>工作原理：如果一个类加载器收到了类加载请求，它首先不会自己去尝试加载这个类，而是把这个请求委派给父类的加载器去完成，如果父类加载器还存在它的父类加载器，则进一步向上委派，因此所有的加载请求最终都将到达顶层的启动类加载器。如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载。</p>
+<p>双亲委派模式优势：Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层次关可以避免类的重复加载，当父加载器已经加载了该类时，子类ClassLoader就没有必要再加载一次。<br>Object类在程序的各种类加载器环境中都能保证是同一个类。</p>
+<p>主要代码实现：loadClass()方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">protected Class&lt;?&gt; loadClass(String name, boolean resolve)</span><br><span class="line">        throws ClassNotFoundException</span><br><span class="line">    &#123;</span><br><span class="line">        synchronized (getClassLoadingLock(name)) &#123;</span><br><span class="line">            &#x2F;&#x2F; First, check if the class has already been loaded</span><br><span class="line">            Class&lt;?&gt; c &#x3D; findLoadedClass(name);</span><br><span class="line">            if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                long t0 &#x3D; System.nanoTime();</span><br><span class="line">                try &#123;</span><br><span class="line">                    if (parent !&#x3D; null) &#123;</span><br><span class="line">                        c &#x3D; parent.loadClass(name, false);</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        c &#x3D; findBootstrapClassOrNull(name);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">                    &#x2F;&#x2F; ClassNotFoundException thrown if class not found</span><br><span class="line">                    &#x2F;&#x2F; from the non-null parent class loader</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    &#x2F;&#x2F; If still not found, then invoke findClass in order</span><br><span class="line">                    &#x2F;&#x2F; to find the class.</span><br><span class="line">                    long t1 &#x3D; System.nanoTime();</span><br><span class="line">                    c &#x3D; findClass(name);</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; this is the defining class loader; record the stats</span><br><span class="line">                    sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClasses().increment();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (resolve) &#123;</span><br><span class="line">                resolveClass(c);</span><br><span class="line">            &#125;</span><br><span class="line">            return c;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>先检查请求加载的类型是否已经被加载过，若没有则调用父加载器的loadClass()方法，若父加载器为空则默认使用bootstrap类加载器作为父加载器。假如父加载器加载失败，抛出ClassNotFoundException异常的话，子加载器才调用自己的findClass()方法尝试进行加载。</p>
+<p>若要实现自定义类加载器，只需要继承java.lang.ClassLoader类，并且重写findClass()方法即可。</p>
+<h3 id="4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"><a href="#4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？" class="headerlink" title="4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"></a>4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？</h3><p>解释器：程序可以迅速启动和执行，消耗内存小（成本低，到后期效率低）；<br>编译器：随着代码频繁执行会将代码编译成本地机器码（成本高，到后期效率高）。</p>
+<p>在整个虚拟机执行架构中，解释器与编译器经常配合工作，两者各有优势：当程序需要迅速启动和执行的时候，解释器可以优先发挥作用，省去编译的时间，立即执行。在程序运行后，随着时间的推移，编译器逐渐发挥作用，把越来越多的代码编译成本地代码之后，可以获取更高的执行效率。当程序运行环境中内存资源限制较大（如部分嵌入式系统），可以使用解释执行来节约内存，反之可以使用编译执行来提升效率。<br>解释执行可以节约内存，而编译执行可以提升效率。因此，在整个虚拟机执行架构中，解释器与编译器经常配合工作。</p>
+<h3 id="5-Java内存模型"><a href="#5-Java内存模型" class="headerlink" title="5 Java内存模型"></a>5 Java内存模型</h3><p>Java内存模型（Java Memory Model，JMM）：屏蔽掉各种硬件和操作系统的内存访问差异，以实现让Java程序在各种平台下都能达到一致的并发效果。<br>Java 内存模型的主要目标是定义程序中各个变量的访问规则，在虚拟机中将变量存储到内存和从内存中取出变量。<br>Java 内存模型规定了所有的变量都存储在主内存（Main Memory）中，每个线程有自己的工作线程（Working Memory），保存主内存副本拷贝和私有变量，不同线程不能访问工作内存中的变量。线程间变量值的传递需要通过主内存来完成。</p>
+<h3 id="6-内存间的交互"><a href="#6-内存间的交互" class="headerlink" title="6 内存间的交互"></a>6 内存间的交互</h3><p>关于主内存与工作内存之间的具体交互协议，即一个变量如何从主内存拷贝到工作内存、如何从工作内存同步到主内存之间的实现细节，Java内存模型定义了以下八种操作来完成：<br>lock（锁定）：作用于主内存的变量，把一个变量标识为一条线程独占状态。<br>unlock（解锁）：作用于主内存变量，把一个处于锁定状态的变量释放出来，释放后的变量才可以被其他线程锁定。<br>read（读取）：作用于主内存变量，把一个变量值从主内存传输到线程的工作内存中，以便随后的load动作使用<br>load（载入）：作用于工作内存的变量，它把read操作从主内存中得到的变量值放入工作内存的变量副本中。<br>use（使用）：作用于工作内存的变量，把工作内存中的一个变量值传递给执行引擎，每当虚拟机遇到一个需要使用变量的值的字节码指令时将会执行这个操作。<br>assign（赋值）：作用于工作内存的变量，它把一个从执行引擎接收到的值赋值给工作内存的变量，每当虚拟机遇到一个给变量赋值的字节码指令时执行这个操作。<br>store（存储）：作用于工作内存的变量，把工作内存中的一个变量的值传送到主内存中，以便随后的write的操作。<br>write（写入）：作用于主内存的变量，它把store操作从工作内存中一个变量的值传送到主内存的变量中。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -762,36 +819,6 @@
       </tags>
   </entry>
   <entry>
-    <title>12_01_Java</title>
-    <url>/2021/12/01/12-01-Java/</url>
-    <content><![CDATA[<h3 id="1-Java参数传递"><a href="#1-Java参数传递" class="headerlink" title="1 Java参数传递"></a>1 Java参数传递</h3><p>值传递（pass by value）是指在调用函数时将实际参数<strong>复制</strong>一份传递到函数中，这样在函数中如果对参数进行修改，将不会影响到实际参数。<br>引用传递（pass by reference）是指在调用函数时将实际参数的<strong>地址直接</strong>传递到函数中，那么在函数中对参数所进行的修改，将影响到实际参数。<br>传递|值传递|引用传递<br>—|:—:|:—:|<br>区别|会创建副本|不会创建副本<br>结果|函数中无法改变原始对象|函数中可以改变原始对象</p>
-<p>Java在方法调用传递参数时，都是值传递。只不过对于对象参数，值的内容是对象的引用。<br>在运行栈中，基本类型和引用类型的处理是一样的，都是传值。但是当进入被调用方法时，传递的引用值被程序解释到堆中，这个时候才对应到真正的对象。如果此时进行修改，修改的是引用对应的对象，而不是引用本身。即修改的是堆中的数据，所以这个修改是可以保持的。</p>
-<h3 id="2-判断对象存活的算法"><a href="#2-判断对象存活的算法" class="headerlink" title="2 判断对象存活的算法"></a>2 判断对象存活的算法</h3><p>垃圾收集器在对堆和方法区进行回收前，首先要确定这些区域的对象哪些可以回收，哪些暂时还不能回收，这就要用到判断对象是否存活的算法。</p>
-<p><strong>引用计数算法</strong><br>引用计数算法是垃圾收集器的早期策略。在这种方法中，堆中每个对象实例都有一个引用计数器。当一个对象被创建时，就将该对象实例分配给一个变量，该变量计数设置为1。当任何其它变量被赋值为这个对象的引用时，计数加1（a = b，则 b 引用的对象实例的计数器加1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数器减1。任何引用计数器为0的对象实例都可以被当作垃圾收集。当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器减1。</p>
-<p>缺点：无法检测出循环引用。</p>
-<p><strong>可达性分析算法</strong><br>可达性分析（Reachability Analysis）算法的基本思路就是通过一系列称为“GC Roots”的根对象作为起始节点集，从这些节点开始，根据引用关系向下搜索，搜索过程所走过的路径称为“引用链”，如果某个对象到GC Roots间没有任何引用链相连，则证明此对象是不可能再被使用的，会被判定为可回收的对象。</p>
-<p>在Java语言中，固定可作为GC Roots的对象包括以下几种：<br>在虚拟机栈（栈帧中的本地变量表）中引用的对象；<br>在方法区中类静态属性引用的对象；<br>在方法区中常量引用的对象；<br>在本地方法栈中JNI（Native方法）引用的对象；<br>Java虚拟机内部的引用；<br>所有被同步锁（synchronized关键字）持有的对象。</p>
-<h3 id="3-被标记为垃圾的对象一定会被回收吗？"><a href="#3-被标记为垃圾的对象一定会被回收吗？" class="headerlink" title="3 被标记为垃圾的对象一定会被回收吗？"></a>3 被标记为垃圾的对象一定会被回收吗？</h3><p>不一定！<br>即使在可达性分析算法中判定为不可达的对象，也不是“非死不可”，要真正宣告一个对象死亡，至少要经历两次标记过程。<br>如果对象在进行可达性分析后发现没有与GC Roots相连接的引用链，那它将会被第一次标记。随后进行一次筛选，筛选的条件是此对象是否有必要执行finalize()方法。<br>在finalize()方法中没有重新与引用链建立关联关系的，将被进行第二次标记。第二次标记后的对象将被回收，如果对象在finalize()方法中重新与引用链建立了关联关系，那么将会逃离本次回收，继续存活。</p>
-<h3 id="4-Java引用类型"><a href="#4-Java引用类型" class="headerlink" title="4 Java引用类型"></a>4 Java引用类型</h3><p><strong>强引用</strong><br>强引用是指在程序代码之中普遍存在的引用赋值。如果一个对象具有强引用，那么垃圾回收器不会回收它。</p>
-<p><strong>软引用</strong><br>可以通过java.lang.ref.SoftReference使用软引用。一个持有软引用的对象，不会被JVM很快回收，JVM会根据当前堆的使用情况来判断何时回收。当堆使用率临近阈值时，才会去回收软引用的对象。因此，软引用可以用于实现对内存敏感的高速缓存。</p>
-<p><strong>弱引用</strong><br>当垃圾收集器工作时，无论当前内存是否足够，都会回收掉只被弱引用关联的对象。</p>
-<p><strong>虚引用</strong><br>一个对象是否有虚引用的存在，完全不会对其生存时间构成影响，也无法通过虚引用来取得一个对象实例。为一个对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</p>
-<h3 id="5-Java内存泄露"><a href="#5-Java内存泄露" class="headerlink" title="5 Java内存泄露"></a>5 Java内存泄露</h3><p>内存泄漏就是存在一些不会再被使用却没有被回收的对象，这些对象有下两个特点：<br>这些对象是可达的，即在有向图中，存在通路可以与其相连。<br>这些对象是无用的，即程序以后不会再使用这些对象。<br>这些对象不会被GC所回收，然而它却占用内存。</p>
-<p>根本原因：<br>长生命周期的对象持有短生命周期对象的引用就很可能发生内存泄漏，尽管短生命周期对象已经不再需要，但是因为长生命周期对象持有它的引用而导致不能被回收，这就是Java中内存泄漏的发生场景。<br>数据库连接（dataSourse.getConnection()），网络连接(socket)和IO连接，除非其显式的调用了close()方法将其连接关闭，否则是不会主动被GC回收的。<br>单例对象在初始化后将在JVM的整个生命周期中存在（以静态变量的方式），如果单例对象持有外部的引用，那么这个对象将不能被JVM正常回收，导致内存泄漏。</p>
-<h3 id="6-常用的垃圾收集算法"><a href="#6-常用的垃圾收集算法" class="headerlink" title="6 常用的垃圾收集算法"></a>6 常用的垃圾收集算法</h3><p><strong>标记-清除（mark-sweep）算法</strong><br>算法分为“标记”和“清除”两个阶段：首先标记出所有需要回收的对象，在标记完成后，统一回收掉所有被标记的对象。也可以反过来，标记存活的对象，统一回收所有未被标记的对象。标记-清除算法采用可达性分析算法进行对象是否存活的判断。</p>
-<p>缺点：执行效率不稳定；内存空间的碎片化问题。</p>
-<p><strong>复制算法</strong><br>复制算法的提出是为了克服句柄开销和解决内存碎片问题。把堆分成 一个对象面和多个空闲面， 程序从对象面为对象分配空间，当对象满了，基于 copying 算法的垃圾收集就从根集合（GC Roots）中扫描活动对象，并将每个活动对象复制到空闲面，这样空闲面变成了对象面，原来的对象面变成了空闲面，程序会在新的对象面中分配内存。</p>
-<p><strong>标记-整理（mark-compact）算法</strong><br>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但在清除时不同，在回收不存活的对象占用的空间后，会将所有的存活对象往左端空闲空间移动，并更新对应的指针。标记-整理算法是在标记-清除算法的基础上，又进行了对象的移动，因此成本更高，但是却解决了内存碎片的问题。</p>
-<p><strong>分代收集算法</strong><br>分代收集算法是目前大部分 JVM 的垃圾收集器采用的算法。它的核心思想是根据对象存活的生命周期将内存划分为若干个不同的区域。一般情况下将堆划分为老年代（Tenured Generation）和新生代（Young Generation），在堆之外还有一个代就是永久代（Permanet Generation）。<br>老年代的特点是每次垃圾收集时只有少量对象需要被回收，而新生代的特点是每次垃圾回收时都有大量的对象需要被回收，那么就可以根据不同代的特点采取最适合的收集算法。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>12_12_SpringMVC</title>
     <url>/2021/12/12/12-12-SpringMVC/</url>
     <content><![CDATA[<h3 id="1-MVC模式"><a href="#1-MVC模式" class="headerlink" title="1 MVC模式"></a>1 MVC模式</h3><p>模型－视图－控制器（MVC）。M指业务模型，V指用户界面，C则是控制器，使用MVC的目的是将M和V实现代码分离，从而使同一个程序可以使用不同的表现形式。</p>
@@ -882,6 +909,42 @@
       </tags>
   </entry>
   <entry>
+    <title>12_18_OS</title>
+    <url>/2021/12/18/12-18-OS/</url>
+    <content><![CDATA[<h3 id="1-进程状态"><a href="#1-进程状态" class="headerlink" title="1 进程状态"></a>1 进程状态</h3><img src="/2021/12/18/12-18-OS/process.png" class="">
+
+<p>就绪状态：进程已处于准备运行状态，即进程获得了除了处理器之外的一切所需资源，一旦得到处理器资源(处理器分配的时间片)即可运行。</p>
+<p>运行状态：进程正在处理器上运行(单核CPU下任意时刻只有一个进程处于运行状态)。</p>
+<p>阻塞状态：又称为等待状态，进程正在等待某一事件而暂停运行。例如等待某资源为可用或等待IO操作完成。即使处理器空闲，该进程也不能运行。</p>
+<h3 id="2-进程间通信（InterProcess-Communication）方式有哪些？"><a href="#2-进程间通信（InterProcess-Communication）方式有哪些？" class="headerlink" title="2 进程间通信（InterProcess Communication）方式有哪些？"></a>2 进程间通信（InterProcess Communication）方式有哪些？</h3><p>每个进程都有不同的用户地址空间，任何一个进程的全局变量对另一个进程是不可见的，所以进程之间要交换数据必须通过内核。在内核中开辟一块缓冲区，进程1把数据从用户空间拷到内核缓冲区，进程2再从内核缓冲区把数据读走，内核提供的这种机制称为进程间通信（IPC，InterProcess Communication）。</p>
+<p><strong>管道（无名管道）</strong><br>管道是半双工的，数据只能向一个方向流动；双方通信时，需要建立起两个管道；<br>只能用于父子进程或者兄弟进程之间(具有亲缘关系的进程)的通信；<br>单独构成一种独立的文件系统：管道对于管道两端的进程而言，就是一个文件，但它不是普通的文件，它不属于某种文件系统，而是单独构成一种文件系统，并且只存在于内存中；<br>数据的读出和写入：一个进程向管道中写的内容被管道另一端的进程读出。写入的内容每次都添加在管道缓冲区的末尾，并且每次都是从管道缓冲区的头部读出数据。</p>
+<p>局限：<br>只支持单向数据流；<br>只能用于具有亲缘关系的进程之间；<br>没有名字；<br>管道的缓冲区是有限的；<br>管道所传送的是无格式字节流，这就要求管道的双方必须事先约定好数据的格式。</p>
+<p><strong>有名管道（FIFO）</strong><br>有名管道提供了一个路径名与之关联，以有名管道的文件形式存在于文件系统中。这样，即使与有名管道的创建进程不存在亲缘关系的进程，只要可以访问该路径，就能够彼此通过有名管道相互通信。因此，通过有名管道不相关的进程也能交换数据。有名管道的名字存在于文件系统中，内容存放在内存中。</p>
+<p><strong>消息队列</strong><br>消息队列是存放在内核中的消息链表，每个消息队列由消息队列标识符表示；<br>消息队列是面向记录的，其中的消息具有特定的格式以及特定的优先级；<br>消息队列独立于发送与接收进程。进程终止时，消息队列及其内容并不会被删除。只有在内核重启(操作系统重启)或者显示地删除一个消息队列时，该消息队列才会被真正的删除；<br>消息队列可以实现消息的随机查询,消息不一定要以先进先出的次序读取,也可以按消息的类型读取。</p>
+<p><strong>信号量</strong><br>信号量是一个计数器，用于多进程对共享数据的访问，信号量的意图在于进程间同步。<br>信号量用于进程间同步，若要在进程间传递数据需要结合共享内存；<br>信号量基于操作系统的 PV 操作，程序对信号量的操作都是原子操作；<br>每次对信号量的 PV 操作不仅限于对信号量值加 1 或减1，而是可以加减任意正整数。</p>
+<p><strong>共享内存</strong><br>指两个或多个进程可以直接（共享）读写同一块内存空间；<br>共享内存是最快的一种IPC，因为进程是直接对内存进行存取；<br>由于多个进程共享一段内存，因此需要依靠某种同步机制（如信号量）来达到进程间的同步。</p>
+<p><strong>信号</strong><br>信号是一种比较复杂的通信方式，用于通知接收进程某个事件已经发生。</p>
+<p><strong>套接字（socket）</strong><br>主要用于在客户端和服务器之间通过网络进行通信。套接字是支持 TCP/IP 的网络通信的基本操作单元，可以看做是不同主机之间的进程进行双向通信的端点，简单说就是通信双方的一种约定，用套接字中的相关函数来完成通信过程。</p>
+<h3 id="3-进程调度算法"><a href="#3-进程调度算法" class="headerlink" title="3 进程调度算法"></a>3 进程调度算法</h3><p>为了确定首先执行哪个进程以及最后执行哪个进程以实现最大CPU利用率。</p>
+<p><strong>先来先服务(FCFS)调度算法</strong><br>每个进程就绪后加入就绪队列，从就绪队列中选择一个最先进入该队列的进程并为之分配资源，然后立即执行。FCFS是非抢占式的，易于实现，但效率不高，性能不好。有利于长作业（CPU繁忙性）而不利于短作业（I/O繁忙性）。</p>
+<p><strong>短作业优先（SJF）调度算法</strong><br>每次从后备队列中选择一个或若干个估计运行时间最短的作业，将它们调入内存运行。SJF是非抢占式的，优先照顾短作业，具有很好的性能，降低平均等待时间，提高吞吐量。<br>不利于长作业，长作业可能一直处于等待状态，会出现饥饿现象；完全未考虑作业的优先紧迫程度，不能用于实时系统。</p>
+<p><strong>时间片轮转调度算法</strong><br>时间片轮转调度是一种最古老，最简单，最公平且使用最广泛的算法。每个进程被分配一个时间段，称作它的时间片，即该进程允许运行的时间。进程调度程序总是选择就绪队列中第一个进程执行，即先来先服务的原则，但仅能运行一个时间片。适用于分时系统。</p>
+<p><strong>最短剩余时间优先调度算法</strong><br>最短剩余时间优先是针对短作业优先增加了抢占机制的版本。进程调度程序总是选择预期剩余时间最短的进程。当一个进程加入到就绪队列，它可能比当前运行的进程具有更短的剩余时间，因此调度程序就很可能抢占当前正在运行的进程。</p>
+<p><strong>高响应比优先调度算法</strong><br>高响应比优先调度算法（Highest Reponse Ratio First, HRRF）是非抢占式的，主要用于作业调度。每次进行作业调度时，先计算后备队列中每个作业的响应比，选择响应比最高的作业调度运行。<br>响应比 = （等待时间 + 服务时间） / 服务时间 = 等待时间 / 服务时间 + 1<br>该算法介于FCFS和SJF之间，但是每次需要计算每个作业的响应比，增加系统开销。</p>
+<p><strong>优先级调度算法</strong><br>为每个进程分配一个优先级，首先执行具有最高优先级的进程，依此类推。具有相同优先级的进程以 FCFS 方式执行。</p>
+<p><strong>多级反馈队列调度算法</strong><br>设置多个就绪队列，并为各个队列赋予不同的优先级。在优先级越高的队列中，每个进程所规定的执行时间片就越小。<br>当一个新进程进入内存后，首先放入第一队列的末尾，按照先来先服务原则排队等候调度。如果它能在一个时间片中完成，便可撤离；如果未完成，就转入第二队列的末尾，等待调度。依此类推。<br>仅当第一队列空闲的时候，调度程序才调度第二队列中的进程运行。<br>如果处理机正在处理第i队列中的进程，又有新进程进入优先级更高的队列，则此新队列抢占正在运行的处理机，并把正在运行的进程放在第i队列的队尾。</p>
+<h3 id="4-作业调度与进程调度"><a href="#4-作业调度与进程调度" class="headerlink" title="4 作业调度与进程调度"></a>4 作业调度与进程调度</h3><p>作业调度又称为高级调度，频率较低。其主要任务就是将位于外存后备队列中的某个（或某些）作业调入内存，排在就绪队列上。但仅仅是将作业调入内存，并为作业创建进程、分配资源，此时进程处于就绪状态，并没有执行。</p>
+<p>进程调度又称为低级调度，是最基本的、频率最高的调度方式。其主要任务是从就绪队列中选取一个（或几个）进程，并为之分配处理机，这时候才可以理解为“执行”。</p>
+<p>区别：<br>作业调度是为作业建立进程的过程，是将作业由外存调入内存的过程；<br>而进程调度整个过程并没有跑出内存的范围，而是将就绪态的进程变为运行态的进程。</p>
+]]></content>
+      <categories>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>进程调度</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>12_16_Network</title>
     <url>/2021/12/16/12-16-Network/</url>
     <content><![CDATA[<h3 id="1-每一层对应的网络协议"><a href="#1-每一层对应的网络协议" class="headerlink" title="1 每一层对应的网络协议"></a>1 每一层对应的网络协议</h3><img src="/2021/12/16/12-16-Network/protocol.png" class="">
@@ -921,42 +984,6 @@
       </categories>
       <tags>
         <tag>网络协议</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>12_18_OS</title>
-    <url>/2021/12/18/12-18-OS/</url>
-    <content><![CDATA[<h3 id="1-进程状态"><a href="#1-进程状态" class="headerlink" title="1 进程状态"></a>1 进程状态</h3><img src="/2021/12/18/12-18-OS/process.png" class="">
-
-<p>就绪状态：进程已处于准备运行状态，即进程获得了除了处理器之外的一切所需资源，一旦得到处理器资源(处理器分配的时间片)即可运行。</p>
-<p>运行状态：进程正在处理器上运行(单核CPU下任意时刻只有一个进程处于运行状态)。</p>
-<p>阻塞状态：又称为等待状态，进程正在等待某一事件而暂停运行。例如等待某资源为可用或等待IO操作完成。即使处理器空闲，该进程也不能运行。</p>
-<h3 id="2-进程间通信（InterProcess-Communication）方式有哪些？"><a href="#2-进程间通信（InterProcess-Communication）方式有哪些？" class="headerlink" title="2 进程间通信（InterProcess Communication）方式有哪些？"></a>2 进程间通信（InterProcess Communication）方式有哪些？</h3><p>每个进程都有不同的用户地址空间，任何一个进程的全局变量对另一个进程是不可见的，所以进程之间要交换数据必须通过内核。在内核中开辟一块缓冲区，进程1把数据从用户空间拷到内核缓冲区，进程2再从内核缓冲区把数据读走，内核提供的这种机制称为进程间通信（IPC，InterProcess Communication）。</p>
-<p><strong>管道（无名管道）</strong><br>管道是半双工的，数据只能向一个方向流动；双方通信时，需要建立起两个管道；<br>只能用于父子进程或者兄弟进程之间(具有亲缘关系的进程)的通信；<br>单独构成一种独立的文件系统：管道对于管道两端的进程而言，就是一个文件，但它不是普通的文件，它不属于某种文件系统，而是单独构成一种文件系统，并且只存在于内存中；<br>数据的读出和写入：一个进程向管道中写的内容被管道另一端的进程读出。写入的内容每次都添加在管道缓冲区的末尾，并且每次都是从管道缓冲区的头部读出数据。</p>
-<p>局限：<br>只支持单向数据流；<br>只能用于具有亲缘关系的进程之间；<br>没有名字；<br>管道的缓冲区是有限的；<br>管道所传送的是无格式字节流，这就要求管道的双方必须事先约定好数据的格式。</p>
-<p><strong>有名管道（FIFO）</strong><br>有名管道提供了一个路径名与之关联，以有名管道的文件形式存在于文件系统中。这样，即使与有名管道的创建进程不存在亲缘关系的进程，只要可以访问该路径，就能够彼此通过有名管道相互通信。因此，通过有名管道不相关的进程也能交换数据。有名管道的名字存在于文件系统中，内容存放在内存中。</p>
-<p><strong>消息队列</strong><br>消息队列是存放在内核中的消息链表，每个消息队列由消息队列标识符表示；<br>消息队列是面向记录的，其中的消息具有特定的格式以及特定的优先级；<br>消息队列独立于发送与接收进程。进程终止时，消息队列及其内容并不会被删除。只有在内核重启(操作系统重启)或者显示地删除一个消息队列时，该消息队列才会被真正的删除；<br>消息队列可以实现消息的随机查询,消息不一定要以先进先出的次序读取,也可以按消息的类型读取。</p>
-<p><strong>信号量</strong><br>信号量是一个计数器，用于多进程对共享数据的访问，信号量的意图在于进程间同步。<br>信号量用于进程间同步，若要在进程间传递数据需要结合共享内存；<br>信号量基于操作系统的 PV 操作，程序对信号量的操作都是原子操作；<br>每次对信号量的 PV 操作不仅限于对信号量值加 1 或减1，而是可以加减任意正整数。</p>
-<p><strong>共享内存</strong><br>指两个或多个进程可以直接（共享）读写同一块内存空间；<br>共享内存是最快的一种IPC，因为进程是直接对内存进行存取；<br>由于多个进程共享一段内存，因此需要依靠某种同步机制（如信号量）来达到进程间的同步。</p>
-<p><strong>信号</strong><br>信号是一种比较复杂的通信方式，用于通知接收进程某个事件已经发生。</p>
-<p><strong>套接字（socket）</strong><br>主要用于在客户端和服务器之间通过网络进行通信。套接字是支持 TCP/IP 的网络通信的基本操作单元，可以看做是不同主机之间的进程进行双向通信的端点，简单说就是通信双方的一种约定，用套接字中的相关函数来完成通信过程。</p>
-<h3 id="3-进程调度算法"><a href="#3-进程调度算法" class="headerlink" title="3 进程调度算法"></a>3 进程调度算法</h3><p>为了确定首先执行哪个进程以及最后执行哪个进程以实现最大CPU利用率。</p>
-<p><strong>先来先服务(FCFS)调度算法</strong><br>每个进程就绪后加入就绪队列，从就绪队列中选择一个最先进入该队列的进程并为之分配资源，然后立即执行。FCFS是非抢占式的，易于实现，但效率不高，性能不好。有利于长作业（CPU繁忙性）而不利于短作业（I/O繁忙性）。</p>
-<p><strong>短作业优先（SJF）调度算法</strong><br>每次从后备队列中选择一个或若干个估计运行时间最短的作业，将它们调入内存运行。SJF是非抢占式的，优先照顾短作业，具有很好的性能，降低平均等待时间，提高吞吐量。<br>不利于长作业，长作业可能一直处于等待状态，会出现饥饿现象；完全未考虑作业的优先紧迫程度，不能用于实时系统。</p>
-<p><strong>时间片轮转调度算法</strong><br>时间片轮转调度是一种最古老，最简单，最公平且使用最广泛的算法。每个进程被分配一个时间段，称作它的时间片，即该进程允许运行的时间。进程调度程序总是选择就绪队列中第一个进程执行，即先来先服务的原则，但仅能运行一个时间片。适用于分时系统。</p>
-<p><strong>最短剩余时间优先调度算法</strong><br>最短剩余时间优先是针对短作业优先增加了抢占机制的版本。进程调度程序总是选择预期剩余时间最短的进程。当一个进程加入到就绪队列，它可能比当前运行的进程具有更短的剩余时间，因此调度程序就很可能抢占当前正在运行的进程。</p>
-<p><strong>高响应比优先调度算法</strong><br>高响应比优先调度算法（Highest Reponse Ratio First, HRRF）是非抢占式的，主要用于作业调度。每次进行作业调度时，先计算后备队列中每个作业的响应比，选择响应比最高的作业调度运行。<br>响应比 = （等待时间 + 服务时间） / 服务时间 = 等待时间 / 服务时间 + 1<br>该算法介于FCFS和SJF之间，但是每次需要计算每个作业的响应比，增加系统开销。</p>
-<p><strong>优先级调度算法</strong><br>为每个进程分配一个优先级，首先执行具有最高优先级的进程，依此类推。具有相同优先级的进程以 FCFS 方式执行。</p>
-<p><strong>多级反馈队列调度算法</strong><br>设置多个就绪队列，并为各个队列赋予不同的优先级。在优先级越高的队列中，每个进程所规定的执行时间片就越小。<br>当一个新进程进入内存后，首先放入第一队列的末尾，按照先来先服务原则排队等候调度。如果它能在一个时间片中完成，便可撤离；如果未完成，就转入第二队列的末尾，等待调度。依此类推。<br>仅当第一队列空闲的时候，调度程序才调度第二队列中的进程运行。<br>如果处理机正在处理第i队列中的进程，又有新进程进入优先级更高的队列，则此新队列抢占正在运行的处理机，并把正在运行的进程放在第i队列的队尾。</p>
-<h3 id="4-作业调度与进程调度"><a href="#4-作业调度与进程调度" class="headerlink" title="4 作业调度与进程调度"></a>4 作业调度与进程调度</h3><p>作业调度又称为高级调度，频率较低。其主要任务就是将位于外存后备队列中的某个（或某些）作业调入内存，排在就绪队列上。但仅仅是将作业调入内存，并为作业创建进程、分配资源，此时进程处于就绪状态，并没有执行。</p>
-<p>进程调度又称为低级调度，是最基本的、频率最高的调度方式。其主要任务是从就绪队列中选取一个（或几个）进程，并为之分配处理机，这时候才可以理解为“执行”。</p>
-<p>区别：<br>作业调度是为作业建立进程的过程，是将作业由外存调入内存的过程；<br>而进程调度整个过程并没有跑出内存的范围，而是将就绪态的进程变为运行态的进程。</p>
-]]></content>
-      <categories>
-        <category>操作系统</category>
-      </categories>
-      <tags>
-        <tag>进程调度</tag>
       </tags>
   </entry>
   <entry>
@@ -1078,21 +1105,6 @@
       </tags>
   </entry>
   <entry>
-    <title>12_life</title>
-    <url>/2021/12/04/12-life/</url>
-    <content><![CDATA[<img src="/2021/12/04/12-life/life.png" class="">
-
-<p>江城子 乙卯正月二十日夜记梦<br>宋 苏轼</p>
-<p>十年生死两茫茫，不思量，自难忘。千里孤坟，无处话凄凉。纵使相逢应不识，尘满面，鬓如霜。<br>夜来幽梦忽还乡，小轩窗，正梳妆。相顾无言，惟有泪千行。料得年年肠断处，明月夜，短松冈。</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>爱情</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>12_29_Tree</title>
     <url>/2021/12/29/12-29-Tree/</url>
     <content><![CDATA[<h3 id="1-二叉树"><a href="#1-二叉树" class="headerlink" title="1 二叉树"></a>1 二叉树</h3><p>1）每个结点最多有两颗子树，所以二叉树中不存在度大于2的结点。<br>2）左子树和右子树是有顺序的，次序不能颠倒。<br>3）即使树中某结点只有一棵子树，也要区分它是左子树还是右子树。</p>
@@ -1113,6 +1125,21 @@
       </categories>
       <tags>
         <tag>二叉树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>12_life</title>
+    <url>/2021/12/04/12-life/</url>
+    <content><![CDATA[<img src="/2021/12/04/12-life/life.png" class="">
+
+<p>江城子 乙卯正月二十日夜记梦<br>宋 苏轼</p>
+<p>十年生死两茫茫，不思量，自难忘。千里孤坟，无处话凄凉。纵使相逢应不识，尘满面，鬓如霜。<br>夜来幽梦忽还乡，小轩窗，正梳妆。相顾无言，惟有泪千行。料得年年肠断处，明月夜，短松冈。</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>爱情</tag>
       </tags>
   </entry>
   <entry>
@@ -1806,19 +1833,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>oct_day</title>
-    <url>/2021/10/30/oct-day/</url>
-    <content><![CDATA[<p>十月的北京可谓是诈寒还暖，十月的倒数第二天竟然有二十多度，比起国庆之后的最低气温，现在不可谓不舒适。后天就是十一月了，日子总是这么轻飘飘的就过去了，明天三年之约也来了。多么令人期待了，等待了数个三年之后，炎帝迎来了他的三年之约。十一月总是给人美好，十一月的自己也要更加自律了，毕竟毕业不是儿戏啊！而且实习经验也没有的自己更要抓紧时间了。</p>
-<p>农历九月二十五日</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>十月</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>rain</title>
     <url>/2021/03/26/rain/</url>
     <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
@@ -1832,6 +1846,19 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>如晴似雨</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>oct_day</title>
+    <url>/2021/10/30/oct-day/</url>
+    <content><![CDATA[<p>十月的北京可谓是诈寒还暖，十月的倒数第二天竟然有二十多度，比起国庆之后的最低气温，现在不可谓不舒适。后天就是十一月了，日子总是这么轻飘飘的就过去了，明天三年之约也来了。多么令人期待了，等待了数个三年之后，炎帝迎来了他的三年之约。十一月总是给人美好，十一月的自己也要更加自律了，毕竟毕业不是儿戏啊！而且实习经验也没有的自己更要抓紧时间了。</p>
+<p>农历九月二十五日</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>十月</tag>
       </tags>
   </entry>
   <entry>
