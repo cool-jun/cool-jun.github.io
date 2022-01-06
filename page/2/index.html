@@ -789,7 +789,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-06 11:57:15" itemprop="dateModified" datetime="2022-01-06T11:57:15+08:00">2022-01-06</time>
+                <time title="修改时间：2022-01-06 14:44:25" itemprop="dateModified" datetime="2022-01-06T14:44:25+08:00">2022-01-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -826,7 +826,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="1-类加载机制"><a href="#1-类加载机制" class="headerlink" title="1 类加载机制"></a>1 类加载机制</h3><p>Java虚拟机把描述类的数据从Class文件加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这个过程被称作虚拟机的类加载机制。<br>一个类型从被加载到虚拟机内存中开始，到卸载出内存为止，他的整个生命周期会经历7个阶段：<strong>加载、验证、准备、解析、初始化、使用和卸载</strong>。其中验证、准备和解析三个部分统称为连接。解析阶段在某些情况下可以在初始化阶段之后再开始，这是为了支持Java语言的运行时绑定特性（动态绑定）。</p>
+          <h3 id="1-类加载机制"><a href="#1-类加载机制" class="headerlink" title="1 类加载机制"></a>1 类加载机制</h3><p>Java虚拟机把描述类的数据从Class文件加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这个过程被称作虚拟机的类加载机制。<br>一个类型从被加载到虚拟机内存中开始，到卸载出内存为止，它的整个生命周期会经历7个阶段：<strong>加载、验证、准备、解析、初始化、使用和卸载</strong>。其中验证、准备和解析三个部分统称为连接。解析阶段在某些情况下可以在初始化阶段之后再开始，这是为了支持Java语言的运行时绑定特性（动态绑定）。</p>
 <img src="/2021/12/05/12-05-Java/class.png" class="">
 <p><strong>加载</strong><br>在加载阶段，Java虚拟机需要完成以下三件事情：</p>
 <ul>
@@ -842,16 +842,16 @@
 <p><strong>准备</strong><br>为类中定义的变量（静态变量）分配内存并设置类变量初始值的阶段，这些变量所使用的内存都将在方法区中进行分配。这时候进入内存分配的仅包括类变量（被static修饰的变量），而不包括实例变量，实例变量将会在对象实例化时随着对象一起分配在Java堆中。<br>实例化不是类加载的一个过程，类加载发生在所有实例化操作之前，并且类加载只进行一次，实例化可以进行多次。</p>
 <p><strong>解析</strong><br>Java虚拟机将常量池内的符号引用替换为直接引用。</p>
 <p><strong>初始化</strong><br>进行准备阶段时，变量已经赋过一次系统要求的初始零值，而在初始化阶段，则会根据程序员通过程序编码制定的主观计划去初始化类变量和其它资源。或者说初始化阶段就是执行类构造器<clinit>()方法的过程。</p>
-<h3 id="2-类加载器"><a href="#2-类加载器" class="headerlink" title="2 类加载器"></a>2 类加载器</h3><p>启动类加载器（Bootstrap ClassLoader）：使用C++语言实现，是虚拟机自身的一部分。它负责加载存放在<JAVA_HOME>\lib目录，或者被-Xbootclasspath参数所指定的路径下存放的，而且是Java虚拟机能够识别的类库加载到虚拟机的内存中。</p>
-<p>拓展类加载器（Extension ClassLoader）：它是在类sun.misc.Launcher$ExtClassLoader中以Java代码的形式实现的。它负责加载<JAVA_HOME>\lib\ext目录中，或者被java.ext.dirs系统变量所指定的路径中所有的类库。</p>
+<h3 id="2-类加载器"><a href="#2-类加载器" class="headerlink" title="2 类加载器"></a>2 类加载器</h3><p>启动类加载器（Bootstrap ClassLoader）：使用C++语言实现，是虚拟机自身的一部分。它负责加载存放在JAVA_HOME\lib目录，或者被-Xbootclasspath参数所指定的路径下存放的，而且是Java虚拟机能够识别的类库到虚拟机的内存中。</p>
+<p>拓展类加载器（Extension ClassLoader）：它是在类sun.misc.Launcher$ExtClassLoader中以Java代码的形式实现的。它负责加载JAVA_HOME\lib\ext目录中，或者被java.ext.dirs系统变量所指定的路径中所有的类库。</p>
 <p>应用程序类加载器（Application Class Loader)：由sun.misc.Launcher$AppClassLoder实现。由于应用程序类加载器是ClassLoader类中的getSystemClassLoader()方法的返回值，所以也称为“系统类加载器”。它负责加载用户类路径（ClassPath）上所有的类库，开发者可以直接使用这个类加载器，如果应用程序中没有自定义过类加载器，一般情况下这个就是程序中默认的类加载器。</p>
-<h3 id="3-双亲委派模型"><a href="#3-双亲委派模型" class="headerlink" title="3 双亲委派模型"></a>3 双亲委派模型</h3><p>双亲委派模型要求除了顶层的bootstrap类加载器外，其余的类加载器都应当有自己的父类加载器。不过这里类加载器之间的父子关系一般不是以继承的方式来实现的，，而是通常使用<strong>组合关系</strong>来复用父加载器的相关代码。</p>
+<h3 id="3-双亲委派模型"><a href="#3-双亲委派模型" class="headerlink" title="3 双亲委派模型"></a>3 双亲委派模型</h3><p>双亲委派模型要求除了顶层的启动类加载器外，其余的类加载器都应当有自己的父类加载器。不过这里类加载器之间的父子关系一般不是以继承的方式来实现的，而是通常使用<strong>组合关系</strong>来复用父加载器的相关代码。</p>
 <img src="/2021/12/05/12-05-Java/classloader.png" class="">
 <p>工作原理：如果一个类加载器收到了类加载请求，它首先不会自己去尝试加载这个类，而是把这个请求委派给父类的加载器去完成，如果父类加载器还存在它的父类加载器，则进一步向上委派，因此所有的加载请求最终都将到达顶层的启动类加载器。如果父类加载器可以完成类加载任务，就成功返回，倘若父类加载器无法完成此加载任务，子加载器才会尝试自己去加载。</p>
-<p>双亲委派模式优势：Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层次关可以避免类的重复加载，当父加载器已经加载了该类时，子类ClassLoader就没有必要再加载一次。<br>Object类在程序的各种类加载器环境中都能保证是同一个类。</p>
+<p>双亲委派模型优点：Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层次关可以避免类的重复加载，当父加载器已经加载了该类时，子类加载器就没有必要再加载一次；Object类在程序的各种类加载器环境中都能保证是同一个类。</p>
 <p>主要代码实现：loadClass()方法。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">protected Class&lt;?&gt; loadClass(String name, boolean resolve)</span><br><span class="line">        throws ClassNotFoundException</span><br><span class="line">    &#123;</span><br><span class="line">        synchronized (getClassLoadingLock(name)) &#123;</span><br><span class="line">            &#x2F;&#x2F; First, check if the class has already been loaded</span><br><span class="line">            Class&lt;?&gt; c &#x3D; findLoadedClass(name);</span><br><span class="line">            if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                long t0 &#x3D; System.nanoTime();</span><br><span class="line">                try &#123;</span><br><span class="line">                    if (parent !&#x3D; null) &#123;</span><br><span class="line">                        c &#x3D; parent.loadClass(name, false);</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        c &#x3D; findBootstrapClassOrNull(name);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">                    &#x2F;&#x2F; ClassNotFoundException thrown if class not found</span><br><span class="line">                    &#x2F;&#x2F; from the non-null parent class loader</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                if (c &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    &#x2F;&#x2F; If still not found, then invoke findClass in order</span><br><span class="line">                    &#x2F;&#x2F; to find the class.</span><br><span class="line">                    long t1 &#x3D; System.nanoTime();</span><br><span class="line">                    c &#x3D; findClass(name);</span><br><span class="line"></span><br><span class="line">                    &#x2F;&#x2F; this is the defining class loader; record the stats</span><br><span class="line">                    sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);</span><br><span class="line">                    sun.misc.PerfCounter.getFindClasses().increment();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (resolve) &#123;</span><br><span class="line">                resolveClass(c);</span><br><span class="line">            &#125;</span><br><span class="line">            return c;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>先检查请求加载的类型是否已经被加载过，若没有则调用父加载器的loadClass()方法，若父加载器为空则默认使用bootstrap类加载器作为父加载器。假如父加载器加载失败，抛出ClassNotFoundException异常的话，子加载器才调用自己的findClass()方法尝试进行加载。</p>
+<p>先检查请求加载的类型是否已经被加载过，若没有则调用父加载器的loadClass()方法，若父加载器为空则默认使用启动类加载器作为父加载器。假如父加载器加载失败，抛出ClassNotFoundException异常的话，子加载器才调用自己的findClass()方法尝试进行加载。</p>
 <p>若要实现自定义类加载器，只需要继承java.lang.ClassLoader类，并且重写findClass()方法即可。</p>
 <h3 id="4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"><a href="#4-HotSpot虚拟机为什么要使用解释器与编译器并存的架构？" class="headerlink" title="4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？"></a>4 HotSpot虚拟机为什么要使用解释器与编译器并存的架构？</h3><p>解释器：程序可以迅速启动和执行，消耗内存小（成本低，到后期效率低）；<br>编译器：随着代码频繁执行会将代码编译成本地机器码（成本高，到后期效率高）。</p>
 <p>在整个虚拟机执行架构中，解释器与编译器经常配合工作，两者各有优势：当程序需要迅速启动和执行的时候，解释器可以优先发挥作用，省去编译的时间，立即执行。在程序运行后，随着时间的推移，编译器逐渐发挥作用，把越来越多的代码编译成本地代码之后，可以获取更高的执行效率。当程序运行环境中内存资源限制较大（如部分嵌入式系统），可以使用解释执行来节约内存，反之可以使用编译执行来提升效率。<br>解释执行可以节约内存，而编译执行可以提升效率。因此，在整个虚拟机执行架构中，解释器与编译器经常配合工作。</p>
@@ -998,7 +998,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-06 10:50:27" itemprop="dateModified" datetime="2022-01-06T10:50:27+08:00">2022-01-06</time>
+                <time title="修改时间：2022-01-06 15:55:02" itemprop="dateModified" datetime="2022-01-06T15:55:02+08:00">2022-01-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1057,16 +1057,26 @@
 </ol>
 <h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>它开创了收集器面向<strong>局部收集</strong>的设计思路和基于<strong>Region</strong>的内存布局形式。<br>与以往的收集器不同，G1引入region（区间）的概念，它也分年轻代和老年代。年轻代依然有Eden区和Survivor区。从实际的物理角度看Eden，Survivor等不需要连续只需要保证逻辑上的连续即可。在G1中，堆被分成若干大小相等的区域（region），内存的回收和划分都以region为单位；同时，它吸取了 CMS 的特点，把整个垃圾回收过程分为几个阶段，分散一个垃圾回收过程；而且，G1 也认同分代垃圾回收的思想，认为不同对象的生命周期不同，可以采取不同收集方式，因此，它也支持分代的垃圾回收。为了达到对回收时间的可预计性，G1 在扫描了 region 以后，对其中的活跃对象的大小进行排序，首先会收集那些活跃对象小的 region，以便快速回收空间（要复制的活跃对象少了），因为活跃对象小，里面可以认为多数都是垃圾，所以这种方式被称为 Garbage First（G1）的垃圾回收算法。</p>
 <h3 id="4-内存分配的理解？大对象怎么分配？空间分配担保？"><a href="#4-内存分配的理解？大对象怎么分配？空间分配担保？" class="headerlink" title="4 内存分配的理解？大对象怎么分配？空间分配担保？"></a>4 内存分配的理解？大对象怎么分配？空间分配担保？</h3><ol>
-<li>对象优先在Eden中分配：大多数情况下，对象在新生代 Eden 区分配，当 Eden 区空间不够时，发起 MinorGC。</li>
-<li>大对象直接进入老年代：大对象是指需要连续内存空间的对象，最典型的大对象是那种很长的字符串以及数组。经常出现大对象会提前触发垃圾收集以获取足够的连续空间分配给大对象。PretenureSizeThreshold，大于此值的对象直接在老年代分配，避免在 Eden 区和 Survivor 区之间的大量内存复制。</li>
-<li>长期存活的对象将进入老年代：为对象定义年龄计数器，对象在 Eden 出生并经过 Minor GC 依然存活，将移动到 Survivor 中，年龄就增加 1 岁，增加到一定年龄则移动到老年代中。MaxTenuringThreshold 用来定义年龄的阈值。</li>
-<li>动态对象年龄判定：为了更好的适应不同程序的内存情况，虚拟机不是永远要求对象年龄必须达到了某个值才能进入老年代，如果 Survivor 空间中相同年龄所有对象大小的总和大于 Survivor 空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需达到要求的年龄。</li>
+<li>对象优先在Eden分配。大多数情况下，对象在新生代Eden区中分配，当Eden区没有足够空间进行分配时，虚拟机将发起一次Minor GC。</li>
+<li>大对象直接进入老年代。大对象是指需要大量连续内存空间的Java对象，最典型的大对象便是那种很长的字符串，或者元素数量很庞大的数组。经常出现提前触发垃圾收集以获取足够的连续空间分配给大对象的情况。虚拟机提供了-XX:PretenureSizeThreshold参数，大于此值的对象直接在老年代分配，避免在Eden区和两个Survivor区之间的大量内存复制。</li>
+<li>长期存活的对象将进入老年代。虚拟机给每个对象定义了一个对象年龄计数器，存储在对象头中。对象通常在Eden区诞生，如果经过一次Minor GC后依然存活，并且能被Survivor容纳的话，该对象会被移动到Survivor空间，并将其对象年龄增加1岁，当它的年龄增加到一定程度（默认为15），就移动到老年代中。</li>
+<li>动态对象年龄判定。为了更好的适应不同程序的内存情况，虚拟机不是永远要求对象年龄必须达到了阙值才能进入老年代，如果Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需等到阙值要求的年龄。</li>
+<li>空间分配担保。在发生Minor GC之前，虚拟机必须先检查老年代中最大可用的连续空间是否大于新生代所有对象总空间，如果大于的话，那么这一次Minor GC可以确保是安全的。</li>
 </ol>
-<p>在发生 Minor GC 之前，虚拟机先检查老年代最大可用的连续空间是否大于新生代所有对象总空间，如果大于的话，那么 Minor GC 可以确认是安全的。</p>
-<h3 id="5-jvm监控工具"><a href="#5-jvm监控工具" class="headerlink" title="5 jvm监控工具"></a>5 jvm监控工具</h3><p>jvisualvm：虚拟机监视和故障处理平台<br>jps ：查看当前 Java 进程<br>jstat：显示虚拟机运⾏数据<br>jmap：内存监控<br>jhat：分析 heapdump ⽂件<br>jstack：线程快照<br>jinfo：虚拟机配置信息</p>
-<h3 id="6-class文件结构"><a href="#6-class文件结构" class="headerlink" title="6 class文件结构"></a>6 class文件结构</h3><p>Class文件结构采用类似C语言的结构体来存储数据的，主要有两类数据项，无符号数和表，无符号数用来表述数字，索引引用以及字符串等，比如 u1，u2，u4，u8分别代表1个字节，2个字节，4个字节，8个字节的无符号数，而表是有多个无符号数以及其它的表组成的复合结构，习惯地以_info结尾。</p>
+<h3 id="5-jvm性能监控、故障处理工具"><a href="#5-jvm性能监控、故障处理工具" class="headerlink" title="5 jvm性能监控、故障处理工具"></a>5 jvm性能监控、故障处理工具</h3><p>jps（jvm process status tool，虚拟机进程状况工具）：可以列出正在运行的虚拟机进程。<br>jstat（jvm statistics monitoring tool，虚拟机统计信息监视工具）：可以显示虚拟机进程中的类加载、内存、垃圾收集等运行时数据。<br>jinfo（Configuration info for Java，Java配置信息工具）：实时查看和调整虚拟机各项参数。<br>jmap（memory map for java，Java内存映像工具）：用于生成堆转储快照。<br>jhat（jvm heap analysis tool，虚拟机堆转储快照分析工具）：与jmap搭配使用，来分析jmap生成的堆转储快照。<br>jstack（stack trace for Java，Java堆栈跟踪工具）：用于生成虚拟机当前时刻的线程快照。</p>
+<h3 id="6-class类文件的结构"><a href="#6-class类文件的结构" class="headerlink" title="6 class类文件的结构"></a>6 class类文件的结构</h3><p>Class文件结构采用一种类似于C语言结构体的伪结构来存储数据，有两种数据类型，“无符号数”和“表”。<br>无符号数属于基本的数据类型，以u1，u2，u4，u8来分别代表1个字节，2个字节，4个字节，8个字节的无符号数，无符号数可以用来描述数字，索引引用、数量值或者字符串值。<br>表是由多个无符号数或者其它表作为数据项构成的复合数据类型，习惯性地以_info结尾。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic;</span><br><span class="line">    u2             minor_version;</span><br><span class="line">    u2             major_version;</span><br><span class="line">    u2             constant_pool_count;</span><br><span class="line">    cp_info        constant_pool[constant_pool_count-1];</span><br><span class="line">    u2             access_flags;</span><br><span class="line">    u2             this_class;</span><br><span class="line">    u2             super_class;</span><br><span class="line">    u2             interfaces_count;</span><br><span class="line">    u2             interfaces[interfaces_count];</span><br><span class="line">    u2             fields_count;</span><br><span class="line">    field_info     fields[fields_count];</span><br><span class="line">    u2             methods_count;</span><br><span class="line">    method_info    methods[methods_count];</span><br><span class="line">    u2             attributes_count;</span><br><span class="line">    attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>每个 Class 文件的头 4 个字节称为魔数（magic），它的值固定为 0xCAFEBABE，表示文件类型是能够被JVM处理的Class文件。紧接着magic之后的四个字节存储的是 Class 文件的次版本号和主版本号。<br>在主次版本号之后是常量池。常量池主要存储了字面量以及符号引用。</p>
+<p>每个Class文件的头4个字节称为魔数（magic number），它的值固定为0xCAFEBABE，作用是确定这个文件是否是一个能被虚拟机接受的Class文件。<br>紧接着魔数的4个字节存储的是Class文件的版本号。第五和第六个字节是次版本号，第七和第八个字节是主版本号。<br>在主次版本号之后是常量池入口。常量池主要存放两大类常量：字面量和符号引用。</p>
+<h3 id="7-部分收集与整堆收集"><a href="#7-部分收集与整堆收集" class="headerlink" title="7 部分收集与整堆收集"></a>7 部分收集与整堆收集</h3><p>部分收集</p>
+<ul>
+<li>新生代收集（Minor GC）：目标只是新生代的垃圾收集。</li>
+<li>老年代收集（Major GC）：目标只是老年代的垃圾收集。目前只有CMS收集器会有单独收集老年代的行为。注意：有些场合“Major GC”是指整堆收集。</li>
+<li>混合收集（Mixed GC）：目标是收集整个新生代以及部分老年代的垃圾收集。目前只有G1收集器会有这种行为。</li>
+</ul>
+<p>整堆收集</p>
+<ul>
+<li>Full GC：目标是整个Java堆和方法区的垃圾收集</li>
+</ul>
 
       
     </div>
