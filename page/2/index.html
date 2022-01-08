@@ -187,6 +187,189 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/13/12-13-Network/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/13/12-13-Network/" class="post-title-link" itemprop="url">12_13_Network</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-13 18:59:52" itemprop="dateCreated datePublished" datetime="2021-12-13T18:59:52+08:00">2021-12-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-01 20:27:49" itemprop="dateModified" datetime="2022-01-01T20:27:49+08:00">2022-01-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/13/12-13-Network/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/13/12-13-Network/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-四次挥手"><a href="#1-四次挥手" class="headerlink" title="1 四次挥手"></a>1 四次挥手</h3><p>建立一个连接需要三次握手，而终止一个连接需要四次挥手。<br>四次挥手过程：刚开始双方都处于 establised 的状态。</p>
+<img src="/2021/12/13/12-13-Network/fourbaibai.png" class="">
+<ol>
+<li>第一次挥手：客户端发送一个 FIN 报文，报文中指定一个序列号。此时客户端处于 FIN_WAIT1 状态。即发出连接释放报文段（FIN=1，序列号seq=u），并停止再发送数据，主动关闭TCP连接，进入FIN_WAIT1状态，等待服务端的确认。</li>
+<li>第二次挥手：服务端收到 FIN 报文之后，会发送 ACK 报文，并且把客户端的序列号值+1 作为 ACK 报文的序列号值，表明已经收到客户端的报文了，此时服务端处于 CLOSE_WAIT 状态。TCP处于半关闭状态，客户端到服务端的连接释放。客户端收到服务端的确认后，进入FIN_WAIT2 状态，等待服务端发出的连接释放报文段。</li>
+<li>第三次挥手：如果服务端也想断开连接了，和客户端的第一次挥手一样，发送 FIN 报文，并指定一个序列号。此时服务端处于 LAST_ACK 的状态，等待客户端的确认。</li>
+<li>第四次挥手：客户端收到 FIN 报文之后，同样发送一个 ACK 报文作为应答，并且把服务端的序列号值 +1 作为自己 ACK 报文的序列号值，此时客户端处于 TIME_WAIT 状态。需要过一阵子以确保服务端收到自己的 ACK 报文之后才会进入 CLOSED 状态。服务端收到 ACK 报文之后，就关闭连接了，处于 CLOSED 状态。</li>
+</ol>
+<p>为什么客户端发送ACK报文之后不直接关闭，而是要等待一阵子才关闭？<br>原因就是，要确保服务器已经收到了客户端的 ACK 报文，如果没有收到的话，服务器会重新发送 FIN 报文给客户端，客户端再次收到 FIN 报文之后，就知道之前的 ACK 报文丢失了，然后再次发送 ACK 报文。</p>
+<p>2 MSL<br>MSL(Maximum Segment Lifetime)即“最大报文段生存时间”，它是任何报文在网络上存在的最长时间，超过这个时间报文将被丢弃。</p>
+<ul>
+<li><p>为了保证客户端发送的最后一个ACK报文段能够到达服务器。<br>因为这个ACK有可能丢失，从而导致处在LAST-ACK状态的服务器收不到对FIN-ACK的确认报文。服务器会超时重传这个FIN-ACK，接着客户端再重传一次确认，重新启动时间等待计时器（Time_Wait Timer）。最后客户端和服务器都能正常关闭。<br>假设客户端不等待2 MSL，而是在发送完ACK之后直接释放关闭，一但这个ACK丢失的话，服务器就无法正常的进入关闭连接状态。</p>
+</li>
+<li><p>防止“已失效的连接请求报文段”出现在本连接中。<br>客户端在发送完最后一个ACK报文段后，再经过2MSL，就可以使本连接持续的时间段内所产生的所有报文段都从网络中消失，使下一个新的连接中不会出现这种旧的连接请求报文段。</p>
+</li>
+</ul>
+<p><strong>保活计时器（Keeplive Timer）</strong><br>除时间等待计时器外，TCP还有一个保活计时器（keepalive timer）。设想这样的场景：客户端已主动与服务器建立了 TCP 连接。但后来客户端的主机突然发生故障。显然，服务器以后就不能再收到客户端发来的数据。因此，应当有措施使服务器不要再白白等待下去。这就需要使用保活计时器了。</p>
+<p>服务器每收到一次客户端的数据，就重新设置保活计时器，时间的设置通常是两个小时。若两个小时都没有收到客户端的数据，服务端就发送一个探测报文段，以后则每隔 75 秒发送一次。若连续发送10个探测报文段后仍然无客户端的响应，服务端就认为客户端出了故障，接着就关闭这个连接。</p>
+<p><strong>TCP协议如何保证可靠传输</strong></p>
+<ol>
+<li>校验和：目的是检测数据在传输过程中的变化，若校验出数据包有错，则丢弃报文段并且不给出响应，数据包发送端超时，然后会重发数据；</li>
+<li>确认应答+序列号：接收方收到报文就会进行确认。既然 TCP 报文段作为 IP 数据报来传输，而 IP 数据报的到达可能会失序，因此 TCP 报文段的到达也可能会失序。TCP将对失序数据进行重新排序，然后才交给应用层；</li>
+<li>丢弃重复数据：TCP的接收端会丢弃重复的数据；</li>
+<li>延迟应答：接收数据的主机不会立刻返回ACK应答，通常会延迟几百毫秒；</li>
+<li>超时重传：当 TCP 发出一个报文段后，它启动一个定时器（重传计时器，Retransmission Timer），等待目的端确认收到这个报文段。如果不能及时收到一个确认，将重发这个报文段；</li>
+<li>流量控制：接收端处理数据的速度是优先的，如果发送端发的太快，会导致接收端的缓冲区一下子满了，这个时候如果发送端继续发送就会造成丢包，继而引起丢包重传等一系列连锁反应。因此TCP支持根据接收端的处理能力，来决定发送端的发送速度。TCP使用的流量控制协议是可变大小的滑动窗口协议。<br>接收端将自己可以接受的缓冲区大小放入TCP首部中的“窗口”字段，通过ACK报文通知发送端；<br>“窗口”字段越大，说明网络的吞吐量越高；<br>接收端一旦发现自己的缓冲区快满了就会将窗口大小设置成一个更小的值通知发送端；<br>发送端接收到窗口大小以后，就会减慢自己的发送速度；<br>如果接收端缓冲区满了，就会将窗口置为0，这时发送方不再发送数据；<br>但是需要定期的发送一个试探窗口，目的是接收端要把窗口大小告诉发送端。</li>
+</ol>
+<h3 id="2-自动重传请求（Automatic-Repeat-reQuest，ARQ）"><a href="#2-自动重传请求（Automatic-Repeat-reQuest，ARQ）" class="headerlink" title="2 自动重传请求（Automatic Repeat-reQuest，ARQ）"></a>2 自动重传请求（Automatic Repeat-reQuest，ARQ）</h3><p>自动重传请求（Automatic Repeat-reQuest，ARQ）是OSI模型中数据链路层的错误纠正协议之一。ARQ包括停止等待ARQ协议和连续ARQ协议，拥有错误检测（Error Detection）、正面确认（Positive Acknowledgment）、超时重传（Retransmission after Timeout）和负面确认及重传（Negative Acknowledgment and Retransmission）等机制。<br>它通过使用确认和超时这两个机制，在不可靠服务的基础上实现可靠的信息传输。如果发送方在发送后一段时间之内没有收到确认，它通常会重新发送。</p>
+<p><strong>停止等待ARQ协议</strong><br>超时重传指只要超过一段时间仍然没有收到确认，就会重传前面发送过的分组。因此每发送完一个分组需要设置一个重传计时器，其重传时间应比数据在分组传输的平均往返时间更长一些。</p>
+<p>停止等待ARQ协议基本原理就是每发完一个分组就停止发送，等待对方确认。在收到确认后再发送下一个分组；在停止等待ARQ协议中，若接收方收到重复分组，就丢弃该分组，但同时还要发送确认。主要包括以下几种情况：无差错情况、出现差错（超时重传）、确认丢失和确认延迟。<br>停止等待ARQ协议的一个严重缺点是信道利用率太低。</p>
+<p><strong>连续ARQ协议</strong><br>连续 ARQ 协议可提高信道利用率。发送方采用流水线传输。所谓流水线传输就是发送方可以连续发送多个分组，不必每发完一个分组就停下来等待对方确认。发送方维持一个发送窗口，凡位于发送窗口内的分组可以连续发送出去，而不需要等待对方确认。接收方一般采用累计确认，对按序到达的最后一个分组发送确认，表明到这个分组为止的所有分组都已经正确收到了。</p>
+<h3 id="3-滑动窗口"><a href="#3-滑动窗口" class="headerlink" title="3 滑动窗口"></a>3 滑动窗口</h3><p>滑动窗口（Sliding window）是一种流量控制技术。早期的网络通信中，通信双方不会考虑网络的拥挤情况直接发送数据。由于大家不知道网络拥塞状况，同时发送数据，导致阻塞掉包问题，谁也发不了数据，所以就有了滑动窗口机制来解决此问题。</p>
+<p>TCP利用滑动窗口实现流量控制。滑动窗口的大小意味着接收方还有多大的缓冲区可以用于接收数据。发送方可以通过滑动窗口的大小来确定应该发送多大的数据。当滑动窗口为 0 时，发送方一般不能再发送数据报。<br>但有两种情况除外，一种情况是可以发送紧急数据，例如，允许用户终止在远端机上的运行进程。另一种情况是发送方可以发送一个 1 字节的数据报来通知接收方重新声明它希望接收的下一字节及发送方的滑动窗口大小。</p>
+<p><strong>流量控制</strong><br>TCP利用滑动窗口实现流量控制。<br>流量控制是为了控制发送方的发送速率，保证接收方来得及接收。接收方发送的确认报文中的窗口字段可以用来控制发送方窗口大小，从而影响发送方的发送速率。将窗口字段设置为0，则发送方不能发送数据。</p>
+<h3 id="4-TCP拥塞控制"><a href="#4-TCP拥塞控制" class="headerlink" title="4 TCP拥塞控制"></a>4 TCP拥塞控制</h3><p>流量控制是点对点通信量的控制，是一个端到端的问题，主要就是抑制发送端发送数据的速率，以便接收端来得及接收。</p>
+<p>在某段时间，若对网络中某一资源的需求超过了该资源所能提供的可用部分，网络性能就要变坏，这种情况就叫做网络拥塞。（对资源的需求 &gt; 可用资源）<br>拥塞控制就是防止过多的数据注入到网络中，可以使网络中的路由器或链路不致过载，是一个全局性的过程。它涉及到所有的主机、路由器，以及与降低网络传输性能有关的所有因素。</p>
+<p>为了进行拥塞控制，TCP发送方要维持一个拥塞窗口(cwnd)状态变量。拥塞窗口的大小取决于网络的拥塞程度，并且动态变化。<br>发送方让自己的发送窗口（swnd）取为拥塞窗口和接收方的接受窗口中较小的一个。</p>
+<p>TCP拥塞控制采用了四种算法，慢开始、拥塞避免、快重传和快恢复。<br>在网络层也可以使路由器采用适当的分组丢弃策略（主动队列管理AQM），以减少网络拥塞的发生。<br>发送方给接收方发送数据报文段后，接收方给发送方发回相应的确认报文段，一个传输轮次所经历的时间就是往返时间RTT。</p>
+<p><strong>慢开始</strong><br>发送方开始发送数据时，如果立即把大量数据注入到网络，那么可能会引起网络阻塞。较好的做法是先探测一下，即由小到大逐渐增大发送窗口，也就是由小到大逐渐增大拥塞窗口数值。cwnd初始值为1，每经过一个传播轮次，cwnd加倍。</p>
+<p>拥塞窗口cwnd的值被设置为1，还需设置慢开始门限ssthresh，在执行慢开始算法时，发送方每收到一个对新报文段的确认时，就把拥塞窗口cwnd的值加一，然后开始下一轮的传输，当拥塞窗口cwnd增长到慢开始门限值时，就使用拥塞避免算法。</p>
+<p><strong>拥塞避免</strong><br>每个传输轮次，拥塞窗口cwnd只能线性加一，而不是像慢开始算法，每个传输轮次拥塞窗口cwnd按指数增长。</p>
+<p><strong>快重传</strong><br>快重传要求接收方在收到一个失序的报文段后就立即发出重复确认（为的是使发送方及早知道有报文段没有到达对方），而不要等到自己发送数据时捎带确认。<br>快重传算法规定，发送方只要一连收到三个重复确认ACK就应当立即重传对方尚未收到的报文段，而不必继续等待重传计时器超时。</p>
+<p><strong>快恢复</strong><br>与快重传配合使用，主要有两个要点:<br>①当发送方连续收到三个重复确认时，就执行“乘法减小”算法，即把ssthresh门限减半。但是接下去并不执行慢开始算法。<br>②考虑到如果网络出现拥塞的话就不会收到好几个重复的确认，所以发送方现在认为网络可能没有出现拥塞。所以此时不执行慢开始算法，而是将cwnd设置为ssthresh的大小，然后执行拥塞避免算法。</p>
+<h3 id="5-GET与POST"><a href="#5-GET与POST" class="headerlink" title="5 GET与POST"></a>5 GET与POST</h3><p>get和post都是HTTP中请求数据的方法。<br>直观上来看，get用于获取数据，post用于提交数据（传输实体）。</p>
+<p>GET请求只支持 URL 编码，而 POST 支持多种编码方式；<br>GET请求只接受 ASCII 字符的参数，而 POST 则没有限制；<br>GET请求在 URL 传参时有长度限制，而 POST 则没有限制；<br>GET请求参数通过 URL 传送，而 POST 放在 Request Body 中；<br>GET请求会被浏览器主动缓存，而 POST 不会（除非手动设置）；<br>幂等的HTTP方法，同样的请求被执行一次与连续执行多次的效果是一样的，服务器的状态也是一样的。<br>GET，HEAD，PUT和DELETE等方法都是幂等的，而POST方法不是。</p>
+<p>XMLHttpRequest是一个API，它为客户端提供了在客户端和服务器之间传输数据的功能。它提供了一个通过 URL 来获取数据的简单方式，并且不会使整个页面刷新。这使得网页只更新一部分页面而不会打扰到用户。XMLHttpRequest在 AJAX 中被大量使用。</p>
+<p>GET产生一个TCP数据包；POST产生两个TCP数据包。<br>在使用 XMLHttpRequest 的 POST 方法时，浏览器会先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 ok（返回数据）。（并不是所有浏览器都会在POST中发送两次包，Firefox就只发送一次）；对于GET方式的请求，浏览器会把http header和data一并发送出去，服务器响应200（返回数据）；</p>
+<h3 id="6-TCP与UDP"><a href="#6-TCP与UDP" class="headerlink" title="6 TCP与UDP"></a>6 TCP与UDP</h3><p>TCP和UDP都是TCP/IP中的传输层协议。</p>
+<p>TCP（Transmission Control Protocol，传输控制协议）是面向连接的协议，所谓面向连接，就是说，双方在传输数据前，必须建立可靠的连接。一个TCP连接必须要经过三次“握手”才能建立起来。</p>
+<p>TCP仅支持单播传输，每条TCP传输连接只能有两个端点，只能进行点对点的数据传输，不支持多播和广播传输方式。<br>TCP提供全双工通信，也就是说在通信的时候，双方既是发送方，也是接收方。TCP允许通信双方在任何时候都能发送数据，因为TCP连接的两端都设有缓存，用来临时存放通信的数据。当然，TCP可以立即发送一个数据段，也可以缓存一段时间以便一次发送更多的数据段。<br>TCP提供可靠的传输。传送的数据无差错、不丢失、不重复、按序到达。<br>TCP是面向字节流的，TCP不像UDP那样一个一个报文独立地传输，而是在不保留报文边界的情况下以字节流方式进行传输。“面向字节流”的含义是：虽然应用程序和 TCP 的交互是一次一个数据块（大小不等），但是 TCP 把应用程序交下来的数据仅仅看成是一连串的无结构的字节流。</p>
+<p>TCP可靠传输特点：</p>
+<ol>
+<li>传输信道无差错，保证传输数据正确；</li>
+<li>不管发送方以多快的速度发送数据，接收方总是来得及处理收到的数据；<br>（1）首先，采用三次握手来建立TCP连接，四次挥手来释放TCP连接，从而保证建立的传输信道是可靠的。<br>（2）其次，TCP采用了连续ARQ协议来保证数据传输的正确性，使用滑动窗口协议来保证接收方能够及时处理所接收到的数据，进行流量控制。<br>（3）最后，TCP使用慢开始、拥塞避免、快重传和快恢复来进行拥塞控制，避免网络拥塞。</li>
+</ol>
+<p>UDP（User Datagram Protocol，用户数据报协议），是一种无连接的协议，传输数据之前源端和终端不建立连接。<br>UDP使用尽最大努力交付，即不保证可靠交付。<br>UDP是面向报文的，对应用程序交下来的报文，在添加首部后就向下交付给IP层。既不拆分，也不合并，而是保留这些报文的边界。因此，应用程序需要选择合适的报文大小。<br>UDP不止支持一对一的传输方式，同样支持一对多，多对多，多对一的方式，也就是说 UDP 提供了单播，多播，广播的功能。<br>UDP首部只有8个字节，相对于TCP的20个字节开销很小。<br>UDP没有拥塞控制，即使网络出现拥塞也不会降低发送速率。</p>
+<p>HTTP、HTTPS、FTP、TELNET、SMTP(简单邮件传输协议)协议基于可靠的TCP协议。<br>TFTP、DNS、DHCP、TFTP、SNMP(简单网络管理协议)、RIP基于不可靠的UDP协议。</p>
+<table>
+<thead>
+<tr>
+<th>描述</th>
+<th align="center">UDP</th>
+<th align="center">TCP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>是否连接</td>
+<td align="center">无连接</td>
+<td align="center">面向连接</td>
+</tr>
+<tr>
+<td>是否可靠</td>
+<td align="center">不可靠传输，不使用流量控制和拥塞控制</td>
+<td align="center">可靠传输，使用流量控制和拥塞控制</td>
+</tr>
+<tr>
+<td>连接对象个数</td>
+<td align="center">支持一对一，一对多，多对一和多对多交互通信</td>
+<td align="center">只能是一对一通信</td>
+</tr>
+<tr>
+<td>传输方式</td>
+<td align="center">面向报文</td>
+<td align="center">面向字节流</td>
+</tr>
+<tr>
+<td>首部开销</td>
+<td align="center">首部开销小，仅8字节</td>
+<td align="center">首部最小20字节，最大60字节</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td align="center">适用于实时应用（IP电话、视频会议、直播等）</td>
+<td align="center">适用于要求可靠传输的应用，例如文件传输</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/12/12-12-SpringMVC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1253,114 +1436,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/27/11-27-Java/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/27/11-27-Java/" class="post-title-link" itemprop="url">11_27_Java</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-11-27 20:39:47" itemprop="dateCreated datePublished" datetime="2021-11-27T20:39:47+08:00">2021-11-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-05 20:08:53" itemprop="dateModified" datetime="2022-01-05T20:08:53+08:00">2022-01-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/11/27/11-27-Java/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/27/11-27-Java/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-JVM主要组成部分及其作用"><a href="#1-JVM主要组成部分及其作用" class="headerlink" title="1 JVM主要组成部分及其作用"></a>1 JVM主要组成部分及其作用</h3><ul>
-<li>类加载器（ClassLoader）</li>
-<li>运行时数据区（Runtime Data Area)</li>
-<li>执行引擎（Execution Engine）</li>
-<li>本地库接口（Native Interface）</li>
-</ul>
-<p>首先通过类加载器（ClassLoader）会把Java代码转换成字节码，运行时数据区（Runtime Data Area）会把字节码加载到内存中，而字节码只是JVM的一套指令集规范，并不能直接交给底层操作系统去执行，因此需要特定的命令解析器执行引擎（Execution Engine），将字节码翻译成底层系统指令，再交由CPU去执行，而这个过程中需要调用其他语言的本地库接口（Native Interface）来实现整个程序的功能。</p>
-<h3 id="2-运行时数据区"><a href="#2-运行时数据区" class="headerlink" title="2 运行时数据区"></a>2 运行时数据区</h3><img src="/2021/11/27/11-27-Java/jvm.png" class="">
-<p><strong>程序计数器</strong><br>程序计数器（Program Counter Register）是一块较小的内存空间，它可以看作是当前线程所执行的字节码的行号指示器。<br>字节码解释器执作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令。程序的分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。</p>
-<p>由于Java虚拟机的多线程是通过线程轮流切换、分配处理器执行时间的方式来实现的，在任何一个确定的时刻，一个处理器都只会执行一条线程中的命令。因此，为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器，各线程之间的计数器互不影响，独立存储，我们程这块内存区域为“线程私有”的内存。<br>此区域是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。</p>
-<p><strong>Java虚拟机栈</strong><br>与程序计数器一样，Java虚拟机栈（Java Virtual Machine Stacks）也是线程私有的，它的生命周期与线程相同。<br>虚拟机栈描述的是Java方法执行的线程内存模型：每个方法被执行的时候，jvm都会同步创建一个栈帧（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法被调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
-<p>局部变量表存放了编译期可知的各种基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用和returnAddress类型（指向了一条字节码指令的地址）。<br>Java虚拟机栈的局部变量表的空间单位是槽（Slot），其中64位长度的double和long类型会占用两个Slot。局部变量表所需内存空间在编译期完成分配，当进入一个方法时，该方法需要在帧中分配多大的局部变量是完全确定的，在方法运行期间不会改变局部变量表的大小。</p>
-<p>Java虚拟机栈有两种异常状况：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出StackOverflowErro异常；如果Java虚拟机栈扩展时无法申请到足够的内存，就会抛出OutOfMemoryError异常。</p>
-<p><strong>本地方法栈</strong><br>本地方法栈（Native Method Stack）与虚拟机栈所发挥的作用是非常相似的，其区别只是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的本地（Native）方法服务。</p>
-<p>Java虚拟机规范没有对本地方法栈中方法使用的语言、使用的方式和数据结构做出强制规定，因此具体的虚拟机可以自由地实现它。例如：HotSpot虚拟机直接把Java虚拟机栈和本地方法栈合二为一。<br>与Java虚拟机栈一样，本地方法栈也会抛出StackOverflowError和OutOfMemoryError异常。</p>
-<p><strong>Java堆</strong><br>Java堆（Java Heap）是被所有线程所共享的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是存放对象实例，几乎所有的对象实例都在这里分配内存。</p>
-<p>Java堆是垃圾收集器管理的主要区域，因此很多时候也被称做“GC”堆（Garbage Collected Heap）。<br>从回收内存的角度看，由于现代垃圾收集器大部分都是基于分代收集理论设计的，所以Java堆中会出现新生代、老年代、永久代等名词。<br>从分配内存的角度来看，所有线程共享的Java堆中可以划分出多个线程私有的分配缓冲区（Thread Local Allocation Buffer,TLAB），以提升对象分配时的效率。不过无论如何划分，无论哪个区域，存储的只能是对象实例，进一步划分的目的是为了更好地回收内存，或者更快地分配内存。<br>Java虚拟机规范规定，Java堆可以处于物理上不连续的内存空间中，只要逻辑上是连续的即可。在实现时，可以是固定大小的，也可以是可扩展的。如果在堆中没有内存完成实例分配，并且堆也无法扩展时，将会抛出OutOfMemoryError异常。</p>
-<p><strong>方法区</strong><br>方法区（Method Area）与Java堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。<br>虽然Java虚拟机规范中把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做Non-Heap（非堆），目的是与Java堆区分开来。</p>
-<p>Java虚拟机规范对方法区的限制非常宽松，除了和Java堆一样不需要连续的内存和可以选择固定大小或者可扩展外，还可以选择不实现垃圾收集。这个区域的内存回收目标主要是针对常量池的回收和对类型的卸载。<br>根据Java虚拟机规范规定，当方法区无法满足新的内存分配需求时，将抛出OutOfMemoryError异常。</p>
-<p>运行时常量池（Runtime Constant Pool）是方法区的一部分。Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池表，用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后存放到方法区的运行时常量池中。<br>Java虚拟机对Class文件每一部分（当然也包括常量池）的格式都有严格的规定，每一个字节用于存储哪种数据都必须符合规范上的要求才会被虚拟机认可、装载和执行。</p>
-<p>直接内存（Direct Memory）并不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。但是这部分内存也被频繁地使用，而且也可能导致OutOfMemoryError异常。<br>本机直接内存的分配不会受到Java堆大小的限制，但是，既然是内存，肯定还是会受到本机总内存大小以及处理器寻址空间的限制。如果各个内存区域总和大于物理内存限制，会导致动态扩展时出现OutOfMemoryError异常。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1432,7 +1507,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">57</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1445,7 +1520,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">48</span>
+        <span class="site-state-item-count">49</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
