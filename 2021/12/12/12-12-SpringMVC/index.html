@@ -30,7 +30,7 @@
 <meta property="og:image" content="http://example.com/2021/12/12/12-12-SpringMVC/mvc.png">
 <meta property="og:image" content="http://example.com/2021/12/12/12-12-SpringMVC/springmvc_process.png">
 <meta property="article:published_time" content="2021-12-12T04:39:41.000Z">
-<meta property="article:modified_time" content="2022-01-02T07:23:12.260Z">
+<meta property="article:modified_time" content="2022-02-16T12:18:56.847Z">
 <meta property="article:author" content="He Jun">
 <meta property="article:tag" content="mvc">
 <meta name="twitter:card" content="summary">
@@ -223,7 +223,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-02 15:23:12" itemprop="dateModified" datetime="2022-01-02T15:23:12+08:00">2022-01-02</time>
+                <time title="修改时间：2022-02-16 20:18:56" itemprop="dateModified" datetime="2022-02-16T20:18:56+08:00">2022-02-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -291,7 +291,7 @@
 <h3 id="3-常用注解"><a href="#3-常用注解" class="headerlink" title="3 常用注解"></a>3 常用注解</h3><p>@RequestMapping：您可以使用@RequestMapping注释将请求映射到控制器方法。它具有各种属性，可以通过URL、HTTP方法、请求参数、头和媒体类型进行匹配。您可以在类级别使用它来表示共享映射，或者在方法级别使用它来缩小到特定的端点映射。</p>
 <p>@RequestBody：此注解用于接收前端传来的实体，接收参数也是对应的实体，比如前端通过 JSON 提交传来两个参数username和password，此时我们需要在后端封装一个实体来接收。在传递的参数比较多的情况下，使用@RequestBody接收会非常方便。</p>
 <p>@ResponseBody：此注解将返回的数据结构转换为JSON格式。</p>
-<h3 id="3-redirect与forward"><a href="#3-redirect与forward" class="headerlink" title="3 redirect与forward"></a>3 redirect与forward</h3><p>request.getRequestDispatcher(“hj.jsp”).forward(request, response);<br>// 转发到 hj.jsp<br>response.sendRedirect(“hj.jsp”);             // 重定向到 hj.jsp<br>可以知道的是一个是用request对象调用，一个是用response对象调用。</p>
+<h3 id="3-forward与redirect"><a href="#3-forward与redirect" class="headerlink" title="3 forward与redirect"></a>3 forward与redirect</h3><p>request.getRequestDispatcher(“hj.jsp”).forward(request, response);<br>// 转发到 hj.jsp<br>response.sendRedirect(“hj.jsp”);             // 重定向到 hj.jsp<br>可以知道的是一个是用request对象调用，一个是用response对象调用。</p>
 <p>两者区别如下：</p>
 <ol>
 <li>地址栏显示<br>forword是服务器内部的重定向，服务器直接访问目标地址（url），把里面的东西读取出来。但是客户端并不知道，因此客户端（浏览器）的网址是不会发生变化的。<br>redirect是服务器根据逻辑发送一个状态码，告诉浏览器重新去请求目标地址，所以地址栏显示的是新的地址。</li>
@@ -300,8 +300,8 @@
 <li>效率<br>forword效率高，而redirect效率低。</li>
 </ol>
 <p><strong>本质</strong><br>forword是服务器行为，而redirect是客户端行为。</p>
-<p>转发过程：浏览器发送http请求—&gt;web服务器接受此请求—&gt;调用内部的一个方法在容器内部完成请求处理和转发动作—&gt;将目标资源发送给客户。在这里，转发的路径必须是同一个web容器下的url，其不能转向到其他的web路径上去，中间传递的是自己的容器内的request。在浏览器路径栏显示的仍然是其第一次访问的路径，也就是说客户端是感觉不到服务器做了转发的。转发行为是浏览器只做了一次访问请求。</p>
-<p>重定向过程：浏览器发送http请求—&gt;web服务器接受后发送302状态码及对应新的location给浏览器—&gt;浏览器发现是302响应，则自动再发送一个新的http请求，请求的url是新的location地址—&gt;服务器根据此请求寻找资源并发送给客户。在这里location可以重定向到任意URL，既然是浏览器重新发出了请求，则就没有什么request传递的概念了。在浏览器路径栏显示的是其重定向的路径，客户可以观察到地址的变化的。重定向行为是浏览器做了至少两次的访问请求的。</p>
+<p>转发过程：浏览器发送http请求—&gt;web服务器接受此请求—&gt;调用内部的一个方法在容器内部完成请求处理和转发动作—&gt;将目标资源发送给客户端。在这里，转发的路径必须是同一个web容器下的url，其不能转向到其他的web路径上去，中间传递的是自己的容器内的request。在浏览器路径栏显示的仍然是其第一次访问的路径，也就是说客户端是感觉不到服务器做了转发的。转发行为是浏览器只做了一次访问请求。</p>
+<p>重定向过程：浏览器发送http请求—&gt;web服务器接受后发送302状态码及对应新的location给浏览器—&gt;浏览器发现是302响应，则自动再发送一个新的http请求，请求的url是新的location地址—&gt;服务器根据此请求寻找资源并发送给客户端。在这里location可以重定向到任意URL，既然是浏览器重新发出了请求，则就没有什么request传递的概念了。在浏览器路径栏显示的是其重定向的路径，客户端可以观察到地址的变化的。重定向行为是浏览器做了至少两次的访问请求的。</p>
 
     </div>
 
@@ -406,7 +406,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-MVC%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">1 MVC模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-SpringMVC%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%EF%BC%88%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">2 SpringMVC的工作原理（执行流程）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%B8%B8%E7%94%A8%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.</span> <span class="nav-text">3 常用注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-redirect%E4%B8%8Eforward"><span class="nav-number">4.</span> <span class="nav-text">3 redirect与forward</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-MVC%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">1 MVC模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-SpringMVC%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%EF%BC%88%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">2 SpringMVC的工作原理（执行流程）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%B8%B8%E7%94%A8%E6%B3%A8%E8%A7%A3"><span class="nav-number">3.</span> <span class="nav-text">3 常用注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-forward%E4%B8%8Eredirect"><span class="nav-number">4.</span> <span class="nav-text">3 forward与redirect</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
