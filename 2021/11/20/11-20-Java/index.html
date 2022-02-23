@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="1 HashMap多线程死循环问题HashMap是采用链表解决Hash冲突，因为是链表结构，那么就很容易形成闭合的链路。当多个线程同时 put 时，如果同时触发了 rehash 操作，会导致 HashMap 的链表中出现循环节点，使得后面get的时候会死循环。 resize方法：条件：size &gt; capacity * loadFactor创建一个新的Node空数组，长度是原数组的2倍。re">
+  <meta name="description" content="1 HashMap多线程死循环问题HashMap采用链表解决Hash冲突，因为是链表结构，那么就很容易形成闭合的链路。当多个线程同时put时，如果同时触发了rehash操作，会导致HashMap的链表中出现循环节点，使得后面get的时候会死循环。 resize方法：条件：size &gt; capacity * loadFactor创建一个新的Node空数组，长度是原数组的2倍。rehash：遍历">
 <meta property="og:type" content="article">
 <meta property="og:title" content="11_20_Java">
 <meta property="og:url" content="http://example.com/2021/11/20/11-20-Java/index.html">
 <meta property="og:site_name" content="cool-jun的博客">
-<meta property="og:description" content="1 HashMap多线程死循环问题HashMap是采用链表解决Hash冲突，因为是链表结构，那么就很容易形成闭合的链路。当多个线程同时 put 时，如果同时触发了 rehash 操作，会导致 HashMap 的链表中出现循环节点，使得后面get的时候会死循环。 resize方法：条件：size &gt; capacity * loadFactor创建一个新的Node空数组，长度是原数组的2倍。re">
+<meta property="og:description" content="1 HashMap多线程死循环问题HashMap采用链表解决Hash冲突，因为是链表结构，那么就很容易形成闭合的链路。当多个线程同时put时，如果同时触发了rehash操作，会导致HashMap的链表中出现循环节点，使得后面get的时候会死循环。 resize方法：条件：size &gt; capacity * loadFactor创建一个新的Node空数组，长度是原数组的2倍。rehash：遍历">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-11-20T06:07:49.000Z">
-<meta property="article:modified_time" content="2022-01-04T05:05:38.254Z">
+<meta property="article:modified_time" content="2022-02-23T13:04:55.527Z">
 <meta property="article:author" content="He Jun">
 <meta property="article:tag" content="集合">
 <meta name="twitter:card" content="summary">
@@ -220,7 +220,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-04 13:05:38" itemprop="dateModified" datetime="2022-01-04T13:05:38+08:00">2022-01-04</time>
+                <time title="修改时间：2022-02-23 21:04:55" itemprop="dateModified" datetime="2022-02-23T21:04:55+08:00">2022-02-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -264,33 +264,33 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="1-HashMap多线程死循环问题"><a href="#1-HashMap多线程死循环问题" class="headerlink" title="1 HashMap多线程死循环问题"></a>1 HashMap多线程死循环问题</h3><p>HashMap是采用链表解决Hash冲突，因为是链表结构，那么就很容易形成闭合的链路。当多个线程同时 put 时，如果同时触发了 rehash 操作，会导致 HashMap 的链表中出现循环节点，使得后面get的时候会死循环。</p>
+        <h3 id="1-HashMap多线程死循环问题"><a href="#1-HashMap多线程死循环问题" class="headerlink" title="1 HashMap多线程死循环问题"></a>1 HashMap多线程死循环问题</h3><p>HashMap采用链表解决Hash冲突，因为是链表结构，那么就很容易形成闭合的链路。当多个线程同时put时，如果同时触发了rehash操作，会导致HashMap的链表中出现循环节点，使得后面get的时候会死循环。</p>
 <p>resize方法：<br>条件：size &gt; capacity * loadFactor<br>创建一个新的Node空数组，长度是原数组的2倍。<br>rehash：遍历原Node数组，把所有的Node重新Hash到新数组。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
 
-<h3 id="2-HashMap与Hashtable"><a href="#2-HashMap与Hashtable" class="headerlink" title="2 HashMap与Hashtable"></a>2 HashMap与Hashtable</h3><p>Hashtable：基于哈希表实现，它将键映射到值。任何非空对象都可以用作键或值。<br>HashMap的 key 和 value 都允许为null，而 Hashtable 的 key 和 value 都不允许为null。<br>HashMap遇到key为 null 的时候，调用 putForNullKey 方法进行处理，但对 value 没有处理。Hashtable遇到null，直接返回NullPointerException。<br>Hashtable是线程安全的，HashMap是非线程安全的。<br>HashMap继承了AbstractMap，Hashtable继承Dictionary抽象类，两者均实现Map接口。</p>
-<p>虽然 HashMap 和 Hashtable 都是基于单链表的，但是 HashMap 进行 put 或者 get 操作，可以达到常数时间的性能；而 Hashtable 的 put 和 get 操作都是加了 synchronized 锁，所以效率很差。<br>Hashtable的初始长度是11，之后每次扩充容量变为之前的2n+1（n为上一次的长度），而 HashMap 的初始长度为16，之后每次扩充变为原来的两倍。创建时，如果给定了容量初始值，那么Hashtable会直接使用你给定的大小，而HashMap会将其扩充为2的幂次方大小。</p>
-<p>Java中Hashtable、Collections.synchronizedMap、以及 ConcurrentHashMap 可以实现线程安全的Map。<br>Hashtable是直接在方法上加 synchronized 关键字，锁住整个数组，粒度比较大；即每次锁住整张表让线程独占，致使效率低下。<br>Collections.synchronizedMap是使用Collections集合工具的内部类，通过传入Map封装出一个SynchronizedMap对象，内部定义了一个对象锁，方法内通过对象锁实现。<br>ConcurrentHashMap使用分段锁，降低了锁粒度，让并发度大大提高。</p>
-<h3 id="2-ConcurrentHashMap"><a href="#2-ConcurrentHashMap" class="headerlink" title="2 ConcurrentHashMap"></a>2 ConcurrentHashMap</h3><p>ConcurrentHashMap：一个哈希表，支持检索的完全并发性和更新的高预期并发性。该类遵循与Hashtable相同的功能规范，包括与Hashtable的每个方法对应的方法版本。但是，即使所有操作都是线程安全的，检索操作也不需要锁定，并且不支持以防止所有访问的方式锁定整个表。在依赖其线程安全但不依赖于其同步细节的程序中，此类与 Hashtable 完全可互操作。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bin数组。第一次插入时延迟初始化。大小始终是 2 的幂。由迭代器直接访问。</span><br><span class="line">transient volatile Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
+<h3 id="2-HashMap与Hashtable"><a href="#2-HashMap与Hashtable" class="headerlink" title="2 HashMap与Hashtable"></a>2 HashMap与Hashtable</h3><p>Hashtable：基于哈希表实现，它将键映射到值。任何非空对象都可以用作键或值。<br>HashMap的key和value都允许为null，而Hashtable的key和value都不允许为null。<br>HashMap遇到key为null的时候，调用putForNullKey方法进行处理，但对value没有处理。Hashtable遇到null，直接返回NullPointerException。<br>Hashtable是线程安全的，HashMap是非线程安全的。<br>HashMap继承了AbstractMap，Hashtable继承Dictionary抽象类，两者均实现Map接口。</p>
+<p>虽然HashMap和Hashtable都是基于单链表的，但是HashMap进行put或者get操作时，可以达到常数时间的性能；而Hashtable的put和get操作都是加了synchronized锁，所以效率很差。<br>Hashtable的初始长度是11，之后每次扩充容量变为之前的2n+1（n为上一次的长度），而HashMap的初始长度为16，之后每次扩充变为原来的两倍。创建时，如果给定了容量初始值，那么Hashtable会直接使用你给定的大小，而HashMap会将其扩充为2的幂次方大小。</p>
+<p>Java中Hashtable、Collections.synchronizedMap、以及ConcurrentHashMap均可以实现线程安全的Map。<br>Hashtable是直接在方法上加synchronized关键字，锁住整个数组，粒度比较大；即每次锁住整张表让线程独占，致使效率低下。<br>Collections.synchronizedMap是使用Collections集合工具的内部类，通过传入Map封装出一个SynchronizedMap对象，内部定义了一个对象锁，方法内通过对象锁实现。<br>ConcurrentHashMap使用分段锁，降低了锁粒度，让并发度大大提高。</p>
+<h3 id="2-ConcurrentHashMap"><a href="#2-ConcurrentHashMap" class="headerlink" title="2 ConcurrentHashMap"></a>2 ConcurrentHashMap</h3><p>ConcurrentHashMap：一个哈希表，支持检索的完全并发性和更新的高预期并发性。该类遵循与Hashtable相同的功能规范，包括与Hashtable的每个方法对应的方法版本。但是，即使所有操作都是线程安全的，检索操作也不需要锁定，并且不支持以防止所有访问的方式锁定整个表。在依赖其线程安全但不依赖于其同步细节的程序中，此类与Hashtable完全可互操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bin数组。第一次插入时延迟初始化。大小始终是2的幂。由迭代器直接访问。</span><br><span class="line">transient volatile Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
 
-<p><strong>实现原理</strong><br>“分段锁”：容器中有多把锁，每一把锁锁一段数据，这样在多线程访问不同段的数据时，就不会存在锁竞争了，这样便可以有效地提高并发效率。</p>
-<p>JDK 1.7 数组+链表。（segment[]+hashentry[]）。<br>ConcurrentHashMap采用了分段锁技术，ConcurrentHashMap在对象中保存了一个Segment数组，将整个Hash表划分为多个Segment。在执行put操作时会先根据hash算法定位到元素属于哪个Segment，然后对该Segment加锁即可。每当一个线程占用锁访问一个Segment时，不会影响到其他的Segment。<br>ConcurrentHashMap的get方法是非常高效的，因为整个过程都不需要加锁。</p>
-<p>ConcurrentHashMap使用Segment来表示不同的部分，每个Segment其实就是一个小的Hashtable，它们有自己的锁。每个segment使用单独的ReentrantLock（分段锁）。如果操作涉及不同segment，则可以并发执行，如果是同一个segment，则会进行锁的竞争和等待。<br>ConcurrentHashMap定位一个元素的过程需要进行两次Hash操作。第一次Hash定位到Segment，第二次Hash定位到元素所在的链表的头部。</p>
-<p>JDK 1.8 数组+链表（红黑树）。<br>舍弃了JDK1.7中的Segment分段锁，而采用了CAS + synchronized来保证并发安全性。<br>1.7版本锁的粒度是基于Segment的，包含多个HashEntry，而1.8锁的粒度就是Node（HashEntry）。<br>1.8版本的数据结构变得更加简单，使得操作也更加清晰流畅，因为已经使用synchronized来进行同步，所以不需要分段锁的概念，也就不需要Segment这种数据结构了，由于粒度的降低，实现的复杂度也增加了。1.8使用红黑树来优化链表。将查询效率降到0（logn）。</p>
+<p><strong>实现原理</strong><br>“分段锁”：容器中有多把锁，每一把锁锁一段数据，这样在多线程访问不同段的数据时，就不会存在锁竞争了，这样可以有效地提高并发效率。</p>
+<p>JDK1.7 数组+链表。（segment[]+hashentry[]）。<br>ConcurrentHashMap采用了分段锁技术，ConcurrentHashMap在对象中保存了一个Segment数组，将整个Hash表划分为多个Segment。在执行put操作时会先根据hash算法定位到元素属于哪个Segment，然后对该Segment加锁。每当一个线程占用锁访问一个Segment时，不会影响到其他的Segment。ConcurrentHashMap的get方法是非常高效的，因为整个过程都不需要加锁。</p>
+<p>ConcurrentHashMap使用Segment来表示不同的部分，每个Segment其实就是一个小的Hashtable，它们有自己的锁。每个segment使用单独的ReentrantLock（可重入锁）。如果操作涉及不同segment，则可以并发执行，如果是同一个segment，则会进行锁的竞争和等待。<br>ConcurrentHashMap定位一个元素的过程需要进行两次Hash操作。第一次Hash定位到Segment，第二次Hash定位到元素所在的链表的头部。</p>
+<p>JDK 1.8 数组+链表+红黑树。<br>舍弃了JDK1.7中的Segment分段锁，而采用了CAS + synchronized来保证并发安全性。<br>1.7中锁的粒度是基于Segment的，一个Segment包含多个HashEntry，而1.8锁的粒度就是Node（HashEntry）。<br>1.8的数据结构变得更加简单，操作也更加清晰流畅，因为已经使用synchronized来进行同步，所以不需要分段锁的概念，也就不需要Segment这种数据结构了，由于粒度的降低，实现的复杂度也增加了。1.8使用红黑树来优化链表，将查询效率降到0（logn）。</p>
 <p>CAS（Compare and Swap，比较并替换）。CAS本质上很简单，一般至少有3个参数：V表示要更新的变量、E表示预期值、N表示新值变量。如果V值等于E值，则将V的值设为N。若V值和E值不同，则说明已经有其他线程做了更新，则当前线程什么都不做。<br>通俗的理解就是CAS操作需要我们提供一个期望值，当期望值与当前线程的变量值相同时，说明还没有线程修改该值，则当前线程可以进行修改，也就是执行CAS操作。但如果期望值与当前线程的变量值不等，则说明该值已被其他线程修改，此时不执行更新操作，但可以选择重新读取该变量再次尝试修改该变量，也可以放弃操作。</p>
-<h3 id="3-LinkedHashMap"><a href="#3-LinkedHashMap" class="headerlink" title="3 LinkedHashMap"></a>3 LinkedHashMap</h3><p>Map接口的哈希表和链表实现，迭代顺序可预测。<br>此实现与 HashMap 的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
+<h3 id="3-LinkedHashMap"><a href="#3-LinkedHashMap" class="headerlink" title="3 LinkedHashMap"></a>3 LinkedHashMap</h3><p>Map接口的哈希表和链表实现，迭代顺序可预测。<br>此实现与HashMap的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class LinkedHashMap&lt;K,V&gt;</span><br><span class="line">    extends HashMap&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;</span><br><span class="line">普通LinkedHashMap条目的HashMap.Node子类。</span><br><span class="line">static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; &#123;</span><br><span class="line">        Entry&lt;K,V&gt; before, after;</span><br><span class="line">        Entry(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            super(hash, key, value, next);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">双向链表的头部（最年长的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; head;</span><br><span class="line">双向链表的尾部（最年轻的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br><span class="line">此链接哈希映射的迭代排序方法：访问顺序为true，插入顺序为false。</span><br><span class="line">final boolean accessOrder;</span><br></pre></td></tr></table></figure>
-<p>双向链表<br>key和value都允许为空<br>key重复会覆盖<br>有序的<br>LinkedHashMap是非线程安全的</p>
+<p>双向链表<br>key和value都允许为空<br>key重复会覆盖<br>有序<br>LinkedHashMap是非线程安全的</p>
 <p>LinkedHashMap中的Entry增加了before和after两个指针，用于维护双向链表。before、after用于维护Entry插入的先后顺序。正是因为before、after的存在，LinkedHashMap才形成了双向链表。<br>LinkedHashMap可以认为是散列表与链表（HashMap+LinkedList）的结合，它继承了HashMap，也用LinkedList维护插入/访问元素的先后顺序。从性能上而言，因为额外维护了链表的关系，性能上要略差于HashMap。</p>
-<p>TreeMap是按照Key的自然顺序或者Comprator的顺序进行排序，内部是通过红黑树来实现。所以要么 key 所属的类实现 Comparable 接口，或者自定义一个实现了 Comparator 接口的比较器，传给 TreeMap 用户 key 的比较。</p>
+<p>TreeMap是按照Key的自然顺序或者Comprator的顺序进行排序，内部是通过红黑树来实现。所以要么key所属的类实现Comparable接口，或者自定义一个实现了Comparator接口的比较器。</p>
 <h3 id="4-HashSet"><a href="#4-HashSet" class="headerlink" title="4 HashSet"></a>4 HashSet</h3><p>这个类实现了Set接口，由一个哈希表（实际上是一个HashMap实例）支持。它不保证集合的迭代顺序，此类允许空元素。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class HashSet&lt;E&gt;</span><br><span class="line">    extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements Set&lt;E&gt;, Cloneable, java.io.Serializable</span><br><span class="line">private transient HashMap&lt;E,Object&gt; map;</span><br><span class="line">构造一个新的空集，后备HashMap实例具有默认初始容量(16)和负载因子(0.75)。</span><br><span class="line">public HashSet() &#123;</span><br><span class="line">        map &#x3D; new HashMap&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p><strong>HashSet为什么元素不能重复</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        return map.put(e, PRESENT)&#x3D;&#x3D;null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>元素值是作为 map 的key，map的 value 则是 PRESENT 变量，这个变量只作为放入 map 时的一个占位符存在。HashMap的 key 是不能重复的，HashSet的元素作为 map 的key，当然也不能重复了。</p>
+<p>元素值是作为map的key，map的value则是PRESENT变量，这个变量只作为放入map时的一个占位符存在。HashMap的key是不能重复的，HashSet的元素作为map的key，当然也不能重复了。</p>
 <h3 id="5-Iterator"><a href="#5-Iterator" class="headerlink" title="5 Iterator"></a>5 Iterator</h3><p>集合上的迭代器。迭代器取代了Java集合框架中的枚举。<br>迭代器在两个方面不同于枚举：<br>迭代器允许调用者在具有明确定义语义的迭代期间从底层集合中删除元素。<br>方法名称已得到改进。</p>
-<p>ListIterator<br>public interface ListIterator<E> extends Iterator<E><br>列表的迭代器，允许程序员沿任一方向遍历列表，在迭代期间修改列表，并获取迭代器在列表中的当前位置。ListIterator没有当前元素，它的光标位置始终位于调用 previous() 返回的元素和调用 next() 返回的元素之间。</p>
+<p>ListIterator<br>public interface ListIterator<E> extends Iterator<E><br>列表的迭代器，允许程序员沿任一方向遍历列表，在迭代期间修改列表，并获取迭代器在列表中的当前位置。ListIterator没有当前元素，它的光标位置始终位于调用previous()返回的元素和调用next()返回的元素之间。</p>
 
     </div>
 
