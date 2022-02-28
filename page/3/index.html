@@ -218,7 +218,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-07 18:09:44" itemprop="dateModified" datetime="2022-01-07T18:09:44+08:00">2022-01-07</time>
+                <time title="修改时间：2022-02-28 13:49:09" itemprop="dateModified" datetime="2022-02-28T13:49:09+08:00">2022-02-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -264,22 +264,22 @@
 <p>老年代（主要是Mark-Compact算法）</p>
 <ol>
 <li>在新生代中经历了N次垃圾回收后仍然存活的对象，就会被放到老年代中。因此，可以认为老年代中存放的都是一些生命周期比较长的对象。</li>
-<li>当老年代内存满时触发Full GC，Full GC发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
+<li>当老年代内存满时会触发Full GC，Full GC发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
 </ol>
 <h3 id="2-常用的垃圾收集器"><a href="#2-常用的垃圾收集器" class="headerlink" title="2 常用的垃圾收集器"></a>2 常用的垃圾收集器</h3><ol>
 <li>Serial GC，它是最古老的垃圾收集器，“Serial”体现在其收集工作是单线程的，“单线程”强调的是在它进行垃圾收集时，必须暂停其它所有工作线程，直到它收集结束。即会进入臭名昭著的“Stop The World”状态。当然，其单线程设计也意味着精简的GC实现，无需维护复杂的数据结构，初始化也简单，所以一直是Client模式下默认新生代收集器。</li>
 <li>Serial Old GC，它是Serial收集器的老年代版本，同样是一个单线程收集器，使用了标记-整理（Mark-Compact）算法。</li>
-<li>ParNew GC，是一个新生代收集器，它实际是Serial GC的多线程并行版本，最常见的应用场景是配合老年代的CMS GC工作。</li>
+<li>ParNew GC，是一个新生代收集器，它实际是Serial GC的多线程版本，最常见的应用场景是配合老年代的CMS GC工作。</li>
 <li>Parrallel Scavenge GC，它是一款新生代收集器，基于复制算法实现的收集器。它的目标是达到一个可扩展的吞吐量，也被称为“吞吐量优先收集器”。</li>
 <li>Parrallel Old GC，它是Parrallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法实现。</li>
-<li>CMS（Concurrent Mark Sweep）GC，基于标记-清除（Mark-Sweep）算法实现，设计目标是尽量缩短停顿时间，这一点对于Web等反应时间敏感的应用非常重要。一直到今天，仍然有很多系统使用CMS GC。但是，CMS 采用的标记-清除算法，存在着内存碎片化问题，所以难以避免在长时间运行情况下发生full GC，导致恶劣的停顿。另外，既然强调了并发（Concurrent），CMS会占用更多CPU资源，并和用户线程争抢。</li>
+<li>CMS（Concurrent Mark Sweep）GC，基于标记-清除（Mark-Sweep）算法实现，设计目标是尽量缩短停顿时间，这一点对于Web等反应时间敏感的应用非常重要。一直到今天，仍然有很多系统使用CMS GC。但是，CMS采用的标记-清除算法，存在内存碎片化问题，所以难以避免在长时间运行情况下发生full GC，导致恶劣的停顿。另外，既然强调了并发（Concurrent），CMS会占用更多CPU资源，并和用户线程争抢。</li>
 <li>G1（Garbage First）GC，这是一种兼顾吞吐量和停顿时间的GC实现，是Oracle JDK 9以后的默认GC选项，主要面向服务端应用的垃圾收集器。</li>
 </ol>
-<h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>它开创了收集器面向<strong>局部收集</strong>的设计思路和基于<strong>Region</strong>的堆内存布局形式。<br>其它的垃圾收集器收集范围要么是整个新生代、要么是整个老年代，再要么是整个Java堆。而G1可以面向堆内存任何部分来组成会收集（collection set）进行回收。<br>G1把连续的Java堆划分为多个大小相等的独立区域（region），每一个region都可以扮演新生代的Eden空间、Survivor空间或者老年代空间。<br>为了达到对回收时间的可预计性，G1在扫描了region以后，对其中活跃对象的大小进行排序，会首先收集那些活跃对象小的region，以便快速回收空间（要复制的活跃对象少了）。因为活跃对象小，可以认为多数对象都是垃圾，所以这种方式被称为Garbage First（G1）的垃圾回收算法。</p>
+<h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>它开创了收集器面向<strong>局部收集</strong>的设计思路和基于<strong>Region</strong>的堆内存布局形式。<br>一般的垃圾收集器收集范围要么是整个新生代、要么是整个老年代，再要么是整个Java堆。而G1可以面向堆内存任何部分来组成回收集（collection set）进行回收。<br>G1把连续的Java堆划分为多个大小相等的独立区域（region），每一个region都可以扮演新生代的Eden空间、Survivor空间或者老年代空间。<br>为了达到对回收时间的可预计性，G1在扫描了region以后，对其中活跃对象的大小进行排序，会首先收集那些活跃对象小的region，以便快速回收空间（要复制的活跃对象少了）。因为活跃对象小，可以认为多数对象都是垃圾，所以这种方式被称为Garbage First（G1）的垃圾回收算法。</p>
 <h3 id="4-内存分配的理解？大对象怎么分配？空间分配担保？"><a href="#4-内存分配的理解？大对象怎么分配？空间分配担保？" class="headerlink" title="4 内存分配的理解？大对象怎么分配？空间分配担保？"></a>4 内存分配的理解？大对象怎么分配？空间分配担保？</h3><ol>
 <li>对象优先在Eden分配。大多数情况下，对象在新生代Eden区中分配，当Eden区没有足够空间进行分配时，虚拟机将发起一次Minor GC。</li>
 <li>大对象直接进入老年代。大对象是指需要大量连续内存空间的Java对象，最典型的大对象便是那种很长的字符串，或者元素数量很庞大的数组。经常出现提前触发垃圾收集以获取足够的连续空间分配给大对象的情况。虚拟机提供了-XX:PretenureSizeThreshold参数，大于此值的对象直接在老年代分配，避免在Eden区和两个Survivor区之间的大量内存复制。</li>
-<li>长期存活的对象将进入老年代。虚拟机给每个对象定义了一个对象年龄计数器，存储在对象头中。对象通常在Eden区诞生，如果经过一次Minor GC后依然存活，并且能被Survivor容纳的话，该对象会被移动到Survivor空间，并将其对象年龄增加1岁，当它的年龄增加到一定程度（默认为15），就移动到老年代中。</li>
+<li>长期存活的对象进入老年代。虚拟机给每个对象定义了一个对象年龄计数器，存储在对象头中。对象通常在Eden区诞生，如果经过一次Minor GC后依然存活，并且能被Survivor容纳的话，该对象会被移动到Survivor空间，并将其对象年龄增加1岁，当它的年龄增加到一定程度（默认为15），就移动到老年代中。</li>
 <li>动态对象年龄判定。为了更好的适应不同程序的内存情况，虚拟机不是永远要求对象年龄必须达到了阙值才能进入老年代，如果Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需等到阙值要求的年龄。</li>
 <li>空间分配担保。在发生Minor GC之前，虚拟机必须先检查老年代中最大可用的连续空间是否大于新生代所有对象总空间，如果大于的话，那么这一次Minor GC可以确保是安全的。</li>
 </ol>
@@ -355,7 +355,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-27 21:28:46" itemprop="dateModified" datetime="2022-02-27T21:28:46+08:00">2022-02-27</time>
+                <time title="修改时间：2022-02-28 13:40:11" itemprop="dateModified" datetime="2022-02-28T13:40:11+08:00">2022-02-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -430,7 +430,8 @@
 <p><strong>复制算法</strong><br>它将可用内存按容量划分为大小相等的两块，每次只使用其中的一块。当这一块的内存用完了，就将还存活着的对象复制到另外一块上面，然后再把已使用过的内存空间一次清理掉。</p>
 <p>优点：解决了内存空间的碎片化问题。<br>缺点：内存利用率不高，空间浪费严重；对象存活率较高时需要进行较多的复制操作，效率会降低。</p>
 <p><strong>标记-整理（mark-compact）算法</strong><br>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但后序步骤不是直接对可回收对象进行清理。而是让所有存活的对象都向内存空间一端移动，然后直接清理掉边界以外的内存。</p>
-<h3 id="7-分代收集理论"><a href="#7-分代收集理论" class="headerlink" title="7 分代收集理论"></a>7 分代收集理论</h3><p>核心思想是根据对象存活的生命周期将Java堆划分为不同的区域，然后将回收对象依据其年龄分配到不同的区域中存储。一般情况下将Java堆划分为新生代（Young Generation）和老年代（Old Generation）两个区域。在堆之外还有一个代就是永久代（Permanet Generation）。<br>新生代的特点是每次垃圾回收时都有大量的对象需要被回收，而老年代的特点是每次垃圾收集时只有少量对象需要被回收，那么就可以根据不同代的特点采取最适合的收集算法。</p>
+<h3 id="7-分代收集理论"><a href="#7-分代收集理论" class="headerlink" title="7 分代收集理论"></a>7 分代收集理论</h3><p>核心思想：根据对象存活的生命周期将Java堆划分为不同的区域，然后将回收对象依据其年龄分配到不同的区域存储。一般情况下将Java堆划分为新生代（Young Generation）和老年代（Old Generation）两个区域。在堆之外还有一个代就是永久代（Permanet Generation）。</p>
+<p>新生代的特点是每次垃圾回收时都有大量的对象需要被回收，而老年代的特点是每次垃圾收集时只有少量对象需要被回收，那么就可以根据不同代的特点采取最适合的收集算法。</p>
 
       
     </div>
