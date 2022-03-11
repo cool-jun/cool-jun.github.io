@@ -187,6 +187,517 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/26/mpc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/08/26/mpc/" class="post-title-link" itemprop="url">mpc</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-08-26 16:25:07" itemprop="dateCreated datePublished" datetime="2021-08-26T16:25:07+08:00">2021-08-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-12-21 11:44:26" itemprop="dateModified" datetime="2021-12-21T11:44:26+08:00">2021-12-21</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/08/26/mpc/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/26/mpc/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="SmartBid"><a href="#SmartBid" class="headerlink" title="SmartBid"></a>SmartBid</h1><h2 id="Getting-started"><a href="#Getting-started" class="headerlink" title="Getting started"></a>Getting started</h2><h3 id="Requirements"><a href="#Requirements" class="headerlink" title="Requirements"></a>Requirements</h3><p>Work with Hyperledger Fabric v. 1.1.1-mpc (WARNING you need to install 1.1.1-mpc as described below)</p>
+<p>Follow <a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html">https://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html</a> and <a target="_blank" rel="noopener" href="https://github.com/hyperledger/fabric-sdk-node">https://github.com/hyperledger/fabric-sdk-node</a>. In particular:</p>
+<ul>
+<li><p><code>go</code> <a target="_blank" rel="noopener" href="https://golang.org/">https://golang.org/</a> - most recent version. On Ubuntu DO NOT INSTALL USING <code>apt-get</code>. It will NOT work (outdated version). You may use the <code>snap</code> version but you might have the following issue: <a target="_blank" rel="noopener" href="https://github.com/golang/go/issues/24674#issuecomment-379919460">https://github.com/golang/go/issues/24674#issuecomment-379919460</a>. Instead, it is better to manually install it in your home directory:</p>
+<pre><code>  mkdir ~/opt
+  cd ~/opt
+  wget https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz
+  tar xvzf go1.10.3.linux-amd64.tar.gz</code></pre>
+<p>  and add the following lines to <code>~/.zshrc</code> or <code>~/.bashrc</code></p>
+<pre><code>  export GOROOT=$HOME/opt/go
+  export PATH=$PATH:$GOROOT/bin</code></pre>
+</li>
+</ul>
+<ul>
+<li><code>docker</code> <a target="_blank" rel="noopener" href="https://www.docker.com/products/overview">https://www.docker.com/products/overview</a>- v1.13 or higher</li>
+<li><code>docker compose</code> <a target="_blank" rel="noopener" href="https://docs.docker.com/compose/overview/">https://docs.docker.com/compose/overview/</a> - v1.8 or higher (<code>sudo pip install docker-compose</code>)</li>
+<li><code>node.js</code>, <code>npm</code> <a target="_blank" rel="noopener" href="https://nodejs.org/en/download/">https://nodejs.org/en/download/</a><ul>
+<li>node runtime version and 8.4.0 or higher (NodeJS &gt; 8 is not supported by <code>fabric-node-sdk</code>, and we need NodeJS &gt;= 8 for async/await)</li>
+<li>npm v3.10.10</li>
+</ul>
+</li>
+<li>on MacOS: need <code>gnu-tar</code> and <code>coreutils</code>: with Homebrew: <code>brew install gnu-tar --with-default-names</code>, <code>brew install coreutils</code> (needs to change path)</li>
+</ul>
+<p>In addition:</p>
+<ul>
+<li><code>gulp</code> - install via <code>npm install -g gulp</code></li>
+<li><code>yarn</code> - install via <code>npm install -g yarn</code> / <code>brew install yarn</code> / … -&gt; npm might be used but it seems to be too unreliable</li>
+<li><code>tmux</code> &amp; <code>tmuxinator</code> - if you want to use them</li>
+</ul>
+<p><em>Warning</em>: Not using the indicated versions might lead to errors very hard to debug.</p>
+<p>The <code>$GOPATH</code> must be set.</p>
+<p>For <code>carbuy-go</code>: (this dependencies are OPTIONAL but highly recommended; they are required to locally compile the chaincode, outside the Docker container <code>fabric-ccenv-mpc</code>)</p>
+<ul>
+<li><p><code>swig</code> - We need a recent version of <code>swig</code>. The default version of swig in Ubuntu 16.04 has a bug: <a target="_blank" rel="noopener" href="https://github.com/swig/swig/issues/619">https://github.com/swig/swig/issues/619</a>. Tested with 3.0.12. For Ubuntu, inside <code>swig</code> source folder (downloaded from <a target="_blank" rel="noopener" href="http://www.swig.org/download.html">http://www.swig.org/download.html</a>):</p>
+<pre><code>  sudo apt-get install libpcre3 libpcre3-dev
+  ./configure
+  make
+  sudo make install</code></pre>
+</li>
+<li><p><code>emp-tookit</code> from the <code>carbuy</code> branch from <code>https://github.com/fabrice102/</code></p>
+<ul>
+<li><p>on Ubuntu:<br>go the the folder you want to install it:</p>
+<pre><code>wget https://raw.githubusercontent.com/fabrice102/emp-readme/carbuy/scripts/setup_new_machine.sh -O emp_install.sh &amp;&amp; bash emp_install.sh</code></pre>
+<p>and then follows instruction “on both” below</p>
+</li>
+<li><p>on macOS:<br>go the the folder you want to install it:</p>
+<ul>
+<li><p><code>git clone -b carbuy https://github.com/fabrice102/emp-readme.git</code></p>
+</li>
+<li><p>install pre-requisites using HomeBrew</p>
+</li>
+<li><p>add <code>export OPENSSL_ROOT_DIR=/usr/local/opt/openssl</code> to an init script (e.g., <code>~/.zshrc</code> if <code>zsh</code> is used) and run it</p>
+</li>
+<li><p>run</p>
+<pre><code>  bash emp-readme/scripts/install_emp-tool.sh
+  bash emp-readme/scripts/install_emp-ot.sh
+  bash emp-readme/scripts/install_emp-m2pc.sh
+  bash emp-readme/scripts/install_emp-sh2pc.sh</code></pre>
+</li>
+<li><p><em>warning</em>: the flag <code>-DUSE_RANDOM_DEVICE=yes</code> for <code>cmake</code> is required to not use <code>rdrand</code> on systems not supporting <code>rdrand</code></p>
+</li>
+<li><p>you can run <code>cmake</code> manually with the flags:</p>
+<pre><code>  -DCMAKE_INSTALL_PREFIX=$HOME/usr  # for a local install
+  -DCMAKE_BUILD_TYPE=DEBUG # for a debug version</code></pre>
+<p>in the latter case, as we cannot use <code>cmake</code> within <code>carbuy-go</code>, you need to set up correctly <code>LD_LIBRARY_PATH</code> before doing anything on <code>carbuy-go</code>.<br>To avoid breaking <code>rpath</code> mechanisms, it is not recommended to change <code>LD_LIBRARY_PATH</code>, <code>LIBRARY_PATH</code>, or <code>DYLD_LIBRARY_PATH</code> for all the system.</p>
+</li>
+</ul>
+</li>
+<li><p>on both, add to <code>~/.zshrc</code>, <code>~/.bashrc</code>, or a similar file:</p>
+<pre><code>export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/include/emp-tool:/usr/local/include/emp-sh2pc:/usr/local/include/emp-ot</code></pre>
+</li>
+</ul>
+</li>
+<li><p><code>dep</code> <a target="_blank" rel="noopener" href="https://github.com/golang/dep">https://github.com/golang/dep</a></p>
+</li>
+</ul>
+<p>We assume that:</p>
+<ul>
+<li>The environment variable <code>$CARBUYDIR</code> points to an existing directory (e.g., <code>~/projects/carbuy</code>)</li>
+<li>This repository <code>carbuy-client</code> is cloned in <code>$CARBUYDIR/carbuy-client</code>.</li>
+<li>The repository <code>carbuy-go</code> is cloned in <code>$GOPATH/src/carbuy</code>.</li>
+</ul>
+<p>In other words:</p>
+<pre><code>cd $CARBUYDIR
+git clone [url carbuy-client] carbuy-client
+
+cd $GOPATH/src
+git clone [url carbuy-go] carbuy</code></pre>
+<h3 id="Compilation-installation-of-dependencies"><a href="#Compilation-installation-of-dependencies" class="headerlink" title="Compilation / installation of dependencies"></a>Compilation / installation of dependencies</h3><p><em>Important</em>: These steps might need to be done again after an update.</p>
+<h4 id="Fabric-v1-1-1-mpc"><a href="#Fabric-v1-1-1-mpc" class="headerlink" title="Fabric v1.1.1-mpc"></a>Fabric v1.1.1-mpc</h4><pre><code>mkdir -p $GOPATH/src/github.com/hyperledger
+cd $GOPATH/src/github.com/hyperledger
+git clone -b mpc_e2e https://github.com/fabrice102/fabric   # only the first time - if the folder &quot;fabric&quot; does not already exists, else check you are on the remote and mpc_e2e branch (cd fabric; git status)
+cd fabric
+git pull
+make docker</code></pre>
+<h4 id="carbuy-client"><a href="#carbuy-client" class="headerlink" title="carbuy-client"></a>carbuy-client</h4><pre><code>cd $CARBUYDIR/carbuy-client
+git submodule update --init
+cd fabric-sdk-node
+yarn
+gulp ca
+cd ..
+yarn
+
+cd $CARBUYDIR/carbuy-client/fabric
+./bootstrap.sh
+
+cd $CARBUYDIR/carbuy-client/fabric/fabric-ccenv-carbuy
+docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.1-mpc .</code></pre>
+<h4 id="carbuy-go"><a href="#carbuy-go" class="headerlink" title="carbuy-go"></a>carbuy-go</h4><p>This step is only required if you want to locally compile the chaincode.</p>
+<pre><code>cd $GOPATH/src/carbuy
+dep ensure</code></pre>
+<h3 id="1-Running-the-fabric"><a href="#1-Running-the-fabric" class="headerlink" title="1. Running the fabric"></a>1. Running the fabric</h3><p>Run</p>
+<pre><code>cd &quot;$CARBUYDIR/carbuy-client/fabric/network&quot;
+./byfn.sh -m generate
+./byfn.sh -m up</code></pre>
+<p>At the end, you should see</p>
+<pre><code>===================== Anchor peers for org &quot;Org1MSP&quot; on &quot;mychannel&quot; is updated successfully =====================
+
+========= All GOOD, BYFN execution completed ===========
+
+
+ _____   _   _   ____
+| ____| | \ | | |  _ \
+|  _|   |  \| | | | | |
+| |___  | |\  | | |_| |
+|_____| |_| \_| |____/</code></pre>
+<p>To stop the fabric:</p>
+<pre><code>cd &quot;$CARBUYDIR/carbuy-client/fabric/network&quot;
+./byfn.sh -m down</code></pre>
+<p>In this case, the ledger is destroyed.</p>
+<h3 id="2-Deploying-the-carbuy-application"><a href="#2-Deploying-the-carbuy-application" class="headerlink" title="2. Deploying the carbuy application"></a>2. Deploying the carbuy application</h3><p>Now you need to deploy the chaincode:</p>
+<pre><code>cd $CARBUYDIR/carbuy-client
+node deploy</code></pre>
+<p>Each deploy generates a fresh <code>chaincodeID</code> which is stored in <code>chaincodeID.txt</code>.<br>Therefore only the last deployed chaincode is actually used (except if you change <code>chaincodeID.txt</code>).<br>Furthermore, each deployment starts from a fresh empty ledger that way.</p>
+<p><em>Note</em>: <code>node deploy</code> is equivalent to <code>node deploy.js</code>.</p>
+<h3 id="3-Populate-the-database"><a href="#3-Populate-the-database" class="headerlink" title="3. Populate the database"></a>3. Populate the database</h3><p>You can create initial entries into the database by using the <code>populate.sh</code> script:</p>
+<pre><code>cd $CARBUYDIR/carbuy-client
+./scripts/populate.sh</code></pre>
+<p>Other smaller populate scripts are available (look for <code>populate*.sh</code>).</p>
+<h3 id="4-Accessing-the-smartbid-application-using-command-line-OPTIONAL"><a href="#4-Accessing-the-smartbid-application-using-command-line-OPTIONAL" class="headerlink" title="4. Accessing the smartbid application using command line (OPTIONAL)"></a>4. Accessing the smartbid application using command line (OPTIONAL)</h3><p>Now, you can run the <code>invoke</code> (or <code>query</code> if you don’t need the transaction to be recorded) command with different parameters. The command gets the name of the function that is executed (e.g. createItem, etc.) and a structure that includes all of the variables for the command.</p>
+<p>For example:</p>
+<pre><code>cd $CARBUYDIR/carbuy-client
+
+node invoke org0 createItem &#39;&#123;
+    &quot;id&quot;:              &quot;715987522&quot;,
+    &quot;sellerID&quot;:        &quot;org0&quot;,
+    &quot;name&quot;:            &quot;House, White Plains&quot;,
+    &quot;category&quot;:        &quot;Real Estate&quot;,
+    &quot;description&quot;:     &quot;&quot;,
+    &quot;auctionDateTime&quot;: 1494648000,
+    &quot;startPrice&quot;:      10000,
+    &quot;reservePrice&quot;:    &#39;$(node encrypt org0 30000)&#39;,
+    &quot;soldPrice&quot;:       0,
+    &quot;owner&quot;:           &quot;&quot;,
+    &quot;status&quot;:          &quot;available&quot;
+&#125;&#39;
+
+node invoke org2 makeBid &#39;&#123;
+    &quot;sellerID&quot;:        &quot;org0&quot;,
+    &quot;itemID&quot;:          &quot;715987522&quot;,
+    &quot;buyerID&quot;:         &quot;org2&quot;,
+    &quot;price&quot;:           &#39;$(node encrypt org2 15000)&#39;,
+    &quot;bidDateTime&quot;:     1493152448,
+    &quot;valid&quot;:           true
+&#125;&#39;
+
+node invoke org1 createItem &#39;&#123;
+    &quot;id&quot;:              &quot;715987524&quot;,
+    &quot;sellerID&quot;:        &quot;org1&quot;,
+    &quot;name&quot;:            &quot;House, Yorktown&quot;,
+    &quot;category&quot;:        &quot;Real Estate&quot;,
+    &quot;description&quot;:     &quot;&quot;,
+    &quot;auctionDateTime&quot;: 1494648000,
+    &quot;startPrice&quot;:      10000,
+    &quot;reservePrice&quot;:    &#39;$(node encrypt org1 25000)&#39;,
+    &quot;soldPrice&quot;:       0,
+    &quot;owner&quot;:           &quot;&quot;,
+    &quot;status&quot;:          &quot;available&quot;
+&#125;&#39;
+
+node query org2 getMyItemsWithBids org2</code></pre>
+<p>The first argument is a comma-separated list of orgs to be contacted. The following arguments correspond to the invoke function of the chaincode and its arguments.</p>
+<p>The reserve price is confidential. Therefore, an encryption of the price is saved on the chaincode and not the plaintextValue.</p>
+<p><code>node encrypt</code> enables to encrypt data for a given organization.</p>
+<h3 id="5-Running-the-web-server-OPTIONAL"><a href="#5-Running-the-web-server-OPTIONAL" class="headerlink" title="5. Running the web server (OPTIONAL)"></a>5. Running the web server (OPTIONAL)</h3><p>The web server provides a nicer interface than the command line.<br>To run it:</p>
+<pre><code>cd $CARBUYDIR/carbuy-client
+node app</code></pre>
+<p>When developing for the web server, it is convenient to restart it whenever needed.<br>For that, you can use <code>nodemon</code>. To install it:</p>
+<pre><code>cd $CARBUYDIR/carbuy-client
+npm install -g nodemon</code></pre>
+<p>To run the web server using <code>nodemon</code>:</p>
+<pre><code>nodemon -e &#39;*&#39; app.js</code></pre>
+<h3 id="Running-everything-above-automatically"><a href="#Running-everything-above-automatically" class="headerlink" title="Running everything above automatically"></a>Running everything above automatically</h3><p>Just run</p>
+<pre><code>$CARBUYDIR/carbuy-client/scripts/start.sh</code></pre>
+<p><em>TIP</em>: You can add the option <code>--populate</code> to <code>$CARBUYDIR/carbuy-client/scripts/start.sh</code>  to automatically populate after deploy.</p>
+<p><em>TIP</em>: If you are in a hurry and want only a small set of data, you can just use <code>$CARBUYDIR/carbuy-client/scripts/populateQuick.sh</code> or <code>$CARBUYDIR/carbuy-client/scripts/populateMin.sh</code>.</p>
+<p><em>TIP</em>: You can add the option <code>--no-app</code> to <code>$CARBUYDIR/carbuy-client/scripts/start.sh</code> to not launch the server. You can then run <code>$CARBUYDIR/carbuy-client/scripts/simpleTest.sh</code> to run a simple test auction.</p>
+<h3 id="6-Stopping-everything"><a href="#6-Stopping-everything" class="headerlink" title="6. Stopping everything"></a>6. Stopping everything</h3><pre><code>$CARBUYDIR/carbuy-client/scripts/stop.sh</code></pre>
+<h3 id="Updating"><a href="#Updating" class="headerlink" title="Updating"></a>Updating</h3><p>If you want to update all repos and compile what needs to be compiled, you can use</p>
+<pre><code>$CARBUYDIR/carbuy-client/scripts/update.sh</code></pre>
+<h2 id="Organization"><a href="#Organization" class="headerlink" title="Organization"></a>Organization</h2><ul>
+<li><code>fabric/</code>: files used to run the fabric orderer, peers, …</li>
+<li><code>static/</code>: static files of the web server</li>
+<li><code>data/</code>: fake database for the web server, used to store e.g., picture of users and cars: picture of with <code>id</code> from org0 <code>org0ID</code> is stored in <code>data/&lt;org0ID&gt;/&lt;id&gt;.png</code></li>
+<li><code>lib/</code>: templates, plugins, and other tools for the web server and <code>deploy.js</code>, …</li>
+<li><code>scripts/</code>: various scripts to make life easier</li>
+<li><code>test/</code>: mocha test files (to be run with <code>npm test</code>)</li>
+<li><code>config.json</code>: configuration file for everything</li>
+<li><code>manifest.js</code>: configuration file for the web server</li>
+<li><code>deploy.js</code>, <code>invoke.js</code>, <code>query.js</code>: see above</li>
+<li><code>chaincodeID.txt</code>: file created by <code>deploy.js</code> containing the chaincode ID of the last deployed chaincode</li>
+</ul>
+<h2 id="Unit-testing"><a href="#Unit-testing" class="headerlink" title="Unit testing"></a>Unit testing</h2><p>For the JS part, we are using <code>mocha</code>.<br>To run the tests:</p>
+<pre><code>cd $CARBUYDIR/carbuy-client
+npm test</code></pre>
+<h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><h3 id="Peers"><a href="#Peers" class="headerlink" title="Peers"></a>Peers</h3><p>WARNING: This section is completely out of date.</p>
+<p>Following the tutorial above, you get three peers: <code>org0</code>, <code>org1</code>, and <code>org2</code>.<br>However, the chaincode is oblivious to this and can work with any number of peers for most function calls, except when holding an auction which can only be done between three peers.</p>
+<p>When the chaincode is deployed, the <code>init</code> function should be given the list of peer IDs.<br>This is automatically done by <code>deploy.js</code>.</p>
+<p><em>Warning</em>: Peer name should only contains alphanumerical characters, <code>-</code> and <code>_</code>.</p>
+<h3 id="Data-model-structures-stored-on-the-blockchain"><a href="#Data-model-structures-stored-on-the-blockchain" class="headerlink" title="Data model / structures stored on the blockchain"></a>Data model / structures stored on the blockchain</h3><p>The data model is defined explicitly in the chaincode (<code>carbuy-go</code>), and must be kept in synch manually.<br>More precisely, the structures are defined at the top of <code>seller.go</code>, <code>buyer.go</code>, and <code>encrypted.go</code>, in the folder <code>$GOPATH/src/carbuy/chaincode/</code>.</p>
+<p>Comments indicate under which key the structures are stored on the blockchain.</p>
+<h3 id="Invoke-queries"><a href="#Invoke-queries" class="headerlink" title="Invoke queries"></a>Invoke queries</h3><p>There are five functions which can be invoked: <code>createItem</code>, <code>getMyItemsWithBids</code>, <code>getOtherItemsWithBids</code>, <code>makeBid</code>, <code>holdAuction</code>. Each of these functions gets <code>(stub, args)</code>, where <code>args</code> includes all of the input parameters.</p>
+<p>The invoke queries are called in <code>$GOPATH/src/carbuy/chaincode/main.go</code>, function <code>Invoke</code>.</p>
+<h2 id="Workarounds-and-dirty-details"><a href="#Workarounds-and-dirty-details" class="headerlink" title="Workarounds and dirty details"></a>Workarounds and dirty details</h2><h3 id="carbuy-client-1"><a href="#carbuy-client-1" class="headerlink" title="carbuy-client"></a>carbuy-client</h3><h4 id="Npm-packages"><a href="#Npm-packages" class="headerlink" title="Npm packages"></a>Npm packages</h4><p>We use the following workarounds in <code>package.json</code>:</p>
+<ul>
+<li>The npm package <code>node-hashtable</code> does not compile on macos Sierra. We instead use <a target="_blank" rel="noopener" href="https://github.com/fabrice102/node-hashtable">https://github.com/fabrice102/node-hashtable</a>.</li>
+<li>The npm package <code>grpc</code> seems to be manually installed at least on macos Sierra.</li>
+<li>The npm package <code>winston</code> seems to be a dependency of fabric-client which has to be manually installed <code>node_modules/fabric-client/lib/utils.js:25:15</code>.</li>
+</ul>
+<h4 id="Events"><a href="#Events" class="headerlink" title="Events"></a>Events</h4><p>We only look at the events from the <code>org0</code> peer. This should never be an issue at least in our setting.</p>
+<h3 id="carbuy-go-1"><a href="#carbuy-go-1" class="headerlink" title="carbuy-go"></a>carbuy-go</h3><h4 id="Vendor-and-package-versions"><a href="#Vendor-and-package-versions" class="headerlink" title="Vendor and package versions"></a>Vendor and package versions</h4><p>We use <code>golang dep</code> to simplify dependencies management.</p>
+<p>However, for speed, we do not vendor anything in the chaincode. Instead <code>fabric-ccenv-carbuy</code> contains already everything that is requires.<br>Thus, no need for compilation each time and installation is faster.</p>
+<h4 id="SWIG"><a href="#SWIG" class="headerlink" title="SWIG"></a>SWIG</h4><p>We need <code>swig</code>. For that we need two changes:</p>
+<ul>
+<li>Patch <code>node_modules/fabric-client/lib/packager/Golang.js</code> to support <code>swig</code>; concretely, we use <code>fabric-sdk-node</code> as a submodule, from branch <code>swig-support</code> from <a target="_blank" rel="noopener" href="https://github.com/fabrice102/fabric-sdk-node.git">https://github.com/fabrice102/fabric-sdk-node.git</a>.</li>
+<li>Use of <code>CORE_CHAINCODE_BUILDER</code> and <code>$CARBUYDIR/carbuy-client/fabric/fabric-ccenv-carbuy</code>, cf above. We need a recent version of <code>swig</code>, because the default version of swig in Ubuntu 16.04 has a bug: <a target="_blank" rel="noopener" href="https://github.com/swig/swig/issues/619">https://github.com/swig/swig/issues/619</a>.</li>
+</ul>
+<h2 id="Other-remarks"><a href="#Other-remarks" class="headerlink" title="Other remarks"></a>Other remarks</h2><p>We use <a target="_blank" rel="noopener" href="https://github.com/hyperledger/fabric/blob/master/docs/source/asset_setup.rst">https://github.com/hyperledger/fabric/blob/master/docs/source/asset_setup.rst</a> as a base, with various changes.<br>In particular <code>peer0</code>, <code>peer1</code>, and <code>peer2</code> have been renamed <code>org0</code>, <code>org1</code>, and <code>org2</code>.<br>Furthermore the network id has been changed from <code>peer0</code> to <code>carbuy</code>.</p>
+<p>The web server uses <code>hapijs</code> <a target="_blank" rel="noopener" href="https://hapijs.com/">https://hapijs.com/</a>.<br>The pages use <code>bootstrap</code> <a target="_blank" rel="noopener" href="https://getbootstrap.com/">https://getbootstrap.com/</a>.</p>
+<p><em>IMPORTANT</em>: Keys must be changed on production. They are stored both in <code>$CARBUYDIR/carbuy-client/keys/</code> and in <code>$GOPATH/src/carbuy/helper/server/config/config.go</code>.</p>
+<h2 id="Troubleshooting"><a href="#Troubleshooting" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h2><h3 id="Error-GRPC-client-got-an-error-response-from-the-peer-Error-Error-executing-chaincode-Failed-to-execute-transaction-when-invoking"><a href="#Error-GRPC-client-got-an-error-response-from-the-peer-Error-Error-executing-chaincode-Failed-to-execute-transaction-when-invoking" class="headerlink" title="Error GRPC client got an error response from the peer. Error: Error executing chaincode: Failed to execute transaction when invoking"></a>Error <code>GRPC client got an error response from the peer. Error: Error executing chaincode: Failed to execute transaction</code> when invoking</h3><p>To debug this error, look at the logs of the chaincode</p>
+<pre><code>docker logs carbuy-[peer]-[chaincodeid]-....</code></pre>
+<p>Use autocompletion to make your life easier.</p>
+<h3 id="Issues-with-npm-or-weird-JS-issues"><a href="#Issues-with-npm-or-weird-JS-issues" class="headerlink" title="Issues with npm or weird JS issues"></a>Issues with <code>npm</code> or weird JS issues</h3><p>Use <code>yarn</code> as <code>npm</code> often creates weird issues.</p>
+<p>If you insist on using <code>npm</code>, here are some comments.</p>
+<p>Might be useful to remove <code>node_modules</code> and <code>package-lock.json</code> and run <code>npm install</code> again.<br>True also inside <code>fabric-sdk-node</code>. (See requirements at the beginning.)</p>
+<p>If problems with versions, might be useful to remove <code>package-lock.json</code> too.</p>
+<p>See <a target="_blank" rel="noopener" href="https://github.com/npm/npm/issues/16839">https://github.com/npm/npm/issues/16839</a></p>
+<h3 id="Issues-with-installation-of-chaincode"><a href="#Issues-with-installation-of-chaincode" class="headerlink" title="Issues with installation of chaincode"></a>Issues with installation of chaincode</h3><p>Check that you gave the latest <code>fabric-ccenv-carbuy</code> Docker image.<br>Otherwise run:</p>
+<pre><code>cd $CARBUYDIR/carbuy-client/fabric/fabric-ccenv-carbuy
+docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></pre>
+<h3 id="Other-random-errors"><a href="#Other-random-errors" class="headerlink" title="Other random errors"></a>Other random errors</h3><p>In some cases just rebooting the machine solves some errors.</p>
+<h3 id="Chaincode-dead-lock"><a href="#Chaincode-dead-lock" class="headerlink" title="Chaincode dead lock"></a>Chaincode dead lock</h3><p>To debug send signal QUIT to process 1 in the docker container of the chaincode and look at the logs.<br><a target="_blank" rel="noopener" href="https://stackoverflow.com/a/28699595/2945326">https://stackoverflow.com/a/28699595/2945326</a></p>
+<h3 id="Errors-on-the-chaincode"><a href="#Errors-on-the-chaincode" class="headerlink" title="Errors on the chaincode"></a>Errors on the chaincode</h3><p>Debugging can be eased by changing PRINT_LINE define on top of <code>$GOPATH/src/carbuy/chaincode/mpc/mpc.cpp</code>.</p>
+<h3 id="Acknowledgement"><a href="#Acknowledgement" class="headerlink" title="Acknowledgement"></a>Acknowledgement</h3><p>Thanks to Research fellow, Shai Halevi for his guidance and help.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/25/evening/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/08/25/evening/" class="post-title-link" itemprop="url">evening</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-08-25 20:24:31" itemprop="dateCreated datePublished" datetime="2021-08-25T20:24:31+08:00">2021-08-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-11-11 11:09:26" itemprop="dateModified" datetime="2021-11-11T11:09:26+08:00">2021-11-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index"><span itemprop="name">生活</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/08/25/evening/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/25/evening/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
+<p>农历七月十八</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/15/markdown/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/04/15/markdown/" class="post-title-link" itemprop="url">markdown</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-15 09:53:57" itemprop="dateCreated datePublished" datetime="2021-04-15T09:53:57+08:00">2021-04-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-08 16:07:46" itemprop="dateModified" datetime="2022-01-08T16:07:46+08:00">2022-01-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Tool/" itemprop="url" rel="index"><span itemprop="name">Tool</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/04/15/markdown/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/04/15/markdown/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
+<p>格式如下图：</p>
+<img src="/2021/04/15/markdown/md.jpg" class="">
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/07/java-keyword/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -904,323 +1415,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/10/md5-salt/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/10/md5-salt/" class="post-title-link" itemprop="url">md5+salt</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-10 19:32:27" itemprop="dateCreated datePublished" datetime="2020-10-10T19:32:27+08:00">2020-10-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-21 11:46:12" itemprop="dateModified" datetime="2021-12-21T11:46:12+08:00">2021-12-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/technology-stack/" itemprop="url" rel="index"><span itemprop="name">technology-stack</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/10/10/md5-salt/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/10/md5-salt/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>传统的md5算法通过产生一个128位（16字节）的散列值（hash value），用于确保信息的安全性。但随着技术的发展，md5无法防止碰撞（collision）且可以被加以破解。<br>salt的出现可以一定程度上解决这个问题。</p>
-<h3 id="md5-salt实现原理"><a href="#md5-salt实现原理" class="headerlink" title="md5+salt实现原理"></a>md5+salt实现原理</h3><p><strong>注册</strong><br>1、用户提供用户名和密码<br>2、系统提供一个salt，salt+密码进行散列生成一个hash<br>3、系统将hash和salt分别存放到数据库中</p>
-<p><strong>登录</strong><br>1、用户填写用户名和密码<br>2、系统通过用户名找到对应的hash和salt<br>3、系统将密码和salt进行散列生成new_hash<br>4、比较hash与new_hash，相等则表示密码正确，反之密码错误。</p>
-<p><strong>流程图如下</strong></p>
-<img src="/2020/10/10/md5-salt/md5.png" class="">
-
-<h4 id="md5-salt"><a href="#md5-salt" class="headerlink" title="md5+salt"></a>md5+salt</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;md5</span><br><span class="line">  Md5Hash md5Hash &#x3D; new Md5Hash(&quot;123456&quot;);</span><br><span class="line">  System.out.println(md5Hash.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;md5+salt</span><br><span class="line">  Md5Hash md5HashSalt &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;);</span><br><span class="line">  System.out.println(md5HashSalt.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  e10adc3949ba59abbe56e057f20f883e</span><br><span class="line">  5f9dcb70720b6f58a2b219015fad5c30</span><br></pre></td></tr></table></figure>
-
-<h4 id="md5-salt-hash散列"><a href="#md5-salt-hash散列" class="headerlink" title="md5+salt+hash散列"></a>md5+salt+hash散列</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;md5+salt+hash散列</span><br><span class="line">  Md5Hash md5Hash1 &#x3D; new Md5Hash(&quot;123456&quot;, &quot;x0*7ps&quot;, 1024);</span><br><span class="line">  System.out.println(md5Hash1.toHex());</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;运行结果</span><br><span class="line">  14b9f6ecccb925f15cf92c44ff9326ce</span><br></pre></td></tr></table></figure>
-
-<h3 id="shiro实现md5-salt"><a href="#shiro实现md5-salt" class="headerlink" title="shiro实现md5+salt"></a>shiro实现md5+salt</h3><p><strong>自定义realm</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 自定义realm  md5+salt+hash散列</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CustomMd5Realm extends AuthorizingRealm &#123;</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException &#123;</span><br><span class="line">        &#x2F;&#x2F;获取身份信息</span><br><span class="line">        String principal &#x3D; (String) token.getPrincipal();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;根据用户名查询数据库</span><br><span class="line">        if (&quot;hj&quot;.equals(principal)) &#123;</span><br><span class="line">            &#x2F;&#x2F;参数1：用户名  参数2：md5+salt之后的密码 参数3：注册时的salt  参数4：realm名字</span><br><span class="line">            return new SimpleAuthenticationInfo(principal, &quot;14b9f6ecccb925f15cf92c44ff9326ce&quot;,</span><br><span class="line">                    ByteSource.Util.bytes(&quot;x0*7ps&quot;), this.getName());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>测试验证</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">public class TestCustomMd5Authenticator &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        DefaultSecurityManager defaultSecurityManager &#x3D; new DefaultSecurityManager();</span><br><span class="line"></span><br><span class="line">        CustomMd5Realm realm &#x3D; new CustomMd5Realm();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;realm使用hash凭证匹配器</span><br><span class="line">        HashedCredentialsMatcher credentialsMatcher &#x3D; new HashedCredentialsMatcher();</span><br><span class="line">        &#x2F;&#x2F;设置算法为md5</span><br><span class="line">        credentialsMatcher.setHashAlgorithmName(&quot;md5&quot;);</span><br><span class="line">        &#x2F;&#x2F;设置散列次数为1024</span><br><span class="line">        credentialsMatcher.setHashIterations(1024);</span><br><span class="line"></span><br><span class="line">        realm.setCredentialsMatcher(credentialsMatcher);</span><br><span class="line">        defaultSecurityManager.setRealm(realm);</span><br><span class="line"></span><br><span class="line">        SecurityUtils.setSecurityManager(defaultSecurityManager);</span><br><span class="line"></span><br><span class="line">        Subject subject &#x3D; SecurityUtils.getSubject();</span><br><span class="line"></span><br><span class="line">        UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hj&quot;, &quot;123456&quot;);</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">            System.out.println(&quot;login success&quot;);</span><br><span class="line">        &#125; catch (UnknownAccountException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;username error&quot;);</span><br><span class="line">        &#125; catch (IncorrectCredentialsException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            System.out.println(&quot;password error&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/08/shiro-base/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/08/shiro-base/" class="post-title-link" itemprop="url">shiro</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-10-08 09:54:40" itemprop="dateCreated datePublished" datetime="2020-10-08T09:54:40+08:00">2020-10-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-21 11:41:56" itemprop="dateModified" datetime="2021-12-21T11:41:56+08:00">2021-12-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/technology-stack/" itemprop="url" rel="index"><span itemprop="name">technology-stack</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/10/08/shiro-base/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/10/08/shiro-base/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Apache shiro是一个强大的且容易使用的Java安全框架，执行身份验证（认证）、授权、加密和会话管理。<br>Shiro有三个核心概念，<strong>Subject，SecurityManager，Realms</strong>。<br><strong>shiro顶层图</strong></p>
-<img src="/2020/10/08/shiro-base/shiro-high.png" class="">
-
-<p><strong>shiro详细架构图</strong></p>
-<img src="/2020/10/08/shiro-base/shiro-detail.png" class="">
-
-<h4 id="Subject"><a href="#Subject" class="headerlink" title="Subject"></a>Subject</h4><p>Subject意味着<strong>当前正在执行的用户</strong>，但它不仅仅指代User，还可以是<strong>第三方进程</strong>，<strong>后台账户</strong>或其它类似的任何东西。It simply means ‘the thing that is currently interacting with the software’.</p>
-<h4 id="SecurityManager"><a href="#SecurityManager" class="headerlink" title="SecurityManager"></a>SecurityManager</h4><p>SecurityManager管理所有用户的安全操作，是shiro的核心。</p>
-<h4 id="Realms"><a href="#Realms" class="headerlink" title="Realms"></a>Realms</h4><p>Realm在Shiro和你的应用安全数据之间充当桥或者连接器的角色。</p>
-<h4 id="其它重要概念"><a href="#其它重要概念" class="headerlink" title="其它重要概念"></a>其它重要概念</h4><p><strong>Authentication（认证）</strong><br>认证就是一个验证用户身份的过程，也叫登录。<br><strong>Authorization（授权）</strong><br>授权就是对一个已经登陆的用户授予其访问系统资源的权限。<br><strong>Session Management（会话管理）</strong><br>类似于web中session，这个session是apache shiro特有的。<br><strong>Cryptography（密码学）</strong><br>密码学就是一个混淆或隐藏数据的过程。</p>
-<h3 id="单机版应用"><a href="#单机版应用" class="headerlink" title="单机版应用"></a>单机版应用</h3><h4 id="ini文件"><a href="#ini文件" class="headerlink" title="ini文件"></a>ini文件</h4><p>可以将一些subject对象的数据写到shiro.ini文件中，例如用户名、密码之类的信息。</p>
-<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><p><strong>1.创建安全管理器对象</strong><br><code>DefaultSecurityManager securityManager = new DefaultSecurityManager();</code></p>
-<p><strong>2.给安全管理器设置realm</strong><br><code>securityManager.setRealm(new IniRealm(&quot;classpath:shiro.ini&quot;));</code></p>
-<p><strong>3.SecurityUtils给全局安全工具类设置安全管理器</strong><br><code>SecurityUtils.setSecurityManager(securityManager);</code></p>
-<p><strong>4.关键对象subject（主体）</strong><br><code>Subject subject = SecurityUtils.getSubject();</code></p>
-<p><strong>5.创建令牌</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hejun&quot;,&quot;123456&quot;);</span><br><span class="line"></span><br><span class="line">try&#123;</span><br><span class="line">    subject.login(token);  &#x2F;&#x2F;用户认证</span><br><span class="line">    System.out.println(&quot;认证状态: &quot; + subject.isAuthenticated());</span><br><span class="line">&#125; catch(Exception e) &#123;</span><br><span class="line">    e.printSstackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="自定义realm"><a href="#自定义realm" class="headerlink" title="自定义realm"></a>自定义realm</h3><p>自定义realm的作用就是将认证/授权的数据来源转为数据库，丢掉shiro.ini文件。</p>
-<img src="/2020/10/08/shiro-base/extends-diagram.png" class="">
-<p><strong>1.继承AuthorizingRealm类，重写两个方法</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * 自定义realm  将认证&#x2F;授权数据的来源转为数据库</span><br><span class="line"> *&#x2F;</span><br><span class="line">public class CustomRealm extends AuthorizingRealm &#123;</span><br><span class="line">    &#x2F;&#x2F;授权</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) &#123;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;认证</span><br><span class="line">    @Override</span><br><span class="line">    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException &#123;</span><br><span class="line">        &#x2F;&#x2F;token中获取用户名</span><br><span class="line">        String principal &#x3D; (String) authenticationToken.getPrincipal();</span><br><span class="line">        System.out.println(principal);</span><br><span class="line">        &#x2F;&#x2F;根据身份信息使用jdbc mybatis查询相关数据库</span><br><span class="line">        if (&quot;hj&quot;.equals(principal)) &#123;</span><br><span class="line">            &#x2F;&#x2F;参数1，2：返回数据库中的正确用户名和密码</span><br><span class="line">            return new SimpleAuthenticationInfo(principal, &quot;123&quot;, this.getName());</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>2.测试</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public class TestCustomRealmAuthenticator &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;创建securityManager</span><br><span class="line">        DefaultSecurityManager defaultSecurityManager &#x3D; new DefaultSecurityManager();</span><br><span class="line">        &#x2F;&#x2F;设置自定义realm</span><br><span class="line">        defaultSecurityManager.setRealm(new CustomRealm());</span><br><span class="line">        &#x2F;&#x2F;为全局安全工具类设置securityManager</span><br><span class="line">        SecurityUtils.setSecurityManager(defaultSecurityManager);</span><br><span class="line">        &#x2F;&#x2F;通过全局安全工具类获得subject</span><br><span class="line">        Subject subject &#x3D; SecurityUtils.getSubject();</span><br><span class="line">        &#x2F;&#x2F;创建token</span><br><span class="line">        UsernamePasswordToken token &#x3D; new UsernamePasswordToken(&quot;hj&quot;, &quot;123&quot;);</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            subject.login(token);</span><br><span class="line">            System.out.println(&quot;login success&quot;);</span><br><span class="line">        &#125; catch (AuthenticationException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><strong>最终在SimpleAccountRealm这个类中的doGetAuthenticationInfo方法中完成用户名的校验。</strong></p>
-<p><strong>密码校验在AuthenticatingRealm的assertCredentialsMatch完成。密码校验是自动完成的。</strong></p>
-<p><strong>AuthenticatingRealm 认证realm doGetAuthenticationInfo</strong></p>
-<p><strong>AuthorizingRealm 授权realm doGetAuthorizationInfo</strong></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/23/concurrency/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/09/23/concurrency/" class="post-title-link" itemprop="url">Three ways to create Java Multithread</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-09-23 21:47:33" itemprop="dateCreated datePublished" datetime="2020-09-23T21:47:33+08:00">2020-09-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-02 17:56:52" itemprop="dateModified" datetime="2022-01-02T17:56:52+08:00">2022-01-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/09/23/concurrency/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/23/concurrency/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>创建Java多线程的三种方式。</p>
-<h3 id="1-Thread"><a href="#1-Thread" class="headerlink" title="1 Thread"></a>1 Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承了Thread类就不能再继承其它类了，这也是一个缺点。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class MyThread1 extends Thread &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F;启动5个线程，分别执行run方法。</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new MyThread1().start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-Runnable"><a href="#2-Runnable" class="headerlink" title="2 Runnable"></a>2 Runnable</h3><p>通过实现Runnable接口的run方法来实现多线程，启动线程需要通过Thread类。一般情况下用此方法来创建多线程。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class MyThread2 implements Runnable &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void run() &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            new Thread(new MyThread2()).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-Callable"><a href="#3-Callable" class="headerlink" title="3 Callable"></a>3 Callable</h3><p>通过实现Callable接口的call方法来实现多线程，有返回值。可以通过FutureTask包装器来创建Thread线程。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class MyThread3&lt;V&gt; implements Callable&lt;V&gt; &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public V call() throws Exception &#123;</span><br><span class="line">        System.out.println(Thread.currentThread().getName());</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        for (int i &#x3D; 0; i &lt; 5; i++) &#123;</span><br><span class="line">            &#x2F;&#x2F;通过MyThread3实例化一个callable对象</span><br><span class="line">            Callable&lt;Integer&gt; callable &#x3D; new MyThread3&lt;&gt;();</span><br><span class="line">            &#x2F;&#x2F;通过callable实例化FutureTask类</span><br><span class="line">            FutureTask&lt;Integer&gt; task &#x3D; new FutureTask&lt;&gt;(callable);</span><br><span class="line">            new Thread(task).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1292,7 +1486,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">64</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1305,7 +1499,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">53</span>
+        <span class="site-state-item-count">56</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
