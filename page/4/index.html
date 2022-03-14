@@ -670,7 +670,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-06 19:53:53" itemprop="dateModified" datetime="2022-03-06T19:53:53+08:00">2022-03-06</time>
+                <time title="修改时间：2022-03-14 10:46:49" itemprop="dateModified" datetime="2022-03-14T10:46:49+08:00">2022-03-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -732,7 +732,7 @@
 <p>sleep()方法可以在任何地方使用，而wait()方法则只能在同步方法或同步代码块中使用。</p>
 <h3 id="6-run-与start"><a href="#6-run-与start" class="headerlink" title="6 run()与start()"></a>6 run()与start()</h3><p>通常，系统通过调用线程类的start()方法来启动一个线程，此时该线程处于就绪状态，即这个线程可以被JVM来调度执行。在调度过程中，JVM底层通过调用线程类的run()方法来完成实际的操作，当run()方法结束后，此线程就会终止。</p>
 <p>如果直接调用线程类的run()方法，此时run()方法仅仅被当做一个普通的函数调用，程序中仍然只有主线程这一个线程，无法达到启动多线程的目的。</p>
-<h3 id="8-线程同步的方法"><a href="#8-线程同步的方法" class="headerlink" title="8 线程同步的方法"></a>8 线程同步的方法</h3><p>1 Synchronized关键字；<br>2 volatile关键字；<br>3 wait和notify方法；<br>4 可重入锁（ReentrantLock）；<br>5 阻塞队列实现线程同步；<br>6 信号量Semaphore。</p>
+<h3 id="8-线程同步的方法"><a href="#8-线程同步的方法" class="headerlink" title="8 线程同步的方法"></a>8 线程同步的方法</h3><p>1 Synchronized关键字；<br>2 volatile关键字；<br>3 wait和notify方法；<br>4 重入锁（ReentrantLock）；<br>5 阻塞队列实现线程同步；<br>6 信号量Semaphore。</p>
 <h3 id="9-Thread的interrupt方法原理"><a href="#9-Thread的interrupt方法原理" class="headerlink" title="9 Thread的interrupt方法原理"></a>9 Thread的interrupt方法原理</h3><p>interrupt是Thread类的实例方法，它的主要作用就是给目标线程发送一个通知，有人希望你退出啦，同时会将目标线程的中断标志设置为true，也就是已经有人打断过该线程了。至于目标线程如何处理，完全取决于目标线程自身。<br>interrupt方法中断线程可以分为两种情况，第一种情况是打断正在运行的线程。第二种情况是打断正在休眠的线程，比如目标线程调用了sleep方法而处于阻塞状态，这时候如果打断它，就会抛出InterruptedException异常。</p>
 
       
@@ -784,7 +784,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-25 21:12:28" itemprop="dateModified" datetime="2022-02-25T21:12:28+08:00">2022-02-25</time>
+                <time title="修改时间：2022-03-14 10:47:24" itemprop="dateModified" datetime="2022-03-14T10:47:24+08:00">2022-03-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -833,7 +833,7 @@
 
 <p><strong>实现原理</strong><br>“分段锁”：容器中有多把锁，每一把锁锁一段数据，这样在多线程访问不同段的数据时，就不会存在锁竞争了，这样可以有效地提高并发效率。</p>
 <p>JDK1.7 数组+链表。（segment[]+hashentry[]）。<br>ConcurrentHashMap采用了分段锁技术，ConcurrentHashMap在对象中保存了一个Segment数组，将整个Hash表划分为多个Segment。在执行put操作时会先根据hash算法定位到元素属于哪个Segment，然后对该Segment加锁。每当一个线程占用锁访问一个Segment时，不会影响到其他的Segment。ConcurrentHashMap的get方法是非常高效的，因为整个过程都不需要加锁。</p>
-<p>ConcurrentHashMap使用Segment来表示不同的部分，每个Segment其实就是一个小的Hashtable，它们有自己的锁。每个segment使用单独的ReentrantLock（可重入锁）。如果操作涉及不同segment，则可以并发执行，如果是同一个segment，则会进行锁的竞争和等待。<br>ConcurrentHashMap定位一个元素的过程需要进行两次Hash操作。第一次Hash定位到Segment，第二次Hash定位到元素所在的链表的头部。</p>
+<p>ConcurrentHashMap使用Segment来表示不同的部分，每个Segment其实就是一个小的Hashtable，它们有自己的锁。每个segment使用单独的ReentrantLock（重入锁）。如果操作涉及不同segment，则可以并发执行，如果是同一个segment，则会进行锁的竞争和等待。<br>ConcurrentHashMap定位一个元素的过程需要进行两次Hash操作。第一次Hash定位到Segment，第二次Hash定位到元素所在的链表的头部。</p>
 <p>JDK 1.8 数组+链表+红黑树。<br>舍弃了JDK1.7中的Segment分段锁，而采用了CAS + synchronized来保证并发安全性。<br>1.7中锁的粒度是基于Segment的，一个Segment包含多个HashEntry，而1.8锁的粒度就是Node（HashEntry）。<br>1.8的数据结构变得更加简单，操作也更加清晰流畅，因为已经使用synchronized来进行同步，所以不需要分段锁的概念，也就不需要Segment这种数据结构了，由于粒度的降低，实现的复杂度也增加了。1.8使用红黑树来优化链表，将查询效率降到o（logn）。</p>
 <p>CAS（Compare and Swap，比较并替换）。CAS本质上很简单，一般至少有3个参数：V表示要更新的变量、E表示预期值、N表示新值变量。如果V值等于E值，则将V的值设为N。若V值和E值不同，则说明已经有其他线程做了更新，则当前线程什么都不做。<br>通俗的理解就是CAS操作需要我们提供一个期望值，当期望值与当前线程的变量值相同时，说明还没有线程修改该值，则当前线程可以进行修改，也就是执行CAS操作。但如果期望值与当前线程的变量值不等，则说明该值已被其他线程修改，此时不执行更新操作，但可以选择重新读取该变量再次尝试修改该变量，也可以放弃操作。</p>
 <h3 id="3-LinkedHashMap"><a href="#3-LinkedHashMap" class="headerlink" title="3 LinkedHashMap"></a>3 LinkedHashMap</h3><p>Map接口的哈希表和链表实现，迭代顺序可预测。<br>此实现与HashMap的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
@@ -1233,7 +1233,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-08 11:33:31" itemprop="dateModified" datetime="2022-03-08T11:33:31+08:00">2022-03-08</time>
+                <time title="修改时间：2022-03-13 12:19:44" itemprop="dateModified" datetime="2022-03-13T12:19:44+08:00">2022-03-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1274,8 +1274,9 @@
 <p>Exception：可分为运行时异常与受检查异常。<br>运行时异常：空指针异常、指定的类找不到、数组越界、方法传递参数错误、数据类型转换错误。可以编译通过，一运行就停止了，程序不会自己处理。</p>
 <p>受检查异常：要么用try … catch…捕获，要么用throws声明抛出，交给父类处理。</p>
 <p>常见的异常类有：NullPointerException、SQLException、IndexOutOfBoundsException、FileNotFoundException、IOException、ClassCastException、IllegalArgumentException。</p>
-<h3 id="2-throw和throws的区别"><a href="#2-throw和throws的区别" class="headerlink" title="2 throw和throws的区别"></a>2 throw和throws的区别</h3><p>throw：在方法体内部，表示抛出异常，由方法体内部的语句处理。throw是具体向外抛出异常的动作，所以它抛出的是一个异常实例。</p>
+<h3 id="2-throw和throws的区别"><a href="#2-throw和throws的区别" class="headerlink" title="2 throw和throws的区别"></a>2 throw和throws的区别</h3><p>throw：在方法体内部，表示抛出异常，由方法体内部的语句处理。throw是具体向外抛出异常的动作，所以它抛出的是一个异常实例。异常可以是系统定义的，也可以是自己定义的。</p>
 <p>throws：在方法声明后面，表示如果抛出异常，由该方法的调用者来进行异常的处理。表示出现异常的可能性，并不一定会发生这种异常。</p>
+<p>throw只能用于抛出一种异常，而throws可以抛出多中异常。</p>
 <h3 id="3-Java-IO-Stream"><a href="#3-Java-IO-Stream" class="headerlink" title="3 Java IO Stream"></a>3 Java IO Stream</h3><p>功能：输入流、输出流<br>类型：字节流、字符流</p>
 <p>字节流：InputStream/OutputStream是字节流的抽象类，这两个抽象类派生了若干子类，不同的子类分别处理不同的操作。</p>
 <img src="/2021/11/14/11-14-Java/byte.png" class="">
