@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="1 Spring事务事务是指作为单个逻辑工作单元执行的一系列操作。这些操作要么全部执行，要么全部不执行。事务特性：原子性（atomicity）：强调事务的不可分割。事务的原子性确保动作要么全部完成，要么完全不起作用。一致性（consistency）：事务执行前后数据的完整性保持一致。隔离性（isolation）：一个事务执行的过程中，不应该受到其他事务的干扰。持久性（durability）：事务被">
+  <meta name="description" content="1 Spring事务Spring事务的本质其实就是数据库对事务的支持，没有数据库的事务支持，Spring是无法提供事务功能的。对于纯JDBC操作数据库，想要用到事务，可以按照以下步骤进行：  获取连接 Connection con &#x3D; DriverManager.getConnection() 开启事务 con.setAutoCommit(true&#x2F;false) 执行 CRUD 提交事务&#x2F;回滚事务">
 <meta property="og:type" content="article">
-<meta property="og:title" content="12_11_Spring">
+<meta property="og:title" content="spring_transaction">
 <meta property="og:url" content="http://example.com/2021/12/11/12-11-Spring/index.html">
 <meta property="og:site_name" content="cool-jun的博客">
-<meta property="og:description" content="1 Spring事务事务是指作为单个逻辑工作单元执行的一系列操作。这些操作要么全部执行，要么全部不执行。事务特性：原子性（atomicity）：强调事务的不可分割。事务的原子性确保动作要么全部完成，要么完全不起作用。一致性（consistency）：事务执行前后数据的完整性保持一致。隔离性（isolation）：一个事务执行的过程中，不应该受到其他事务的干扰。持久性（durability）：事务被">
+<meta property="og:description" content="1 Spring事务Spring事务的本质其实就是数据库对事务的支持，没有数据库的事务支持，Spring是无法提供事务功能的。对于纯JDBC操作数据库，想要用到事务，可以按照以下步骤进行：  获取连接 Connection con &#x3D; DriverManager.getConnection() 开启事务 con.setAutoCommit(true&#x2F;false) 执行 CRUD 提交事务&#x2F;回滚事务">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-12-11T05:53:07.000Z">
-<meta property="article:modified_time" content="2022-03-01T02:47:19.628Z">
+<meta property="article:modified_time" content="2022-03-15T13:08:28.185Z">
 <meta property="article:author" content="He Jun">
 <meta property="article:tag" content="事务">
 <meta name="twitter:card" content="summary">
@@ -46,7 +46,7 @@
   };
 </script>
 
-  <title>12_11_Spring | cool-jun的博客</title>
+  <title>spring_transaction | cool-jun的博客</title>
   
 
 
@@ -203,7 +203,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          12_11_Spring
+          spring_transaction
         </h1>
 
         <div class="post-meta">
@@ -220,7 +220,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-01 10:47:19" itemprop="dateModified" datetime="2022-03-01T10:47:19+08:00">2022-03-01</time>
+                <time title="修改时间：2022-03-15 21:08:28" itemprop="dateModified" datetime="2022-03-15T21:08:28+08:00">2022-03-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -264,9 +264,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="1-Spring事务"><a href="#1-Spring事务" class="headerlink" title="1 Spring事务"></a>1 Spring事务</h3><p>事务是指作为单个逻辑工作单元执行的一系列操作。这些操作要么全部执行，要么全部不执行。<br>事务特性：<br>原子性（atomicity）：强调事务的不可分割。事务的原子性确保动作要么全部完成，要么完全不起作用。<br>一致性（consistency）：事务执行前后数据的完整性保持一致。<br>隔离性（isolation）：一个事务执行的过程中，不应该受到其他事务的干扰。<br>持久性（durability）：事务被提交之后，它对数据库中数据的改变是持久的。</p>
-<p>Spring事务可以分为两种：<br>编程式事务(通过代码的方式来实现事务)<br>声明式事务(通过配置的方式来实现事务)</p>
-<p>在编程式事务中有以下几个重要的接口<br>TransactionDefinition：定义了Spring兼容的事务属性(比如事务隔离级别、事务传播、事务超时、是否只读状态)<br>TransactionStatus：代表了事务的具体运行状态(获取事务运行状态的信息，也可以通过该接口间接回滚事务等操作)<br>PlatformTransactionManager：事务管理器接口(定义了一组行为，具体实现交由不同的持久化框架来完成)</p>
+        <h3 id="1-Spring事务"><a href="#1-Spring事务" class="headerlink" title="1 Spring事务"></a>1 Spring事务</h3><p>Spring事务的本质其实就是数据库对事务的支持，没有数据库的事务支持，Spring是无法提供事务功能的。对于纯JDBC操作数据库，想要用到事务，可以按照以下步骤进行：</p>
+<ol>
+<li>获取连接 Connection con = DriverManager.getConnection()</li>
+<li>开启事务 con.setAutoCommit(true/false)</li>
+<li>执行 CRUD</li>
+<li>提交事务/回滚事务 con.commit() / con.rollback();</li>
+<li>关闭连接 conn.close();</li>
+</ol>
+<p>使用Spring的事务管理功能后，我们可以不再写步骤2和步骤4的代码，而是由Spirng自动完成。</p>
+<p>Spring支持编程式事务管理以及声明式事务管理两种方式。<br>编程式事务管理(通过代码的方式来实现事务)<br>声明式事务管理(通过配置的方式来实现事务)</p>
+<p>在编程式事务管理中有以下几个重要的接口<br>TransactionDefinition：定义了Spring兼容的事务属性(比如事务隔离级别、事务传播、事务超时、是否只读状态)<br>TransactionStatus：代表了事务的具体运行状态(获取事务运行状态的信息，也可以通过该接口间接回滚事务等操作)<br>PlatformTransactionManager：事务管理器接口(定义了一组行为，具体实现交由不同的持久化框架来完成)</p>
 <p>TransactionDefinition接口中定义了五个表示隔离级别的常量<br>ISOLATION_DEFAULT：使用后端数据库默认的隔离界别，MySQL默认采用REPEATABLE_READ隔离级别，Oracle默认采用READ_COMMITTED隔离级别。<br>ISOLATION_READ_UNCOMMITTED：这是事务最低的隔离级别，它允许另外一个事务可以读到这个事务未提交的数据。这种隔离级别会产生脏读，不可重复读和幻读。<br>ISOLATION_READ_COMMITTED：保证一个事务修改的数据提交后才能被另外一个事务读取，另外一个事务不能读取该事务未提交的数据。这种事务隔离级别可以避免脏读，但是可能会出现不可重复读和幻读。<br>ISOLATION_REPEATABLE_READ：这种事务隔离级别可以防止脏读、不可重复读，但是可能出现幻读。对同一字段的多次读取结果都是一致的。它除了保证一个事务不能读取另一个事务未提交的数据外，还保证了不可重复读。<br>ISOLATION_SERIALIZABLE：最高的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰。该级别可以防止脏读、不可重复读以及幻读。但这将严重影响程序的性能。</p>
 <h3 id="2-Spring事务传播行为"><a href="#2-Spring事务传播行为" class="headerlink" title="2 Spring事务传播行为"></a>2 Spring事务传播行为</h3><p>当一个事务方法被另一个事务方法调用时，这个事务方法应该如何传播（进行）。例如：methodA事务方法调用methodB事务方法时，methodB是继续在调用者methodA的事务中运行呢，还是为自己开启一个新事务运行，这就是由methodB的事务传播行为决定的。</p>
 <p>支持当前事务<br>PROPAGATION_REQUIRED：如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务。<br>PROPAGATION_SUPPORTS：如果当前存在事务，则加入该事务；如果当前没有事务，则以非事务的方式继续运行。<br>PROPAGATION_MANDATORY：如果当前存在事务，则加入该事务；如果当前没有事务，则抛出异常。</p>
@@ -311,12 +319,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/12/10/12-10-Spring/" rel="prev" title="12_10_Spring">
-      <i class="fa fa-chevron-left"></i> 12_10_Spring
+    <a href="/2021/12/10/12-10-Spring/" rel="prev" title="spring_aop">
+      <i class="fa fa-chevron-left"></i> spring_aop
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/12/11/12-11-Network/" rel="next" title="12_11_Network">
-      12_11_Network <i class="fa fa-chevron-right"></i>
+    <a href="/2021/12/11/12-11-Network/" rel="next" title="tcp_connect">
+      tcp_connect <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -393,7 +401,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">64</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -406,7 +414,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">56</span>
+        <span class="site-state-item-count">55</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

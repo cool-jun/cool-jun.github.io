@@ -187,6 +187,115 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/26/11-26-Redis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/26/11-26-Redis/" class="post-title-link" itemprop="url">redis</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-26 21:28:04" itemprop="dateCreated datePublished" datetime="2021-11-26T21:28:04+08:00">2021-11-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-15 21:15:07" itemprop="dateModified" datetime="2022-03-15T21:15:07+08:00">2022-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/11/26/11-26-Redis/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/26/11-26-Redis/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-Redis"><a href="#1-Redis" class="headerlink" title="1 Redis"></a>1 Redis</h3><p>Redis（Remote Dictionary Server，远程字典服务)，是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库。</p>
+<p>Redis五种基础数据结构：<br>string、list、hash、set、zset。</p>
+<p>Redis功能如下：<br>数据缓存、分布式锁、支持数据持久化、支持事务、支持消息队列。</p>
+<p>Redis相比Memcached的优势：<br>Memcached所有的值均是简单的字符串，Redis支持更为丰富的数据类型；<br>Redis的速度比Memcached更快；<br>Redis可以持久化；</p>
+<p>Redis使用场景：<br>缓存：减轻 MySQL 的查询压力，提升系统性能；<br>排行榜：利用 Redis 的 Sorted Set（有序集合）实现；<br>计算器/限速器：利用 Redis 中原子性的自增操作，我们可以统计类似用户点赞数、用户访问数等。这类操作如果用MySQL，频繁的读写会带来相当大的压力；限速器比较典型的使用场景是限制某个用户访问某个 API 的频率，常用于抢购，防止用户疯狂点击带来不必要的压力；<br>好友关系：利用集合的某些命令，例如求交集、并集、差集等。可以方便解决一些共同好友、共同爱好之类的功能；<br>session共享：Session是保存在服务器的文件中，如果是集群服务，同一个用户过来可能落在不同机器上，这就会导致用户频繁登陆；采用 Redis 保存 Session 后，无论用户落在那台机器上都能够获取到对应的 Session 信息。</p>
+<p>Redis为什么这么快？<br>完全基于内存，绝大部分请求是纯粹的内存操作，非常快速。<br>采用单线程，避免了不必要的上下文切换和竞争条件，也不存在多进程或多线程导致的切换而消耗CPU，不用去考虑各种锁的问题。<br>使用多路I/O复用模型，非阻塞IO。</p>
+<p>Redis怎样保证缓存和数据库的一致性？<br>从理论上说，只要我们设置了合理的键过期时间，就能保证缓存和数据库中的数据最终是一致的。因为只要缓存数据过期了，就会被删除。随后读的时候，因为缓存中没有，就去查数据库中的数据，然后写入缓存。<br>新增、更改、删除数据库操作时同步更新Redis，可以使用事务机制来保证数据的一致性。</p>
+<h3 id="2-缓存穿透与缓存雪崩"><a href="#2-缓存穿透与缓存雪崩" class="headerlink" title="2 缓存穿透与缓存雪崩"></a>2 缓存穿透与缓存雪崩</h3><p><strong>缓存穿透</strong><br>请求的数据在缓存和数据库中都没有，而用户不断发起请求，导致所有的请求都落到数据库上，造成数据库短时间内承受大量请求而崩掉。<br>解决办法：布隆过滤器，将所有可能存在的数据哈希到一个足够大的bitmap中，一个不存在的数据会被这个bitmap拦截掉，从而避免了对底层存储系统的查询压力。</p>
+<p><strong>缓存雪崩</strong><br>由于设置缓存时，key都采用了相同expire，导致缓存在同一时间大面积失效，请求全部落到DB，DB瞬时负载过重而崩掉。<br>解决办法：<br>随机值：在原有失效时间基础上增加一个随机值，这样每个缓存的过期时间重复率就会降低，集体失效概率也会大大降低。<br>加锁排队：在缓存失效后，通过加锁或者队列来控制读数据库写缓存的线程数量。比如对某个key只允许一个线程查询数据和写缓存，其他线程等待。<br>数据预热：可以通过缓存 reload 机制，预先去更新缓存，在即将发生大量并发访问前手动触发加载缓存不同的key，设置不同的过期时间，让缓存失效的时间点尽量均匀。<br>双缓存策略：Cache1为原始缓存，Cache2为拷贝缓存，Cache1失效时，可以访问Cache2，Cache1缓存失效时间设置为短期，Cache2设置为长期。</p>
+<h3 id="3-Redis持久化方式"><a href="#3-Redis持久化方式" class="headerlink" title="3 Redis持久化方式"></a>3 Redis持久化方式</h3><p>持久化就是把内存的数据写到磁盘中，防止服务宕机内存数据丢失。</p>
+<p>RDB(Redis DataBase)，按照一定的时间周期策略把内存的数据以快照的形式保存到硬盘的二进制文件中。即Snapshot快照存储，对应产生的数据文件为dump.rdb，通过配置文件中的 save 参数来定义快照的周期。核心函数：rdbSave（生成RDB文件）和rdbLoad（从文件加载内存）两个函数。默认方式为RDB。</p>
+<p>AOF（Append-only file），Redis会将每一个收到的写命令都通过Write函数追加到文件最后。Redis重启时会通过重新执行文件中保存的写命令来在内存中重建整个数据库的内容。每当执行服务器（定时）任务或者函数时，flushAppendOnlyFile函数都会被调用。<br>WRITE：根据条件，将 aof_buf 中的缓存写入到 AOF 文件；<br>SAVE：根据条件，调用 fsync 或 fdatasync 函数，将 AOF 文件保存到磁盘中。</p>
+<p>区别：<br>RDB性能比AOF好；<br>AOF比RDB更新频率高，优先使用AOF还原数据；<br>AOF比RDB更安全也更大；<br>如果两个都配置了，优先加载AOF。</p>
+<h3 id="4-Redis淘汰策略"><a href="#4-Redis淘汰策略" class="headerlink" title="4 Redis淘汰策略"></a>4 Redis淘汰策略</h3><p>noeviction：禁止淘汰数据；<br>allkeys-lru：尝试回收最近最少使用的键，使得新添加的数据有空间存放；<br>volatile-lru：尝试回收最近最少使用的键，但仅限于在过期集合中的键，使得新添加的数据有空间存放；<br>allkeys-random：回收随机的键使得新添加的数据有空间存放；<br>volatile-random：回收随机的键使得新添加的数据有空间存放，但仅限于在过期集合中的键；<br>volatile-ttl：回收在过期集合中的键，并且优先回收存活时间较短的键，使得新添加的数据有空间存放。</p>
+<h3 id="5-Redis常见性能问题和解决方案"><a href="#5-Redis常见性能问题和解决方案" class="headerlink" title="5 Redis常见性能问题和解决方案"></a>5 Redis常见性能问题和解决方案</h3><p>Master最好不要做任何持久化工作，包括内存快照和AOF日志文件，特别是不要启用内存快照做持久化。<br>如果数据比较关键，某个Slave开启AOF备份数据，策略为每秒同步一次。<br>为了主从复制的速度和连接的稳定性，Slave和Master最好在同一个局域网内。<br>尽量避免在压力较大的主库上增加从库。<br>为了Master的稳定性，主从复制不要用图状结构，用单向链表结构更稳定，即主从关系为：Master&lt;–Slave1&lt;–Slave2&lt;–Slave3…，这样的结构也方便解决单点故障问题，实现Slave对Master的替换，如果Master挂了，可以立马启用Slave1做Master，其他不变。</p>
+<h3 id="6-Redis怎样实现分布式锁"><a href="#6-Redis怎样实现分布式锁" class="headerlink" title="6 Redis怎样实现分布式锁"></a>6 Redis怎样实现分布式锁</h3><p>Redis为单线程模式，采用队列将并发访问变成串行访问，且多客户端对 redis 的连接并不存在竞争关系。</p>
+<p>redis要实现分布式锁，应该满足以下条件：<br>互斥性：在任意时刻，只有一个客户端能持有锁。<br>不能死锁：客户端在持有锁的期间崩溃而没有主动解锁，也能保证后续其他客户端能加锁。<br>容错性：只要大部分的redis节点正常运行，客户端就可以加锁和解锁。</p>
+<p>可以直接通过 set key value px milliseconds nx 命令实现加锁，通过Lua脚本实现解锁。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 加锁</span><br><span class="line">&#x2F;&#x2F; 加锁实际上就是在redis中，给Key键设置一个值，为避免死锁，设置一个过期时间。</span><br><span class="line">SET resource_key unique_value NX PX 30000</span><br><span class="line">&#x2F;&#x2F; unique_value是客户端生成的唯一字符串。</span><br><span class="line">&#x2F;&#x2F; NX代表只有键不存在时，才对键进行设置操作。</span><br><span class="line">&#x2F;&#x2F; PX 30000设置键的过期时间为3000毫秒。</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 解锁（lua脚本中，一定要比较value，防止误解锁）</span><br><span class="line">&#x2F;&#x2F; 解锁的过程就是将Key删除</span><br><span class="line">if redis.call(&quot;get&quot;,KEYS[1]) &#x3D;&#x3D; ARGV[1] then</span><br><span class="line">    return redis.call(&quot;del&quot;,KEYS[1])</span><br><span class="line">else</span><br><span class="line">    return 0</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p>首先，set()加入了NX参数，可以保证如果key已经存在，则函数不会调用成功，也就是说只有一个客户端能持有锁，满足互斥性。<br>其次，由于我们对锁设置了过期时间，即使锁的持有者后续发生崩溃而没有解锁，锁也会因为到了过期时间而自动解锁（即key被删除），不会发生死锁。<br>最后，因为我们将value赋值为requestId，用来标识这把锁是哪个请求加的，那么客户端在解锁的时候就可以进行校验是否为同一个客户端。</p>
+<p>将Lua代码传到jedis.eval()方法里，并使参数KEYS[1]赋值为lockKey，ARGV[1]赋值为requestId。在执行的时候，首先会获取锁对应的value值，检查是否与requestId相等，如果相等则解锁（删除key）。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/26/11-26-Java/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -201,7 +310,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/11/26/11-26-Java/" class="post-title-link" itemprop="url">11_26_Java</a>
+            <a href="/2021/11/26/11-26-Java/" class="post-title-link" itemprop="url">create_thread_pool</a>
         </h2>
 
         <div class="post-meta">
@@ -218,7 +327,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-27 15:53:22" itemprop="dateModified" datetime="2022-02-27T15:53:22+08:00">2022-02-27</time>
+                <time title="修改时间：2022-03-15 21:16:48" itemprop="dateModified" datetime="2022-03-15T21:16:48+08:00">2022-03-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -304,7 +413,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/11/24/11-24-Java/" class="post-title-link" itemprop="url">11_24_Java</a>
+            <a href="/2021/11/24/11-24-Java/" class="post-title-link" itemprop="url">thread_pool</a>
         </h2>
 
         <div class="post-meta">
@@ -321,7 +430,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-26 21:01:39" itemprop="dateModified" datetime="2022-02-26T21:01:39+08:00">2022-02-26</time>
+                <time title="修改时间：2022-03-15 21:16:40" itemprop="dateModified" datetime="2022-03-15T21:16:40+08:00">2022-03-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -411,7 +520,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/11/23/11-23-Java/" class="post-title-link" itemprop="url">11_23_Java</a>
+            <a href="/2021/11/23/11-23-Java/" class="post-title-link" itemprop="url">锁</a>
         </h2>
 
         <div class="post-meta">
@@ -428,7 +537,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-26 20:51:31" itemprop="dateModified" datetime="2022-02-26T20:51:31+08:00">2022-02-26</time>
+                <time title="修改时间：2022-03-15 21:21:02" itemprop="dateModified" datetime="2022-03-15T21:21:02+08:00">2022-03-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -465,34 +574,61 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="1-synchronized与ReentrantLock"><a href="#1-synchronized与ReentrantLock" class="headerlink" title="1 synchronized与ReentrantLock"></a>1 synchronized与ReentrantLock</h3><p>synchronized是Java中的关键字，ReentrantLock是一个类。<br>ReentrantLock提供了比synchronized更多更灵活的特性，比如等待可中断、可实现公平锁、锁绑定多个条件。<br>synchronized依赖于JVM，ReentrantLock依赖于API。<br>JDK1.6为synchronized关键字进行了很多优化，但是这些优化都是在虚拟机层面实现的。<br>ReentrantLock是API层面实现的（需要lock()和unlock方法配合try/finally语句块来完成）。</p>
+          <h3 id="1-synchronized"><a href="#1-synchronized" class="headerlink" title="1 synchronized"></a>1 synchronized</h3><p>Synchronized同步方法可以支持使用一种简单的策略来防止线程干扰和内存一致性错误，如果一个对象对多个线程可见，则对该对象变量的所有读取或写入都是通过同步方法来完成的。它是一种基本的同步锁。<br>synchronized底层是借助操作系统的Mutex Lock(互斥锁)来实现的线程同步。</p>
+<p>Synchronized是解决Java并发问题的一种最常用最简单的方法，它可以确保同一时刻最多只有一个线程执行同步代码，从而保证多线程环境下的并发安全。如果有一段代码被Synchronized所修饰，那么这段代码就会以原子的方式执行，当多个线程在执行这段代码的时候，它们是互斥的，不会相互干扰，不会同时执行。</p>
+<p>Synchronized工作机制就是在多线程环境中使用一把锁，在第一个线程执行的时候去获取这把锁，一旦获取就独占这把锁直到执行完毕或者在一定条件下释放这把锁，但在这把锁被释放之前其他的线程只能阻塞等待。</p>
+<p>JVM基于进入和退出Monitor对象来实现方法同步和代码块同步。<br>synchronized同步代码块的实现使用的是monitorenter和monitorexit指令，其中monitorenter指令指向同步代码块的开始位置，monitorexit指令则指向同步代码块的结束位置。</p>
+<p>当执行monitorenter指令时，线程试图获取锁也就是获取监视器锁（monitor）的持有权。monitor对象存在于每个Java对象的对象头中，synchronized便是通过这种方式获取锁的，这也是为什么Java中任意对象可以加锁的原因。当计数器为0则可以成功获取，获取后将锁计数器设为1。相应的在执行monitorexit指令后，将锁计数器设为0，表明锁被释放。如果获取锁失败，那当前线程就要阻塞，直到锁被另外一个线程释放为止。</p>
+<p>synchronized修饰的方法用ACC_SYNCHRONIZED标识，该标识指明了该方法是一个同步方法，JVM通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。</p>
+<p>修饰实例方法：给当前实例对象加锁，进入同步代码前要获得当前实例对象的锁。</p>
+<p>修饰静态方法：给当前类对象加锁，进入同步代码前要获得当前类对象的锁。访问静态synchronized方法占用的锁是当前类的锁，而访问非静态synchronized方法占用的锁是当前实例对象的锁；</p>
+<p>修饰代码块：对指定对象加锁，进入同步代码前要获得指定对象的锁。和synchronized方法一样，synchronized(this) 代码块也是锁定当前对象的。synchronized关键字加到static静态方法和synchronized(class)代码块上都是是给类上锁。synchronized关键字加到非static静态方法上是给实例对象上锁。</p>
+<p>双重校验锁实现单例模式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    private volatile static SingletonDemo uniqueInstance;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line">    public static SingletonDemo getUniqueInstance() &#123;</span><br><span class="line">        &#x2F;&#x2F; 先判断对象是否已经实例化，没有实例化过才进入加锁代码</span><br><span class="line">        if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            &#x2F;&#x2F; 类对象加锁</span><br><span class="line">            synchronized (SingletonDemo.class) &#123;</span><br><span class="line">                if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    uniqueInstance &#x3D; new SingletonDemo();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码执行顺序：</p>
+<ol>
+<li>为uniqueInstance分配内存空间</li>
+<li>初始化uniqueInstance</li>
+<li>将uniqueInstance指向分配的内存地址</li>
+</ol>
+<p>由于JVM具有指令重排的特性，执行顺序有可能变成1 -&gt; 3 -&gt; 2。指令重排在单线程环境下不会出现问题，但是在多线程环境下会导致一个线程获得还没有初始化的实例。</p>
+<p>volatile关键字常用于<strong>保证变量的内存可见性</strong>和<strong>防止指令重排序</strong>。<br>内存可见性是指当一个线程修改了某个变量的值，其它线程总是能知道这个变量的变化。也就是说，如果线程A修改了共享变量V的值，那么线程B在使用V的值时，能立即读到V的最新值。<br>为了提高性能，编译器和处理器常常会对指令做重排序，volatile可以保证修饰的变量其编译后的顺序与程序的执行顺序一样。</p>
+<h3 id="2-JDK1-6之后synchronized关键字所做的优化"><a href="#2-JDK1-6之后synchronized关键字所做的优化" class="headerlink" title="2 JDK1.6之后synchronized关键字所做的优化"></a>2 JDK1.6之后synchronized关键字所做的优化</h3><p>JDK1.6对锁的实现引入了大量的优化，如自旋锁、适应性自旋锁、锁消除、锁粗化、偏向锁、轻量级锁等技术来减少锁操作的开销。<br>优化后synchronized锁的分类：无锁状态、偏向锁状态、轻量级锁状态、重量级锁状态。<br>锁可以升级，但是不能降级，即无锁状态 –&gt; 偏向锁状态 –&gt; 轻量级锁状态 –&gt; 重量级锁状态。这种策略是为了提高获得锁和释放锁的效率。</p>
+<p><strong>偏向锁</strong><br>偏向于第一个获得它的线程，如果接下来该锁没有被其他线程获取，那么持有偏向锁的线程就不需要进行同步。偏向锁是针对一个线程而言的。<br>但是对于锁竞争比较激烈的场景，偏向锁就失效了，因为极有可能每次申请锁的线程都是不相同的，因此这种场景下不应该使用偏向锁。需要注意的是，偏向锁失败后，并不会立即膨胀为重量级锁，而是先升级为轻量级锁。</p>
+<p><strong>轻量级锁</strong><br>当出现有两个线程来竞争锁的情况，那么偏向锁就失效了，此时锁就会膨胀，升级为轻量级锁。<br>在没有多线程竞争的前提下，减少传统的重量级锁使用操作系统互斥量产生的性能消耗，因为使用轻量级锁时，不需要申请互斥量。另外，轻量级锁的加锁和解锁都用到了CAS操作。<br>“对于绝大部分锁，在整个同步周期内都是不存在竞争的”。如果没有竞争，轻量级锁使用CAS操作避免了使用互斥操作的开销。但如果存在锁竞争，除了互斥量开销外，还会额外发生CAS操作，因此在有锁竞争的情况下，轻量级锁比传统的重量级锁更慢！如果锁竞争激烈，那么轻量级将很快膨胀为重量级锁！</p>
+<p><strong>自旋锁</strong><br>轻量级锁失败后，虚拟机为了避免线程真实地在操作系统层面挂起，还会进行一项称为自旋锁的优化手段。<br>一般线程持有锁的时间都不会太久，所以仅仅为了这一点时间去挂起线程/恢复线程是得不偿失的。<br>思想：让一个线程在请求一个共享数据的锁时执行忙循环（自旋）一段时间，如果在这段时间内能获得锁，就可以避免进入阻塞状态。<br>自旋等待不能完全替代阻塞，因为它还是要占用处理器时间。如果锁被占用的时间短，那么效果当然很好。反之，自旋等待的时间必须要有限度，如果自旋超过了限定次数仍然没有获得锁，就应该挂起线程。</p>
+<p><strong>自适应自旋锁</strong><br>自旋的时间不再固定了，而是由前一次在同一个锁上的自旋时间以及锁的拥有者的状态来决定。</p>
+<p><strong>重量级锁</strong><br>阻塞所有等待竞争的线程，防止CPU空转。</p>
+<p><strong>锁消除</strong><br>虚拟机的JIT在运行时如果检测到一些要求同步的代码上不可能发生共享数据竞争，则会去掉这些锁。</p>
+<p><strong>锁粗化</strong><br>减少不必要的紧连在一起的lock，unlock操作，将多个连续的锁扩展成一个范围更大的锁。</p>
+<h3 id="3-synchronized与ReentrantLock"><a href="#3-synchronized与ReentrantLock" class="headerlink" title="3 synchronized与ReentrantLock"></a>3 synchronized与ReentrantLock</h3><p>synchronized是Java中的关键字，ReentrantLock是一个类。<br>ReentrantLock提供了比synchronized更多更灵活的特性，比如等待可中断、可实现公平锁、锁绑定多个条件。<br>synchronized依赖于JVM，ReentrantLock依赖于API。<br>JDK1.6为synchronized关键字进行了很多优化，但是这些优化都是在虚拟机层面实现的。<br>ReentrantLock是API层面实现的（需要lock()和unlock方法配合try/finally语句块来完成）。</p>
 <p>很明显synchronized的使用比较方便简洁，并且由编译器去保证加锁和释放锁，而ReentrantLock需要手动声明来加锁和释放锁，为了避免忘记释放锁而造成死锁，最好在finally中声明释放锁。</p>
 <p>ReentrantLock的实现是一种自旋锁，通过循环调用CAS操作来实现加锁。它的性能比较好也是因为避免了使线程进入内核态的阻塞状态。想尽办法避免线程进入内核的阻塞状态是我们去分析和理解锁设计的关键钥匙。</p>
-<h3 id="2-synchronized与volatile"><a href="#2-synchronized与volatile" class="headerlink" title="2 synchronized与volatile"></a>2 synchronized与volatile</h3><p>synchronized锁定当前变量，只有当前线程可以访问该变量，其他线程被阻塞。<br>volatile本质是在告诉JVM当前变量在寄存器中的值是不确定的，需要从主存中读取。保证了不同线程对该变量操作的内存可见性，禁止指令重排序。<br>synchronized可以作用于变量、方法、对象；volatile只能作用于变量。<br>volatile不会造成线程的阻塞；synchronized可能会造成线程的阻塞。<br>volatile标记的变量不会被编译器优化；synchronized标记的变量可以被编译器优化。</p>
-<h3 id="3-ReentrantReadWriteLock"><a href="#3-ReentrantReadWriteLock" class="headerlink" title="3 ReentrantReadWriteLock"></a>3 ReentrantReadWriteLock</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;** Inner class providing readlock *&#x2F;</span><br><span class="line">private final ReentrantReadWriteLock.ReadLock readerLock;</span><br><span class="line">&#x2F;** Inner class providing writelock *&#x2F;</span><br><span class="line">private final ReentrantReadWriteLock.WriteLock writerLock;</span><br></pre></td></tr></table></figure>
+<h3 id="4-synchronized与volatile"><a href="#4-synchronized与volatile" class="headerlink" title="4 synchronized与volatile"></a>4 synchronized与volatile</h3><p>synchronized锁定当前变量，只有当前线程可以访问该变量，其他线程被阻塞。<br>volatile本质是在告诉JVM当前变量在寄存器中的值是不确定的，需要从主存中读取。保证了不同线程对该变量操作的内存可见性，禁止指令重排序。<br>synchronized可以作用于变量、方法、对象；volatile只能作用于变量。<br>volatile不会造成线程的阻塞；synchronized可能会造成线程的阻塞。<br>volatile标记的变量不会被编译器优化；synchronized标记的变量可以被编译器优化。</p>
+<h3 id="5-ReentrantReadWriteLock"><a href="#5-ReentrantReadWriteLock" class="headerlink" title="5 ReentrantReadWriteLock"></a>5 ReentrantReadWriteLock</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;** Inner class providing readlock *&#x2F;</span><br><span class="line">private final ReentrantReadWriteLock.ReadLock readerLock;</span><br><span class="line">&#x2F;** Inner class providing writelock *&#x2F;</span><br><span class="line">private final ReentrantReadWriteLock.WriteLock writerLock;</span><br></pre></td></tr></table></figure>
 <p>ReentrantReadWriteLock允许多个读线程同时访问，但是不允许写线程和读线程、写线程和写线程同时访问。<br>ReentrantReadWriteLock维护了两个锁：ReadLock，WriteLock。<br>ReentrantReadWriteLock可以保证多个线程同时读，所以在读操作远大于写操作的时候，读写锁就非常有用了。</p>
 <p>在写线程持有的所有写锁都被释放之前，不允许非可重入读者。<br>重入还允许从写锁降级到读锁，通过获取写锁，然后是读锁，然后释放写锁。<br>读锁和写锁都支持锁获取过程中的中断。</p>
-<h3 id="4-悲观锁与乐观锁"><a href="#4-悲观锁与乐观锁" class="headerlink" title="4 悲观锁与乐观锁"></a>4 悲观锁与乐观锁</h3><p><strong>悲观锁</strong><br>当你要对数据进行操作时，为了避免同时被其他人修改，最好的办法就是直接对该数据进行加锁。这样别人想拿这个数据就会阻塞直到它拿到锁。</p>
+<h3 id="6-悲观锁与乐观锁"><a href="#6-悲观锁与乐观锁" class="headerlink" title="6 悲观锁与乐观锁"></a>6 悲观锁与乐观锁</h3><p><strong>悲观锁</strong><br>当你要对数据进行操作时，为了避免同时被其他人修改，最好的办法就是直接对该数据进行加锁。这样别人想拿这个数据就会阻塞直到它拿到锁。</p>
 <p>悲观锁分为共享锁和排他锁。<br>共享锁又称为读锁，简称S锁。共享锁就是多个事务对于同一数据可以共享一把锁，都能访问到数据，但是只能读不能修改。<br>排他锁又称为写锁，简称X锁。排他锁就是不能与其他锁并存，如果一个事务获取了一个数据行的排他锁，其他事务就不能再获取该数据行的锁（包括共享锁和排他锁）。获取排他锁的事务可以对数据行读取和修改。</p>
 <p>传统的关系型数据库使用悲观锁机制，比如行锁、表锁、读锁、写锁等，都是在操作之前先上锁。<br>Java中synchronized和ReentrantLock等独占锁也是悲观锁思想的实现。</p>
 <p><strong>乐观锁</strong><br>当你要对数据进行操作时，假设不会被其他人修改，所以不用上锁。但是在更新的时候会判断一下在此期间别人有没有去更新这个数据。乐观锁适用于读多写少的场景，这样可以提高程序的吞吐量。<br>数据库提供的类似于write_condition机制，其实就是提供的乐观锁。<br>Java中java.util.concurrent.atomic包下面的原子变量类就是使用了乐观锁的一种实现方式CAS来实现的。</p>
-<h3 id="5-乐观锁的两种实现方式"><a href="#5-乐观锁的两种实现方式" class="headerlink" title="5 乐观锁的两种实现方式"></a>5 乐观锁的两种实现方式</h3><p><strong>版本号机制</strong><br>在数据中加上一个version字段，表示数据被修改的次数。当数据被修改时，version值加一。当线程A要更新数据时，在读取数据的同时也会读取version值，在提交更新时，只有刚读取到的version值与当前数据库中的version值相等时才更新，否则重试，直到更新成功。</p>
+<h3 id="7-乐观锁的两种实现方式"><a href="#7-乐观锁的两种实现方式" class="headerlink" title="7 乐观锁的两种实现方式"></a>7 乐观锁的两种实现方式</h3><p><strong>版本号机制</strong><br>在数据中加上一个version字段，表示数据被修改的次数。当数据被修改时，version值加一。当线程A要更新数据时，在读取数据的同时也会读取version值，在提交更新时，只有刚读取到的version值与当前数据库中的version值相等时才更新，否则重试，直到更新成功。</p>
 <p><strong>CAS</strong><br>compare and swap（比较与交换），是一种有名的无锁算法。在不使用锁的情况下实现多线程之间的变量同步，也就是在没有线程被阻塞的情况下实现变量的同步，所以也叫非阻塞同步。<br>CAS本质上很简单，一般至少有3个参数：V表示要更新的变量、E表示预期值、N表示新值变量。<br>如果V值等于E值，则将V的值设为N。若V值和E值不同，则说明已经有其他线程做了更新，则当前线程什么都不做。</p>
 <p>通俗的理解就是CAS操作需要我们提供一个期望值，当期望值与当前线程的变量值相同时，说明还没有线程修改该值，则当前线程可以进行修改，也就是执行CAS操作。但如果期望值与当前线程的变量值不等，则说明该值已被其他线程修改，此时不执行更新操作，但可以选择重新读取该变量再次尝试修改该变量，也可以放弃操作。</p>
 <p><strong>缺点</strong><br>ABA问题<br>如果一个变量V初次读取的时候是A值，并且在准备赋值的时候检查到它仍然是A值，那我们就能说明它的值没有被其他线程修改过了吗？很明显是不能的，因为在这段时间它的值可能被改为其它值，然后又改回A，但CAS操作就会误认为它从来没有被修改过。<br>JDK1.5 AtomicStampedReference类中的compareAndSet方法就是首先检查当前引用是否等于预期引用，并且当前标志是否等于预期标志，如果全部相等，则以原子方式将该引用和该标志的值设置为给定的更新值。</p>
 <p>循环时间长，开销大<br>自旋CAS（也就是不成功就一直循环执行直到成功），如果长时间不成功，会给CPU带来非常大的执行开销。</p>
 <p>只能保证一个共享变量的原子操作<br>CAS只对单个共享变量有效，当操作涉及多个共享变量时CAS无效。<br>但是从JDK1.5开始，提供了AtomicReference类来保证引用对象之间的原子性，你可以把多个变量放在一个对象里来进行CAS操作。所以我们可以使用锁或者利用AtomicReference类把多个共享变量合并成一个共享变量来操作。</p>
 <p>CAS适用于写比较少的情况下（多读场景，冲突一般较少），synchronized适用于写比较多的情况下（多写场景，冲突一般较多）。</p>
-<h3 id="6-atomic原理"><a href="#6-atomic原理" class="headerlink" title="6 atomic原理"></a>6 atomic原理</h3><p>java.util.concurrent.atomic包中类的基本特性就是在多线程环境下，当有多个线程同时对单个（包括基本类型及引用类型）变量进行操作时，具有排他性，即当多个线程同时对该变量的值进行更新时，仅有一个线程能成功，而未成功的线程可以向自旋锁一样，继续尝试，直到执行成功。</p>
-<h3 id="7-AQS"><a href="#7-AQS" class="headerlink" title="7 AQS"></a>7 AQS</h3><p>AbstractQueuedSynchronizer（抽象队列同步器）：提供一个框架，用于实现依赖先进先出(FIFO)等待队列的阻塞锁和相关同步器（信号量、事件等）。</p>
+<h3 id="8-atomic原理"><a href="#8-atomic原理" class="headerlink" title="8 atomic原理"></a>8 atomic原理</h3><p>java.util.concurrent.atomic包中类的基本特性就是在多线程环境下，当有多个线程同时对单个（包括基本类型及引用类型）变量进行操作时，具有排他性，即当多个线程同时对该变量的值进行更新时，仅有一个线程能成功，而未成功的线程可以向自旋锁一样，继续尝试，直到执行成功。</p>
+<h3 id="9-AQS"><a href="#9-AQS" class="headerlink" title="9 AQS"></a>9 AQS</h3><p>AbstractQueuedSynchronizer（抽象队列同步器）：提供一个框架，用于实现依赖先进先出(FIFO)等待队列的阻塞锁和相关同步器（信号量、事件等）。</p>
 <p>核心思想：如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制AQS是用CLH队列锁实现的，将暂时获取不到锁的线程加入到队列中。</p>
 <p>AQS将每一条请求共享资源的线程封装成一个CLH队列锁的一个结点（Node），来实现锁的分配。<br>private volatile int state;<br>AQS使用一个int成员变量(state)来表示同步状态，通过内置的FIFO队列来完成获取资源线程的排队工作。AQS使用CAS对该同步状态进行原子操作实现对其值的修改。</p>
 <p>AQS对资源的共享方式：<br>Exclusive（独占）：只有一个线程能执行，如ReentrantLock，又可分为公平锁和非公平锁。<br>公平锁：按照线程在队列中的排队顺序，先到者先拿到锁。<br>非公平锁：当线程要获取锁时，先通过两次CAS操作去抢锁，如果没抢到，当前线程再加入到队列中等待唤醒。<br>Share（共享）：多个线程可同时执行，如Semaphore/CountDownLatch、Semaphore、CountDownLatCh、CyclicBarrier、ReadWriteLock。</p>
-<h3 id="8-AQS的几个模板方法"><a href="#8-AQS的几个模板方法" class="headerlink" title="8 AQS的几个模板方法"></a>8 AQS的几个模板方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">如果与当前（调用）线程独占同步，则返回true。</span><br><span class="line">protected boolean isHeldExclusively() &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试以独占模式获取。该方法应该查询对象的状态是否允许以独占模式获取它，如果允许则获取它。</span><br><span class="line">protected boolean tryAcquire(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试设置状态以反映独占模式下的释放</span><br><span class="line">protected boolean tryRelease(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试以共享模式获取。该方法应该查询对象的状态是否允许在共享模式下获取它，如果允许则获取它。</span><br><span class="line">protected int tryAcquireShared(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试设置状态以反映共享模式下的释放。此方法始终由执行释放的线程调用。</span><br><span class="line">protected boolean tryReleaseShared(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="10-AQS的几个模板方法"><a href="#10-AQS的几个模板方法" class="headerlink" title="10 AQS的几个模板方法"></a>10 AQS的几个模板方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">如果与当前（调用）线程独占同步，则返回true。</span><br><span class="line">protected boolean isHeldExclusively() &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试以独占模式获取。该方法应该查询对象的状态是否允许以独占模式获取它，如果允许则获取它。</span><br><span class="line">protected boolean tryAcquire(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试设置状态以反映独占模式下的释放</span><br><span class="line">protected boolean tryRelease(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试以共享模式获取。该方法应该查询对象的状态是否允许在共享模式下获取它，如果允许则获取它。</span><br><span class="line">protected int tryAcquireShared(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">尝试设置状态以反映共享模式下的释放。此方法始终由执行释放的线程调用。</span><br><span class="line">protected boolean tryReleaseShared(int arg) &#123;</span><br><span class="line">        throw new UnsupportedOperationException();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="9-信号量Semaphore"><a href="#9-信号量Semaphore" class="headerlink" title="9 信号量Semaphore"></a>9 信号量Semaphore</h3><p>synchronized和ReentrantLock都是一次只允许一个线程访问某个资源，Semaphore(信号量)可以指定多个线程同时访问某个资源。</p>
+<h3 id="11-信号量Semaphore"><a href="#11-信号量Semaphore" class="headerlink" title="11 信号量Semaphore"></a>11 信号量Semaphore</h3><p>synchronized和ReentrantLock都是一次只允许一个线程访问某个资源，Semaphore(信号量)可以指定多个线程同时访问某个资源。</p>
 <p>计数信号量。从概念上讲，信号量维护一组许可。如有必要，每个获取块直到许可可用，然后获取它。每个版本都会增加一个许可，可能会释放一个阻塞的收单方。但是，没有使用实际的许可对象；信号量只是计算可用的数量并相应地采取行动。<br>信号量通常用于限制可以访问某些（物理或逻辑）资源的线程数。</p>
-<h3 id="10-CountDownLatch与CyclicBarrier"><a href="#10-CountDownLatch与CyclicBarrier" class="headerlink" title="10 CountDownLatch与CyclicBarrier"></a>10 CountDownLatch与CyclicBarrier</h3><p>CountDownLatch：一种同步辅助，允许一个或多个线程等待，直到在其他线程中执行的一组操作完成。<br>CountDownLatch使用给定的计数进行初始化。由于调用了 countDown 方法，await方法会阻塞，直到当前计数达到零，然后释放所有等待线程，并且任何后续的 await 调用都会立即返回。这是一种一次性现象——无法重置计数。如果您需要重置计数的版本，请考虑使用CyclicBarrier。</p>
+<h3 id="12-CountDownLatch与CyclicBarrier"><a href="#12-CountDownLatch与CyclicBarrier" class="headerlink" title="12 CountDownLatch与CyclicBarrier"></a>12 CountDownLatch与CyclicBarrier</h3><p>CountDownLatch：一种同步辅助，允许一个或多个线程等待，直到在其他线程中执行的一组操作完成。<br>CountDownLatch使用给定的计数进行初始化。由于调用了 countDown 方法，await方法会阻塞，直到当前计数达到零，然后释放所有等待线程，并且任何后续的 await 调用都会立即返回。这是一种一次性现象——无法重置计数。如果您需要重置计数的版本，请考虑使用CyclicBarrier。</p>
 <p>CyclicBarrier：一种同步辅助工具，它允许一组线程全部等待彼此到达公共屏障点。CyclicBarriers在涉及固定大小的线程组的程序中很有用，这些线程必须偶尔相互等待。屏障被称为循环的，因为它可以在等待线程被释放后重新使用。</p>
 
       
@@ -527,7 +663,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/11/22/11-22-Java/" class="post-title-link" itemprop="url">11_22_Java</a>
+            <a href="/2021/11/22/11-22-Java/" class="post-title-link" itemprop="url">threadlocal</a>
         </h2>
 
         <div class="post-meta">
@@ -544,7 +680,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-25 21:35:57" itemprop="dateModified" datetime="2022-02-25T21:35:57+08:00">2022-02-25</time>
+                <time title="修改时间：2022-03-15 21:20:02" itemprop="dateModified" datetime="2022-03-15T21:20:02+08:00">2022-03-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -593,33 +729,6 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">返回thread-local变量的当前线程副本中的值。</span><br><span class="line">如果该变量对于当前线程没有值，则首先将其初始化为调用initialValue方法返回的值。</span><br><span class="line">public T get() &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null) &#123;</span><br><span class="line">            ThreadLocalMap.Entry e &#x3D; map.getEntry(this);</span><br><span class="line">            if (e !&#x3D; null) &#123;</span><br><span class="line">                @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">                T result &#x3D; (T)e.value;</span><br><span class="line">                return result;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return setInitialValue();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">将thread-local变量的当前线程副本设置为指定值。</span><br><span class="line">public void set(T value) &#123;</span><br><span class="line">        Thread t &#x3D; Thread.currentThread();</span><br><span class="line">        ThreadLocalMap map &#x3D; getMap(t);</span><br><span class="line">        if (map !&#x3D; null)</span><br><span class="line">            map.set(this, value);</span><br><span class="line">        else</span><br><span class="line">            createMap(t, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">删除thread-local变量的当前线程值。</span><br><span class="line">public void remove() &#123;</span><br><span class="line">         ThreadLocalMap m &#x3D; getMap(Thread.currentThread());</span><br><span class="line">         if (m !&#x3D; null)</span><br><span class="line">             m.remove(this);</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="2-ThreadLocal使用场景"><a href="#2-ThreadLocal使用场景" class="headerlink" title="2 ThreadLocal使用场景"></a>2 ThreadLocal使用场景</h3><p>数据库连接、session管理。<br>Spring采用Threadlocal，来保证单个线程中的数据库操作使用的是同一个数据库连接，同时，采用这种方式可以使业务层使用事务时不需要感知并管理connection对象，通过传播级别，巧妙地管理多个事务配置之间的切换，挂起和恢复。</p>
-<h3 id="3-synchronized"><a href="#3-synchronized" class="headerlink" title="3 synchronized"></a>3 synchronized</h3><p>Synchronized同步方法可以支持使用一种简单的策略来防止线程干扰和内存一致性错误，如果一个对象对多个线程可见，则对该对象变量的所有读取或写入都是通过同步方法来完成的。它是一种基本的同步锁。<br>synchronized底层是借助操作系统的Mutex Lock(互斥锁)来实现的线程同步。</p>
-<p>Synchronized是解决Java并发问题的一种最常用最简单的方法，它可以确保同一时刻最多只有一个线程执行同步代码，从而保证多线程环境下的并发安全。如果有一段代码被Synchronized所修饰，那么这段代码就会以原子的方式执行，当多个线程在执行这段代码的时候，它们是互斥的，不会相互干扰，不会同时执行。</p>
-<p>Synchronized工作机制就是在多线程环境中使用一把锁，在第一个线程执行的时候去获取这把锁，一旦获取就独占这把锁直到执行完毕或者在一定条件下释放这把锁，但在这把锁被释放之前其他的线程只能阻塞等待。</p>
-<p>JVM基于进入和退出Monitor对象来实现方法同步和代码块同步。<br>synchronized同步代码块的实现使用的是monitorenter和monitorexit指令，其中monitorenter指令指向同步代码块的开始位置，monitorexit指令则指向同步代码块的结束位置。</p>
-<p>当执行monitorenter指令时，线程试图获取锁也就是获取监视器锁（monitor）的持有权。monitor对象存在于每个Java对象的对象头中，synchronized便是通过这种方式获取锁的，这也是为什么Java中任意对象可以加锁的原因。当计数器为0则可以成功获取，获取后将锁计数器设为1。相应的在执行monitorexit指令后，将锁计数器设为0，表明锁被释放。如果获取锁失败，那当前线程就要阻塞，直到锁被另外一个线程释放为止。</p>
-<p>synchronized修饰的方法用ACC_SYNCHRONIZED标识，该标识指明了该方法是一个同步方法，JVM通过该 ACC_SYNCHRONIZED 访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。</p>
-<p>修饰实例方法：给当前实例对象加锁，进入同步代码前要获得当前实例对象的锁。</p>
-<p>修饰静态方法：给当前类对象加锁，进入同步代码前要获得当前类对象的锁。访问静态synchronized方法占用的锁是当前类的锁，而访问非静态synchronized方法占用的锁是当前实例对象的锁；</p>
-<p>修饰代码块：对指定对象加锁，进入同步代码前要获得指定对象的锁。和synchronized方法一样，synchronized(this) 代码块也是锁定当前对象的。synchronized关键字加到static静态方法和synchronized(class)代码块上都是是给类上锁。synchronized关键字加到非static静态方法上是给实例对象上锁。</p>
-<p>双重校验锁实现单例模式</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    private volatile static SingletonDemo uniqueInstance;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line">    public static SingletonDemo getUniqueInstance() &#123;</span><br><span class="line">        &#x2F;&#x2F; 先判断对象是否已经实例化，没有实例化过才进入加锁代码</span><br><span class="line">        if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            &#x2F;&#x2F; 类对象加锁</span><br><span class="line">            synchronized (SingletonDemo.class) &#123;</span><br><span class="line">                if (uniqueInstance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    uniqueInstance &#x3D; new SingletonDemo();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>代码执行顺序：</p>
-<ol>
-<li>为uniqueInstance分配内存空间</li>
-<li>初始化uniqueInstance</li>
-<li>将uniqueInstance指向分配的内存地址</li>
-</ol>
-<p>由于JVM具有指令重排的特性，执行顺序有可能变成1 -&gt; 3 -&gt; 2。指令重排在单线程环境下不会出现问题，但是在多线程环境下会导致一个线程获得还没有初始化的实例。</p>
-<p>volatile关键字常用于<strong>保证变量的内存可见性</strong>和<strong>防止指令重排序</strong>。<br>内存可见性是指当一个线程修改了某个变量的值，其它线程总是能知道这个变量的变化。也就是说，如果线程A修改了共享变量V的值，那么线程B在使用V的值时，能立即读到V的最新值。<br>为了提高性能，编译器和处理器常常会对指令做重排序，volatile可以保证修饰的变量其编译后的顺序与程序的执行顺序一样。</p>
-<h3 id="4-JDK1-6之后synchronized关键字所做的优化"><a href="#4-JDK1-6之后synchronized关键字所做的优化" class="headerlink" title="4 JDK1.6之后synchronized关键字所做的优化"></a>4 JDK1.6之后synchronized关键字所做的优化</h3><p>JDK1.6对锁的实现引入了大量的优化，如自旋锁、适应性自旋锁、锁消除、锁粗化、偏向锁、轻量级锁等技术来减少锁操作的开销。<br>优化后synchronized锁的分类：无锁状态、偏向锁状态、轻量级锁状态、重量级锁状态。<br>锁可以升级，但是不能降级，即无锁状态 –&gt; 偏向锁状态 –&gt; 轻量级锁状态 –&gt; 重量级锁状态。这种策略是为了提高获得锁和释放锁的效率。</p>
-<p><strong>偏向锁</strong><br>偏向于第一个获得它的线程，如果接下来该锁没有被其他线程获取，那么持有偏向锁的线程就不需要进行同步。偏向锁是针对一个线程而言的。<br>但是对于锁竞争比较激烈的场景，偏向锁就失效了，因为极有可能每次申请锁的线程都是不相同的，因此这种场景下不应该使用偏向锁。需要注意的是，偏向锁失败后，并不会立即膨胀为重量级锁，而是先升级为轻量级锁。</p>
-<p><strong>轻量级锁</strong><br>当出现有两个线程来竞争锁的情况，那么偏向锁就失效了，此时锁就会膨胀，升级为轻量级锁。<br>在没有多线程竞争的前提下，减少传统的重量级锁使用操作系统互斥量产生的性能消耗，因为使用轻量级锁时，不需要申请互斥量。另外，轻量级锁的加锁和解锁都用到了CAS操作。<br>“对于绝大部分锁，在整个同步周期内都是不存在竞争的”。如果没有竞争，轻量级锁使用CAS操作避免了使用互斥操作的开销。但如果存在锁竞争，除了互斥量开销外，还会额外发生CAS操作，因此在有锁竞争的情况下，轻量级锁比传统的重量级锁更慢！如果锁竞争激烈，那么轻量级将很快膨胀为重量级锁！</p>
-<p><strong>自旋锁</strong><br>轻量级锁失败后，虚拟机为了避免线程真实地在操作系统层面挂起，还会进行一项称为自旋锁的优化手段。<br>一般线程持有锁的时间都不会太久，所以仅仅为了这一点时间去挂起线程/恢复线程是得不偿失的。<br>思想：让一个线程在请求一个共享数据的锁时执行忙循环（自旋）一段时间，如果在这段时间内能获得锁，就可以避免进入阻塞状态。<br>自旋等待不能完全替代阻塞，因为它还是要占用处理器时间。如果锁被占用的时间短，那么效果当然很好。反之，自旋等待的时间必须要有限度，如果自旋超过了限定次数仍然没有获得锁，就应该挂起线程。</p>
-<p><strong>自适应自旋锁</strong><br>自旋的时间不再固定了，而是由前一次在同一个锁上的自旋时间以及锁的拥有者的状态来决定。</p>
-<p><strong>重量级锁</strong><br>阻塞所有等待竞争的线程，防止CPU空转。</p>
-<p><strong>锁消除</strong><br>虚拟机的JIT在运行时如果检测到一些要求同步的代码上不可能发生共享数据竞争，则会去掉这些锁。</p>
-<p><strong>锁粗化</strong><br>减少不必要的紧连在一起的lock，unlock操作，将多个连续的锁扩展成一个范围更大的锁。</p>
 
       
     </div>
@@ -653,7 +762,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/11/21/11-21-Java/" class="post-title-link" itemprop="url">11_21_Java</a>
+            <a href="/2021/11/21/11-21-Java/" class="post-title-link" itemprop="url">thread</a>
         </h2>
 
         <div class="post-meta">
@@ -670,7 +779,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-14 10:46:49" itemprop="dateModified" datetime="2022-03-14T10:46:49+08:00">2022-03-14</time>
+                <time title="修改时间：2022-03-15 21:21:25" itemprop="dateModified" datetime="2022-03-15T21:21:25+08:00">2022-03-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -767,7 +876,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/11/20/11-20-Java/" class="post-title-link" itemprop="url">11_20_Java</a>
+            <a href="/2021/11/20/11-20-Java/" class="post-title-link" itemprop="url">map</a>
         </h2>
 
         <div class="post-meta">
@@ -784,7 +893,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-14 10:47:24" itemprop="dateModified" datetime="2022-03-14T10:47:24+08:00">2022-03-14</time>
+                <time title="修改时间：2022-03-15 21:21:48" itemprop="dateModified" datetime="2022-03-15T21:21:48+08:00">2022-03-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -881,7 +990,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/11/19/11-19-Java/" class="post-title-link" itemprop="url">11_19_Java</a>
+            <a href="/2021/11/19/11-19-Java/" class="post-title-link" itemprop="url">hashmap</a>
         </h2>
 
         <div class="post-meta">
@@ -898,7 +1007,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-23 20:29:02" itemprop="dateModified" datetime="2022-02-23T20:29:02+08:00">2022-02-23</time>
+                <time title="修改时间：2022-03-15 21:22:11" itemprop="dateModified" datetime="2022-03-15T21:22:11+08:00">2022-03-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -990,7 +1099,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/11/17/11-17-Java/" class="post-title-link" itemprop="url">11_17_Java</a>
+            <a href="/2021/11/17/11-17-Java/" class="post-title-link" itemprop="url">list</a>
         </h2>
 
         <div class="post-meta">
@@ -1007,7 +1116,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-23 20:12:52" itemprop="dateModified" datetime="2022-02-23T20:12:52+08:00">2022-02-23</time>
+                <time title="修改时间：2022-03-15 21:22:29" itemprop="dateModified" datetime="2022-03-15T21:22:29+08:00">2022-03-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1103,7 +1212,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/11/15/11-15-Java/" class="post-title-link" itemprop="url">11_15_Java</a>
+            <a href="/2021/11/15/11-15-Java/" class="post-title-link" itemprop="url">collection</a>
         </h2>
 
         <div class="post-meta">
@@ -1120,7 +1229,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-22 21:29:11" itemprop="dateModified" datetime="2022-02-22T21:29:11+08:00">2022-02-22</time>
+                <time title="修改时间：2022-03-15 21:22:44" itemprop="dateModified" datetime="2022-03-15T21:22:44+08:00">2022-03-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1183,120 +1292,6 @@
 <li>对于Queue接口，LinkedList是最常用的实现。</li>
 <li>对于Deque接口，ArrayDeque是最常用的实现。</li>
 </ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/14/11-14-Java/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/14/11-14-Java/" class="post-title-link" itemprop="url">11_14_Java</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-11-14 20:00:00" itemprop="dateCreated datePublished" datetime="2021-11-14T20:00:00+08:00">2021-11-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-13 12:19:44" itemprop="dateModified" datetime="2022-03-13T12:19:44+08:00">2022-03-13</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/11/14/11-14-Java/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/14/11-14-Java/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-Error和Exception的区别"><a href="#1-Error和Exception的区别" class="headerlink" title="1 Error和Exception的区别"></a>1 Error和Exception的区别</h3><p>Error：一般指与虚拟机相关的问题，如：系统崩溃、虚拟机错误、内存空间不足、栈溢出等。错误会导致应用程序中断，仅靠程序本身无法恢复。</p>
-<p>Exception：可分为运行时异常与受检查异常。<br>运行时异常：空指针异常、指定的类找不到、数组越界、方法传递参数错误、数据类型转换错误。可以编译通过，一运行就停止了，程序不会自己处理。</p>
-<p>受检查异常：要么用try … catch…捕获，要么用throws声明抛出，交给父类处理。</p>
-<p>常见的异常类有：NullPointerException、SQLException、IndexOutOfBoundsException、FileNotFoundException、IOException、ClassCastException、IllegalArgumentException。</p>
-<h3 id="2-throw和throws的区别"><a href="#2-throw和throws的区别" class="headerlink" title="2 throw和throws的区别"></a>2 throw和throws的区别</h3><p>throw：在方法体内部，表示抛出异常，由方法体内部的语句处理。throw是具体向外抛出异常的动作，所以它抛出的是一个异常实例。异常可以是系统定义的，也可以是自己定义的。</p>
-<p>throws：在方法声明后面，表示如果抛出异常，由该方法的调用者来进行异常的处理。表示出现异常的可能性，并不一定会发生这种异常。</p>
-<p>throw只能用于抛出一种异常，而throws可以抛出多中异常。</p>
-<h3 id="3-Java-IO-Stream"><a href="#3-Java-IO-Stream" class="headerlink" title="3 Java IO Stream"></a>3 Java IO Stream</h3><p>功能：输入流、输出流<br>类型：字节流、字符流</p>
-<p>字节流：InputStream/OutputStream是字节流的抽象类，这两个抽象类派生了若干子类，不同的子类分别处理不同的操作。</p>
-<img src="/2021/11/14/11-14-Java/byte.png" class="">
-
-<p>字符流：Reader/Writer是字符流的抽象类，这两个抽象类派生了若干子类，不同的子类分别处理不同的操作。</p>
-<img src="/2021/11/14/11-14-Java/char.png" class="">
-
-<p>字节流与字符流的区别：字节流按8位传输，以字节为单位输入输出数据。字符流按16位传输，以字符为单位输入输出数据。但不管是文件读写还是网络发送接收，信息的最小存储单元都是字节。</p>
-<h3 id="4-BIO-NIO-AIO"><a href="#4-BIO-NIO-AIO" class="headerlink" title="4 BIO NIO AIO"></a>4 BIO NIO AIO</h3><p>BIO（Blocking I/O）：传统的java.io包，它是基于流模型实现的，交互的方式是<strong>同步、阻塞</strong>。数据的读取或写入必须阻塞在某个线程内等待其完成。一个线程对应一个请求，服务器为每一个连接请求都创建了一个线程来处理。<br>模式简单使用方便，但并发处理能力低。在活动连接数不是特别高（小于单机1000）的情况下，这种模型是比较不错的，可以让每一个连接专注于自己的I/O并且编程模型简单，也不用过多考虑系统的过载、限流等问题。线程池本身就是一个天然的漏斗，可以缓冲一些系统处理不了的连接或请求。但是，当面对十万甚至百万级连接的时候，传统的BIO模型是无能为力的。</p>
-<p>NIO（New IO）：BIO的升级，客户端和服务器通过Channel（通道）通讯，实现了多路复用。NIO是一种<strong>同步非阻塞</strong>的I/O模型，在jdk1.4中引入，对应为java.nio包，提供了Channel，Selector，Buffer三大组件。</p>
-<img src="/2021/11/14/11-14-Java/nio.png" class="">
-<p>NIO中的N可以理解为Non-blocking，不单纯是New。它支持面向缓冲的，基于通道的I/O操作方法。NIO提供了与传统BIO模型中的Socket和ServerSocket相对应的SocketChannel和ServerSocketChannel两种不同的套接字通道实现，两种通道都支持阻塞和非阻塞两种模式。<br>阻塞模式就像传统中的BIO一样，比较简单，但是性能和可靠性都不好，非阻塞模式正好与之相反。对于低负载、低并发的应用程序，可以使用同步阻塞I/O来提升开发速率和更好的维护性；对于高负载、高并发的（网络）应用，应使用NIO的非阻塞模式来开发。</p>
-<p><strong>BIO vs NIO</strong><br>BIO流是阻塞的，NIO流是不阻塞的。<br>BIO中，当一个线程调用read()或write()时，该线程被阻塞，直到有一些数据被读取，或数据完全写入。该线程在此期间不能再干其它事情。<br>NIO中，单线程从通道读取数据到buffer，同时可以继续做别的事情，当数据读取到buffer中后，线程再继续处理数据。<br>BIO面向流(Stream oriented)，而NIO面向缓冲区(Buffer oriented)。</p>
-<p>NIO通过Channel（通道）进行读写。<br>通道是双向的，可读也可写，而流的读写是单向的。无论读写，通道只能和Buffer交互。因为Buffer，通道可以异步地读写。<br>Channel是客户端与服务端之间的双工连接通道。所以在请求的过程中，客户端与服务端中间的Channel就在不停的执行“连接、询问、断开”的过程。</p>
-<p>NIO有Selector(选择器)。<br>选择器用于使用单个线程来处理多个通道，例如一个线程处理多个Channel，多个Channel反复轮询，Selector就看该Channel所需的数据是否准备好了；如果准备好了，则将数据通过Channel返回给该客户端的Buffer，该客户端再进行后续其他操作；如果没准备好，则告诉Channel还需要继续轮询；多个Channel反复询问Selector，Selector为这些Channel一一解答。因此，它需要较少的线程来处理这些通道。</p>
-<p>AIO（Asynchronous IO）：NIO的升级，也叫NIO2，jdk1.7引入，实现了<strong>异步</strong>IO。<br>异步IO的操作基于事件和回调机制。也就是操作之后会直接返回，不会堵塞在那里，当后台处理完成，操作系统会通知相应的线程进行后续的操作。虽然NIO在网络操作中，提供了非阻塞的用法，但是NIO的IO行为还是同步的。</p>
-<p>阻塞和非阻塞关注的是程序在等待调用结果（消息，返回值）时的状态。<br>阻塞<br>阻塞调用：调用结果返回之前，当前线程会被挂起。调用线程只有在得到结果之后才会返回。</p>
-<p>非阻塞<br>非阻塞调用：在不能立刻得到结果之前，该调用不会阻塞当前线程。</p>
-<p>同步和异步关注的是消息通信机制 (synchronous communication/ asynchronous communication)。<br>同步<br>在发出一个请求后，在没有得到结果之前，该调用不会返回。一旦调用返回，就得到返回值了。换句话说，就是由调用者主动等待这个调用的结果。</p>
-<p>异步<br>请求在发出之后，这个调用就直接返回了，所以没有返回结果。换句话说，当一个异步过程调用发出后，调用者不会立刻得到结果。而是在调用发出后，被调用者通过状态、通知来通知调用者，或通过回调函数处理这个调用。</p>
 
       
     </div>
@@ -1383,7 +1378,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">64</span>
+          <span class="site-state-item-count">65</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1396,7 +1391,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">56</span>
+        <span class="site-state-item-count">55</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
