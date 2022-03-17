@@ -187,6 +187,266 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/16/mysql-basic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/03/16/mysql-basic/" class="post-title-link" itemprop="url">mysql_basic</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-16 14:51:32" itemprop="dateCreated datePublished" datetime="2022-03-16T14:51:32+08:00">2022-03-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-17 21:55:16" itemprop="dateModified" datetime="2022-03-17T21:55:16+08:00">2022-03-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/03/16/mysql-basic/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/16/mysql-basic/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="1-mysql相关知识"><a href="#1-mysql相关知识" class="headerlink" title="1 mysql相关知识"></a>1 mysql相关知识</h2><p>事务、存储引擎、索引、SQL优化、锁、日志、主从复制、读写分离、分库分表等。</p>
+<p>基础篇：SQL（Structured Query Language）、函数、约束、多表查询、事务。</p>
+<h3 id="1-1-SQL"><a href="#1-1-SQL" class="headerlink" title="1.1 SQL"></a>1.1 SQL</h3><p>DDL（data definition language），用来定义数据库对象（数据库、表、字段）。<br>DML（data manipulation language），用来对数据库表中的数据进行增删改。<br>DQL（Data Query Language），用来查询数据库表中的记录（select）。<br>DCL（Data Control Language），用来创建数据库用户、控制数据库的访问权限。</p>
+<h4 id="DDL"><a href="#DDL" class="headerlink" title="DDL"></a>DDL</h4><p>show databases;<br>select database();  // 查询当前数据库<br>create database if not exists db_name;<br>drop database if exists db_name;<br>use db_name;</p>
+<p>show tables;<br>desc table_name;  // 查询表结构<br>show create table tb_name;</p>
+<img src="/2022/03/16/mysql-basic/1.png" class="">
+<img src="/2022/03/16/mysql-basic/2.png" class="">
+
+<p>alter table emp add nickname varchar(20) comment ‘昵称’;  // 添加字段<br>alter table emp modify nickname char(30);  // 修改字段类型<br>alter table emp change nickname username varchar(30) comment ‘用户名’;  // 修改字段名及其类型<br>alter table emp drop username;  // 删除字段<br>alter table emp rename to employee;  // 修改表名<br>drop table if exists tb_name;  // 删除表，表不存在<br>truncate table employee;  // 删除表的所有数据，表存在</p>
+<h4 id="DML"><a href="#DML" class="headerlink" title="DML"></a>DML</h4><p><strong>添加数据</strong><br>insert into 表名(字段名1,字段名2) values (值1,值2);  // 指定字段添加<br>insert into 表名 values (值1,值2);  // 全部字段添加<br>insert into 表名(字段名1,字段名2) values (值1,值2),(值1,值2),(值1,值2);  // 指定字段批量添加<br>insert into 表名 values (值1,值2),(值1,值2),(值1,值2);  // 全部字段批量添加</p>
+<p><strong>修改数据</strong><br>update 表名 set 字段名1=值1,字段名2=值2 where 条件;</p>
+<p><strong>删除数据</strong><br>delete from 表名 where 条件;</p>
+<h4 id="DQL"><a href="#DQL" class="headerlink" title="DQL"></a>DQL</h4><p>select 字段列表 from 表名列表 where 条件列表 group by 分组字段列表 having 分组后的条件列表 order by 排序字段列表 limit 分页参数</p>
+<p><strong>基本查询</strong><br>select 字段1,字段2 from 表名;<br>select 字段1 as 别名1,字段2 as 别名2 from 表名;<br>select distinct 字段列表 from 表名;  // 去除重复记录</p>
+<p><strong>条件查询</strong><br>select 字段列表 from 表名 where 条件列表;</p>
+<p>条件<br>比较运算符|功能<br>—|:—:|<br>between and|某个范围之类（含最小、最大值）<br>in(…)|在in之后的列表中的值，多选一<br>like|模糊匹配（_匹配单个字符，%匹配多个字符）<br>is null|为空<br>is not null|不为空</p>
+<p>select * from employee where age = 18 or age = 20 or age = 40;  等价于<br>select * from employee where age in(18,20,40);</p>
+<p>select * from employee where name like ‘__’;  // 查询姓名为两个字的员工<br>select * from employee where name like ‘%俊’;  // 查询姓名以俊结尾的员工</p>
+<p><strong>聚合函数</strong><br>一列数据作为一个整体，纵向计算。<br>函数|功能<br>—:|:—:|<br>count|统计数量<br>max|最大值<br>min|最小值<br>avg|平均值<br>sum|求和</p>
+<p>select 聚合函数(字段列表) from 表名;</p>
+<img src="/2022/03/16/mysql-basic/juhe.png" class="">
+
+<p><strong>分组查询</strong><br>select 字段列表 from 表名 [where 条件列表] group by 分组字段列表 [having 分组后的条件列表]</p>
+<img src="/2022/03/16/mysql-basic/by1.png" class="">
+<img src="/2022/03/16/mysql-basic/by2.png" class="">
+
+<p><strong>排序查询</strong><br>select 字段列表 from 表名 order by 字段1 排序方式1，字段2 排序方式2;<br>asc：升序（默认）<br>desc：降序</p>
+<img src="/2022/03/16/mysql-basic/order.png" class="">
+
+<p><strong>分页查询</strong><br>select 字段列表 from 表名 limit 起始索引,记录数;<br>起始索引从0开始，起始索引=（页码-1）*每页记录数</p>
+<img src="/2022/03/16/mysql-basic/limit.png" class="">
+
+<p><strong>DQL执行顺序</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select 字段列表           4</span><br><span class="line">from 表名列表             1</span><br><span class="line">where 条件列表            2</span><br><span class="line">group by 分组字段列表      3</span><br><span class="line">having 分组后的条件列表     3</span><br><span class="line">order by 排序字段列表      5</span><br><span class="line">limit 分页参数            6</span><br></pre></td></tr></table></figure>
+
+<h4 id="DCL"><a href="#DCL" class="headerlink" title="DCL"></a>DCL</h4><p>查询用户<br>use mysql;<br>select * from user;</p>
+<p>创建用户<br>create user ‘用户名‘@’主机名’ identified by ‘密码’;</p>
+<p>修改用户密码<br>alter user ‘用户名‘@’主机名’ identified with mysql_native_password by ‘新密码’;</p>
+<p>删除用户<br>drop user ‘用户名‘@’主机名’;</p>
+<p><strong>权限控制</strong><br>权限|说明<br>—:|:—:|<br>all,all privileges|所有权限<br>select|查询数据<br>insert|插入数据<br>update|修改数据<br>delete|删除数据<br>alter|修改表<br>drop|删除数据库、表、视图<br>create|创建数据库、表</p>
+<p>查询权限<br>show grants for ‘用户名‘@’主机名’;</p>
+<p>授予权限<br>grant 权限列表 on 数据库名.表名 to ‘用户名‘@’主机名’;</p>
+<p>撤销权限<br>revoke 权限列表 on 数据库名.表名 from ‘用户名‘@’主机名’;</p>
+<h3 id="1-2-函数"><a href="#1-2-函数" class="headerlink" title="1.2 函数"></a>1.2 函数</h3><h4 id="字符串函数"><a href="#字符串函数" class="headerlink" title="字符串函数"></a>字符串函数</h4><table>
+<thead>
+<tr>
+<th align="right">函数</th>
+<th align="center">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">concat(s1,s2,s3)</td>
+<td align="center">字符串拼接</td>
+</tr>
+<tr>
+<td align="right">lower(str)</td>
+<td align="center">将str全部转换为小写</td>
+</tr>
+<tr>
+<td align="right">upper(str)</td>
+<td align="center">将str全部转换为大写</td>
+</tr>
+<tr>
+<td align="right">lpad(str,n,pad)</td>
+<td align="center">左填充，用字符pad对str左边进行填充至长度为n</td>
+</tr>
+<tr>
+<td align="right">rpad(str,n,pad)</td>
+<td align="center">右填充，用字符pad对str右边进行填充至长度为n</td>
+</tr>
+<tr>
+<td align="right">trim(str)</td>
+<td align="center">去掉str头部和尾部的空格</td>
+</tr>
+<tr>
+<td align="right">substring(str,start,len)</td>
+<td align="center">返回子字符串</td>
+</tr>
+</tbody></table>
+<img src="/2022/03/16/mysql-basic/lpad.png" class="">
+
+<h4 id="数值函数"><a href="#数值函数" class="headerlink" title="数值函数"></a>数值函数</h4><table>
+<thead>
+<tr>
+<th align="right">函数</th>
+<th align="center">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">ceil(x)</td>
+<td align="center">向上取整</td>
+</tr>
+<tr>
+<td align="right">floor(x)</td>
+<td align="center">向下取整</td>
+</tr>
+<tr>
+<td align="right">mod(x,y)</td>
+<td align="center">返回x%y</td>
+</tr>
+<tr>
+<td align="right">rand()</td>
+<td align="center">返回0~1内的随机数</td>
+</tr>
+<tr>
+<td align="right">round(x,y)</td>
+<td align="center">求x四舍五入的值，保留y位小数</td>
+</tr>
+</tbody></table>
+<img src="/2022/03/16/mysql-basic/round.png" class="">
+
+<h4 id="日期函数"><a href="#日期函数" class="headerlink" title="日期函数"></a>日期函数</h4><table>
+<thead>
+<tr>
+<th align="right">函数</th>
+<th align="center">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">curdate()</td>
+<td align="center">当前日期</td>
+</tr>
+<tr>
+<td align="right">curtime()</td>
+<td align="center">当前时间</td>
+</tr>
+<tr>
+<td align="right">now()</td>
+<td align="center">当前日期和时间</td>
+</tr>
+<tr>
+<td align="right">year(date)</td>
+<td align="center">年份</td>
+</tr>
+<tr>
+<td align="right">month(date)</td>
+<td align="center">月份</td>
+</tr>
+<tr>
+<td align="right">day(date)</td>
+<td align="center">天</td>
+</tr>
+<tr>
+<td align="right">datediff(date1,date2)</td>
+<td align="center">返回两个时间之间相差的天数</td>
+</tr>
+</tbody></table>
+<img src="/2022/03/16/mysql-basic/date.png" class="">
+
+<h4 id="流程函数"><a href="#流程函数" class="headerlink" title="流程函数"></a>流程函数</h4><table>
+<thead>
+<tr>
+<th align="right">函数</th>
+<th align="center">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">if(value,t,f)</td>
+<td align="center">value为true，返回t，否则返回f</td>
+</tr>
+<tr>
+<td align="right">ifnull(value1,value2)</td>
+<td align="center">value1不为空，返回value1，否则返回value2</td>
+</tr>
+<tr>
+<td align="right">case when val1 then res1 else default end</td>
+<td align="center">val1为true，返回res1，否则返回默认值</td>
+</tr>
+<tr>
+<td align="right">case expr when val1 then res1 else default end</td>
+<td align="center">expr的值等于val1，返回res1，否则返回默认值</td>
+</tr>
+</tbody></table>
+<img src="/2022/03/16/mysql-basic/case.png" class="">
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/15/jingsuan-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1272,106 +1532,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/29/12-29-Tree/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/12/29/12-29-Tree/" class="post-title-link" itemprop="url">Tree</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-12-29 11:19:28" itemprop="dateCreated datePublished" datetime="2021-12-29T11:19:28+08:00">2021-12-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 20:48:55" itemprop="dateModified" datetime="2022-03-15T20:48:55+08:00">2022-03-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/12/29/12-29-Tree/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/29/12-29-Tree/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-二叉树"><a href="#1-二叉树" class="headerlink" title="1 二叉树"></a>1 二叉树</h3><p>1）每个结点最多有两颗子树，所以二叉树中不存在度大于2的结点。<br>2）左子树和右子树是有顺序的，次序不能颠倒。<br>3）即使树中某结点只有一棵子树，也要区分它是左子树还是右子树。</p>
-<p>性质：<br>1）在二叉树的第i层上最多有2^(i-1)个节点（i&gt;=1）。<br>2）二叉树深度为k，那么最多有2^k-1个节点（k&gt;=1）。<br>3）n0=n2+1。n0表示度数为0的节点个数（叶子节点个数），n2表示度数为2的节点个数。<br>4）在完全二叉树中，具有n个节点的完全二叉树的深度为[log2n]+1，其中[log2n]是向下取整。<br>5）若对含n个结点的完全二叉树从上到下且从左至右进行1至n的编号，则对完全二叉树中任意一个编号为i的结点有如下特性：<br>(1) 若i=1，则该结点是二叉树的根，无双亲，否则，编号为[i/2]的结点为其双亲结点;<br>(2) 若2i&gt;n，则该结点无左孩子，否则，编号为2i的结点为其左孩子结点；<br>(3) 若2i+1&gt;n，则该结点无右孩子结点，否则，编号为2i+1的结点为其右孩子结点。</p>
-<h3 id="2-满二叉树"><a href="#2-满二叉树" class="headerlink" title="2 满二叉树"></a>2 满二叉树</h3><p>高度为h，由2^h-1个节点构成的二叉树称为满二叉树。</p>
-<h3 id="3-完全二叉树"><a href="#3-完全二叉树" class="headerlink" title="3 完全二叉树"></a>3 完全二叉树</h3><p>完全二叉树是由满二叉树引出来的，若设二叉树的高度为h，则除第 h 层外，其它各层 (1～h-1) 的结点个数都达到最大值(即1~h-1层为一个满二叉树)，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。</p>
-<h3 id="4-平衡二叉树（AVL树）"><a href="#4-平衡二叉树（AVL树）" class="headerlink" title="4 平衡二叉树（AVL树）"></a>4 平衡二叉树（AVL树）</h3><p>它是一棵空树或者它的左右两棵子树的高度差的绝对值不超过1，并且左右两棵子树都是一棵平衡二叉树。</p>
-<h3 id="5-二叉排序树（二叉搜索树-二叉查找树）BST"><a href="#5-二叉排序树（二叉搜索树-二叉查找树）BST" class="headerlink" title="5 二叉排序树（二叉搜索树/二叉查找树）BST"></a>5 二叉排序树（二叉搜索树/二叉查找树）BST</h3><p>它是一棵空树，或者是具有下列性质的二叉树：<br>（1）若左子树不空，则左子树上所有结点的值均小于它的根结点的值；<br>（2）若右子树不空，则右子树上所有结点的值均大于它的根结点的值；<br>（3）左、右子树也分别为二叉排序树；<br>（4）一般来说没有键值相等的结点。</p>
-<h3 id="6-红黑树"><a href="#6-红黑树" class="headerlink" title="6 红黑树"></a>6 红黑树</h3><p>红黑树（Red Black Tree）是一种自平衡二叉查找树。红黑树是一种含有红黑结点并且能自平衡的二叉查找树。它必须满足下面性质：<br>性质1：每个结点要么是黑色，要么是红色。<br>性质2：根结点是黑色。<br>性质3：每个叶子结点（NIL）都是黑色。<br>性质4：每个红色结点的两个子结点一定都是黑色。<br>性质5：任意一个结点到每个叶子结点的路径都包含数量相同的黑色结点。<br>如果一个结点存在黑色子结点，那么该结点肯定有两个子结点。</p>
-<p>应用：TreeMap、TreeSet、JDK1.8 HashMap</p>
-<p><strong>红黑树vs平衡二叉树</strong><br>红黑树不追求”完全平衡”，它不像AVL树那样要求节点的|balFact| &lt;= 1，它只要求部分达到平衡。红黑树是用非严格的平衡来换取增删节点时旋转次数的降低，任何不平衡都会在三次旋转之内解决，而AVL树是严格的平衡树，因此在增加或者删除节点的时候，旋转的次数比红黑树要多。</p>
-<p>红黑树的查询性能略微逊色于AVL树，但是，红黑树在插入和删除上优于AVL树，AVL树每次插入删除会进行大量的平衡度计算，而红黑树为了维持红黑性质所做的红黑变换和旋转的开销，相较于AVL树为了维持平衡的开销要小得多。<br>实际应用中，若搜索的次数远大于插入和删除，那么选择AVL树；如果搜索，插入，删除次数几乎差不多，应该选择红黑树。</p>
-<h3 id="7-B树、B-树"><a href="#7-B树、B-树" class="headerlink" title="7 B树、B+树"></a>7 B树、B+树</h3><p><strong>B树</strong><br>一棵m阶B树是一棵平衡的m路搜索树。它或者是空树，或者是满足下列性质的树：<br>1、根结点至少有两棵子树；<br>2、树中每个结点至多有m棵子树；<br>3、除根结点以外的所有结点（不包括叶子结点）的度数正好是关键字总数加一。<br>4、所有结点都包含如下形式的数据：(n,A0 ,K1 ,A1 ,K2 ,A2 , … ,Kn,An )<br>其中n为关键字的个数，Ki(i=1, … , n)为关键字，且满足K1&lt;K2&lt;…&lt;Kn。Ai( i=0,1, … , n)为指向子树根结点的指针，且对于i=1,2, … , n-1，Ai所指子树上各结点的一切关键字均大于Ki，而小于Ki+1。A0所指子树上各结点的一切关键字均小于K1，An所指子树上各结点的一切关键字均大于Kn。<br>对于叶子结点，所有指针Ai皆为空。对于具有n个关键字的非叶结点，将有n+1棵子树。</p>
-<p><strong>B+树</strong><br>1.有n棵子树的结点中含有n个关键字；<br>2.根节点至少有一棵子树，除根节点外，其他结点至少有[ m/2 ]棵子树；<br>3.所有的叶子结点中包含了全部关键字的信息，及指向含有这些关键字信息的指针，且叶子结点依关键字的大小自小而大顺序链接。(而B树的叶子节点并没有包括全部关键字的信息)<br>4.所有的非叶子结点可以看成是索引部分，结点中仅含有其子树根结点中最大（或最小）关键字。</p>
-<p>B+树的搜索与B树基本相同，区别是B+树只有到达叶子结点才能命中（B树可以在非叶子结点命中）。<br>B树的优势是当你要查找的值恰好处在一个非叶子节点时，查找到该节点就成功返回并结束查询。<br>而B+树由于非叶子节点只是索引部分，这些节点中只含有其子树中的最大(或最小)关键字，当非终端节点上的关键字等于给点值时，查找并不终止，而是继续向下直到叶子节点。因此在B+树中，无论查找成功与否，都是走了一条从根到叶子节点的路径。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1443,7 +1603,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">65</span>
+          <span class="site-state-item-count">66</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
