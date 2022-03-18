@@ -187,6 +187,197 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/18/about-java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/03/18/about-java/" class="post-title-link" itemprop="url">about_java</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-18 14:36:37 / 修改时间：15:28:39" itemprop="dateCreated datePublished" datetime="2022-03-18T14:36:37+08:00">2022-03-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/03/18/about-java/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/18/about-java/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-Java中重写equals方法为什么要重写hashcode方法？"><a href="#1-Java中重写equals方法为什么要重写hashcode方法？" class="headerlink" title="1 Java中重写equals方法为什么要重写hashcode方法？"></a>1 Java中重写equals方法为什么要重写hashcode方法？</h3><p>如果一个类没有重写equals(Object obj)方法，则等价于通过==比较两个对象，即比较的是对象在内存中的地址是否相等；如果重写了equals(Object obj)方法，一般是比较值是否相等。<br>当我们将equals方法重写后有必要将hashCode方法也重写，这样做才能保证不违背hashCode方法中“相同对象必须有相同哈希值”的约定。<br>一个对象多次调用它的hashCode方法，应当返回相同的integer（哈希值）；<br>两个对象如果通过equals方法判定为相等，那么就应当返回相同integer；<br>hashCode方法实际上必须要完成的一件事情就是，为equals方法认定为相同的对象返回相同的哈希值。<br>为什么重写equals方法就得重写hashCode方法—–因为必须保证重写后的equals方法认定为相同的两个对象拥有相同的哈希值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">String类重写了equals方法和hashCode方法</span><br><span class="line">    public boolean equals(Object anObject) &#123;</span><br><span class="line">        if (this &#x3D;&#x3D; anObject) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        if (anObject instanceof String) &#123;</span><br><span class="line">            String anotherString &#x3D; (String)anObject;</span><br><span class="line">            int n &#x3D; value.length;</span><br><span class="line">            if (n &#x3D;&#x3D; anotherString.value.length) &#123;</span><br><span class="line">                char v1[] &#x3D; value;</span><br><span class="line">                char v2[] &#x3D; anotherString.value;</span><br><span class="line">                int i &#x3D; 0;</span><br><span class="line">                while (n-- !&#x3D; 0) &#123;</span><br><span class="line">                    if (v1[i] !&#x3D; v2[i])</span><br><span class="line">                        return false;</span><br><span class="line">                    i++;</span><br><span class="line">                &#125;</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int hashCode() &#123;</span><br><span class="line">        int h &#x3D; hash;</span><br><span class="line">        if (h &#x3D;&#x3D; 0 &amp;&amp; value.length &gt; 0) &#123;</span><br><span class="line">            char val[] &#x3D; value;</span><br><span class="line"></span><br><span class="line">            for (int i &#x3D; 0; i &lt; value.length; i++) &#123;</span><br><span class="line">                h &#x3D; 31 * h + val[i];</span><br><span class="line">            &#125;</span><br><span class="line">            hash &#x3D; h;</span><br><span class="line">        &#125;</span><br><span class="line">        return h;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>如果重写equals方法不重写hashCode方法会怎样？</strong><br>String类为例：String类中对equals方法进行了重写，但是如果此时我们不将hashCode方法也进行重写，那么String类调用的就是来自顶级父类Obejct类中的hashCode方法。即，对于两个字符串对象，使用它们各自的地址值映射为哈希值。也就是说，被String类中的equals方法认定为相等的两个对象拥有不同的哈希值——因为它们的地址值不同。<br>hashmap中会出现用equals比较相等的对象存在不同的地方（因为hash值不同）。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/18/about-os/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/03/18/about-os/" class="post-title-link" itemprop="url">about_os</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-18 10:10:51 / 修改时间：13:04:15" itemprop="dateCreated datePublished" datetime="2022-03-18T10:10:51+08:00">2022-03-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/03/18/about-os/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/18/about-os/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-用户态与内核态"><a href="#1-用户态与内核态" class="headerlink" title="1 用户态与内核态"></a>1 用户态与内核态</h3><p>用户态与内核态是操作系统的两种运行级别，大部分程序都是运行在用户态。</p>
+<p>运行在用户态下的程序不能直接访问操作系统内核数据结构和程序。当我们在系统中执行一个程序时，大部分时间是运行在用户态下的，在其需要操作系统帮助完成某些它没有权力和能力完成的工作时就会切换到内核态（比如操作硬件）。</p>
+<p>用户态就是提供应用程序运行的空间，为了使应用程序访问到内核管理的资源，例如CPU，内存，I/O。内核必须提供一组通用的访问接口，这些接口就叫系统调用。</p>
+<p>区别：权限不同。<br>用户态的进程能够访问的资源受到了极大的限制，而运行在内核态的进程可以“为所欲为”。<br>如果用户态和内核态拥有相同的特权，应用程序就可以直接访问物理内存，破坏它，读取私有数据或者完全控制系统，通过用户态模式可以限制应用程序。</p>
+<p>用户态切换到内核态</p>
+<ul>
+<li>系统调用，这是用户态进程主动要求切换到内核态的一种方式，用户态进程通过系统调用申请使用操作系统提供的服务程序完成工作。</li>
+<li>异常，运行在用户态下的程序发生了某些事先不可知的异常，这时会触发由当前运行进程切换到处理此异常的内核相关程序中，也就转到了内核态，比如缺页异常。</li>
+<li>外设中断，当外设完成用户的请求时，会向CPU发送中断信号。</li>
+</ul>
+<h3 id="2-进程切换为什么比线程切换慢"><a href="#2-进程切换为什么比线程切换慢" class="headerlink" title="2 进程切换为什么比线程切换慢?"></a>2 进程切换为什么比线程切换慢?</h3><p><strong>虚拟地址（逻辑地址）vs物理地址</strong><br>操作系统会给每个进程分配一个虚拟地址空间（vitural address），每个进程包含的栈、堆等这些都会从这个地址空间中被分配一个地址，这个地址就被称为虚拟地址。底层指令写入的地址也是虚拟地址。</p>
+<p>每个进程都拥有一个自己的虚拟地址空间，并且独立于其他进程的地址空间。</p>
+<p>有了虚拟地址空间后，CPU就可以通过生成一个虚拟地址来访问主存，这个虚拟地址在被送到内存之前会先被转换成物理地址，这个虚拟地址到物理地址的转换过程称为地址翻译/地址转换（address translation）。</p>
+<p>CPU上的内存管理单元（Memory Management Unit，MMU）就是专门用来进行虚拟地址到物理地址的转换的，不过MMU需要借助存放在内存中的页表，而这张表的内容正是由操作系统进行管理的。</p>
+<p>操作系统为每个进程建立了一张页表。一个进程对应一张页表，进程的每个页面对应一个页表项，每个页表项由页号和块号（页框号）组成，记录着进程页面和实际存放的内存块之间的映射关系。</p>
+<p>进程切换会涉及到虚拟地址空间的切换，而这正是导致进程切换比线程切换慢的原因。虚拟地址转换为物理地址需要两个东西：CPU上的MMU和内存中的页表。访问页表（内存）次数太多导致其成为了操作系统地一个性能瓶颈。</p>
+<p>转换检测缓冲区（Translation Lookaside Buffer，TLB）也称为快表，通常内置在CPU的MMU中。TLB的出现是基于这样一种现象的：大多数程序总是对少量的页面进行多次的访问。因此，只有很少的页表项会被反复读取，而其他的页表项很少被访问。</p>
+<p>TLB中存放的就是那些会被反复读取的页表项，若TLB命中，就不需要再访问内存了；若TLB中没有目标页表项，则还需要去查询内存中的页表（慢表），从页表中得到物理页框地址，同时将页表中的该表项添加到TLB中。</p>
+<p>由于进程切换会涉及到虚拟地址空间的切换，这就导致内存中的页表也需要进行切换，一个进程对应一个页表是不假，但是CPU中的TLB只有一个，页表切换后这个TLB就失效了。这样，TLB在一段时间内肯定是无法被命中的，操作系统就必须去访问内存，那么虚拟地址转换为物理地址就会变慢，表现出来的就是程序运行会变慢。<br>而线程切换呢，由于不涉及虚拟地址空间的切换，也就不存在这个问题了。</p>
+<h3 id="3-有了进程，为什么还需要线程？"><a href="#3-有了进程，为什么还需要线程？" class="headerlink" title="3 有了进程，为什么还需要线程？"></a>3 有了进程，为什么还需要线程？</h3><ul>
+<li>进程在同一时间只能干一件事，进程在执行的过程中如果被阻塞，整个进程就会挂起，即使进程中有些工作不依赖于等待的资源，仍然不会执行。</li>
+<li>从资源上来讲，创建进程，需要为其分配系统资源、创建进程控制块（PCB）等操作，代价比较大。而创建线程，则不需要分配系统资源，因为线程可以共享同一进程的资源。</li>
+<li>从调度角度来看，进程间的调度开销要比同一进程中的线程之间的大。</li>
+</ul>
+<h3 id="3-协程"><a href="#3-协程" class="headerlink" title="3 协程"></a>3 协程</h3><p>协程也被称为轻量级线程，协程运行在线程之上，当一个协程执行完成后，可以选择主动让出，让另一个协程运行在当前线程之上。<br>协程并没有增加线程数量，只是在线程的基础之上通过分时复用的方式运行多个协程，而且协程的切换在用户态完成，切换的代价比线程从用户态到内核态的代价小很多。<br>协程只有和异步IO结合起来才能发挥出最大的威力。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/16/mysql-basic/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -648,7 +839,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 20:34:26" itemprop="dateModified" datetime="2022-03-15T20:34:26+08:00">2022-03-15</time>
+                <time title="修改时间：2022-03-18 16:07:43" itemprop="dateModified" datetime="2022-03-18T16:07:43+08:00">2022-03-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -686,7 +877,25 @@
 
       
           <p>2022年3月9号<br>由于本次面试是线下面试，一些问题记不太清，本次面试基本都是拿着简历问问题。</p>
-<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍了研究方向"><a href="#2-介绍了研究方向" class="headerlink" title="2 介绍了研究方向"></a>2 介绍了研究方向</h3><h3 id="3-docker有哪些常用命令"><a href="#3-docker有哪些常用命令" class="headerlink" title="3 docker有哪些常用命令"></a>3 docker有哪些常用命令</h3><h3 id="4-redis数据类型"><a href="#4-redis数据类型" class="headerlink" title="4 redis数据类型"></a>4 redis数据类型</h3><h3 id="5-说说spring-ioc与aop"><a href="#5-说说spring-ioc与aop" class="headerlink" title="5 说说spring ioc与aop"></a>5 说说spring ioc与aop</h3><h3 id="6-创建多线程的方式"><a href="#6-创建多线程的方式" class="headerlink" title="6 创建多线程的方式"></a>6 创建多线程的方式</h3><h3 id="7-说说线程池"><a href="#7-说说线程池" class="headerlink" title="7 说说线程池"></a>7 说说线程池</h3><h3 id="8-jvm详细说一下"><a href="#8-jvm详细说一下" class="headerlink" title="8 jvm详细说一下"></a>8 jvm详细说一下</h3><h3 id="9-垃圾回收机制"><a href="#9-垃圾回收机制" class="headerlink" title="9 垃圾回收机制"></a>9 垃圾回收机制</h3><h3 id="10-垃圾收集器有哪些？说一下G1"><a href="#10-垃圾收集器有哪些？说一下G1" class="headerlink" title="10 垃圾收集器有哪些？说一下G1"></a>10 垃圾收集器有哪些？说一下G1</h3><h3 id="11-spring有哪些注解，说一下-Resource注解"><a href="#11-spring有哪些注解，说一下-Resource注解" class="headerlink" title="11 spring有哪些注解，说一下@Resource注解"></a>11 spring有哪些注解，说一下@Resource注解</h3><h3 id="12-说一下git常用命令，rebase命令了解吗？"><a href="#12-说一下git常用命令，rebase命令了解吗？" class="headerlink" title="12 说一下git常用命令，rebase命令了解吗？"></a>12 说一下git常用命令，rebase命令了解吗？</h3><h3 id="13-说一下osi七层模型"><a href="#13-说一下osi七层模型" class="headerlink" title="13 说一下osi七层模型"></a>13 说一下osi七层模型</h3><h3 id="14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？"><a href="#14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？" class="headerlink" title="14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？"></a>14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？</h3><h3 id="15-十亿条无序的数据，找出其中最大的10条。（top-k问题）"><a href="#15-十亿条无序的数据，找出其中最大的10条。（top-k问题）" class="headerlink" title="15 十亿条无序的数据，找出其中最大的10条。（top k问题）"></a>15 十亿条无序的数据，找出其中最大的10条。（top k问题）</h3><h3 id="16-算法题：单链表反转"><a href="#16-算法题：单链表反转" class="headerlink" title="16 算法题：单链表反转"></a>16 算法题：单链表反转</h3><h3 id="17-HR面"><a href="#17-HR面" class="headerlink" title="17 HR面"></a>17 HR面</h3><p>日常聊天半小时，面试通过。<br>3月15日婉拒offer</p>
+<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍研究方向"><a href="#2-介绍研究方向" class="headerlink" title="2 介绍研究方向"></a>2 介绍研究方向</h3><h3 id="3-docker有哪些常用命令"><a href="#3-docker有哪些常用命令" class="headerlink" title="3 docker有哪些常用命令"></a>3 docker有哪些常用命令</h3><p>docker –help;  //帮助命令<br>docker pull image_name;  //下载镜像<br>docker run image_name  //运行镜像</p>
+<p>docker images;  //查看本地主机上的所有镜像<br>docker images -a;<br>docker images -q;<br>docker images -aq;<br>-a：列出所有镜像。<br>-q：只显示镜像id。</p>
+<p>docker search image_name;  //搜索镜像</p>
+<p>docker rmi image_name;  //删除镜像<br>docker rmi -f $(docker images -aq);</p>
+<p>docker run -it REPOSITORY/IMAGE ID;  //运行容器，可以使用容器的REPOSITORY或者IMAGE ID运行容器,其中参数-i表示以交互模式运行容器，-t表示为容器重新分配一个伪输入终端,-i与-t通常同时使用。</p>
+<p>docker ps;  //查看所有正在运行的容器<br>docker ps -a;  //查看所有运行过的容器<br>docker ps -n 5;  //表示查看最近运行过的5个容器</p>
+<p>docker stop CONTAINER ID;  //退出容器<br>docker kill CONTAINER ID;  //退出容器</p>
+<h3 id="4-redis数据类型"><a href="#4-redis数据类型" class="headerlink" title="4 redis数据类型"></a>4 redis数据类型</h3><p>hash、list、hash、set、zset</p>
+<h3 id="5-说说spring-ioc与aop"><a href="#5-说说spring-ioc与aop" class="headerlink" title="5 说说spring ioc与aop"></a>5 说说spring ioc与aop</h3><p><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/12/05/12-05-Spring/">ioc</a><br><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/12/10/12-10-Spring/">aop</a></p>
+<h3 id="6-创建多线程的方式"><a href="#6-创建多线程的方式" class="headerlink" title="6 创建多线程的方式"></a>6 创建多线程的方式</h3><p>见蔚来一面</p>
+<h3 id="7-说说线程池"><a href="#7-说说线程池" class="headerlink" title="7 说说线程池"></a>7 说说线程池</h3><p><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/11/24/11-24-Java/">概念</a><br><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/11/26/11-26-Java/">创建方式</a></p>
+<h3 id="8-jvm详细说一下"><a href="#8-jvm详细说一下" class="headerlink" title="8 jvm详细说一下"></a>8 jvm详细说一下</h3><p><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/11/27/11-27-Java/">jvm</a></p>
+<h3 id="9-垃圾回收机制"><a href="#9-垃圾回收机制" class="headerlink" title="9 垃圾回收机制"></a>9 垃圾回收机制</h3><p><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/12/04/12-04-Java/">gc</a></p>
+<h3 id="10-垃圾收集器有哪些？说一下G1"><a href="#10-垃圾收集器有哪些？说一下G1" class="headerlink" title="10 垃圾收集器有哪些？说一下G1"></a>10 垃圾收集器有哪些？说一下G1</h3><h3 id="11-spring有哪些注解，说一下-Resource注解"><a href="#11-spring有哪些注解，说一下-Resource注解" class="headerlink" title="11 spring有哪些注解，说一下@Resource注解"></a>11 spring有哪些注解，说一下@Resource注解</h3><h3 id="12-说一下git常用命令，rebase命令了解吗？"><a href="#12-说一下git常用命令，rebase命令了解吗？" class="headerlink" title="12 说一下git常用命令，rebase命令了解吗？"></a>12 说一下git常用命令，rebase命令了解吗？</h3><h3 id="13-说一下osi七层模型"><a href="#13-说一下osi七层模型" class="headerlink" title="13 说一下osi七层模型"></a>13 说一下osi七层模型</h3><h3 id="14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？"><a href="#14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？" class="headerlink" title="14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？"></a>14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？</h3><h3 id="15-十亿条无序的数据，找出其中最大的10条。（top-k问题）"><a href="#15-十亿条无序的数据，找出其中最大的10条。（top-k问题）" class="headerlink" title="15 十亿条无序的数据，找出其中最大的10条。（top k问题）"></a>15 十亿条无序的数据，找出其中最大的10条。（top k问题）</h3><h3 id="16-算法题：单链表反转"><a href="#16-算法题：单链表反转" class="headerlink" title="16 算法题：单链表反转"></a>16 算法题：单链表反转</h3><p>头插法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public ListNode reverseList(ListNode head) &#123;</span><br><span class="line">    ListNode previous &#x3D; null;</span><br><span class="line">    ListNode current &#x3D; head;</span><br><span class="line">    while (current !&#x3D; null) &#123;</span><br><span class="line">        ListNode after &#x3D; current.next;</span><br><span class="line">        current.next &#x3D; previous;</span><br><span class="line">        previous &#x3D; current;</span><br><span class="line">        current &#x3D; after;</span><br><span class="line">    &#125;</span><br><span class="line">    return previous;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>递归</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public ListNode reverseList(ListNode head) &#123;</span><br><span class="line">    if (head &#x3D;&#x3D; null || head.next &#x3D;&#x3D; null) &#123;</span><br><span class="line">        return head;</span><br><span class="line">    &#125;</span><br><span class="line">    ListNode newHead &#x3D; reverseList(head.next);</span><br><span class="line">    head.next.next &#x3D; head;</span><br><span class="line">    head.next &#x3D; null;</span><br><span class="line">    return newHead;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="17-HR面"><a href="#17-HR面" class="headerlink" title="17 HR面"></a>17 HR面</h3><p>日常聊天半小时，面试通过。<br>3月15日婉拒offer。</p>
 
       
     </div>
@@ -918,7 +1127,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 21:34:51" itemprop="dateModified" datetime="2022-03-15T21:34:51+08:00">2022-03-15</time>
+                <time title="修改时间：2022-03-18 15:57:53" itemprop="dateModified" datetime="2022-03-18T15:57:53+08:00">2022-03-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1014,12 +1223,8 @@
 <h3 id="5-Object类有那些函数"><a href="#5-Object类有那些函数" class="headerlink" title="5 Object类有那些函数"></a>5 Object类有那些函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public native int hashCode();</span><br><span class="line"></span><br><span class="line">public boolean equals(Object obj) &#123;</span><br><span class="line">        return (this &#x3D;&#x3D; obj);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">protected native Object clone() throws CloneNotSupportedException;</span><br><span class="line"></span><br><span class="line">public String toString() &#123;</span><br><span class="line">        return getClass().getName() + &quot;@&quot; + Integer.toHexString(hashCode());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public final void wait(long timeout, int nanos) throws InterruptedException &#123;&#125;</span><br><span class="line"></span><br><span class="line">public final native void notify();</span><br><span class="line"></span><br><span class="line">public final native void notifyAll();</span><br><span class="line"></span><br><span class="line">protected void finalize() throws Throwable &#123; &#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="6-详细说说hashCode与equals方法"><a href="#6-详细说说hashCode与equals方法" class="headerlink" title="6 详细说说hashCode与equals方法"></a>6 详细说说hashCode与equals方法</h3><p><strong>hashCode</strong><br>hashCode()的作用是获取哈希码，也称为散列码，它实际上是返回一个int型整数。这个哈希码的作用就是确定该对象在哈希表中的索引位置。</p>
-<p><strong>equals</strong><br>equals()的作用是判断两个对象是否相等，如果重写了equals()方法，比较两个对象的内容是否相等，例如String、Date等类对equals方法进行了重写，比较的是所指向的对象的内容；如果没有重写，比较两个对象的地址是否相同，等价于“==”。</p>
-<p><strong>二者联系</strong></p>
-<ol>
-<li>不会创建“类对应的散列表”，我们不会在HashSet, HashTable, HashMap等等这些本质是散列表的数据结构中用到该类。例如，不会创建该类的HashSet集合。在这种情况下，该类的“hashCode()和equals()”没有半毛钱关系的！</li>
-<li>会创建“类对应的散列表”。<br>如果两个对象相等，那么它们的hashCode()值一定相同。这里的相等是指，通过equals()比较两个对象时返回true。<br>如果两个对象hashCode()值相同，它们并不一定相等，哈希冲突。<br>当equals方法被重写时，通常有必要重写hashCode方法，以维护hashCode方法的常规约定：值相同的对象必须有相同的hashCode，保证元素的唯一性。<br>hashCode是为了提高在散列结构存储中查找的效率，在线性表中没有作用。</li>
-</ol>
+<p><strong>equals</strong><br>equals()的作用是判断两个对象是否相等，如果重写了equals()方法，比较两个对象的值是否相等，例如String、Date等类对equals方法进行了重写，比较的是所指向的对象的值；如果没有重写，比较两个对象的地址是否相等，等价于“==”。</p>
+<p><a href="">联系</a></p>
 <p><strong>扩展：==与equals</strong><br>==：对于基本数据类型的变量，比较其存储的“值”是否相等；对于引用类型的变量，比较的是所指向的对象的地址是否相等。<br>equlas同上。</p>
 <h3 id="7-Java实现多线程的方式"><a href="#7-Java实现多线程的方式" class="headerlink" title="7 Java实现多线程的方式"></a>7 Java实现多线程的方式</h3><p>继承Thread类，重写run()方法。<br>实现Runnable接口，重写run()方法，启动线程需要通过Thread类。<br>实现Callable接口，重写call()方法来实现多线程，有返回值。<br>线程池。</p>
 <h3 id="8-Runnable和Callable的区别和联系"><a href="#8-Runnable和Callable的区别和联系" class="headerlink" title="8 Runnable和Callable的区别和联系"></a>8 Runnable和Callable的区别和联系</h3><ul>
@@ -1243,295 +1448,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/13/01-13-sort/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/01/13/01-13-sort/" class="post-title-link" itemprop="url">sort</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-01-13 19:31:36" itemprop="dateCreated datePublished" datetime="2022-01-13T19:31:36+08:00">2022-01-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 21:25:28" itemprop="dateModified" datetime="2022-03-15T21:25:28+08:00">2022-03-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/sort/" itemprop="url" rel="index"><span itemprop="name">sort</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/01/13/01-13-sort/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/13/01-13-sort/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-排序算法分类"><a href="#1-排序算法分类" class="headerlink" title="1 排序算法分类"></a>1 排序算法分类</h3><img src="/2022/01/13/01-13-sort/sort.png" class="">
-
-<h3 id="2-内部排序和外部排序"><a href="#2-内部排序和外部排序" class="headerlink" title="2 内部排序和外部排序"></a>2 内部排序和外部排序</h3><p>排序有内部排序和外部排序，内部排序是指数据记录在内存中进行排序，而外部排序是指因为排序的数据很大，内存一次不能容纳全部的排序记录，在排序过程中需要访问外存。<br>我们通常所说的排序算法往往指的是内部排序算法，即数据记录在内存中进行排序。</p>
-<h3 id="3-比较和非比较"><a href="#3-比较和非比较" class="headerlink" title="3 比较和非比较"></a>3 比较和非比较</h3><p>常见的如快速排序、归并排序、堆排序、冒泡排序等属于比较排序。在排序的最终结果中，元素之间的次序依赖于它们之间的比较。每个数都必须和其他数进行比较，才能确定自己的位置。<br>比较排序的优势：适用于各种规模的数据，也不在乎数据的分布，都能进行排序。</p>
-<p>计数排序、基数排序、桶排序则属于非比较排序。非比较排序是通过确定每个元素之前应该有多少个元素来排序。针对数组arr，计算arr[i]之前有多少个元素，则唯一确定了arr[i]在排序后数组中的位置。<br>非比较排序只要确定每个元素之前的已有的元素个数即可，一次遍历解决。算法时间复杂度O(n)。<br>非比较排序的时间复杂度低，但由于非比较排序需要占用空间来确定唯一的位置。所以对数据规模和数据分布有一定的要求。</p>
-<h3 id="4-常用排序算法总结"><a href="#4-常用排序算法总结" class="headerlink" title="4 常用排序算法总结"></a>4 常用排序算法总结</h3><table>
-<thead>
-<tr>
-<th>排序算法</th>
-<th align="center">平均时间复杂度</th>
-<th align="center">最好情况</th>
-<th align="center">最坏情况</th>
-<th align="center">空间复杂度</th>
-<th align="center">稳定性</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>直接插入排序</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(n)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(1)</td>
-<td align="center">稳定</td>
-</tr>
-<tr>
-<td>希尔排序</td>
-<td align="center">o(n^1.3)~o(n^2)</td>
-<td align="center">o(n^1.3)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(1)</td>
-<td align="center">不稳定</td>
-</tr>
-<tr>
-<td>简单选择排序</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(1)</td>
-<td align="center">不稳定</td>
-</tr>
-<tr>
-<td>堆排序</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(1)</td>
-<td align="center">不稳定</td>
-</tr>
-<tr>
-<td>冒泡排序</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(n)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(1)</td>
-<td align="center">稳定</td>
-</tr>
-<tr>
-<td>快速排序</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(logn)~o(n)</td>
-<td align="center">不稳定</td>
-</tr>
-<tr>
-<td>归并排序</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(n)</td>
-<td align="center">稳定</td>
-</tr>
-<tr>
-<td>基数排序</td>
-<td align="center">o(d(n+r))</td>
-<td align="center">o(d(n+r))</td>
-<td align="center">o(d(n+r))</td>
-<td align="center">o(n+r)</td>
-<td align="center">稳定</td>
-</tr>
-</tbody></table>
-<h3 id="5-冒泡排序与快速排序"><a href="#5-冒泡排序与快速排序" class="headerlink" title="5 冒泡排序与快速排序"></a>5 冒泡排序与快速排序</h3><p><strong>冒泡排序</strong><br>每次比较相邻的两个元素，如果它们的顺序错误就把他们交换。<br>n个数需要进行n-1趟排序。每一趟只能确定一个数的位置，如果有n个数进行排序，只需将n-1个数置于正确位置，也就是说要进行n-1趟操作，而每一趟操作都需要从第1位开始进行相邻两个数的比较。</p>
-<p>优化：当第i趟冒泡排序一次都没有交换，说明该序列已经有序了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public int[] bubbleSort(int[] nums) &#123;</span><br><span class="line">        if (nums.length &lt; 2) &#123;</span><br><span class="line">            return nums;</span><br><span class="line">        &#125;</span><br><span class="line">        int flag &#x3D; 0;  &#x2F;&#x2F; 表示序列是否交换</span><br><span class="line">        for (int i &#x3D; 0; i &lt; nums.length - 1; i++) &#123;</span><br><span class="line">            flag &#x3D; 0;</span><br><span class="line">            for (int j &#x3D; 0; j &lt; nums.length - i - 1; j++) &#123;</span><br><span class="line">                if (nums[j] &gt; nums[j + 1]) &#123;</span><br><span class="line">                    int temp &#x3D; nums[j];</span><br><span class="line">                    nums[j] &#x3D; nums[j + 1];</span><br><span class="line">                    nums[j + 1] &#x3D; temp;</span><br><span class="line">                    flag &#x3D; 1;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F; 一次都没有交换，说明该序列已经有序了</span><br><span class="line">            if (flag &#x3D;&#x3D; 0) &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return nums;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>快速排序</strong><br>快速排序基于分治的思想，通过一趟排序将要排序的数据分割成独立的两部分：分割点左边都是比它小的数，右边都是比它大的数。然后再按此方法对这两部分数据分别进行快速排序，整个排序过程可以递归进行，以此达到整个数据有序。</p>
-<p>快速排序的优化<br>基准元素的选取：固定位置选取、随机位置选取、三数取中法。<br>优化小数组时的排序方案：当局部排序数组长度较小时，采用插入排序，因为长度分割到够小后，继续分割的效率要低于直接插入排序。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">public class QuickSort &#123;</span><br><span class="line">    &#x2F;&#x2F; 快速排序基于分治的思想，通过一趟排序将要排序的数据分割成独立的两部分：</span><br><span class="line">    &#x2F;&#x2F; 分割点左边都是比它小的数，右边都是比它大的数。</span><br><span class="line">    &#x2F;&#x2F; 然后再按此方法对这两部分数据分别进行快速排序，整个排序过程可以递归进行，</span><br><span class="line">    &#x2F;&#x2F; 以此达到整个数据有序。</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 快速排序的优化</span><br><span class="line">    &#x2F;&#x2F; 基准元素的选取：固定位置选取、随机位置选取、三数取中法</span><br><span class="line">    &#x2F;&#x2F; 优化小数组时的排序方案：当局部排序数组长度较小时，采用插入排序，</span><br><span class="line">    &#x2F;&#x2F; 因为长度分割到够小后，继续分割的效率要低于直接插入排序</span><br><span class="line">    public void quickSort(int[] nums, int low, int high) &#123;</span><br><span class="line">        if (low &lt; high) &#123;</span><br><span class="line">            int temp &#x3D; nums[low];  &#x2F;&#x2F; 基准元素</span><br><span class="line">            int i &#x3D; low, j &#x3D; high;</span><br><span class="line">            while (i &lt; j) &#123;</span><br><span class="line">                while (i &lt; j &amp;&amp; nums[j] &gt;&#x3D; temp) &#123;</span><br><span class="line">                    j--;</span><br><span class="line">                &#125;</span><br><span class="line">                &#x2F;&#x2F; 如果nums[j]小于基准元素，nums[i] &#x3D; nums[j]</span><br><span class="line">                nums[i] &#x3D; nums[j];</span><br><span class="line"></span><br><span class="line">                while (i &lt; j &amp;&amp; nums[i] &lt;&#x3D; temp) &#123;</span><br><span class="line">                    i++;</span><br><span class="line">                &#125;</span><br><span class="line">                &#x2F;&#x2F; 如果nums[i]大于基准元素，nums[j] &#x3D; nums[i]</span><br><span class="line">                nums[j] &#x3D; nums[i];</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F; 基准元素将数据分成2部分</span><br><span class="line">            nums[i] &#x3D; temp;</span><br><span class="line">            quickSort(nums, low, i - 1);</span><br><span class="line">            quickSort(nums, i + 1, high);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="6-归并排序"><a href="#6-归并排序" class="headerlink" title="6 归并排序"></a>6 归并排序</h3><p>归并排序（Merge Sort）是建立在归并操作上的一种有效的排序算法，该算法是采用分治思想的一个非常典型的应用。<br>分解–&gt;合并<br>它将已经有序的子序列合并，得到完全有序的序列。即先使每个子序列有序，再使子序列段间有序。若将两个有序表合并成一个有序表，称为二路归并。归并排序是一种稳定的排序方法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">public void merge(int[] nums, int l, int mid, int r, int[] temp) &#123;</span><br><span class="line">        int i &#x3D; l, j &#x3D; mid + 1;  &#x2F;&#x2F; 左边序列和右边序列下标指针</span><br><span class="line">        int t &#x3D; 0;  &#x2F;&#x2F; 临时数组下标指针</span><br><span class="line">        while (i &lt;&#x3D; mid &amp;&amp; j &lt;&#x3D; r) &#123;</span><br><span class="line">            if (nums[i] &lt; nums[j]) &#123;</span><br><span class="line">                temp[t++] &#x3D; nums[i++];</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                temp[t++] &#x3D; nums[j++];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F; 若左边序列还有元素，将其拷贝至数组temp</span><br><span class="line">        while (i &lt;&#x3D; mid) &#123;</span><br><span class="line">            temp[t++] &#x3D; nums[i++];</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F; 若右边序列还有元素，将其拷贝至数组temp</span><br><span class="line">        while (j &lt;&#x3D; r) &#123;</span><br><span class="line">            temp[t++] &#x3D; nums[j++];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 将temp中元素拷贝至原数组</span><br><span class="line">        t &#x3D; 0;</span><br><span class="line">        while (l &lt;&#x3D; r) &#123;</span><br><span class="line">            nums[l++] &#x3D; temp[t++];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void mergeSort(int[] nums, int l, int r, int[] temp) &#123;</span><br><span class="line">        if (l &lt; r) &#123;</span><br><span class="line">            int mid &#x3D; (l + r) &#x2F; 2;</span><br><span class="line">            mergeSort(nums, l, mid, temp);  &#x2F;&#x2F; 对左边序列进行归并排序</span><br><span class="line">            mergeSort(nums, mid+1, r, temp);  &#x2F;&#x2F; 对右边序列进行归并排序</span><br><span class="line">            merge(nums, l, mid, r, temp);  &#x2F;&#x2F; 合并两个有序序列</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="7-直接插入排序与希尔排序"><a href="#7-直接插入排序与希尔排序" class="headerlink" title="7 直接插入排序与希尔排序"></a>7 直接插入排序与希尔排序</h3><p><strong>直接插入排序</strong><br>把n个待排序的元素看成一个有序表和一个无序表。开始时有序表中只包含1个元素，无序表中包含有n-1个元素，排序过程中每次从无序表中取出第一个元素，将它插入到有序表中的适当位置，使之成为新的有序表，重复n-1次可完成排序过程。<br>将一个记录插入到已排序好的有序表中，从而得到一个新、记录数增1的有序表。即：先将序列的第1个记录看成是一个有序的子序列，然后从第2个记录逐个进行插入，直至整个序列有序为止。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 直接插入排序</span><br><span class="line">    &#x2F;&#x2F; 将一个记录插入到已排序好的有序表中，从而得到一个新、记录数增1的有序表。</span><br><span class="line">    &#x2F;&#x2F; 先将序列的第1个记录看成是一个有序的子序列，然后从第2个记录逐个进行插入，</span><br><span class="line">    &#x2F;&#x2F; 直至整个序列有序为止。</span><br><span class="line">    &#x2F;&#x2F; 局部有序--&gt;全局有序</span><br><span class="line">    public void insertSort(int[] nums) &#123;</span><br><span class="line">        for (int i &#x3D; 1; i &lt; nums.length; i++) &#123;</span><br><span class="line">            if (nums[i] &lt; nums[i-1]) &#123;</span><br><span class="line">                int temp &#x3D; nums[i];  &#x2F;&#x2F; 设置哨兵，保存待插入元素</span><br><span class="line">                int j &#x3D; i - 1;</span><br><span class="line">                &#x2F;&#x2F; 元素后移，直到找到插入位置</span><br><span class="line">                while (j &gt;&#x3D; 0 &amp;&amp; nums[j] &gt; temp) &#123;</span><br><span class="line">                    nums[j+1] &#x3D; nums[j];</span><br><span class="line">                    j--;</span><br><span class="line">                &#125;</span><br><span class="line">                nums[j+1] &#x3D; temp;  &#x2F;&#x2F; 插入正确位置</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>希尔排序</strong><br>希尔排序是把记录按下标的一定增量分组，对每组使用直接插入排序算法排序；随着增量逐渐减少，每组包含的关键词越来越多，当增量减至1时，整个文件恰被分成一组，算法便终止。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 希尔排序（缩小增量排序）</span><br><span class="line">    public void shellSort(int[] nums) &#123;</span><br><span class="line">        &#x2F;&#x2F; gap 增量</span><br><span class="line">        for (int gap &#x3D; nums.length &#x2F; 2; gap &gt; 0; gap &#x2F;&#x3D; 2) &#123;</span><br><span class="line">            &#x2F;&#x2F; 对一个增量区间进行比较</span><br><span class="line">            &#x2F;&#x2F; 例如：</span><br><span class="line">            &#x2F;&#x2F; 3  4  5  1  2  6</span><br><span class="line">            &#x2F;&#x2F; |--|--|--^  ^  ^</span><br><span class="line">            &#x2F;&#x2F;    |--|-----|  |</span><br><span class="line">            &#x2F;&#x2F;       |--------|</span><br><span class="line">            for (int i &#x3D; gap; i &lt; nums.length; i++) &#123;</span><br><span class="line">                int temp &#x3D; nums[i];</span><br><span class="line">                int j &#x3D; i - gap;</span><br><span class="line">                while (j &gt;&#x3D; 0 &amp;&amp; nums[j] &gt; temp) &#123;</span><br><span class="line">                    nums[j + gap] &#x3D; nums[j];  &#x2F;&#x2F; j为左区间的取值，j+gap为右区间与左区间的对应值</span><br><span class="line">                    j -&#x3D; gap;</span><br><span class="line">                &#125;</span><br><span class="line">                nums[j + gap] &#x3D; temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="8-简单选择排序与堆排序"><a href="#8-简单选择排序与堆排序" class="headerlink" title="8 简单选择排序与堆排序"></a>8 简单选择排序与堆排序</h3><p><strong>简单选择排序</strong><br>首先在未排序序列中找到最小（大）元素，存放到排序序列的起始位置，然后，再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。以此类推，直到所有元素均排序完毕。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public void selectSort(int[] nums) &#123;</span><br><span class="line">        int min;  &#x2F;&#x2F; 记录每一趟最小值记录的下标</span><br><span class="line">        for (int i &#x3D; 0; i &lt; nums.length - 1; i++) &#123;</span><br><span class="line">            min &#x3D; i;</span><br><span class="line">            for (int j &#x3D; i + 1; j &lt; nums.length; j++) &#123;</span><br><span class="line">                if (nums[min] &gt; nums[j]) &#123;</span><br><span class="line">                    min &#x3D; j;  &#x2F;&#x2F; 找到最小值的下标</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (min !&#x3D; i) &#123;</span><br><span class="line">                int temp &#x3D; nums[min];</span><br><span class="line">                nums[min] &#x3D; nums[i];</span><br><span class="line">                nums[i] &#x3D; temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>堆排序</strong><br>堆是具有以下性质的完全二叉树：<br>每个结点的值都大于或等于其左右孩子结点的值，称为大顶堆；每个结点的值都小于或等于其左右孩子结点的值，称为小顶堆。</p>
-<p>大顶堆：arr[i] &gt;= arr[2i+1] &amp;&amp; arr[i] &gt;= arr[2i+2]<br>小顶堆：arr[i] &lt;= arr[2i+1] &amp;&amp; arr[i] &lt;= arr[2i+2]</p>
-<p>堆排序的基本思想：将待排序序列构造成一个大顶堆，此时，整个序列的最大值就是堆顶的根节点。将其与末尾元素进行交换，此时末尾就为最大值。然后将剩余n-1个元素重新构造成一个堆，这样会得到n个元素的次小值。如此反复执行，便能得到一个有序序列。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">public void heapSort(int[] arr) &#123;</span><br><span class="line">    &#x2F;&#x2F; 以升序排列为例，构建大顶堆</span><br><span class="line">    int n &#x3D; arr.length;</span><br><span class="line">    for (int i &#x3D; n &#x2F; 2 - 1; i &gt;&#x3D; 0; i--) &#123;</span><br><span class="line">        adjustHeap(arr, i, n);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    for (int j &#x3D; n - 1; j &gt; 0; j--) &#123;</span><br><span class="line">        swap(arr, 0, j);  &#x2F;&#x2F; 将堆顶元素与末尾元素交换</span><br><span class="line">        adjustHeap(arr, 0, j);  &#x2F;&#x2F; 重新对堆进行调整</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 调整大顶堆</span><br><span class="line">public void adjustHeap(int[] arr, int i, int len) &#123;</span><br><span class="line">    int temp &#x3D; arr[i];</span><br><span class="line">    for (int k &#x3D; i * 2 + 1; k &lt; len; k &#x3D; k * 2 + 1) &#123;  &#x2F;&#x2F; 从i结点的左子结点开始，也就是2i+1处开始</span><br><span class="line">        if (k + 1 &lt; len &amp;&amp; arr[k] &lt; arr[k + 1]) &#123;  &#x2F;&#x2F; 如果左子结点小于右子结点，k指向右子结点</span><br><span class="line">            k++;</span><br><span class="line">        &#125;</span><br><span class="line">        if (arr[k] &gt; temp) &#123;  &#x2F;&#x2F; 如果子节点大于父节点，将子节点值赋给父节点</span><br><span class="line">            arr[i] &#x3D; arr[k];</span><br><span class="line">            i &#x3D; k;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            break;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    arr[i] &#x3D; temp;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void swap(int[] arr, int a, int b) &#123;</span><br><span class="line">    int t &#x3D; arr[a];</span><br><span class="line">    arr[a] &#x3D; arr[b];</span><br><span class="line">    arr[b] &#x3D; t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/08/01-08-git/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/01/08/01-08-git/" class="post-title-link" itemprop="url">git</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-01-08 16:26:36" itemprop="dateCreated datePublished" datetime="2022-01-08T16:26:36+08:00">2022-01-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 21:25:38" itemprop="dateModified" datetime="2022-03-15T21:25:38+08:00">2022-03-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Tool/" itemprop="url" rel="index"><span itemprop="name">Tool</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/01/08/01-08-git/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/08/01-08-git/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><strong>Git</strong>是一种分布式版本控制系统（Distributed Version Control System，DVCS），分为两种类型的仓库：本地仓库和远程仓库。</p>
-<p>本地仓库：开发人员自己电脑上的Git仓库。<br>远程仓库：远程服务器上的Git仓库。</p>
-<p>clone：就是将远程仓库代码复制到本地仓库。<br>push：就是将本地仓库代码上传到远程仓库。<br>pull：就是将远程仓库代码下载到本地仓库。</p>
-<p><strong>Git工作区、暂存区和版本库</strong><br>工作区：就是电脑里存放项目代码的地方。<br>暂存区：英文叫stage或index。一般存放在.git目录下的index文件（.git/index）中，暂存区有时也叫作索引（index）。用于临时存放你的改动，它只是一个文件，保存即将提交的文件列表信息。<br>版本库（repository）：安全存放数据的位置，这里边有你提交的所有版本的数据。其中，HEAD指向最新放入仓库的版本。</p>
-<p>工作流程：<br>在工作目录中添加、修改文件；<br>将需要进行版本管理的文件放入暂存区域；<br>将暂存区域的文件提交到版本仓库。<br>Git管理的文件有三种状态：已修改（modified）、已暂存（staged）和已提交（committed）。</p>
-<p>将工作区的代码存放到暂存区：<br>git add . （将当前工作区的所有文件存放到暂存区）<br>git add -u （提交更新所有改变的文件，即提交所有变化的文件）<br>git add -A （提交已被修改和已被删除文件，但是不包括新的文件）</p>
-<p><strong>常用命令</strong><br>备份当前工作区的内容<br>git stash</p>
-<p>从远程仓库克隆<br>git clone [url]</p>
-<p>从远程仓库中抓取与拉取<br>git fetch 是从远程仓库获取最新版本到本地仓库，不会自动merge。<br>git pull 是从远程仓库获取最新版本并merge到本地仓库。</p>
-<p>推送到远程仓库<br>git push remote-name branch-name</p>
-<p><strong>Git分支</strong><br>列出所有本地分支<br>git branch<br>列出所有远程分支<br>git branch -r<br>列出所有本地分支和远程分支<br>git branch -a<br>创建分支<br>git branch [branch_name]<br>切换分支<br>git checkout [branch_name]<br>合并分支<br>git merge [branch_name]</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1603,20 +1519,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">68</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-count">57</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

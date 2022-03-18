@@ -187,6 +187,284 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/14/12-14-Mybatis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/14/12-14-Mybatis/" class="post-title-link" itemprop="url">mybatis</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-14 14:16:44" itemprop="dateCreated datePublished" datetime="2021-12-14T14:16:44+08:00">2021-12-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-15 20:54:07" itemprop="dateModified" datetime="2022-03-15T20:54:07+08:00">2022-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mybatis/" itemprop="url" rel="index"><span itemprop="name">Mybatis</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/14/12-14-Mybatis/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/14/12-14-Mybatis/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-mybatis"><a href="#1-mybatis" class="headerlink" title="1 mybatis"></a>1 mybatis</h3><p>MyBatis是一个持久层框架，它内部封装了JDBC，开发者只需要关注SQL语句本身，不需要花费精力去处理加载驱动、创建连接、创建statement等过程。<br>它免除了几乎所有的JDBC代码以及设置参数和获取结果集的工作。MyBatis可以通过简单的 XML 或注解来配置和映射原始类型、接口和Java POJO（Plain Old Java Objects，普通老式Java对象）为数据库中的记录。<br>通过XML或注解的方式将要执行的各种statement配置起来，并通过java对象和statement中sql的动态参数进行映射生成最终执行的sql语句，最后由mybatis框架执行sql并将结果映射为java对象并返回。</p>
+<p>优点：<br>基于SQL语句编程，相当灵活，不会对应用程序或者数据库的现有设计造成影响；SQL写在XML中，解除了sql与程序代码的耦合，便于统一管理；提供XML标签，支持编写动态SQL语句，并可重用。</p>
+<p>缺点：<br>SQL语句的编写工作量较大；且语句依赖于数据库，导致数据库移植性差，不能随意更换数据库。</p>
+<h3 id="2-与"><a href="#2-与" class="headerlink" title="2 ${}与#{}"></a>2 ${}与#{}</h3><p>${}是字符串替换，#{}是预编译处理。<br>Mybatis在处理${}时，就是把${}替换成变量的值。<br>Mybatis在处理#{}时，会将sql中的#{}替换为?号，调用PreparedStatement的set方法来赋值。使用#{}可以有效的防止SQL注入，提高系统安全性。<br>${}传入值时，sql解析参数是不带引号的，而#{}传入值时，sql解析参数是带引号的。</p>
+<h3 id="3-mybatis延迟加载及原理"><a href="#3-mybatis延迟加载及原理" class="headerlink" title="3 mybatis延迟加载及原理"></a>3 mybatis延迟加载及原理</h3><p>Mybatis仅支持一对一关联查询和一对多关联查询的延迟加载。<br>MyBatis中使用association标签来解决一对一的关联查询；使用collection标签来解决一对多的关联查询。<br>在Mybatis配置文件中，可以配置是否启用延迟加载lazyLoadingEnabled=true|false。</p>
+<p>原理：使用CGLIB创建目标对象的代理对象，当调用目标方法时，进入拦截器方法，比如调用a.getB().getName()，拦截器invoke()方法发现a.getB()是null值，那么就会单独发送事先保存好的查询关联B对象的sql，把B查询上来，然后调用a.setB(b)，于是a的对象b属性就有值了，接着完成a.getB().getName()方法的调用。这就是延迟加载的基本原理。</p>
+<h3 id="4-mybatis的一级和二级缓存"><a href="#4-mybatis的一级和二级缓存" class="headerlink" title="4 mybatis的一级和二级缓存"></a>4 mybatis的一级和二级缓存</h3><p>一级缓存: 基于PerpetualCache的HashMap本地缓存，其存储作用域为Session，当Session flush或close之后，该Session中的所有Cache就将被清空，默认打开一级缓存。<br>二级缓存：与一级缓存机制相同，默认也是采用PerpetualCache的HashMap存储，不同点在于其存储作用域为 Mapper(Namespace)，并且可自定义存储源，如Ehcache。默认不打开二级缓存，要开启二级缓存，需要使用二级缓存属性类实现Serializable序列化接口(用来保存对象的状态)，在它的映射文件中配置。<br>对于缓存数据更新机制，当某一个作用域(一级缓存Session/二级缓存Namespaces)进行了C/U/D操作后，默认该作用域下所有select中的缓存将被clear。</p>
+<h3 id="5-Mybatis执行器（Executor）"><a href="#5-Mybatis执行器（Executor）" class="headerlink" title="5 Mybatis执行器（Executor）"></a>5 Mybatis执行器（Executor）</h3><p>SimpleExecutor：每执行一次update或select，就开启一个Statement对象，用完立刻关闭Statement对象。<br>ReuseExecutor：执行update或select，以sql作为key查找Statement对象，存在就使用，不存在就创建。用完后，不关闭Statement对象，而是放置于Map内，供下一次使用。简言之，就是重复使用Statement对象。<br>BatchExecutor：执行update（JDBC批处理不支持select），将所有sql都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个Statement对象。</p>
+<h3 id="6-mybatis动态sql"><a href="#6-mybatis动态sql" class="headerlink" title="6 mybatis动态sql"></a>6 mybatis动态sql</h3><p>MyBatis动态SQL可以让我们在XML映射文件内，以标签的形式编写SQL，并完成逻辑判断和动态拼接SQL的功能。<br>MyBatis提供了9种动态SQL标签：trim、where、set、foreach、if、choose、when、otherwise、bind。<br>执行原理：使用OGNL从SQL参数对象中计算表达式的值，然后根据表达式的值动态拼接SQL，以此来完成动态SQL的功能。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/13/12-13-Network/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/13/12-13-Network/" class="post-title-link" itemprop="url">tcp_release</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-13 18:59:52" itemprop="dateCreated datePublished" datetime="2021-12-13T18:59:52+08:00">2021-12-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-15 20:54:47" itemprop="dateModified" datetime="2022-03-15T20:54:47+08:00">2022-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/13/12-13-Network/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/13/12-13-Network/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-四次挥手"><a href="#1-四次挥手" class="headerlink" title="1 四次挥手"></a>1 四次挥手</h3><p>建立一个连接需要三次握手，而终止一个连接需要四次挥手。<br>四次挥手过程：刚开始双方都处于establised的状态。</p>
+<img src="/2021/12/13/12-13-Network/fourbaibai.png" class="">
+<ol>
+<li>第一次挥手：客户端发送一个连接释放报文，请求释放连接，并且停止发送数据，报文中指定一个序列号。此时客户端处于FIN_WAIT1状态。即发出连接释放报文段（FIN=1，序列号seq=u），关闭TCP连接，进入FIN_WAIT1状态，等待服务端的确认。</li>
+<li>第二次挥手：服务端收到FIN报文之后，会发送ACK报文，ACK=1，ack=u+1，并且带上自己的序列号seq=v，表明已经收到客户端的报文了，此时服务端处于CLOSE_WAIT状态。TCP处于半关闭状态，客户端到服务端的连接释放。客户端收到服务端的确认后，进入FIN_WAIT2状态，等待服务端发出连接释放报文段。</li>
+<li>第三次挥手：如果服务端也想断开连接了，和客户端的第一次挥手一样，发送FIN报文。此时服务端处于LAST_ACK的状态，等待客户端的确认。</li>
+<li>第四次挥手：客户端收到FIN报文之后，同样发送一个ACK报文作为应答，并且把服务端的序列号值+1作为自己报文的ack值，此时客户端处于TIME_WAIT状态。需要过一阵子以确保服务端收到自己的ACK报文之后才会进入CLOSED状态。服务端收到ACK报文之后，就关闭连接了，处于CLOSED状态。</li>
+</ol>
+<p>为什么客户端发送ACK报文之后不直接关闭，而是要等待一阵子才关闭？<br>为了确保服务器已经收到了客户端的ACK报文，如果没有收到的话，服务器会重新发送FIN报文给客户端，客户端再次收到FIN报文之后，就知道之前的ACK报文丢失了，然后再次发送ACK报文。</p>
+<p><strong>2 MSL</strong><br>MSL(Maximum Segment Lifetime)即“最大报文段生存时间”，它是任何报文在网络上存在的最长时间，超过这个时间报文将被丢弃。</p>
+<ul>
+<li><p>为了保证客户端发送的最后一个ACK报文能够到达服务器。<br>因为这个ACK报文有可能丢失，从而导致处在LAST-ACK状态的服务器收不到对FIN报文的确认报文。服务器会超时重传这个FIN报文，接着客户端再重传一次确认，重新启动时间等待计时器（Time_Wait Timer）。最后客户端和服务器都能正常关闭。<br>假设客户端不等待2 MSL，而是在发送完ACK之后直接释放关闭，一但这个ACK丢失的话，服务器就无法正常的进入关闭连接状态。</p>
+</li>
+<li><p>防止“已失效的连接请求报文”出现在本连接中。<br>客户端在发送完最后一个ACK报文段后，再经过2 MSL，就可以使本连接持续的时间段内所产生的所有报文段都从网络中消失，使下一个新的连接中不会出现这种旧的连接请求报文段。</p>
+</li>
+</ul>
+<p><strong>保活计时器（Keeplive Timer）</strong><br>除时间等待计时器外，TCP还有一个保活计时器（keepalive timer）。设想这样的场景：客户端已主动与服务器建立了TCP连接。但后来客户端的主机突然发生故障。显然，服务器以后就不能再收到客户端发来的数据。因此，应当有措施使服务器不要再白白等待下去。这就需要使用保活计时器了。</p>
+<p>服务器每收到一次客户端的数据，就重新设置保活计时器，时间的设置通常是两个小时。若两个小时都没有收到客户端的数据，服务端就发送一个探测报文段，以后则每隔75秒发送一次。若连续发送10个探测报文段后仍然无客户端的响应，服务端就认为客户端出了故障，接着就关闭这个连接。</p>
+<p><strong>TCP协议如何保证可靠传输</strong></p>
+<ol>
+<li>校验和：目的是检测数据在传输过程中的变化，若校验出数据包有错，则丢弃报文段并且不给出响应，数据包发送端超时，重发数据；</li>
+<li>确认应答+序列号：接收方收到报文就会进行确认。既然TCP报文段作为IP数据报来传输，而IP数据报的到达可能会失序，因此TCP报文段的到达也可能会失序。TCP将对失序数据进行重新排序，然后才交给应用层；</li>
+<li>丢弃重复数据：TCP的接收端会丢弃重复的数据；</li>
+<li>延迟应答：接收数据的主机不会立刻返回ACK应答，通常会延迟几百毫秒；</li>
+<li>超时重传：当TCP发出一个报文段后，它启动一个定时器（重传计时器，Retransmission Timer），等待目的端确认收到这个报文段。如果不能及时收到一个确认，将重发这个报文段；</li>
+<li>流量控制：接收端处理数据的速度是优先的，如果发送端发的太快，会导致接收端的缓冲区一下子满了，这个时候如果发送端继续发送就会造成丢包，继而引起丢包重传等一系列连锁反应。因此TCP支持根据接收端的处理能力，来决定发送端的发送速度。TCP使用的流量控制协议是可变大小的滑动窗口协议。<br>接收端将自己可以接受的缓冲区大小放入TCP首部中的“窗口”字段，通过ACK报文通知发送端；<br>“窗口”字段越大，说明网络的吞吐量越高；<br>接收端一旦发现自己的缓冲区快满了就会将窗口大小设置成一个更小的值通知发送端；<br>发送端接收到窗口大小以后，就会减慢自己的发送速度；<br>如果接收端缓冲区满了，就会将窗口置为0，这时发送端不再发送数据；<br>但是需要定期的发送一个试探窗口，目的是接收端要把窗口大小告诉发送端。</li>
+</ol>
+<h3 id="2-自动重传请求（Automatic-Repeat-reQuest，ARQ）"><a href="#2-自动重传请求（Automatic-Repeat-reQuest，ARQ）" class="headerlink" title="2 自动重传请求（Automatic Repeat-reQuest，ARQ）"></a>2 自动重传请求（Automatic Repeat-reQuest，ARQ）</h3><p>自动重传请求（Automatic Repeat-reQuest，ARQ）是OSI模型中数据链路层的错误纠正协议之一。ARQ包括停止等待ARQ协议和连续ARQ协议，拥有错误检测（Error Detection）、正面确认（Positive Acknowledgment）、超时重传（Retransmission after Timeout）和负面确认及重传（Negative Acknowledgment and Retransmission）等机制。<br>它通过使用确认和超时这两个机制，在不可靠服务的基础上实现可靠的信息传输。如果发送方在发送后一段时间之内没有收到确认，它通常会重新发送。</p>
+<p><strong>停止等待ARQ协议</strong><br>超时重传是指只要超过一段时间仍然没有收到确认，就会重传前面发送过的分组。因此每发送完一个分组需要设置一个重传计时器，其重传时间应比数据在分组传输的平均往返时间更长一些。</p>
+<p>停止等待ARQ协议基本原理就是每发完一个分组就停止发送，等待对方确认。在收到确认后再发送下一个分组，在停止等待ARQ协议中，若接收方收到重复分组，就丢弃该分组，但同时还要发送确认。主要包括以下几种情况：无差错情况、出现差错（超时重传）、确认丢失和确认延迟。<br>停止等待ARQ协议的一个严重缺点是信道利用率太低。</p>
+<p><strong>连续ARQ协议</strong><br>连续ARQ协议可提高信道利用率。发送方采用流水线传输。所谓流水线传输就是发送方可以连续发送多个分组，不必每发完一个分组就停下来等待对方确认。发送方维持一个发送窗口，凡位于发送窗口内的分组可以连续发送出去，而不需要等待对方确认。接收方一般采用累计确认，对按序到达的最后一个分组发送确认，表明到这个分组为止的所有分组都已经正确收到了。</p>
+<h3 id="3-滑动窗口"><a href="#3-滑动窗口" class="headerlink" title="3 滑动窗口"></a>3 滑动窗口</h3><p>滑动窗口（Sliding window）是一种流量控制技术。早期的网络通信中，通信双方不会考虑网络的拥塞情况直接发送数据。由于大家不知道网络拥塞状况，同时发送数据，导致阻塞掉包问题，谁也发不了数据，所以就有了滑动窗口机制来解决此问题。</p>
+<p>TCP利用滑动窗口实现流量控制。滑动窗口的大小意味着接收方还有多大的缓冲区可以用于接收数据。发送方可以通过滑动窗口的大小来确定应该发送多大的数据。当滑动窗口为0时，发送方一般不能再发送数据报。<br>但有两种情况除外，一种情况是可以发送紧急数据，例如，允许用户终止在远端机上的运行进程。另一种情况是发送方可以发送一个1字节的数据报来通知接收方重新声明它希望接收的下一字节及发送方的滑动窗口大小。</p>
+<p><strong>流量控制</strong><br>TCP利用滑动窗口实现流量控制。<br>流量控制是为了控制发送方的发送速率，保证接收方来得及接收。接收方发送的确认报文中的窗口字段可以用来控制发送方窗口大小，从而影响发送方的发送速率。将窗口字段设置为0，则发送方不能发送数据。</p>
+<h3 id="4-TCP拥塞控制"><a href="#4-TCP拥塞控制" class="headerlink" title="4 TCP拥塞控制"></a>4 TCP拥塞控制</h3><p>流量控制是点对点通信量的控制，是一个端到端的问题，主要就是抑制发送端发送数据的速率，以便接收端来得及接收。</p>
+<p>在某段时间，若对网络中某一资源的需求超过了该资源所能提供的可用部分，网络性能就要变坏，这种情况就叫做网络拥塞。（对资源的需求 &gt; 可用资源）<br>拥塞控制就是防止过多的数据注入到网络中，可以使网络中的路由器或链路不致过载，是一个全局性的过程。它涉及到所有的主机、路由器，以及与降低网络传输性能有关的所有因素。</p>
+<p>为了进行拥塞控制，TCP发送方要维持一个拥塞窗口(cwnd)状态变量。拥塞窗口的大小取决于网络的拥塞程度，并且动态变化。<br>发送方让自己的发送窗口（swnd）取为拥塞窗口和接收方的接受窗口中较小的一个。</p>
+<p>TCP拥塞控制采用了四种算法，慢开始、拥塞避免、快重传和快恢复。<br>在网络层也可以使路由器采用适当的分组丢弃策略（主动队列管理AQM），以减少网络拥塞的发生。<br>发送方给接收方发送数据报文段后，接收方给发送方发回相应的确认报文段，一个传输轮次所经历的时间就是往返时间RTT。</p>
+<p><strong>慢开始</strong><br>发送方开始发送数据时，如果立即把大量数据注入到网络，那么可能会引起网络阻塞。较好的做法是先探测一下，即由小到大逐渐增大发送窗口，也就是由小到大逐渐增大拥塞窗口数值。cwnd初始值为1，每经过一个传播轮次，cwnd加倍。当拥塞窗口cwnd增长到慢开始门限ssthresh时，就使用拥塞避免算法。</p>
+<p><strong>拥塞避免</strong><br>每个传输轮次，拥塞窗口cwnd只能线性加一，而不是像慢开始算法，每个传输轮次拥塞窗口cwnd按指数增长。</p>
+<p><strong>快重传</strong><br>快重传要求接收方在收到一个失序的报文段后就立即发出重复确认（为的是使发送方及早知道有报文段没有到达对方），而不要等到自己发送数据时捎带确认。<br>快重传算法规定，发送方只要一连收到三个重复确认ACK报文就应当立即重传对方尚未收到的报文段，而不必继续等待重传计时器超时。</p>
+<p><strong>快恢复</strong><br>与快重传配合使用，主要有两个要点:<br>①当发送方连续收到三个重复确认时，就执行“乘法减小”算法，即把ssthresh门限减半。但是接下去并不执行慢开始算法。<br>②考虑到如果网络出现拥塞的话就不会收到好几个重复的确认，所以发送方现在认为网络可能没有出现拥塞。所以此时不执行慢开始算法，而是将cwnd设置为ssthresh的大小，然后执行拥塞避免算法。</p>
+<h3 id="5-GET与POST"><a href="#5-GET与POST" class="headerlink" title="5 GET与POST"></a>5 GET与POST</h3><p>get和post都是HTTP中请求数据的方法。<br>直观上来看，get用于获取数据，post用于提交数据（传输实体）。</p>
+<p>GET请求只支持URL编码，而POST支持多种编码方式；<br>GET请求只接受ASCII字符的参数，而POST则没有限制；<br>GET请求在URL传参时有长度限制，而POST则没有限制；<br>GET请求参数通过URL传送，而POST放在Request Body中；<br>GET请求会被浏览器主动缓存，POST 不会（除非手动设置）；<br>幂等的HTTP方法，同样的请求执行一次与连续执行多次的效果是一样的，服务器的状态也是一样的。<br>GET，HEAD，PUT和DELETE等方法都是幂等的，而POST方法不是。</p>
+<p>XMLHttpRequest是一个API，它为客户端提供了在客户端和服务器之间传输数据的功能。它提供了一个通过URL来获取数据的简单方式，并且不会使整个页面刷新。这使得网页只更新一部分页面而不会打扰到用户。XMLHttpRequest在AJAX中被大量使用。</p>
+<p>GET产生一个TCP数据包；POST产生两个TCP数据包。<br>在使用XMLHttpRequest的POST方法时，浏览器会先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 ok（返回数据）。（并不是所有浏览器都会在POST中发送两次包，Firefox就只发送一次）；对于GET方式的请求，浏览器会把http header和data一并发送出去，服务器响应200（返回数据）。</p>
+<h3 id="6-TCP与UDP"><a href="#6-TCP与UDP" class="headerlink" title="6 TCP与UDP"></a>6 TCP与UDP</h3><p>TCP和UDP都是TCP/IP中的传输层协议。</p>
+<p>TCP（Transmission Control Protocol，传输控制协议）是面向连接的协议。所谓面向连接，就是说，双方在传输数据前，必须建立可靠的连接。一个TCP连接必须要经过三次“握手”才能建立起来。</p>
+<p>TCP仅支持单播传输，每条TCP传输连接只能有两个端点，只能进行点对点的数据传输，不支持多播和广播传输方式。<br>TCP提供全双工通信，也就是说在通信的时候，双方既是发送方，也是接收方。TCP允许通信双方在任何时候都能发送数据，因为TCP连接的两端都设有缓存，用来临时存放通信的数据。当然，TCP可以立即发送一个数据段，也可以缓存一段时间以便一次发送更多的数据段。<br>TCP提供可靠的传输。传送的数据无差错、不丢失、不重复、按序到达。<br>TCP是面向字节流的，TCP不像UDP那样一个一个报文独立地传输，而是在不保留报文边界的情况下以字节流方式进行传输。“面向字节流”的含义是：虽然应用程序和TCP的交互是一次一个数据块（大小不等），但是TCP把应用程序交下来的数据仅仅看成是一连串的无结构的字节流。</p>
+<p>TCP可靠传输特点：</p>
+<ol>
+<li>传输信道无差错，保证传输数据正确；</li>
+<li>不管发送方以多快的速度发送数据，接收方总是来得及处理收到的数据；<br>（1）首先，采用三次握手来建立TCP连接，四次挥手来释放TCP连接，从而保证建立的传输信道是可靠的。<br>（2）其次，TCP采用了连续ARQ协议来保证数据传输的正确性，使用流量控制来保证接收方能够及时处理所接收到的数据。<br>（3）最后，TCP使用慢开始、拥塞避免、快重传和快恢复来进行拥塞控制，避免网络拥塞。</li>
+</ol>
+<p>UDP（User Datagram Protocol，用户数据报协议），是一种无连接的协议，传输数据之前源端和终端不建立连接。<br>UDP使用尽最大努力交付，即不保证可靠交付。<br>UDP是面向报文的，对应用程序交下来的报文，在添加首部后就向下交付给IP层。既不拆分，也不合并，而是保留这些报文的边界。因此，应用程序需要选择合适的报文大小。<br>UDP不止支持一对一的传输方式，同样支持一对多，多对多，多对一的方式，也就是说UDP提供了单播，多播，广播的功能。<br>UDP首部只有8个字节，相对于TCP的20个字节开销很小。<br>UDP没有拥塞控制，即使网络出现拥塞也不会降低发送速率。</p>
+<p>HTTP、HTTPS、FTP、TELNET、SMTP(简单邮件传输协议)协议基于可靠的TCP协议。<br>TFTP、DNS、DHCP、TFTP、SNMP(简单网络管理协议)、RIP基于不可靠的UDP协议。</p>
+<table>
+<thead>
+<tr>
+<th>描述</th>
+<th align="center">UDP</th>
+<th align="center">TCP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>是否连接</td>
+<td align="center">无连接</td>
+<td align="center">面向连接</td>
+</tr>
+<tr>
+<td>是否可靠</td>
+<td align="center">不可靠传输，不使用流量控制和拥塞控制</td>
+<td align="center">可靠传输，使用流量控制和拥塞控制</td>
+</tr>
+<tr>
+<td>连接对象个数</td>
+<td align="center">支持一对一，一对多，多对一和多对多交互通信</td>
+<td align="center">只能是一对一通信</td>
+</tr>
+<tr>
+<td>传输方式</td>
+<td align="center">面向报文</td>
+<td align="center">面向字节流</td>
+</tr>
+<tr>
+<td>首部开销</td>
+<td align="center">首部开销小，仅8字节</td>
+<td align="center">首部最小20字节，最大60字节</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td align="center">适用于实时应用（IP电话、视频会议、直播等）</td>
+<td align="center">适用于要求可靠传输的应用，例如文件传输</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/12/12-12-SpringMVC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1156,245 +1434,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/01/12-01-Java/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/12/01/12-01-Java/" class="post-title-link" itemprop="url">gc_collection</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-12-01 21:16:54" itemprop="dateCreated datePublished" datetime="2021-12-01T21:16:54+08:00">2021-12-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 21:14:01" itemprop="dateModified" datetime="2022-03-15T21:14:01+08:00">2022-03-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/12/01/12-01-Java/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/01/12-01-Java/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-Java参数传递"><a href="#1-Java参数传递" class="headerlink" title="1 Java参数传递"></a>1 Java参数传递</h3><p>值传递（pass by value）是指在调用函数时将实际参数<strong>复制</strong>一份传递到函数中，这样在函数中如果对参数进行修改，将不会影响到实际参数。<br>引用传递（pass by reference）是指在调用函数时将实际参数的<strong>地址直接</strong>传递到函数中，那么在函数中对参数所进行的修改，将影响到实际参数。</p>
-<table>
-<thead>
-<tr>
-<th>传递</th>
-<th align="center">值传递</th>
-<th align="center">引用传递</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>区别</td>
-<td align="center">会创建副本</td>
-<td align="center">不会创建副本</td>
-</tr>
-<tr>
-<td>结果</td>
-<td align="center">函数中无法改变原始对象</td>
-<td align="center">函数中可以改变原始对象</td>
-</tr>
-</tbody></table>
-<p>在JVM中，内存分为堆内存跟栈内存。当我们创建一个对象（new Object）时，就会调用对象的构造函数来开辟空间，将对象数据存储到堆内存中，与此同时在栈内存中生成对应的引用，当我们在后续代码中调用的时候都是栈内存中的引用。还需注意的一点，基本数据类型是存储在栈内存中。</p>
-<p>Java在方法调用传递参数时，都是值传递。只不过对于对象参数，值的内容是对象的引用。<br>在运行栈中，基本类型和引用类型的处理是一样的，都是传值。但是当进入被调用方法时，传递的引用被程序解释到堆中，这个时候才对应到真正的对象。如果此时进行修改，修改的是引用所对应的对象，而不是引用本身。即修改的是堆中的数据，所以这个修改是可以保持的。</p>
-<h3 id="2-判断对象存活的算法"><a href="#2-判断对象存活的算法" class="headerlink" title="2 判断对象存活的算法"></a>2 判断对象存活的算法</h3><p>垃圾收集器在对堆和方法区进行回收前，首先要确定这些区域的对象哪些可以回收，哪些暂时还不能回收，这就要用到判断对象是否存活的算法。</p>
-<p><strong>引用计数算法</strong><br>引用计数算法是垃圾收集器的早期策略。在这种方法中，堆中每个对象实例都有一个引用计数器。当一个对象被创建时，就将该对象实例分配给一个变量，该变量计数设置为1。当任何其它变量被赋值为这个对象的引用时，计数加1（a=b，则b引用的对象实例的计数器加1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数器减1。任何引用计数器为0的对象实例都可以被当作垃圾收集。当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器减1。</p>
-<p>缺点：无法检测出循环引用。</p>
-<p><strong>可达性分析算法</strong><br>可达性分析（Reachability Analysis）算法的基本思路就是通过一系列称为“GC Roots”的根对象作为起始节点集，从这些节点开始，根据引用关系向下搜索，搜索过程所走过的路径称为“引用链”，如果某个对象到GC Roots间没有任何引用链相连，则证明此对象是不可能再被使用的，会被判定为可回收的对象。</p>
-<p>在Java语言中，固定可作为GC Roots的对象包括以下几种：<br>在虚拟机栈（栈帧中的本地变量表）中引用的对象；<br>在方法区中类静态属性引用的对象；<br>在方法区中常量引用的对象；<br>在本地方法栈中JNI（Native方法）引用的对象；<br>Java虚拟机内部的引用；<br>所有被同步锁（synchronized关键字）持有的对象。</p>
-<h3 id="3-被标记为垃圾的对象一定会被回收吗？"><a href="#3-被标记为垃圾的对象一定会被回收吗？" class="headerlink" title="3 被标记为垃圾的对象一定会被回收吗？"></a>3 被标记为垃圾的对象一定会被回收吗？</h3><p>不一定！<br>即使在可达性分析算法中被判定为不可达的对象，也不是“非死不可”，要真正宣告一个对象死亡，至少要经历两次标记过程。<br>如果对象在进行可达性分析后发现没有与GC Roots相连接的引用链，那它将会被第一次标记。随后进行一次筛选，筛选的条件是此对象是否有必要执行finalize()方法。<br>在finalize()方法中没有重新与引用链建立关联关系的，将被进行第二次标记。第二次标记后的对象将被回收，如果对象在finalize()方法中重新与引用链建立了关联关系，那么将会逃离本次回收，继续存活。</p>
-<h3 id="4-Java引用类型"><a href="#4-Java引用类型" class="headerlink" title="4 Java引用类型"></a>4 Java引用类型</h3><p><strong>强引用</strong><br>强引用是指在程序代码之中普遍存在的引用赋值。如果一个对象具有强引用，那么垃圾回收器不会回收它。</p>
-<p><strong>软引用</strong><br>可以通过java.lang.ref.SoftReference使用软引用。一个持有软引用的对象，不会被JVM很快回收，JVM会根据当前堆的使用情况来判断何时回收。当堆使用率临近阈值时，才会去回收软引用的对象。因此，软引用可以用于实现对内存敏感的高速缓存。</p>
-<p><strong>弱引用</strong><br>当垃圾收集器工作时，无论当前内存是否足够，都会回收掉只被弱引用关联的对象。</p>
-<p><strong>虚引用</strong><br>一个对象是否有虚引用的存在，完全不会对其生存时间构成影响，也无法通过虚引用来取得一个对象实例。为一个对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</p>
-<h3 id="5-Java内存泄露"><a href="#5-Java内存泄露" class="headerlink" title="5 Java内存泄露"></a>5 Java内存泄露</h3><p>内存泄漏就是存在一些不会被使用但却没有被回收的对象，这些对象有以下特点：<br>这些对象是可达的，即在有向图中，存在通路可以与其相连。<br>这些对象是无用的，即程序以后不会再使用这些对象。<br>这些对象不会被GC所回收，然而它却占用内存。</p>
-<p>根本原因：<br>长生命周期的对象持有短生命周期对象的引用就很可能发生内存泄漏，尽管短生命周期对象已经不再需要，但是因为长生命周期对象持有它的引用而导致不能被回收，这就是Java中内存泄漏的发生场景。<br>数据库连接（dataSourse.getConnection()），网络连接(socket)和IO连接，除非其显式的调用了close()方法将其连接关闭，否则是不会主动被GC回收的。<br>单例对象在初始化后将在JVM的整个生命周期中存在（以静态变量的方式），如果单例对象持有外部的引用，那么这个对象将不能被JVM正常回收，导致内存泄漏。</p>
-<h3 id="6-常用的垃圾收集算法"><a href="#6-常用的垃圾收集算法" class="headerlink" title="6 常用的垃圾收集算法"></a>6 常用的垃圾收集算法</h3><p><strong>标记-清除（mark-sweep）算法</strong><br>算法分为“标记”和“清除”两个阶段：首先标记出所有需要回收的对象，在标记完成后，统一回收掉所有被标记的对象。也可以反过来，标记存活的对象，统一回收所有未被标记的对象。标记-清除算法采用可达性分析算法进行对象是否存活的判断。</p>
-<p>缺点：执行效率不稳定；内存空间的碎片化问题。</p>
-<p><strong>复制算法</strong><br>它将可用内存按容量划分为大小相等的两块，每次只使用其中的一块。当这一块的内存用完了，就将还存活着的对象复制到另外一块上面，然后再把已使用过的内存空间一次清理掉。</p>
-<p>优点：解决了内存空间的碎片化问题。<br>缺点：内存利用率不高，空间浪费严重；对象存活率较高时需要进行较多的复制操作，效率会降低。</p>
-<p><strong>标记-整理（mark-compact）算法</strong><br>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但后序步骤不是直接对可回收对象进行清理。而是让所有存活的对象都向内存空间一端移动，然后直接清理掉边界以外的内存。</p>
-<h3 id="7-分代收集理论"><a href="#7-分代收集理论" class="headerlink" title="7 分代收集理论"></a>7 分代收集理论</h3><p>核心思想：根据对象存活的生命周期将Java堆划分为不同的区域，然后将回收对象依据其年龄分配到不同的区域存储。一般情况下将Java堆划分为新生代（Young Generation）和老年代（Old Generation）两个区域。在堆之外还有一个代就是永久代（Permanet Generation）。</p>
-<p>新生代的特点是每次垃圾回收时都有大量的对象需要被回收，而老年代的特点是每次垃圾收集时只有少量对象需要被回收，那么就可以根据不同代的特点采取最适合的收集算法。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/27/11-27-Java/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/27/11-27-Java/" class="post-title-link" itemprop="url">jvm</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-11-27 20:39:47" itemprop="dateCreated datePublished" datetime="2021-11-27T20:39:47+08:00">2021-11-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 21:14:27" itemprop="dateModified" datetime="2022-03-15T21:14:27+08:00">2022-03-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/11/27/11-27-Java/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/27/11-27-Java/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-JVM主要组成部分及其作用"><a href="#1-JVM主要组成部分及其作用" class="headerlink" title="1 JVM主要组成部分及其作用"></a>1 JVM主要组成部分及其作用</h3><ul>
-<li>类加载器（ClassLoader）</li>
-<li>运行时数据区（Runtime Data Area)</li>
-<li>执行引擎（Execution Engine）</li>
-<li>本地库接口（Native Interface）</li>
-</ul>
-<p>首先通过类加载器（ClassLoader）会把Java代码转换成字节码，运行时数据区（Runtime Data Area）会把字节码加载到内存中，而字节码只是JVM的一套指令集规范，并不能直接交给底层操作系统去执行，因此需要特定的命令解析器执行引擎（Execution Engine），将字节码翻译成底层系统指令，再交由CPU去执行，而这个过程中需要调用其他语言的本地库接口（Native Interface）来实现整个程序的功能。</p>
-<h3 id="2-运行时数据区"><a href="#2-运行时数据区" class="headerlink" title="2 运行时数据区"></a>2 运行时数据区</h3><img src="/2021/11/27/11-27-Java/jvm.png" class="">
-<p><strong>程序计数器</strong><br>程序计数器（Program Counter Register）是一块较小的内存空间，它可以看作是当前线程所执行的字节码的行号指示器。</p>
-<p>字节码解释器执行时通过改变这个计数器的值来选取下一条需要执行的字节码指令。程序的分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。</p>
-<p>由于Java虚拟机的多线程是通过线程轮流切换、分配处理器执行时间的方式来实现的，在任何一个确定的时刻，一个处理器都只会执行一条线程中的命令。因此，<strong>为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器</strong>，各线程之间的计数器互不影响，独立存储，我们程这块内存区域为“线程私有”的内存。<br>此区域是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。</p>
-<p><strong>Java虚拟机栈</strong><br>与程序计数器一样，Java虚拟机栈（Java Virtual Machine Stacks）也是线程私有的，它的生命周期与线程相同。</p>
-<p>每个Java方法被执行的时候，jvm都会同步创建一个栈帧（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法被调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
-<p>局部变量表存放了编译期可知的各种基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用和returnAddress类型（指向了一条字节码指令的地址）。<br>Java虚拟机栈的局部变量表的空间单位是槽（Slot），其中64位长度的double和long类型会占用两个Slot。局部变量表所需的内存空间在编译期间完成分配，当进入一个方法时，该方法需要在栈帧中分配多大的局部变量空间是完全确定的，在方法运行期间不会改变局部变量表的大小。</p>
-<p>Java虚拟机栈有两种异常状况：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出StackOverflowErro异常；如果Java虚拟机栈扩展时无法申请到足够的内存，就会抛出OutOfMemoryError异常。</p>
-<p><strong>本地方法栈</strong><br>本地方法栈（Native Method Stack）与虚拟机栈所发挥的作用是非常相似的，其区别只是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的本地（Native）方法服务。</p>
-<p>Java虚拟机规范没有对本地方法栈中方法使用的语言、使用的方式和数据结构做出强制规定，因此具体的虚拟机可以自由地实现它。例如：HotSpot虚拟机直接把Java虚拟机栈和本地方法栈合二为一。<br>与Java虚拟机栈一样，本地方法栈也会抛出StackOverflowError和OutOfMemoryError异常。</p>
-<p><strong>Java堆</strong><br>Java堆（Java Heap）是被所有线程所共享的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是存放对象实例，几乎所有的对象实例都在这里分配内存。</p>
-<p>Java堆是垃圾收集器管理的主要区域，因此很多时候也被称做“GC”堆（Garbage Collected Heap）。<br>从回收内存的角度看，由于现代垃圾收集器大部分都是基于分代收集理论设计的，所以Java堆中会出现新生代、老年代、永久代等名词。<br>从分配内存的角度来看，所有线程共享的Java堆中可以划分出多个线程私有的分配缓冲区（Thread Local Allocation Buffer，TLAB），以提升对象分配时的效率。不过无论如何划分，无论哪个区域，存储的只能是对象实例，进一步划分的目的是为了更好地回收内存，或者更快地分配内存。<br>Java虚拟机规范规定，Java堆可以处于物理上不连续的内存空间中，只要逻辑上是连续的即可。在实现时，可以是固定大小的，也可以是可扩展的。如果在堆中没有内存完成实例分配，并且堆也无法扩展时，将会抛出OutOfMemoryError异常。</p>
-<p><strong>方法区</strong><br>方法区（Method Area）与Java堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。<br>虽然Java虚拟机规范中把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做Non-Heap（非堆），目的是与Java堆区分开来。</p>
-<p>Java虚拟机规范对方法区的限制非常宽松，除了和Java堆一样不需要连续的内存和可以选择固定大小或者可扩展外，还可以选择不实现垃圾收集。这个区域的内存回收目标主要是针对常量池的回收和对类型的卸载。根据Java虚拟机规范规定，当方法区无法满足新的内存分配需求时，将抛出OutOfMemoryError异常。</p>
-<p>运行时常量池（Runtime Constant Pool）是方法区的一部分。Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池表，用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后存放到方法区的运行时常量池中。<br>Java虚拟机对Class文件每一部分（当然也包括常量池）的格式都有严格的规定，每一个字节用于存储哪种数据都必须符合规范上的要求才会被虚拟机认可、装载和执行。</p>
-<p>直接内存（Direct Memory）并不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。但是这部分内存也被频繁地使用，而且也可能导致OutOfMemoryError异常。</p>
-<p>本机直接内存的分配不会受到Java堆大小的限制。但是，既然是内存，肯定还是会受到本机总内存大小以及处理器寻址空间的限制。如果各个内存区域总和大于物理内存限制，会导致动态扩展时出现OutOfMemoryError异常。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1466,20 +1505,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">66</span>
+          <span class="site-state-item-count">68</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-count">57</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
