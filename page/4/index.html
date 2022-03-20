@@ -187,6 +187,144 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/04/12-04-Java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/04/12-04-Java/" class="post-title-link" itemprop="url">jvm_gc</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-04 10:44:49" itemprop="dateCreated datePublished" datetime="2021-12-04T10:44:49+08:00">2021-12-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-20 11:30:04" itemprop="dateModified" datetime="2022-03-20T11:30:04+08:00">2022-03-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/04/12-04-Java/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/04/12-04-Java/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-分代收集理论中新生代和老年代采用的收集算法"><a href="#1-分代收集理论中新生代和老年代采用的收集算法" class="headerlink" title="1 分代收集理论中新生代和老年代采用的收集算法"></a>1 分代收集理论中新生代和老年代采用的收集算法</h3><p>新生代（主要是复制算法）</p>
+<ol>
+<li>把新生代分为一块较大的Eden空间和两块较小的Survivor（Survivor0，Survivor1）空间，每次分配内存只使用Eden和其中一块Survivor。</li>
+<li>HotSpot虚拟机默认Eden和Survivor的大小比例为8：1。垃圾收集时，将Eden和Survivor0中仍然存活的对象一次性复制到Survivor1空间上，然后直接清理掉Eden和Survivor0空间。</li>
+<li>当Survivor1区域不足以存放Eden和Survivor0区域的存活对象时，就将存活对象直接存放到老年代。若是老年代也满了就会触发一次Full GC，也就是新生代、老年代都进行回收。</li>
+</ol>
+<p>老年代（主要是Mark-Compact算法）</p>
+<ol>
+<li>在新生代中经历了N次垃圾回收后仍然存活的对象，就会被放到老年代中。因此，可以认为老年代中存放的都是一些生命周期比较长的对象。</li>
+<li>当老年代内存满时会触发Full GC，Full GC发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
+</ol>
+<h3 id="2-常用的垃圾收集器"><a href="#2-常用的垃圾收集器" class="headerlink" title="2 常用的垃圾收集器"></a>2 常用的垃圾收集器</h3><ol>
+<li>Serial，它是最古老的垃圾收集器，这是一个单线程工作的收集器，“单线程”强调的是在它进行垃圾收集时，必须暂停其它所有工作线程，直到它收集结束。它会进入臭名昭著的“Stop The World”状态。当然，其单线程设计也意味着精简的GC实现，无需维护复杂的数据结构，初始化也简单，所以一直是Client模式下默认新生代收集器。</li>
+<li>Serial Old，它是Serial收集器的老年代版本，同样是一个单线程收集器，使用了标记-整理（Mark-Compact）算法。</li>
+<li>ParNew，是一款新生代收集器，它实际上是Serial的多线程并行版本，最常见的应用场景是配合老年代的CMS工作。</li>
+<li>Parrallel Scavenge，它是一款新生代收集器，基于复制算法实现的收集器。它的目标是达到一个可扩展的吞吐量，也被称为“吞吐量优先收集器”。</li>
+<li>Parrallel Old，它是Parrallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法实现。</li>
+<li>CMS（Concurrent Mark Sweep），基于标记-清除（Mark-Sweep）算法实现，设计目标是尽量缩短停顿时间，这一点对于Web等反应时间敏感的应用非常重要。一直到今天，仍然有很多系统使用CMS GC。但是，CMS采用的标记-清除算法，存在内存碎片化问题，所以难以避免在长时间运行情况下发生full GC，导致恶劣的停顿。另外，既然强调了并发（Concurrent），CMS会占用更多CPU资源，并和用户线程争抢。</li>
+<li>G1（Garbage First），这是一种兼顾吞吐量和停顿时间的GC实现，是Oracle JDK 9以后的默认GC选项，主要面向服务端应用的垃圾收集器。</li>
+</ol>
+<h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>它开创了收集器面向<strong>局部收集</strong>的设计思路和基于<strong>Region</strong>的堆内存布局形式。<br>一般的垃圾收集器收集范围要么是整个新生代、要么是整个老年代，再要么是整个Java堆。而G1可以面向堆内存任何部分来组成回收集（collection set）进行回收。<br>G1把连续的Java堆划分为多个大小相等的独立区域（region），每一个region都可以扮演新生代的Eden空间、Survivor空间或者老年代空间。<br>为了达到对回收时间的可预计性，G1在扫描了region以后，对其中活跃对象的大小进行排序，会首先收集那些活跃对象小的region，以便快速回收空间（要复制的活跃对象少了）。因为活跃对象小，可以认为多数对象都是垃圾，所以这种方式被称为Garbage First（G1）的垃圾回收算法。</p>
+<p><strong>cms vs g1</strong></p>
+<h3 id="4-内存分配的理解？大对象怎么分配？空间分配担保？"><a href="#4-内存分配的理解？大对象怎么分配？空间分配担保？" class="headerlink" title="4 内存分配的理解？大对象怎么分配？空间分配担保？"></a>4 内存分配的理解？大对象怎么分配？空间分配担保？</h3><ol>
+<li>对象优先在Eden分配。大多数情况下，对象在新生代Eden区中分配，当Eden区没有足够空间进行分配时，虚拟机将发起一次Minor GC。</li>
+<li>大对象直接进入老年代。大对象是指需要大量连续内存空间的Java对象，最典型的大对象便是那种很长的字符串，或者元素数量很庞大的数组。经常出现提前触发垃圾收集以获取足够的连续空间分配给大对象的情况。虚拟机提供了-XX:PretenureSizeThreshold参数，大于此值的对象直接在老年代分配，避免在Eden区和两个Survivor区之间的大量内存复制。</li>
+<li>长期存活的对象进入老年代。虚拟机给每个对象定义了一个对象年龄计数器，存储在对象头中。对象通常在Eden区诞生，如果经过一次Minor GC后依然存活，并且能被Survivor容纳的话，该对象会被移动到Survivor空间，并将其对象年龄增加1岁，当它的年龄增加到一定程度（默认为15），就移动到老年代中。</li>
+<li>动态对象年龄判定。为了更好的适应不同程序的内存情况，虚拟机不是永远要求对象年龄必须达到了阙值才能进入老年代，如果Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需等到阙值要求的年龄。</li>
+<li>空间分配担保。在发生Minor GC之前，虚拟机必须先检查老年代中最大可用的连续空间是否大于新生代所有对象总空间，如果大于的话，那么这一次Minor GC可以确保是安全的。</li>
+</ol>
+<h3 id="5-jvm性能监控、故障处理工具"><a href="#5-jvm性能监控、故障处理工具" class="headerlink" title="5 jvm性能监控、故障处理工具"></a>5 jvm性能监控、故障处理工具</h3><p>jps（jvm process status tool，虚拟机进程状况工具）：可以列出正在运行的虚拟机进程。<br>jstat（jvm statistics monitoring tool，虚拟机统计信息监视工具）：可以显示虚拟机进程中的类加载、内存、垃圾收集等运行时数据。<br>jinfo（Configuration info for Java，Java配置信息工具）：实时查看和调整虚拟机各项参数。<br>jmap（memory map for java，Java内存映像工具）：用于生成堆转储快照。<br>jhat（jvm heap analysis tool，虚拟机堆转储快照分析工具）：与jmap搭配使用，来分析jmap生成的堆转储快照。<br>jstack（stack trace for Java，Java堆栈跟踪工具）：用于生成虚拟机当前时刻的线程快照。</p>
+<h3 id="6-class类文件的结构"><a href="#6-class类文件的结构" class="headerlink" title="6 class类文件的结构"></a>6 class类文件的结构</h3><p>Class文件结构采用一种类似于C语言结构体的伪结构来存储数据，有两种数据类型，“无符号数”和“表”。<br>无符号数属于基本数据类型，以u1，u2，u4，u8来分别代表1个字节，2个字节，4个字节，8个字节的无符号数，无符号数可以用来描述数字，索引引用、数量值或者字符串值。<br>表是由多个无符号数或者其它表作为数据项构成的复合数据类型，习惯性地以_info结尾。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic;</span><br><span class="line">    u2             minor_version;</span><br><span class="line">    u2             major_version;</span><br><span class="line">    u2             constant_pool_count;</span><br><span class="line">    cp_info        constant_pool[constant_pool_count-1];</span><br><span class="line">    u2             access_flags;</span><br><span class="line">    u2             this_class;</span><br><span class="line">    u2             super_class;</span><br><span class="line">    u2             interfaces_count;</span><br><span class="line">    u2             interfaces[interfaces_count];</span><br><span class="line">    u2             fields_count;</span><br><span class="line">    field_info     fields[fields_count];</span><br><span class="line">    u2             methods_count;</span><br><span class="line">    method_info    methods[methods_count];</span><br><span class="line">    u2             attributes_count;</span><br><span class="line">    attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每个Class文件的头4个字节称为魔数（magic number），它的值固定为0xCAFEBABE，作用是确定这个文件是否是一个能被虚拟机接受的Class文件。<br>紧接着魔数的4个字节存储的是Class文件的版本号。第五和第六个字节是次版本号，第七和第八个字节是主版本号。<br>在主次版本号之后是常量池入口。常量池主要存放两大类常量：字面量和符号引用。</p>
+<h3 id="7-部分收集与整堆收集"><a href="#7-部分收集与整堆收集" class="headerlink" title="7 部分收集与整堆收集"></a>7 部分收集与整堆收集</h3><p>部分收集</p>
+<ul>
+<li>新生代收集（Minor GC）：目标只是新生代的垃圾收集。</li>
+<li>老年代收集（Major GC）：目标只是老年代的垃圾收集。目前只有CMS收集器会有单独收集老年代的行为。注意：有些场合“Major GC”是指整堆收集。</li>
+<li>混合收集（Mixed GC）：目标是收集整个新生代以及部分老年代的垃圾收集。目前只有G1收集器会有这种行为。</li>
+</ul>
+<p>整堆收集</p>
+<ul>
+<li>Full GC：目标是整个Java堆和方法区的垃圾收集。</li>
+</ul>
+<h3 id="8-堆栈的区别"><a href="#8-堆栈的区别" class="headerlink" title="8 堆栈的区别"></a>8 堆栈的区别</h3><ul>
+<li>堆存放的是对象实例。</li>
+<li>栈存放的是局部变量，操作数栈等信息。</li>
+<li>堆是所有线程所共享的一块内存区域，在虚拟机启动时创建。</li>
+<li>栈是线程私有的。</li>
+<li>栈的性能比堆要快，仅次于CPU中的寄存器。但是，在分配内存的时候，存放在栈中的数据大小与生存周期必须在编译时是确定的，缺乏灵活性。</li>
+<li>堆可以动态分配内存大小，编译器不必知道要从堆里分配多少存储空间，生存周期也不必事先告诉编译器。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/01/12-01-Java/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -218,7 +356,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 21:14:01" itemprop="dateModified" datetime="2022-03-15T21:14:01+08:00">2022-03-15</time>
+                <time title="修改时间：2022-03-20 11:28:46" itemprop="dateModified" datetime="2022-03-20T11:28:46+08:00">2022-03-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -278,24 +416,36 @@
 <p>在JVM中，内存分为堆内存跟栈内存。当我们创建一个对象（new Object）时，就会调用对象的构造函数来开辟空间，将对象数据存储到堆内存中，与此同时在栈内存中生成对应的引用，当我们在后续代码中调用的时候都是栈内存中的引用。还需注意的一点，基本数据类型是存储在栈内存中。</p>
 <p>Java在方法调用传递参数时，都是值传递。只不过对于对象参数，值的内容是对象的引用。<br>在运行栈中，基本类型和引用类型的处理是一样的，都是传值。但是当进入被调用方法时，传递的引用被程序解释到堆中，这个时候才对应到真正的对象。如果此时进行修改，修改的是引用所对应的对象，而不是引用本身。即修改的是堆中的数据，所以这个修改是可以保持的。</p>
 <h3 id="2-判断对象存活的算法"><a href="#2-判断对象存活的算法" class="headerlink" title="2 判断对象存活的算法"></a>2 判断对象存活的算法</h3><p>垃圾收集器在对堆和方法区进行回收前，首先要确定这些区域的对象哪些可以回收，哪些暂时还不能回收，这就要用到判断对象是否存活的算法。</p>
-<p><strong>引用计数算法</strong><br>引用计数算法是垃圾收集器的早期策略。在这种方法中，堆中每个对象实例都有一个引用计数器。当一个对象被创建时，就将该对象实例分配给一个变量，该变量计数设置为1。当任何其它变量被赋值为这个对象的引用时，计数加1（a=b，则b引用的对象实例的计数器加1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的引用计数器减1。任何引用计数器为0的对象实例都可以被当作垃圾收集。当一个对象实例被垃圾收集时，它引用的任何对象实例的引用计数器减1。</p>
-<p>缺点：无法检测出循环引用。</p>
+<p><strong>引用计数算法</strong><br>为每个对象添加一个引用计数器。当一个对象被创建时，将计数器值设置为1。当任何其它变量被赋值为这个对象的引用时，计数器值加1（a=b，则b的计数器值加1），但当一个对象实例的某个引用超过了生命周期或者被设置为一个新值时，对象实例的计数器值减1。任何引用计数器值为0的对象实例都可以被当作垃圾进行回收。当一个对象实例被回收时，它引用的任何对象实例的引用计数器值减1。</p>
+<p>缺点：无法解决对象之间相互循环引用的问题。</p>
 <p><strong>可达性分析算法</strong><br>可达性分析（Reachability Analysis）算法的基本思路就是通过一系列称为“GC Roots”的根对象作为起始节点集，从这些节点开始，根据引用关系向下搜索，搜索过程所走过的路径称为“引用链”，如果某个对象到GC Roots间没有任何引用链相连，则证明此对象是不可能再被使用的，会被判定为可回收的对象。</p>
-<p>在Java语言中，固定可作为GC Roots的对象包括以下几种：<br>在虚拟机栈（栈帧中的本地变量表）中引用的对象；<br>在方法区中类静态属性引用的对象；<br>在方法区中常量引用的对象；<br>在本地方法栈中JNI（Native方法）引用的对象；<br>Java虚拟机内部的引用；<br>所有被同步锁（synchronized关键字）持有的对象。</p>
-<h3 id="3-被标记为垃圾的对象一定会被回收吗？"><a href="#3-被标记为垃圾的对象一定会被回收吗？" class="headerlink" title="3 被标记为垃圾的对象一定会被回收吗？"></a>3 被标记为垃圾的对象一定会被回收吗？</h3><p>不一定！<br>即使在可达性分析算法中被判定为不可达的对象，也不是“非死不可”，要真正宣告一个对象死亡，至少要经历两次标记过程。<br>如果对象在进行可达性分析后发现没有与GC Roots相连接的引用链，那它将会被第一次标记。随后进行一次筛选，筛选的条件是此对象是否有必要执行finalize()方法。<br>在finalize()方法中没有重新与引用链建立关联关系的，将被进行第二次标记。第二次标记后的对象将被回收，如果对象在finalize()方法中重新与引用链建立了关联关系，那么将会逃离本次回收，继续存活。</p>
-<h3 id="4-Java引用类型"><a href="#4-Java引用类型" class="headerlink" title="4 Java引用类型"></a>4 Java引用类型</h3><p><strong>强引用</strong><br>强引用是指在程序代码之中普遍存在的引用赋值。如果一个对象具有强引用，那么垃圾回收器不会回收它。</p>
+<p>在Java中，固定可作为GC Roots的对象包括以下几种：<br>在虚拟机栈（栈帧中的本地变量表）中引用的对象；<br>在方法区中类静态属性引用的对象；<br>在方法区中常量引用的对象；<br>在本地方法栈中JNI（Native方法）引用的对象；<br>Java虚拟机内部的引用（异常对象、系统类加载器）；<br>所有被同步锁（synchronized关键字）持有的对象。</p>
+<h3 id="3-Java引用类型"><a href="#3-Java引用类型" class="headerlink" title="3 Java引用类型"></a>3 Java引用类型</h3><p><strong>强引用</strong><br>强引用是指在程序代码之中普遍存在的引用赋值。如果一个对象具有强引用，那么垃圾回收器不会回收它。</p>
 <p><strong>软引用</strong><br>可以通过java.lang.ref.SoftReference使用软引用。一个持有软引用的对象，不会被JVM很快回收，JVM会根据当前堆的使用情况来判断何时回收。当堆使用率临近阈值时，才会去回收软引用的对象。因此，软引用可以用于实现对内存敏感的高速缓存。</p>
 <p><strong>弱引用</strong><br>当垃圾收集器工作时，无论当前内存是否足够，都会回收掉只被弱引用关联的对象。</p>
 <p><strong>虚引用</strong><br>一个对象是否有虚引用的存在，完全不会对其生存时间构成影响，也无法通过虚引用来取得一个对象实例。为一个对象设置虚引用关联的唯一目的只是为了能在这个对象被收集器回收时收到一个系统通知。</p>
-<h3 id="5-Java内存泄露"><a href="#5-Java内存泄露" class="headerlink" title="5 Java内存泄露"></a>5 Java内存泄露</h3><p>内存泄漏就是存在一些不会被使用但却没有被回收的对象，这些对象有以下特点：<br>这些对象是可达的，即在有向图中，存在通路可以与其相连。<br>这些对象是无用的，即程序以后不会再使用这些对象。<br>这些对象不会被GC所回收，然而它却占用内存。</p>
+<h3 id="4-被标记为垃圾的对象一定会被回收吗？"><a href="#4-被标记为垃圾的对象一定会被回收吗？" class="headerlink" title="4 被标记为垃圾的对象一定会被回收吗？"></a>4 被标记为垃圾的对象一定会被回收吗？</h3><p>不一定！<br>即使在可达性分析算法中被判定为不可达的对象，也不是“非死不可”，要真正宣告一个对象死亡，至少要经历两次标记过程。<br>如果对象在进行可达性分析后发现没有与GC Roots相连接的引用链，那它将会被第一次标记。随后进行一次筛选，筛选的条件是此对象是否有必要执行finalize()方法。<br>当对象没有覆盖finalize方法，或者finalize方法已经被虚拟机调用过，那么虚拟机将这两种情况视为没有必要执行。<br>被判定为需要执行的对象将会被放在一个队列中进行第二次标记，除非这个对象与引用链上的任何一个对象建立关联，否则就会被真的回收。</p>
+<h3 id="5-回收方法区"><a href="#5-回收方法区" class="headerlink" title="5 回收方法区"></a>5 回收方法区</h3><p>方法区的垃圾收集主要回收两部分内容：废弃的常量和不再使用的类型。</p>
+<p>回收废弃常量与回收Java堆中的对象非常类似。假如一个字符串“abc”曾经进入常量池中，但是当前系统又没有任何一个字符串对象的值是“abc”，换句话说，已经没有任何字符串对象引用常量池中的“abc”常量，且虚拟机中也没有其他地方引用这个字面量。如果在这时发生内存回收，而且垃圾收集器判断确有必要的话，这个“abc”常量就将会被系统清理出常量池。常量池中其他类(接口)、方法、字段的符号引用也与此类似。</p>
+<p>判定一个类型是否属于“不再被使用的类”需要同时满足下面三个条件：</p>
+<ul>
+<li>该类所有的实例都已经被回收，也就是Java堆中不存在该类及其任何派生子类的实例。</li>
+<li>加载该类的类加载器已经被回收，这个条件除非是经过精心设计的可替换类加载器的场景，如OSGi、JSP的重加载等，否则通常是很难达成的。</li>
+<li>该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。<br>Java虚拟机被允许对满足上述三个条件的无用类进行回收，这里说的仅仅是“被允许”，而并不是和对象一样，没有引用了就必然会回收。</li>
+</ul>
+<h3 id="6-Java内存泄露"><a href="#6-Java内存泄露" class="headerlink" title="6 Java内存泄露"></a>6 Java内存泄露</h3><p>内存泄漏就是存在一些不会被使用但却没有被回收的对象，这些对象有以下特点：<br>这些对象是可达的，即在有向图中，存在通路可以与其相连。<br>这些对象是无用的，即程序以后不会再使用这些对象。<br>这些对象不会被GC所回收，然而它却占用内存。</p>
 <p>根本原因：<br>长生命周期的对象持有短生命周期对象的引用就很可能发生内存泄漏，尽管短生命周期对象已经不再需要，但是因为长生命周期对象持有它的引用而导致不能被回收，这就是Java中内存泄漏的发生场景。<br>数据库连接（dataSourse.getConnection()），网络连接(socket)和IO连接，除非其显式的调用了close()方法将其连接关闭，否则是不会主动被GC回收的。<br>单例对象在初始化后将在JVM的整个生命周期中存在（以静态变量的方式），如果单例对象持有外部的引用，那么这个对象将不能被JVM正常回收，导致内存泄漏。</p>
 <h3 id="6-常用的垃圾收集算法"><a href="#6-常用的垃圾收集算法" class="headerlink" title="6 常用的垃圾收集算法"></a>6 常用的垃圾收集算法</h3><p><strong>标记-清除（mark-sweep）算法</strong><br>算法分为“标记”和“清除”两个阶段：首先标记出所有需要回收的对象，在标记完成后，统一回收掉所有被标记的对象。也可以反过来，标记存活的对象，统一回收所有未被标记的对象。标记-清除算法采用可达性分析算法进行对象是否存活的判断。</p>
 <p>缺点：执行效率不稳定；内存空间的碎片化问题。</p>
 <p><strong>复制算法</strong><br>它将可用内存按容量划分为大小相等的两块，每次只使用其中的一块。当这一块的内存用完了，就将还存活着的对象复制到另外一块上面，然后再把已使用过的内存空间一次清理掉。</p>
 <p>优点：解决了内存空间的碎片化问题。<br>缺点：内存利用率不高，空间浪费严重；对象存活率较高时需要进行较多的复制操作，效率会降低。</p>
 <p><strong>标记-整理（mark-compact）算法</strong><br>标记-整理算法采用标记-清除算法一样的方式进行对象的标记，但后序步骤不是直接对可回收对象进行清理。而是让所有存活的对象都向内存空间一端移动，然后直接清理掉边界以外的内存。</p>
-<h3 id="7-分代收集理论"><a href="#7-分代收集理论" class="headerlink" title="7 分代收集理论"></a>7 分代收集理论</h3><p>核心思想：根据对象存活的生命周期将Java堆划分为不同的区域，然后将回收对象依据其年龄分配到不同的区域存储。一般情况下将Java堆划分为新生代（Young Generation）和老年代（Old Generation）两个区域。在堆之外还有一个代就是永久代（Permanet Generation）。</p>
+<h3 id="7-分代收集理论"><a href="#7-分代收集理论" class="headerlink" title="7 分代收集理论"></a>7 分代收集理论</h3><p>弱分代假说 (Weak Generational Hypothesis)：绝大多数对象都是朝生夕灭的。<br>强分代假说 (Strong Generational Hypothesis)：熬过越多次垃圾收集过程的对象就越难以消亡。<br>多款常用的垃圾收集器的一致的设计原则：收集器应该将Java堆划分出不同的区域，然后将回收对象依据其年龄分配到不同的区域之中存储。</p>
+<p>核心思想：根据对象存活的生命周期将Java堆划分为不同的区域，然后将回收对象依据其年龄分配到不同的区域存储。一般情况下将Java堆划分为新生代（Young Generation）和老年代（Old Generation）两个区域。在堆之外还有一个代就是永久代（Permanet Generation）。</p>
 <p>新生代的特点是每次垃圾回收时都有大量的对象需要被回收，而老年代的特点是每次垃圾收集时只有少量对象需要被回收，那么就可以根据不同代的特点采取最适合的收集算法。</p>
+<p>跨代引用假说(Intergenerational Reference Hypothesis)：跨代引用相对于同代引用来说仅占极少数。<br>存在互相引用关系的两个对象，是应该倾向于同时生存或者同时消亡的。</p>
+<p>如果某个新生代对象存在跨代引用，由于老年代对象难以消亡，该引用会使得新生代对象在收集时同样得以存活，进而在年龄增长之后晋升到老年代中，这时跨代引用也随即被消除了。</p>
+<p>只需在新生代上建立一个全局的数据结构（该结构被称为“记忆集”，Remembered Set），这个结构把老年代划分成若干小块，标识出老年代的哪一块内存会存在跨代引用。此后当发生Minor GC时，只有包含了跨代引用的小块内存里的对象才会被加入到GC Roots进行扫描。虽然这种方法需要在对象改变引用关系（如将自己或者某个属性赋值）时维护记录数据的正确性，会增加一些运行时的开销，但比起收集时扫描整个老年代来说仍然是划算的。</p>
 
       
     </div>
@@ -1211,120 +1361,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/20/11-20-Java/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/20/11-20-Java/" class="post-title-link" itemprop="url">map</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-11-20 14:07:49" itemprop="dateCreated datePublished" datetime="2021-11-20T14:07:49+08:00">2021-11-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 21:21:48" itemprop="dateModified" datetime="2022-03-15T21:21:48+08:00">2022-03-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/11/20/11-20-Java/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/20/11-20-Java/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-HashMap多线程死循环问题"><a href="#1-HashMap多线程死循环问题" class="headerlink" title="1 HashMap多线程死循环问题"></a>1 HashMap多线程死循环问题</h3><p>HashMap采用链表解决Hash冲突，因为是链表结构，那么就很容易形成闭合的链路。当多个线程同时put时，如果同时触发了rehash操作，会导致HashMap的链表中出现循环节点，使得后面get的时候会死循环。</p>
-<p>resize方法：<br>条件：size &gt; capacity * loadFactor<br>创建一个新的Node空数组，长度是原数组的2倍。<br>rehash：遍历原Node数组，把所有的Node重新Hash到新数组。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-HashMap与Hashtable"><a href="#2-HashMap与Hashtable" class="headerlink" title="2 HashMap与Hashtable"></a>2 HashMap与Hashtable</h3><p>Hashtable：基于哈希表实现，它将键映射到值。任何非空对象都可以用作键或值。<br>HashMap的key和value都允许为null，而Hashtable的key和value都不允许为null。<br>HashMap遇到key为null的时候，调用putForNullKey方法进行处理，但对value没有处理。Hashtable遇到null，直接返回NullPointerException。<br>Hashtable是线程安全的，HashMap是非线程安全的。<br>HashMap继承了AbstractMap，Hashtable继承Dictionary抽象类，两者均实现Map接口。</p>
-<p>虽然HashMap和Hashtable都是基于单链表的，但是HashMap进行put或者get操作时，可以达到常数时间的性能；而Hashtable的put和get操作都是加了synchronized锁，所以效率很差。<br>Hashtable的初始长度是11，之后每次扩充容量变为之前的2n+1（n为上一次的长度），而HashMap的初始长度为16，之后每次扩充变为原来的两倍。创建时，如果给定了容量初始值，那么Hashtable会直接使用你给定的大小，而HashMap会将其扩充为2的幂次方大小。</p>
-<p>Java中Hashtable、Collections.synchronizedMap、以及ConcurrentHashMap均可以实现线程安全的Map。<br>Hashtable是直接在方法上加synchronized关键字，锁住整个数组，粒度比较大；即每次锁住整张表让线程独占，致使效率低下。<br>Collections.synchronizedMap是使用Collections集合工具的内部类，通过传入Map封装出一个SynchronizedMap对象，内部定义了一个对象锁，方法内通过对象锁实现。<br>ConcurrentHashMap使用分段锁，降低了锁粒度，让并发度大大提高。</p>
-<h3 id="2-ConcurrentHashMap"><a href="#2-ConcurrentHashMap" class="headerlink" title="2 ConcurrentHashMap"></a>2 ConcurrentHashMap</h3><p>ConcurrentHashMap：一个哈希表，支持检索的完全并发性和更新的高预期并发性。该类遵循与Hashtable相同的功能规范，包括与Hashtable的每个方法对应的方法版本。但是，即使所有操作都是线程安全的，检索操作也不需要锁定，并且不支持以防止所有访问的方式锁定整个表。在依赖其线程安全但不依赖于其同步细节的程序中，此类与Hashtable完全可互操作。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bin数组。第一次插入时延迟初始化。大小始终是2的幂。由迭代器直接访问。</span><br><span class="line">transient volatile Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
-
-<p><strong>实现原理</strong><br>“分段锁”：容器中有多把锁，每一把锁锁一段数据，这样在多线程访问不同段的数据时，就不会存在锁竞争了，这样可以有效地提高并发效率。</p>
-<p>JDK1.7 数组+链表。（segment[]+hashentry[]）。<br>ConcurrentHashMap采用了分段锁技术，ConcurrentHashMap在对象中保存了一个Segment数组，将整个Hash表划分为多个Segment。在执行put操作时会先根据hash算法定位到元素属于哪个Segment，然后对该Segment加锁。每当一个线程占用锁访问一个Segment时，不会影响到其他的Segment。ConcurrentHashMap的get方法是非常高效的，因为整个过程都不需要加锁。</p>
-<p>ConcurrentHashMap使用Segment来表示不同的部分，每个Segment其实就是一个小的Hashtable，它们有自己的锁。每个segment使用单独的ReentrantLock（重入锁）。如果操作涉及不同segment，则可以并发执行，如果是同一个segment，则会进行锁的竞争和等待。<br>ConcurrentHashMap定位一个元素的过程需要进行两次Hash操作。第一次Hash定位到Segment，第二次Hash定位到元素所在的链表的头部。</p>
-<p>JDK 1.8 数组+链表+红黑树。<br>舍弃了JDK1.7中的Segment分段锁，而采用了CAS + synchronized来保证并发安全性。<br>1.7中锁的粒度是基于Segment的，一个Segment包含多个HashEntry，而1.8锁的粒度就是Node（HashEntry）。<br>1.8的数据结构变得更加简单，操作也更加清晰流畅，因为已经使用synchronized来进行同步，所以不需要分段锁的概念，也就不需要Segment这种数据结构了，由于粒度的降低，实现的复杂度也增加了。1.8使用红黑树来优化链表，将查询效率降到o（logn）。</p>
-<p>CAS（Compare and Swap，比较并替换）。CAS本质上很简单，一般至少有3个参数：V表示要更新的变量、E表示预期值、N表示新值变量。如果V值等于E值，则将V的值设为N。若V值和E值不同，则说明已经有其他线程做了更新，则当前线程什么都不做。<br>通俗的理解就是CAS操作需要我们提供一个期望值，当期望值与当前线程的变量值相同时，说明还没有线程修改该值，则当前线程可以进行修改，也就是执行CAS操作。但如果期望值与当前线程的变量值不等，则说明该值已被其他线程修改，此时不执行更新操作，但可以选择重新读取该变量再次尝试修改该变量，也可以放弃操作。</p>
-<h3 id="3-LinkedHashMap"><a href="#3-LinkedHashMap" class="headerlink" title="3 LinkedHashMap"></a>3 LinkedHashMap</h3><p>Map接口的哈希表和链表实现，迭代顺序可预测。<br>此实现与HashMap的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class LinkedHashMap&lt;K,V&gt;</span><br><span class="line">    extends HashMap&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;</span><br><span class="line">普通LinkedHashMap条目的HashMap.Node子类。</span><br><span class="line">static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; &#123;</span><br><span class="line">        Entry&lt;K,V&gt; before, after;</span><br><span class="line">        Entry(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            super(hash, key, value, next);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">双向链表的头部（最年长的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; head;</span><br><span class="line">双向链表的尾部（最年轻的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br><span class="line">此链接哈希映射的迭代排序方法：访问顺序为true，插入顺序为false。</span><br><span class="line">final boolean accessOrder;</span><br></pre></td></tr></table></figure>
-<p>双向链表<br>key和value都允许为空<br>key重复会覆盖<br>有序<br>LinkedHashMap是非线程安全的</p>
-<p>LinkedHashMap中的Entry增加了before和after两个指针，用于维护双向链表。before、after用于维护Entry插入的先后顺序。正是因为before、after的存在，LinkedHashMap才形成了双向链表。<br>LinkedHashMap可以认为是散列表与链表（HashMap+LinkedList）的结合，它继承了HashMap，也用LinkedList维护插入/访问元素的先后顺序。从性能上而言，因为额外维护了链表的关系，性能上要略差于HashMap。</p>
-<p>TreeMap是按照Key的自然顺序或者Comprator的顺序进行排序，内部是通过红黑树来实现。所以要么key所属的类实现Comparable接口，或者自定义一个实现了Comparator接口的比较器。</p>
-<h3 id="4-HashSet"><a href="#4-HashSet" class="headerlink" title="4 HashSet"></a>4 HashSet</h3><p>这个类实现了Set接口，由一个哈希表（实际上是一个HashMap实例）支持。它不保证集合的迭代顺序，此类允许空元素。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public class HashSet&lt;E&gt;</span><br><span class="line">    extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements Set&lt;E&gt;, Cloneable, java.io.Serializable</span><br><span class="line">private transient HashMap&lt;E,Object&gt; map;</span><br><span class="line">构造一个新的空集，后备HashMap实例具有默认初始容量(16)和负载因子(0.75)。</span><br><span class="line">public HashSet() &#123;</span><br><span class="line">        map &#x3D; new HashMap&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p><strong>HashSet为什么元素不能重复</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        return map.put(e, PRESENT)&#x3D;&#x3D;null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>元素值是作为map的key，map的value则是PRESENT变量，这个变量只作为放入map时的一个占位符存在。HashMap的key是不能重复的，HashSet的元素作为map的key，当然也不能重复了。</p>
-<h3 id="5-Iterator"><a href="#5-Iterator" class="headerlink" title="5 Iterator"></a>5 Iterator</h3><p>集合上的迭代器。迭代器取代了Java集合框架中的枚举。<br>迭代器在两个方面不同于枚举：<br>迭代器允许调用者在具有明确定义语义的迭代期间从底层集合中删除元素。<br>方法名称已得到改进。</p>
-<p>ListIterator<br>public interface ListIterator<E> extends Iterator<E><br>列表的迭代器，允许程序员沿任一方向遍历列表，在迭代期间修改列表，并获取迭代器在列表中的当前位置。ListIterator没有当前元素，它的光标位置始终位于调用previous()返回的元素和调用next()返回的元素之间。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1396,7 +1432,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-count">69</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

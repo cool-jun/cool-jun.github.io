@@ -187,6 +187,156 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/20/singleton/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/03/20/singleton/" class="post-title-link" itemprop="url">singleton</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-20 15:42:27 / 修改时间：20:15:46" itemprop="dateCreated datePublished" datetime="2022-03-20T15:42:27+08:00">2022-03-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/03/20/singleton/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/20/singleton/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h3><p>一个类只有一个实例，且该类能自行创建这个实例的一种模式。通过单例模式可以保证，系统中使用单例模式的类只有一个对象实例。</p>
+<p><strong>应用场景</strong></p>
+<ol>
+<li>Windows系统的任务管理器。</li>
+<li>Windows系统的回收站。</li>
+<li>操作系统的文件系统，一个操作系统只能有一个文件系统。</li>
+<li>数据库连接池的设计与实现。</li>
+<li>多线程的线程池设计与实现。</li>
+<li>Spring中创建的Bean实例默认都是单例。</li>
+<li>JavaWeb中，一个Servlet类只有一个实例。</li>
+</ol>
+<p>单例的实现主要通过三个步骤：</p>
+<ol>
+<li>将类的构造方法定义为私有方法。这样其它类的代码就无法通过调用该类的构造方法来实例化该类的对象，只能通过该类提供的静态方法来得到该类的唯一实例。</li>
+<li>定义一个私有的类静态实例。</li>
+<li>提供一个公有的获取实例的静态方法。</li>
+</ol>
+<p>单例模式的常用写法<br><strong>饿汉模式</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    &#x2F;&#x2F; 饿汉式</span><br><span class="line">    private static SingletonDemo instance &#x3D; new SingletonDemo();</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonDemo getInstance() &#123;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在类加载的时候就对实例进行初始化，没有线程安全问题；获取实例的静态方法没有使用同步，调用效率高；但是没有使用懒加载，如果该实例从始至终都没被使用过，则会造成内存浪费。<br>线程安全、非懒加载、效率高，不推荐。</p>
+<p><strong>懒汉模式</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    &#x2F;&#x2F; 懒汉式</span><br><span class="line">    &#x2F;&#x2F; 延迟初始化，线程安全</span><br><span class="line">    private static SingletonDemo instance;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static synchronized SingletonDemo getInstance() &#123;</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            instance &#x3D; new SingletonDemo();</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在第一次使用的时候才进行初始化，达到了懒加载的效果；由于获取实例的静态方法用synchronized修饰，所以也没有线程安全的问题；但是，这种写法每次获取实例都要进行同步（加锁），因此效率较低，并且可能很多同步都是没有必要的。<br>线程安全、懒加载、效率低，不推荐。</p>
+<p><strong>双重校验锁（DCL）</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    &#x2F;&#x2F; DCL</span><br><span class="line">    private static volatile SingletonDemo instance;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonDemo getInstance() &#123;</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            synchronized (SingletonDemo.class) &#123;</span><br><span class="line">                if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    instance &#x3D; new SingletonDemo();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在第一次使用的时候才进行初始化，达到了懒加载的效果；在进行初始化的时候会进行同步（加锁），因此没有线程安全问题；并且只有第一次进行初始化才进行同步，因此不会有效率方面的问题。<br>线程安全、懒加载、效率高，可以使用。</p>
+<p><strong>静态内部类</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    &#x2F;&#x2F; 静态内部类</span><br><span class="line">    private static class SingletonHolder &#123;</span><br><span class="line">        private static final SingletonDemo instance &#x3D; new SingletonDemo();</span><br><span class="line">    &#125;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line">    public static SingletonDemo getInstance() &#123;</span><br><span class="line">        return SingletonHolder.instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>JVM将推迟SingletonHolder的初始化操作，直到开始使用这个类时才初始化，并且由于通过一个静态初始化来初始化instance，因此不需要额外的同步。当任何一个线程第一次调用getInstance时，都会使SingletonHolder被加载和被初始化，此时静态初始化器将执行instance的初始化操作。</p>
+<p>通过静态初始化来初始化instance为什么不需要额外的同步？</p>
+<p>在初始器中采用了特殊的方式来处理静态域（或者在静态初始化代码块中初始化的值），并提供了额外的线程安全性保证。静态初始化器是由JVM在类的初始化阶段执行，即在类被加载后并且被线程使用之前。由于JVM将在初始化期间获得一个锁，并且每个线程都至少获取一次这个锁以确保这个类已经加载，因此在静态初始化期间，内存写入操作将自动对所有线程可见。因此无论是在被构造期间还是被引用时，静态初始化的对象都不需要显式的同步。然而，这个规则仅适用于在构造时的状态，如果对象是可变的，那么在读线程和写线程之间仍然需要通过同步来确保随后的修改操作是可见的，以及避免数据破坏。</p>
+<p>线程安全、懒加载、效率高，推荐使用。</p>
+<p><strong>枚举</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public enum SingletonDemo &#123;</span><br><span class="line">    &#x2F;&#x2F; 枚举</span><br><span class="line">    INSTANCE;</span><br><span class="line">    &#x2F;&#x2F; other method</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>提供了序列化机制，保证线程安全，绝对防止多次实例化，即使是在面对复杂的序列化或者反射攻击的时候。<br>线程安全、非懒加载、效率高，推荐使用。</p>
+<table>
+<thead>
+<tr>
+<th align="right">方式</th>
+<th align="center">优点</th>
+<th align="center">缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">饿汉式</td>
+<td align="center">线程安全、效率高</td>
+<td align="center">非懒加载</td>
+</tr>
+<tr>
+<td align="right">懒汉式</td>
+<td align="center">线程安全、懒加载</td>
+<td align="center">效率低</td>
+</tr>
+<tr>
+<td align="right">双重校验锁</td>
+<td align="center">线程安全、懒加载、效率高</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="right">静态内部类</td>
+<td align="center">线程安全、懒加载、效率高</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="right">枚举</td>
+<td align="center">线程安全、效率高</td>
+<td align="center">非懒加载</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/18/about-java/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -839,7 +989,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-18 16:07:43" itemprop="dateModified" datetime="2022-03-18T16:07:43+08:00">2022-03-18</time>
+                <time title="修改时间：2022-03-20 15:35:22" itemprop="dateModified" datetime="2022-03-20T15:35:22+08:00">2022-03-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -881,16 +1031,56 @@
 <p>docker images;  //查看本地主机上的所有镜像<br>docker images -a;<br>docker images -q;<br>docker images -aq;<br>-a：列出所有镜像。<br>-q：只显示镜像id。</p>
 <p>docker search image_name;  //搜索镜像</p>
 <p>docker rmi image_name;  //删除镜像<br>docker rmi -f $(docker images -aq);</p>
+<p>docker rm container;  //删除容器</p>
 <p>docker run -it REPOSITORY/IMAGE ID;  //运行容器，可以使用容器的REPOSITORY或者IMAGE ID运行容器,其中参数-i表示以交互模式运行容器，-t表示为容器重新分配一个伪输入终端,-i与-t通常同时使用。</p>
 <p>docker ps;  //查看所有正在运行的容器<br>docker ps -a;  //查看所有运行过的容器<br>docker ps -n 5;  //表示查看最近运行过的5个容器</p>
 <p>docker stop CONTAINER ID;  //退出容器<br>docker kill CONTAINER ID;  //退出容器</p>
-<h3 id="4-redis数据类型"><a href="#4-redis数据类型" class="headerlink" title="4 redis数据类型"></a>4 redis数据类型</h3><p>hash、list、hash、set、zset</p>
+<h3 id="4-redis数据类型"><a href="#4-redis数据类型" class="headerlink" title="4 redis数据类型"></a>4 redis数据类型</h3><p>string、list、hash、set、zset</p>
 <h3 id="5-说说spring-ioc与aop"><a href="#5-说说spring-ioc与aop" class="headerlink" title="5 说说spring ioc与aop"></a>5 说说spring ioc与aop</h3><p><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/12/05/12-05-Spring/">ioc</a><br><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/12/10/12-10-Spring/">aop</a></p>
 <h3 id="6-创建多线程的方式"><a href="#6-创建多线程的方式" class="headerlink" title="6 创建多线程的方式"></a>6 创建多线程的方式</h3><p>见蔚来一面</p>
 <h3 id="7-说说线程池"><a href="#7-说说线程池" class="headerlink" title="7 说说线程池"></a>7 说说线程池</h3><p><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/11/24/11-24-Java/">概念</a><br><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/11/26/11-26-Java/">创建方式</a></p>
 <h3 id="8-jvm详细说一下"><a href="#8-jvm详细说一下" class="headerlink" title="8 jvm详细说一下"></a>8 jvm详细说一下</h3><p><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/11/27/11-27-Java/">jvm</a></p>
 <h3 id="9-垃圾回收机制"><a href="#9-垃圾回收机制" class="headerlink" title="9 垃圾回收机制"></a>9 垃圾回收机制</h3><p><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/12/04/12-04-Java/">gc</a></p>
-<h3 id="10-垃圾收集器有哪些？说一下G1"><a href="#10-垃圾收集器有哪些？说一下G1" class="headerlink" title="10 垃圾收集器有哪些？说一下G1"></a>10 垃圾收集器有哪些？说一下G1</h3><h3 id="11-spring有哪些注解，说一下-Resource注解"><a href="#11-spring有哪些注解，说一下-Resource注解" class="headerlink" title="11 spring有哪些注解，说一下@Resource注解"></a>11 spring有哪些注解，说一下@Resource注解</h3><h3 id="12-说一下git常用命令，rebase命令了解吗？"><a href="#12-说一下git常用命令，rebase命令了解吗？" class="headerlink" title="12 说一下git常用命令，rebase命令了解吗？"></a>12 说一下git常用命令，rebase命令了解吗？</h3><h3 id="13-说一下osi七层模型"><a href="#13-说一下osi七层模型" class="headerlink" title="13 说一下osi七层模型"></a>13 说一下osi七层模型</h3><h3 id="14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？"><a href="#14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？" class="headerlink" title="14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？"></a>14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？</h3><h3 id="15-十亿条无序的数据，找出其中最大的10条。（top-k问题）"><a href="#15-十亿条无序的数据，找出其中最大的10条。（top-k问题）" class="headerlink" title="15 十亿条无序的数据，找出其中最大的10条。（top k问题）"></a>15 十亿条无序的数据，找出其中最大的10条。（top k问题）</h3><h3 id="16-算法题：单链表反转"><a href="#16-算法题：单链表反转" class="headerlink" title="16 算法题：单链表反转"></a>16 算法题：单链表反转</h3><p>头插法</p>
+<h3 id="10-垃圾收集器有哪些？说一下G1"><a href="#10-垃圾收集器有哪些？说一下G1" class="headerlink" title="10 垃圾收集器有哪些？说一下G1"></a>10 垃圾收集器有哪些？说一下G1</h3><p><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/12/04/12-04-Java/">collector</a></p>
+<h3 id="11-spring有哪些注解，说一下-Resource注解"><a href="#11-spring有哪些注解，说一下-Resource注解" class="headerlink" title="11 spring有哪些注解，说一下@Resource注解"></a>11 spring有哪些注解，说一下@Resource注解</h3><p>Spring中的注解主要分为两类：</p>
+<ul>
+<li><p>类级别的注解：如@Component、@Repository、@Controller、@Service以及JavaEE6的@ManagedBean和@Named注解，都是添加在类上面的类级别注解。</p>
+</li>
+<li><p>类内部的注解：如@Autowire、@Value、@Resource以及EJB和WebService相关的注解等，都是添加在类内部的字段或者方法上的类内部注解。</p>
+</li>
+</ul>
+<p>具体的来说又有以下几种类型的注解方式</p>
+<ol>
+<li><p>声明bean的注解<br>@Component，通用的注解方式<br>@Service，在业务逻辑层使用（service层）<br>@Repository，在数据访问层使用（dao层）<br>@Controller，在表现层使用，控制器的声明</p>
+</li>
+<li><p>注入bean的注解<br>@Autowired：由Spring提供<br>@Inject：由JSR-330提供<br>@Resource：由JSR-250提供<br>都可以注解在set方法和属性上，推荐注解在属性上（一目了然，少写代码）。</p>
+</li>
+<li><p>java配置类相关注解<br>@Configuration，声明当前类为配置类，相当于xml形式的Spring配置（类上）<br>@Bean，注解在方法上，声明当前方法的返回值为一个bean，替代xml中的方式（方法上）<br>@Configuration，声明当前类为配置类，其中内部组合了@Component注解，表明这个类是一个bean（类上）<br>@ComponentScan，用于对Component进行扫描，相当于xml中的（类上）<br>@WishlyConfiguration，为@Configuration与@ComponentScan的组合注解，可以替代这两个注解</p>
+</li>
+<li><p>切面（AOP）相关注解 Spring支持AspectJ的注解式切面编程。<br>@Aspect，声明一个切面（类上）<br>使用@After、@Before、@Around定义通知（advice），可直接将拦截规则（切点）作为参数。<br>@After，在方法执行之后执行（方法上） @Before 在方法执行之前执行（方法上） @Around 在方法执行之前与之后执行（方法上）<br>@PointCut，声明切点<br>在java配置类中使用@EnableAspectJAutoProxy注解开启Spring对AspectJ代理的支持（类上）</p>
+</li>
+<li><p>@Bean的属性支持<br>@Scope，设置Spring容器如何新建Bean实例（方法上，得有@Bean）<br>其设置类型包括：<br>· Singleton （单例，一个Spring容器中只有一个bean实例，默认模式）,<br>· Protetype （每次调用新建一个bean）,<br>· Request （web项目中，给每个http request新建一个bean）,<br>· Session （web项目中，给每个http session新建一个bean）,<br>· GlobalSession（给每一个 global http session新建一个Bean实例）</p>
+</li>
+</ol>
+<p>@Autowired与@Resource<br>@Autowired默认按类型查找，有查找的优先顺序。<br>按Type匹配（Match by Type）<br>按Qualifier匹配（Match by Qualifier）<br>按Name匹配（Match by Name）</p>
+<p>如果要允许null值，可以设置它的required属性为false，如：@Autowired(required=false)。<br>若想要按名称装配，可以结合@Qualifier注解一起使用，如：@Autowired(required=false)<br>@Qualifier(“bean”)</p>
+<p>@Resource默认按名字查找，但是也有查找的优先顺序。<br>按Name匹配（Match by Name）<br>按Type匹配（Match by Type）<br>按Qualifier匹配（Match by Qualifier）</p>
+<p>@Resource注解和@Autowired一样，也可以标注在字段或属性的setter方法上。<br>Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不指定name也不指定type属性，这时将通过反射机制使用byName自动注入策略。</p>
+<p>@Resource装配顺序</p>
+<ol>
+<li>如果同时指定了name和type，则从Spring上下文中找到唯一匹配的bean进行装配，找不到则抛出异常</li>
+<li>如果指定了name，则从上下文中查找名称（id）匹配的bean进行装配，找不到则抛出异常</li>
+<li>如果指定了type，则从上下文中找到类型匹配的唯一bean进行装配，找不到或者找到多个，都会抛出异常</li>
+<li>如果既没有指定name，又没有指定type，则自动按照byName方式进行装配；如果没有匹配，则回退为一个原始类型进行匹配，如果匹配则自动装配；</li>
+</ol>
+<h3 id="12-说一下git常用命令，rebase命令了解吗？"><a href="#12-说一下git常用命令，rebase命令了解吗？" class="headerlink" title="12 说一下git常用命令，rebase命令了解吗？"></a>12 说一下git常用命令，rebase命令了解吗？</h3><p><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2022/01/08/01-08-git/">git</a></p>
+<h3 id="13-说一下osi七层模型"><a href="#13-说一下osi七层模型" class="headerlink" title="13 说一下osi七层模型"></a>13 说一下osi七层模型</h3><img src="/2022/03/09/shouqi/osi.png" class="">
+
+<h3 id="14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？"><a href="#14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？" class="headerlink" title="14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？"></a>14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？</h3><p><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/12/11/12-11-Network/">三次握手</a><br><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/12/13/12-13-Network/">四次挥手</a></p>
+<h3 id="15-十亿条无序的数据，找出其中最大的10条。（top-k问题）"><a href="#15-十亿条无序的数据，找出其中最大的10条。（top-k问题）" class="headerlink" title="15 十亿条无序的数据，找出其中最大的10条。（top k问题）"></a>15 十亿条无序的数据，找出其中最大的10条。（top k问题）</h3><p>针对top K问题，通常比较好的方案是：分治+hash+小顶堆。</p>
+<p>例如：1亿个数据中找出最大的前100个。<br>hash：如果这1亿个数里面有很多重复的数，先通过Hash，把这1亿个数去重复，这样如果重复率很高的话，会减少很大的内存用量，从而缩小运算空间，然后通过分治法或最小堆法查找最大的100个数。<br>分治：将1亿个数据分成100份，每份100万个数据，找到每份数据中最大的100个，最后在剩下的10000个数据里面找出最大的100个。<br>小顶堆。</p>
+<p><strong>PriorityQueue</strong></p>
+<h3 id="16-算法题：单链表反转"><a href="#16-算法题：单链表反转" class="headerlink" title="16 算法题：单链表反转"></a>16 算法题：单链表反转</h3><p>头插法</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public ListNode reverseList(ListNode head) &#123;</span><br><span class="line">    ListNode previous &#x3D; null;</span><br><span class="line">    ListNode current &#x3D; head;</span><br><span class="line">    while (current !&#x3D; null) &#123;</span><br><span class="line">        ListNode after &#x3D; current.next;</span><br><span class="line">        current.next &#x3D; previous;</span><br><span class="line">        previous &#x3D; current;</span><br><span class="line">        current &#x3D; after;</span><br><span class="line">    &#125;</span><br><span class="line">    return previous;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>递归</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public ListNode reverseList(ListNode head) &#123;</span><br><span class="line">    if (head &#x3D;&#x3D; null || head.next &#x3D;&#x3D; null) &#123;</span><br><span class="line">        return head;</span><br><span class="line">    &#125;</span><br><span class="line">    ListNode newHead &#x3D; reverseList(head.next);</span><br><span class="line">    head.next.next &#x3D; head;</span><br><span class="line">    head.next &#x3D; null;</span><br><span class="line">    return newHead;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -946,7 +1136,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 20:38:37" itemprop="dateModified" datetime="2022-03-15T20:38:37+08:00">2022-03-15</time>
+                <time title="修改时间：2022-03-20 09:54:27" itemprop="dateModified" datetime="2022-03-20T09:54:27+08:00">2022-03-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1127,7 +1317,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-18 15:57:53" itemprop="dateModified" datetime="2022-03-18T15:57:53+08:00">2022-03-18</time>
+                <time title="修改时间：2022-03-20 09:55:33" itemprop="dateModified" datetime="2022-03-20T09:55:33+08:00">2022-03-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1224,7 +1414,7 @@
 
 <h3 id="6-详细说说hashCode与equals方法"><a href="#6-详细说说hashCode与equals方法" class="headerlink" title="6 详细说说hashCode与equals方法"></a>6 详细说说hashCode与equals方法</h3><p><strong>hashCode</strong><br>hashCode()的作用是获取哈希码，也称为散列码，它实际上是返回一个int型整数。这个哈希码的作用就是确定该对象在哈希表中的索引位置。</p>
 <p><strong>equals</strong><br>equals()的作用是判断两个对象是否相等，如果重写了equals()方法，比较两个对象的值是否相等，例如String、Date等类对equals方法进行了重写，比较的是所指向的对象的值；如果没有重写，比较两个对象的地址是否相等，等价于“==”。</p>
-<p><a href="">联系</a></p>
+<p><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2022/03/18/about-java/">联系</a></p>
 <p><strong>扩展：==与equals</strong><br>==：对于基本数据类型的变量，比较其存储的“值”是否相等；对于引用类型的变量，比较的是所指向的对象的地址是否相等。<br>equlas同上。</p>
 <h3 id="7-Java实现多线程的方式"><a href="#7-Java实现多线程的方式" class="headerlink" title="7 Java实现多线程的方式"></a>7 Java实现多线程的方式</h3><p>继承Thread类，重写run()方法。<br>实现Runnable接口，重写run()方法，启动线程需要通过Thread类。<br>实现Callable接口，重写call()方法来实现多线程，有返回值。<br>线程池。</p>
 <h3 id="8-Runnable和Callable的区别和联系"><a href="#8-Runnable和Callable的区别和联系" class="headerlink" title="8 Runnable和Callable的区别和联系"></a>8 Runnable和Callable的区别和联系</h3><ul>
@@ -1352,102 +1542,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/18/02-18-Spring/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/02/18/02-18-Spring/" class="post-title-link" itemprop="url">annotation</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-02-18 20:16:34" itemprop="dateCreated datePublished" datetime="2022-02-18T20:16:34+08:00">2022-02-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 21:25:16" itemprop="dateModified" datetime="2022-03-15T21:25:16+08:00">2022-03-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/02/18/02-18-Spring/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/18/02-18-Spring/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-SpringBootApplication"><a href="#1-SpringBootApplication" class="headerlink" title="1 @SpringBootApplication"></a>1 @SpringBootApplication</h3><p>这是Spring Boot最最最核心的注解，用在Spring Boot主类上，标识这是一个Spring Boot应用，用来开启Spring Boot。<br>这个注解是@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan这三个注解的组合，也可以用这三个注解来代替@SpringBootApplication注解。<br>@Configuration：Spring 3.0添加的一个注解，用来代替applicationContext.xml配置文件，所有这个配置文件里面能做到的事情都可以通过这个注解所在类来完成。</p>
-<ul>
-<li>@SpringBootConfiguration：@Configuration注解的变体，用来修饰Spring Boot配置。</li>
-<li>@EnableAutoConfiguration：允许Spring Boot自动配置注解，开启这个注解之后，Spring Boot就能根据当前类路径下的包或者类来配置Spring Bean。</li>
-<li>@ComponentScan：Spring 3.1添加的一个注解，用来代替配置文件中的component-scan配置，开启组件扫描，即自动扫描包路径下的@Component注解进行注册bean实例到context中。</li>
-</ul>
-<h3 id="2-RestController"><a href="#2-RestController" class="headerlink" title="2 @RestController"></a>2 @RestController</h3><p>@Controller用于标记一个类，使用它标记的类就是一个Spring MVC Controller对象，处理器会扫描使用该注解的类的方法，并检测该方法是否使用了@RequestMapping注解。</p>
-<p>@ResponseBody注解用于将@Controller修饰的类的方法返回的对象，通过适当的HttpMessageConverter转换为指定格式后，写入到Response对象的body数据区，通常用来返回JSON或者XML数据，返回JSON数据的情况比较多。</p>
-<p>@RestController=@Controller+@ResponseBody</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1519,7 +1613,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">68</span>
+          <span class="site-state-item-count">69</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
