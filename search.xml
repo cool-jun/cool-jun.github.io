@@ -179,6 +179,31 @@
       </tags>
   </entry>
   <entry>
+    <title>reflect</title>
+    <url>/2021/10/30/1030-java/</url>
+    <content><![CDATA[<h3 id="1-深克隆和浅克隆的区别？"><a href="#1-深克隆和浅克隆的区别？" class="headerlink" title="1 深克隆和浅克隆的区别？"></a>1 深克隆和浅克隆的区别？</h3><p>浅克隆：<strong>简单复制了原始对象的引用地址，两个对象指向同一个内存地址</strong>。所以任意修改一个的值，另一个都会随之变化。<br>深克隆：将原始对象及值复制过来，任意修改其中一个的值，另一个不会改变。<br>深克隆就是所在类实现Cloneable接口，并使用public修饰符重写clone方法。但Java中clone没有深浅之分，都是统一调用Object的clone方法。只是我们刻意的重写了clone方法。</p>
+<h3 id="2-Java序列化，怎样实现？"><a href="#2-Java序列化，怎样实现？" class="headerlink" title="2 Java序列化，怎样实现？"></a>2 Java序列化，怎样实现？</h3><p>序列化是将对象转换为字节流的过程，可以将其保存到磁盘文件或进行网络传输。序列化为了解决在对象流进行读写操作时所引发的问题。所有可在网络上传输的对象都必须是可序列化的。比如RMI（remote method invoke）。<br>如果要将某个对象保存到磁盘上或者通过网络传输，那么这个类应该实现Serializable接口。<br>反序列化则是相反的过程。</p>
+<p><strong>注意</strong><br>Java序列化过程：<br>所有保存到磁盘的对象都有一个序列化编码，当程序试图序列化一个对象时，会先检查此对象是否已经序列化过，只有此对象未（在此虚拟机）被序列化过，才会将此对象序列化为字节流输出。<br>如果此对象已经序列化过，则直接输出编号。<br>如果想让某个变量不被序列化，使用<strong>transient</strong>修饰。</p>
+<h3 id="3-Java泛型、类型擦除"><a href="#3-Java泛型、类型擦除" class="headerlink" title="3 Java泛型、类型擦除"></a>3 Java泛型、类型擦除</h3><p>泛型通过在编译时检测到更多错误来增加代码的稳定性。简而言之，<strong>泛型使类型（类和接口）在定义类、接口和方法时成为参数</strong>。类型参数为您提供了一种对不同输入重复使用相同代码的方法。<br>区别在于形式参数的输入是值，而类型参数的输入是类型。<br>泛型的使用：泛型类、泛型接口和泛型方法。</p>
+<p>类型擦除：泛型信息只存在于代码编译阶段，在进入JVM之前，与泛型相关的信息会被擦除。类型擦除确保不会为参数化类型创建新类，因此，泛型不会产生运行时开销。<br>在类型擦除过程中，Java编译器擦除所有类型参数，如果类型参数有界，则用其第一个边界替换每个参数，如果类型参数无界，则用Object替换。</p>
+<p>上限通配符，&lt;? extends Foo&gt;，其中Foo是任何类型，匹配Foo和Foo的任何子类型。<br>下限通配符将未知类型限制为特定类型或该类型的超类型。下限通配符使用通配符(‘?’)表示，后跟super关键字，最后跟其下限。即&lt;? super A&gt;。</p>
+<h3 id="4-Java反射、应用场景、优缺点"><a href="#4-Java反射、应用场景、优缺点" class="headerlink" title="4 Java反射、应用场景、优缺点"></a>4 Java反射、应用场景、优缺点</h3><p>反射：<strong>在程序运行时动态的获取信息以及动态的调用对象方法的一种机制</strong>。<br>一般来说，程序中对象是new出来的，程序相当于写死了给jvm去跑。假如这时需要用到某个类，但这个类还没有加载进jvm，此时就需要动态的加载这个类。<br>举个例子：假如我们的项目数据库用到了mysql和oracle，需要动态地根据实际情况加载驱动类。</p>
+<ul>
+<li>根据类名创建实例（类名可以从配置文件读取，不用new，达到解耦）</li>
+<li>调用Method.invoke</li>
+</ul>
+<p>Reflection可以在运行时加载、探知和使用编译期间完全未知的classes。即Java程序可以加载一个运行时才得知名称的class，获取其完整构造，并生成其对象实体、或对其fields设值、或唤起其methods。<br>java.lang.reflect包中的主要类：Class、Field、Method、Constructor、Array。</p>
+<p>应用：工厂模式，使用了反射机制。</p>
+<p>优点：运行时类型的判断，class.forName()动态加载类，提高代码灵活度。<br>缺点：性能开销；安全限制；内部暴露。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>反射</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>dynamic_proxy</title>
     <url>/2021/10/31/1031-java/</url>
     <content><![CDATA[<h3 id="1-Java创建对象的方法"><a href="#1-Java创建对象的方法" class="headerlink" title="1 Java创建对象的方法"></a>1 Java创建对象的方法</h3><p>new、反射newInstance()、clone()、反序列化。</p>
@@ -210,56 +235,6 @@
       </categories>
       <tags>
         <tag>动态代理</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>reflect</title>
-    <url>/2021/10/30/1030-java/</url>
-    <content><![CDATA[<h3 id="1-深克隆和浅克隆的区别？"><a href="#1-深克隆和浅克隆的区别？" class="headerlink" title="1 深克隆和浅克隆的区别？"></a>1 深克隆和浅克隆的区别？</h3><p>浅克隆：<strong>简单复制了原始对象的引用地址，两个对象指向同一个内存地址</strong>。所以任意修改一个的值，另一个都会随之变化。<br>深克隆：将原始对象及值复制过来，任意修改其中一个的值，另一个不会改变。<br>深克隆就是所在类实现Cloneable接口，并使用public修饰符重写clone方法。但Java中clone没有深浅之分，都是统一调用Object的clone方法。只是我们刻意的重写了clone方法。</p>
-<h3 id="2-Java序列化，怎样实现？"><a href="#2-Java序列化，怎样实现？" class="headerlink" title="2 Java序列化，怎样实现？"></a>2 Java序列化，怎样实现？</h3><p>序列化是将对象转换为字节流的过程，可以将其保存到磁盘文件或进行网络传输。序列化为了解决在对象流进行读写操作时所引发的问题。所有可在网络上传输的对象都必须是可序列化的。比如RMI（remote method invoke）。<br>如果要将某个对象保存到磁盘上或者通过网络传输，那么这个类应该实现Serializable接口。<br>反序列化则是相反的过程。</p>
-<p><strong>注意</strong><br>Java序列化过程：<br>所有保存到磁盘的对象都有一个序列化编码，当程序试图序列化一个对象时，会先检查此对象是否已经序列化过，只有此对象未（在此虚拟机）被序列化过，才会将此对象序列化为字节流输出。<br>如果此对象已经序列化过，则直接输出编号。<br>如果想让某个变量不被序列化，使用<strong>transient</strong>修饰。</p>
-<h3 id="3-Java泛型、类型擦除"><a href="#3-Java泛型、类型擦除" class="headerlink" title="3 Java泛型、类型擦除"></a>3 Java泛型、类型擦除</h3><p>泛型通过在编译时检测到更多错误来增加代码的稳定性。简而言之，<strong>泛型使类型（类和接口）在定义类、接口和方法时成为参数</strong>。类型参数为您提供了一种对不同输入重复使用相同代码的方法。<br>区别在于形式参数的输入是值，而类型参数的输入是类型。<br>泛型的使用：泛型类、泛型接口和泛型方法。</p>
-<p>类型擦除：泛型信息只存在于代码编译阶段，在进入JVM之前，与泛型相关的信息会被擦除。类型擦除确保不会为参数化类型创建新类，因此，泛型不会产生运行时开销。<br>在类型擦除过程中，Java编译器擦除所有类型参数，如果类型参数有界，则用其第一个边界替换每个参数，如果类型参数无界，则用Object替换。</p>
-<p>上限通配符，&lt;? extends Foo&gt;，其中Foo是任何类型，匹配Foo和Foo的任何子类型。<br>下限通配符将未知类型限制为特定类型或该类型的超类型。下限通配符使用通配符(‘?’)表示，后跟super关键字，最后跟其下限。即&lt;? super A&gt;。</p>
-<h3 id="4-Java反射、应用场景、优缺点"><a href="#4-Java反射、应用场景、优缺点" class="headerlink" title="4 Java反射、应用场景、优缺点"></a>4 Java反射、应用场景、优缺点</h3><p>反射：<strong>在程序运行时动态的获取信息以及动态的调用对象方法的一种机制</strong>。<br>一般来说，程序中对象是new出来的，程序相当于写死了给jvm去跑。假如这时需要用到某个类，但这个类还没有加载进jvm，此时就需要动态的加载这个类。<br>举个例子：假如我们的项目数据库用到了mysql和oracle，需要动态地根据实际情况加载驱动类。</p>
-<ul>
-<li>根据类名创建实例（类名可以从配置文件读取，不用new，达到解耦）</li>
-<li>调用Method.invoke</li>
-</ul>
-<p>Reflection可以在运行时加载、探知和使用编译期间完全未知的classes。即Java程序可以加载一个运行时才得知名称的class，获取其完整构造，并生成其对象实体、或对其fields设值、或唤起其methods。<br>java.lang.reflect包中的主要类：Class、Field、Method、Constructor、Array。</p>
-<p>应用：工厂模式，使用了反射机制。</p>
-<p>优点：运行时类型的判断，class.forName()动态加载类，提高代码灵活度。<br>缺点：性能开销；安全限制；内部暴露。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>反射</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>string</title>
-    <url>/2021/11/10/11-10-Java/</url>
-    <content><![CDATA[<h3 id="1-Java中String为什么是final？"><a href="#1-Java中String为什么是final？" class="headerlink" title="1 Java中String为什么是final？"></a>1 Java中String为什么是final？</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
-<p>安全性：String被许多的Java类(库)用来当做参数，例如：网络连接地址URL、文件路径path、还有反射机制所需要的String参数等，假若String不是固定不变的，将会引起各种安全隐患；<br>允许String对象缓存HashCode：Java中String对象的哈希码被频繁地使用，比如在HashMap等容器中。字符串不变性保证了hashcode的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是Java堆内存中一个特殊的存储区域，当创建一个String对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
-<h3 id="3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
-<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量，它的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。此类提供与StringBuffer兼容的API，但不保证同步。此类旨在用作StringBuffer的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。在可能的情况下，建议优先使用此类而不是StringBuffer，因为在大多数实现下它会更快。StringBuilder上的主要操作是append和insert方法，它们被重载以接受任何类型的数据。每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。append方法总是在构建器的末尾添加这些字符；insert方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
-<h3 id="2-递归和迭代的区别"><a href="#2-递归和迭代的区别" class="headerlink" title="2 递归和迭代的区别"></a>2 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中，问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远到近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
-<p>以斐波那契数列为例。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>递归容易产生“栈溢出”问题（stack overflow）。<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>string</tag>
       </tags>
   </entry>
   <entry>
@@ -301,43 +276,6 @@
       </tags>
   </entry>
   <entry>
-    <title>list</title>
-    <url>/2021/11/17/11-17-Java/</url>
-    <content><![CDATA[<h3 id="1-ArrayList和LinkedList"><a href="#1-ArrayList和LinkedList" class="headerlink" title="1 ArrayList和LinkedList"></a>1 ArrayList和LinkedList</h3><p>ArrayList：List接口的可调整大小的数组实现。除了实现List接口之外，该类还提供了操作内部用于存储列表的数组大小的方法。（这个类大致相当于Vector，只是它是不同步的）。它提供恒定时间的位置访问，而且速度非常快。<br>它不必为List中的每个元素分配一个节点对象，当它必须同时移动多个元素时，它可以利用System.arraycopy。可以将ArrayList视为没有同步开销的Vector。</p>
-<p>LinkedList：List和Deque接口的双向链表实现。实现所有可选的列表操作，并允许所有元素（包括空值）。索引到列表中的操作将从开头或结尾遍历列表，以更接近指定索引的为准。</p>
-<p>如果您经常将元素添加到List的开头或遍历List以从其内部删除元素，则应考虑使用LinkedList。这些操作需要LinkedList中的常量时间和ArrayList中的线性时间。但是你在性能上付出了很大的代价。位置访问需要LinkedList中的线性时间和ArrayList中的常量时间。此外，LinkedList的常数因子要差得多。ArrayList通常更快。<br>ArrayList有一个调整参数——初始容量，它指的是ArrayList在必须增长之前可以容纳的元素数量，LinkedList没有调整参数。</p>
-<h3 id="2-ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？"><a href="#2-ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？" class="headerlink" title="2 ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？"></a>2 ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？</h3><p>RandomAccess：List实现使用的标记接口来指示它们支持快速（通常是恒定时间）随机访问。此接口的主要目的是允许通用算法改变其行为，以在应用于随机或顺序访问列表时提供良好的性能。</p>
-<p>实现RandomAccess接口的List集合采用一般的for循环遍历，而未实现此接口则采用迭代器。即ArrayList一般采用for循环遍历，LinkedList一般采用迭代器遍历。<br>ArrayList用for循环遍历比iterator迭代器遍历快；LinkedList用iterator迭代器遍历比for循环遍历快。应该考虑到List集合的不同子类采用不同的遍历方式，能够提高性能。</p>
-<h3 id="3-ArrayList扩容分析"><a href="#3-ArrayList扩容分析" class="headerlink" title="3 ArrayList扩容分析"></a>3 ArrayList扩容分析</h3><p>private static final int DEFAULT_CAPACITY = 10;   // 默认初始容量<br>private static final Object[] EMPTY_ELEMENTDATA = {};  // 用于空实例的共享空数组实例<br>private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};  // 用于默认大小的空实例的共享空数组实例。我们将其与 EMPTY_ELEMENTDATA 区分开来，以了解添加第一个元素时要膨胀多少。<br>transient Object[] elementData;  // ArrayList的元素存储在其中的数组缓冲区。ArrayList的容量就是这个数组缓冲区的长度。添加第一个元素时，任何带有 elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA 的空 ArrayList 都将扩展为DEFAULT_CAPACITY。<br>private int size;  // ArrayList的大小（它包含的元素数）。<br><strong>构造方法</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ArrayList(int initialCapacity) &#123;</span><br><span class="line">        if (initialCapacity &gt; 0) &#123;</span><br><span class="line">            this.elementData &#x3D; new Object[initialCapacity];</span><br><span class="line">        &#125; else if (initialCapacity &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            this.elementData &#x3D; EMPTY_ELEMENTDATA;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</span><br><span class="line">                                               initialCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ArrayList() &#123;</span><br><span class="line">        this.elementData &#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA;</span><br><span class="line">    &#125;</span><br><span class="line">无参构造方法会将elementData初始化为一个空数组，插入元素时，扩容将会按默认值重新初始化数组。</span><br><span class="line">而有参的构造方法则会将elementData初始化为参数值大小（&gt;&#x3D;0）的数组。</span><br></pre></td></tr></table></figure>
-
-<p><strong>add方法</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">当调用add方法添加第一个元素时，会进行扩容至大小为DEFAULT_CAPACITY&#x3D;10。</span><br><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        ensureCapacityInternal(size + 1);  &#x2F;&#x2F; Increments modCount!!</span><br><span class="line">        elementData[size++] &#x3D; e;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">private void ensureCapacityInternal(int minCapacity) &#123;</span><br><span class="line">        ensureExplicitCapacity(calculateCapacity(elementData, minCapacity));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">private static int calculateCapacity(Object[] elementData, int minCapacity) &#123;</span><br><span class="line">        if (elementData &#x3D;&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA) &#123;</span><br><span class="line">            return Math.max(DEFAULT_CAPACITY, minCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">        return minCapacity;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p><strong>ensureCapacity、ensureExplicitCapacity方法</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">如有必要，增加此ArrayList实例的容量，以确保它至少可以容纳由最小容量参数指定的元素数量。</span><br><span class="line">public void ensureCapacity(int minCapacity) &#123;</span><br><span class="line">        int minExpand &#x3D; (elementData !&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA)</span><br><span class="line">            &#x2F;&#x2F; any size if not default element table</span><br><span class="line">            ? 0</span><br><span class="line">            &#x2F;&#x2F; larger than default for default empty table. It&#39;s already</span><br><span class="line">            &#x2F;&#x2F; supposed to be at default size.</span><br><span class="line">            : DEFAULT_CAPACITY;</span><br><span class="line"></span><br><span class="line">        if (minCapacity &gt; minExpand) &#123;</span><br><span class="line">            ensureExplicitCapacity(minCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">private void ensureExplicitCapacity(int minCapacity) &#123;</span><br><span class="line">        modCount++;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; overflow-conscious code</span><br><span class="line">        if (minCapacity - elementData.length &gt; 0)</span><br><span class="line">            grow(minCapacity);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>grow方法</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">增加容量以确保它至少可以容纳由最小容量参数指定的元素数量。</span><br><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">        &#x2F;&#x2F; overflow-conscious code</span><br><span class="line">        int oldCapacity &#x3D; elementData.length;</span><br><span class="line">        &#x2F;&#x2F; 扩容大小是原来的1.5倍</span><br><span class="line">        int newCapacity &#x3D; oldCapacity + (oldCapacity &gt;&gt; 1);</span><br><span class="line">        if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">            newCapacity &#x3D; minCapacity;</span><br><span class="line">        if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">            newCapacity &#x3D; hugeCapacity(minCapacity);</span><br><span class="line">        &#x2F;&#x2F; minCapacity is usually close to size, so this is a win:</span><br><span class="line">        elementData &#x3D; Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>总结</strong></p>
-<ol>
-<li>当使用add方法的时候首先调用ensureCapacityInternal方法，传入size+1，检查是否需要扩充elementData数组的容量;</li>
-<li>newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1)，如果还不够，newCapacity = minCapacity；然后判断minCapacity是否大于MAX_ARRAY_SIZE(Integer.MAX_VALUE - 8)，如果大于，就取Integer.MAX_VALUE；</li>
-<li>扩容的主要方法：void grow(int minCapacity)</li>
-<li>ArrayList中copy数组的核心就是System.arraycopy方法，将original数组的所有数据复制到copy数组中。</li>
-</ol>
-<h3 id="4-Array和ArrayList的区别？什么时候用Array？"><a href="#4-Array和ArrayList的区别？什么时候用Array？" class="headerlink" title="4 Array和ArrayList的区别？什么时候用Array？"></a>4 Array和ArrayList的区别？什么时候用Array？</h3><p>Array类提供静态方法来动态创建和访问Java数组。<br>Array不可实例化。public final class Array {}</p>
-<p>Array可以包含基本类型和对象类型，ArrayList只能包含对象类型。<br>Array空间大小是固定的，空间不够时也不能再次申请；ArrayList空间是动态增长的，如果空间不够，可以进行扩容。</p>
-<p>如果一个列表的大小已经指定，大部分情况下是存储和遍历它们，Array更合适。<br>遍历基本数据类型，ArrayList如果确实要存放基本数据类型的数据，那只能存放基本数据类型对应的包装类型的数据。在数据的存取时可能会涉及到Java基本数据类型的自动装箱、自动拆箱。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>集合</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>collection</title>
     <url>/2021/11/15/11-15-Java/</url>
     <content><![CDATA[<h3 id="1-Java-Collection"><a href="#1-Java-Collection" class="headerlink" title="1 Java Collection"></a>1 Java Collection</h3><p>集合（也称为容器）是一个将多个元素组合成一个单元的对象。<br>常见的集合层次结构如下图：</p>
@@ -366,6 +304,68 @@
 <li>对于Queue接口，LinkedList是最常用的实现。</li>
 <li>对于Deque接口，ArrayDeque是最常用的实现。</li>
 </ol>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>集合</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>string</title>
+    <url>/2021/11/10/11-10-Java/</url>
+    <content><![CDATA[<h3 id="1-Java中String为什么是final？"><a href="#1-Java中String为什么是final？" class="headerlink" title="1 Java中String为什么是final？"></a>1 Java中String为什么是final？</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
+<p>安全性：String被许多的Java类(库)用来当做参数，例如：网络连接地址URL、文件路径path、还有反射机制所需要的String参数等，假若String不是固定不变的，将会引起各种安全隐患；<br>允许String对象缓存HashCode：Java中String对象的哈希码被频繁地使用，比如在HashMap等容器中。字符串不变性保证了hashcode的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是Java堆内存中一个特殊的存储区域，当创建一个String对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
+<h3 id="3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
+<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量，它的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。此类提供与StringBuffer兼容的API，但不保证同步。此类旨在用作StringBuffer的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。在可能的情况下，建议优先使用此类而不是StringBuffer，因为在大多数实现下它会更快。StringBuilder上的主要操作是append和insert方法，它们被重载以接受任何类型的数据。每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。append方法总是在构建器的末尾添加这些字符；insert方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
+<h3 id="2-递归和迭代的区别"><a href="#2-递归和迭代的区别" class="headerlink" title="2 递归和迭代的区别"></a>2 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中，问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远到近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
+<p>以斐波那契数列为例。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>递归容易产生“栈溢出”问题（stack overflow）。<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>string</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>list</title>
+    <url>/2021/11/17/11-17-Java/</url>
+    <content><![CDATA[<h3 id="1-ArrayList和LinkedList"><a href="#1-ArrayList和LinkedList" class="headerlink" title="1 ArrayList和LinkedList"></a>1 ArrayList和LinkedList</h3><p>ArrayList：List接口的可调整大小的数组实现。除了实现List接口之外，该类还提供了操作内部用于存储列表的数组大小的方法。（这个类大致相当于Vector，只是它是不同步的）。它提供恒定时间的位置访问，而且速度非常快。<br>它不必为List中的每个元素分配一个节点对象，当它必须同时移动多个元素时，它可以利用System.arraycopy。可以将ArrayList视为没有同步开销的Vector。</p>
+<p>LinkedList：List和Deque接口的双向链表实现。实现所有可选的列表操作，并允许所有元素（包括空值）。索引到列表中的操作将从开头或结尾遍历列表，以更接近指定索引的为准。</p>
+<p>如果您经常将元素添加到List的开头或遍历List以从其内部删除元素，则应考虑使用LinkedList。这些操作需要LinkedList中的常量时间和ArrayList中的线性时间。但是你在性能上付出了很大的代价。位置访问需要LinkedList中的线性时间和ArrayList中的常量时间。此外，LinkedList的常数因子要差得多。ArrayList通常更快。<br>ArrayList有一个调整参数——初始容量，它指的是ArrayList在必须增长之前可以容纳的元素数量，LinkedList没有调整参数。</p>
+<h3 id="2-ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？"><a href="#2-ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？" class="headerlink" title="2 ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？"></a>2 ArrayList实现RandomAccess接口有何作用，为什么LinkedList没有实现此接口？</h3><p>RandomAccess：List实现使用的标记接口来指示它们支持快速（通常是恒定时间）随机访问。此接口的主要目的是允许通用算法改变其行为，以在应用于随机或顺序访问列表时提供良好的性能。</p>
+<p>实现RandomAccess接口的List集合采用一般的for循环遍历，而未实现此接口则采用迭代器。即ArrayList一般采用for循环遍历，LinkedList一般采用迭代器遍历。<br>ArrayList用for循环遍历比iterator迭代器遍历快；LinkedList用iterator迭代器遍历比for循环遍历快。应该考虑到List集合的不同子类采用不同的遍历方式，能够提高性能。</p>
+<h3 id="3-ArrayList扩容分析"><a href="#3-ArrayList扩容分析" class="headerlink" title="3 ArrayList扩容分析"></a>3 ArrayList扩容分析</h3><p>private static final int DEFAULT_CAPACITY = 10;   // 默认初始容量<br>private static final Object[] EMPTY_ELEMENTDATA = {};  // 用于空实例的共享空数组实例<br>private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};  // 用于默认大小的空实例的共享空数组实例。我们将其与 EMPTY_ELEMENTDATA 区分开来，以了解添加第一个元素时要膨胀多少。<br>transient Object[] elementData;  // ArrayList的元素存储在其中的数组缓冲区。ArrayList的容量就是这个数组缓冲区的长度。添加第一个元素时，任何带有 elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA 的空 ArrayList 都将扩展为DEFAULT_CAPACITY。<br>private int size;  // ArrayList的大小（它包含的元素数）。<br><strong>构造方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ArrayList(int initialCapacity) &#123;</span><br><span class="line">        if (initialCapacity &gt; 0) &#123;</span><br><span class="line">            this.elementData &#x3D; new Object[initialCapacity];</span><br><span class="line">        &#125; else if (initialCapacity &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            this.elementData &#x3D; EMPTY_ELEMENTDATA;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</span><br><span class="line">                                               initialCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ArrayList() &#123;</span><br><span class="line">        this.elementData &#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA;</span><br><span class="line">    &#125;</span><br><span class="line">无参构造方法会将elementData初始化为一个空数组，插入元素时，扩容将会按默认值重新初始化数组。</span><br><span class="line">而有参的构造方法则会将elementData初始化为参数值大小（&gt;&#x3D;0）的数组。</span><br></pre></td></tr></table></figure>
+
+<p><strong>add方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">当调用add方法添加第一个元素时，会进行扩容至大小为DEFAULT_CAPACITY&#x3D;10。</span><br><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        ensureCapacityInternal(size + 1);  &#x2F;&#x2F; Increments modCount!!</span><br><span class="line">        elementData[size++] &#x3D; e;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">private void ensureCapacityInternal(int minCapacity) &#123;</span><br><span class="line">        ensureExplicitCapacity(calculateCapacity(elementData, minCapacity));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">private static int calculateCapacity(Object[] elementData, int minCapacity) &#123;</span><br><span class="line">        if (elementData &#x3D;&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA) &#123;</span><br><span class="line">            return Math.max(DEFAULT_CAPACITY, minCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">        return minCapacity;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>ensureCapacity、ensureExplicitCapacity方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">如有必要，增加此ArrayList实例的容量，以确保它至少可以容纳由最小容量参数指定的元素数量。</span><br><span class="line">public void ensureCapacity(int minCapacity) &#123;</span><br><span class="line">        int minExpand &#x3D; (elementData !&#x3D; DEFAULTCAPACITY_EMPTY_ELEMENTDATA)</span><br><span class="line">            &#x2F;&#x2F; any size if not default element table</span><br><span class="line">            ? 0</span><br><span class="line">            &#x2F;&#x2F; larger than default for default empty table. It&#39;s already</span><br><span class="line">            &#x2F;&#x2F; supposed to be at default size.</span><br><span class="line">            : DEFAULT_CAPACITY;</span><br><span class="line"></span><br><span class="line">        if (minCapacity &gt; minExpand) &#123;</span><br><span class="line">            ensureExplicitCapacity(minCapacity);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">private void ensureExplicitCapacity(int minCapacity) &#123;</span><br><span class="line">        modCount++;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; overflow-conscious code</span><br><span class="line">        if (minCapacity - elementData.length &gt; 0)</span><br><span class="line">            grow(minCapacity);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>grow方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">增加容量以确保它至少可以容纳由最小容量参数指定的元素数量。</span><br><span class="line">private void grow(int minCapacity) &#123;</span><br><span class="line">        &#x2F;&#x2F; overflow-conscious code</span><br><span class="line">        int oldCapacity &#x3D; elementData.length;</span><br><span class="line">        &#x2F;&#x2F; 扩容大小是原来的1.5倍</span><br><span class="line">        int newCapacity &#x3D; oldCapacity + (oldCapacity &gt;&gt; 1);</span><br><span class="line">        if (newCapacity - minCapacity &lt; 0)</span><br><span class="line">            newCapacity &#x3D; minCapacity;</span><br><span class="line">        if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</span><br><span class="line">            newCapacity &#x3D; hugeCapacity(minCapacity);</span><br><span class="line">        &#x2F;&#x2F; minCapacity is usually close to size, so this is a win:</span><br><span class="line">        elementData &#x3D; Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>总结</strong></p>
+<ol>
+<li>当使用add方法的时候首先调用ensureCapacityInternal方法，传入size+1，检查是否需要扩充elementData数组的容量;</li>
+<li>newCapacity = oldCapacity + (oldCapacity &gt;&gt; 1)，如果还不够，newCapacity = minCapacity；然后判断minCapacity是否大于MAX_ARRAY_SIZE(Integer.MAX_VALUE - 8)，如果大于，就取Integer.MAX_VALUE；</li>
+<li>扩容的主要方法：void grow(int minCapacity)</li>
+<li>ArrayList中copy数组的核心就是System.arraycopy方法，将original数组的所有数据复制到copy数组中。</li>
+</ol>
+<h3 id="4-Array和ArrayList的区别？什么时候用Array？"><a href="#4-Array和ArrayList的区别？什么时候用Array？" class="headerlink" title="4 Array和ArrayList的区别？什么时候用Array？"></a>4 Array和ArrayList的区别？什么时候用Array？</h3><p>Array类提供静态方法来动态创建和访问Java数组。<br>Array不可实例化。public final class Array {}</p>
+<p>Array可以包含基本类型和对象类型，ArrayList只能包含对象类型。<br>Array空间大小是固定的，空间不够时也不能再次申请；ArrayList空间是动态增长的，如果空间不够，可以进行扩容。</p>
+<p>如果一个列表的大小已经指定，大部分情况下是存储和遍历它们，Array更合适。<br>遍历基本数据类型，ArrayList如果确实要存放基本数据类型的数据，那只能存放基本数据类型对应的包装类型的数据。在数据的存取时可能会涉及到Java基本数据类型的自动装箱、自动拆箱。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -507,6 +507,35 @@
       </tags>
   </entry>
   <entry>
+    <title>thread_pool</title>
+    <url>/2021/11/24/11-24-Java/</url>
+    <content><![CDATA[<h3 id="1-线程池"><a href="#1-线程池" class="headerlink" title="1 线程池"></a>1 线程池</h3><p>线程池是一种工具，提供了一种限制和管理线程资源的方式。<br>降低资源消耗：通过重复利用已创建的线程可以降低线程创建和销毁所造成的消耗;<br>提高响应速度：当任务到达时，可以不需要等到线程创建就能立即执行;<br>提高线程的可管理性：线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public void execute(Runnable command) &#123;</span><br><span class="line">        if (command &#x3D;&#x3D; null)</span><br><span class="line">            throw new NullPointerException();</span><br><span class="line">        int c &#x3D; ctl.get();</span><br><span class="line">        &#x2F;&#x2F; 当前工作线程数 &lt; 核心线程数</span><br><span class="line">        if (workerCountOf(c) &lt; corePoolSize) &#123;</span><br><span class="line">            &#x2F;&#x2F; 创建新线程执行此任务</span><br><span class="line">            if (addWorker(command, true))</span><br><span class="line">                return;</span><br><span class="line">            c &#x3D; ctl.get();</span><br><span class="line">        &#125;</span><br><span class="line">        if (isRunning(c) &amp;&amp; workQueue.offer(command)) &#123;</span><br><span class="line">            int recheck &#x3D; ctl.get();</span><br><span class="line">            if (! isRunning(recheck) &amp;&amp; remove(command))</span><br><span class="line">                reject(command);</span><br><span class="line">            else if (workerCountOf(recheck) &#x3D;&#x3D; 0)</span><br><span class="line">                addWorker(null, false);</span><br><span class="line">        &#125;</span><br><span class="line">        else if (!addWorker(command, false))</span><br><span class="line">            reject(command);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>执行流程</strong><br>当任务来了之后，线程池的执行流程是：先判断当前线程数是否大于核心线程数？如果结果为false，则新建线程并执行任务；如果结果为true，则判断任务队列是否已满？如果结果为false，则把任务添加到任务队列中等待线程执行，否则则判断当前线程数量是否超过最大线程数？如果结果为false，则新建线程执行此任务，否则将执行线程池的拒绝策略。</p>
+<h3 id="2-创建线程池的参数"><a href="#2-创建线程池的参数" class="headerlink" title="2 创建线程池的参数"></a>2 创建线程池的参数</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              ThreadFactory threadFactory,</span><br><span class="line">                              RejectedExecutionHandler handler) &#123;</span><br><span class="line">        if (corePoolSize &lt; 0 ||</span><br><span class="line">            maximumPoolSize &lt;&#x3D; 0 ||</span><br><span class="line">            maximumPoolSize &lt; corePoolSize ||</span><br><span class="line">            keepAliveTime &lt; 0)</span><br><span class="line">            throw new IllegalArgumentException();</span><br><span class="line">        if (workQueue &#x3D;&#x3D; null || threadFactory &#x3D;&#x3D; null || handler &#x3D;&#x3D; null)</span><br><span class="line">            throw new NullPointerException();</span><br><span class="line">        this.acc &#x3D; System.getSecurityManager() &#x3D;&#x3D; null ?</span><br><span class="line">                null :</span><br><span class="line">                AccessController.getContext();</span><br><span class="line">        this.corePoolSize &#x3D; corePoolSize;</span><br><span class="line">        this.maximumPoolSize &#x3D; maximumPoolSize;</span><br><span class="line">        this.workQueue &#x3D; workQueue;</span><br><span class="line">        this.keepAliveTime &#x3D; unit.toNanos(keepAliveTime);</span><br><span class="line">        this.threadFactory &#x3D; threadFactory;</span><br><span class="line">        this.handler &#x3D; handler;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>corePoolSize</strong><br>corePoolSize是保持活动状态（不允许超时）的最小工作线程数，除非设置了allowCoreThreadTimeOut，在这种情况下，最小值为零。<br>线程池中会维护一个最小的线程数量，即使这些线程处于空闲状态，也不会被销毁。<br>allowCoreThreadTimeOut，如果为false（默认），则核心线程即使在空闲时也保持活动状态。如果为true，则核心线程使用keepAliveTime超时等待工作。</p>
+<p>当提交一个任务到线程池时，如果当前poolSize &lt; corePoolSize，线程池会创建一个线程来执行任务，即使其他空闲的基本线程也能够执行新任务，它也会创建线程，当前线程数量大于corePoolSize时就不再创建。如果调用了线程池的prestartAllCoreThreads()方法，线程池会提前创建并启动所有基本线程。</p>
+<p><strong>maximumPoolSize</strong><br>最大池大小（线程池最大线程数量）。请注意，实际最大值在内部由容量限制。</p>
+<p><strong>keepAliveTime</strong><br>空闲线程等待工作的超时（纳秒）。当存在多个corePoolSize或allowCoreThreadTimeOut时，线程使用此超时。否则，他们将永远等待新的工作。<br>一个线程如果处于空闲状态，并且当前线程数量大于corePoolSize，那么在指定时间后，这个空闲线程会被销毁，这里的指定时间由keepAliveTime设定。<br>只有当线程池中的线程数量大于corePoolSize时keepAliveTime才会起作用。</p>
+<p><strong>unit</strong><br>表示给定粒度单位的持续时间，并提供实用方法来跨单位转换，并在这些单位中执行计时和延迟操作。</p>
+<p><strong>workQueue</strong><br>BlockingQueue<Runnable> workQueue，用于保存任务并将其传递给工作线程的队列。</p>
+<p><strong>threadFactory</strong><br>ThreadFactory threadFactory，新线程的工厂，所有线程都是使用此工厂创建的（通过addWorker方法）。</p>
+<p><strong>handler</strong><br>RejectedExecutionHandler handler，在执行中饱和或关闭时调用的处理程序。队列和线程池都满了，说明线程池处于饱和状态，那么必须采取一种策略处理新提交的任务。这个策略默认情况下是AbortPolicy，表示无法处理新任务时抛出异常。</p>
+<p><strong>拒绝策略</strong><br>AbortPolicy：直接丢弃任务，并抛出RejectedExecutionException异常。<br>CallerRunsPolicy：把任务交给添加此任务的（main）主线程来执行。<br>DiscardOldestPolicy：抛弃进入队列最早的那个任务，并尝试执行当前任务。<br>DiscardPolicy：直接丢弃任务。</p>
+<p><strong>workQueue</strong><br>ArrayBlockingQueue：基于数组的有界阻塞队列。此队列对元素FIFO（先进先出）进行排序。队列的头部是在队列中停留时间最长的那个元素。队列的尾部是在队列中停留时间最短的那个元素。新元素插入队列尾部，队列检索操作获取队列头部元素。<br>ArrayBlockingQueue在创建时必须设置大小，当线程数量大于corePoolSize时，新任务被缓存到该阻塞队列中，任务缓存的数量只能为创建时设置的大小；若该阻塞队列满，则会为新的任务创建线程，直到线程池中的线程总数&gt;maximumPoolSize。</p>
+<p>LinkedBlockingQueue：基于链表的可选有界阻塞队列。此队列对元素FIFO（先进先出）进行排序。链接队列通常比基于数组的队列具有更高的吞吐量，但在大多数并发应用程序中的可预测性较差。静态工厂方法Executors.newFixedThreadPool()使用了这个队列。</p>
+<p>SynchronousQueue：一个阻塞队列，其中每个插入操作都必须等待另一个线程执行相应的移除操作，反之亦然。同步队列没有任何内部容量，甚至没有一个容量。您无法查看同步队列，因为元素仅在您尝试删除它时才存在；你不能插入一个元素（使用任何方法），除非另一个线程试图删除它；你不能迭代，因为没有什么可以迭代的。此队列不允许空元素。静态工厂方法Executors.newCachedThreadPool()使用了这个队列。</p>
+<p>一个不缓存任务的阻塞队列，生产者放入一个任务必须等到消费者取出这个任务。也就是说新任务进来时，不会缓存，而是直接执行该任务，如果没有可用线程，则创建新线程，如果线程数量达到maxPoolSize，则执行拒绝策略。</p>
+<p>PriorityBlockingQueue：具有优先级的无界阻塞队列，优先级通过参数Comparator实现。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>线程池</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>create_thread_pool</title>
     <url>/2021/11/26/11-26-Java/</url>
     <content><![CDATA[<h3 id="1-创建线程池的方式"><a href="#1-创建线程池的方式" class="headerlink" title="1 创建线程池的方式"></a>1 创建线程池的方式</h3><p>通过<strong>ThreadPoolExecutor</strong>类的构造方法实现</p>
@@ -525,37 +554,6 @@
 <p><strong>ConcurrentLinkedQueue</strong><br>基于链接节点的无界线程安全队列。此队列对元素FIFO（先进先出）进行排序。队列的头部是在队列中停留时间最长的那个元素。队列的尾部是在队列中停留时间最短的那个元素。新元素插入队列尾部，队列检索操作获取队列头部元素。<br>当多个线程将共享对公共集合的访问时，ConcurrentLinkedQueue是合适的选择。与大多数其他并发集合实现一样，此类不允许使用空元素。</p>
 <p><strong>BlockingQueue</strong><br>一个Queue额外支持在检索元素时等待队列变为非空的操作，并在存储元素时等待队列中有可用空间。<br>在队列为空时，获取元素的线程会等待队列变为非空。当队列满时，存储元素的线程会等待队列有可用空间。阻塞队列常用于生产者-消费者的场景，生产者是往队列里添加元素的线程，消费者是从队列里拿元素的线程。<br>BlockingQueue是一个接口，继承了Queue。<br>BlockingQueue的实现类有ArrayBlockingQueue、DelayQueue、LinkedBlockingDeque、PriorityBlockingQueue、SynchronousQueue。</p>
 <p><strong>ConcurrentSkipListMap</strong><br>一个可扩展的并发ConcurrentNavigableMap实现。映射根据其键的自然顺序进行排序，或者通过映射创建时提供的Comparator进行排序，具体取决于使用的构造函数。<br>此类实现了SkipLists的并发变体，为containsKey、get、put和remove操作及其变体提供预期的平均log(n)时间成本。插入、移除、更新和访问操作由多个线程安全地并发执行。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>线程池</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>thread_pool</title>
-    <url>/2021/11/24/11-24-Java/</url>
-    <content><![CDATA[<h3 id="1-线程池"><a href="#1-线程池" class="headerlink" title="1 线程池"></a>1 线程池</h3><p>线程池提供了一种限制和管理资源的方式。<br><strong>好处</strong><br>降低资源消耗：通过重复利用已创建的线程可以降低线程创建和销毁造成的消耗;<br>提高响应速度：当任务到达时，可以不需要等到线程创建就能立即执行;<br>提高线程的可管理性：线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。</p>
-<h3 id="2-创建线程池的参数"><a href="#2-创建线程池的参数" class="headerlink" title="2 创建线程池的参数"></a>2 创建线程池的参数</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              ThreadFactory threadFactory,</span><br><span class="line">                              RejectedExecutionHandler handler) &#123;</span><br><span class="line">        if (corePoolSize &lt; 0 ||</span><br><span class="line">            maximumPoolSize &lt;&#x3D; 0 ||</span><br><span class="line">            maximumPoolSize &lt; corePoolSize ||</span><br><span class="line">            keepAliveTime &lt; 0)</span><br><span class="line">            throw new IllegalArgumentException();</span><br><span class="line">        if (workQueue &#x3D;&#x3D; null || threadFactory &#x3D;&#x3D; null || handler &#x3D;&#x3D; null)</span><br><span class="line">            throw new NullPointerException();</span><br><span class="line">        this.acc &#x3D; System.getSecurityManager() &#x3D;&#x3D; null ?</span><br><span class="line">                null :</span><br><span class="line">                AccessController.getContext();</span><br><span class="line">        this.corePoolSize &#x3D; corePoolSize;</span><br><span class="line">        this.maximumPoolSize &#x3D; maximumPoolSize;</span><br><span class="line">        this.workQueue &#x3D; workQueue;</span><br><span class="line">        this.keepAliveTime &#x3D; unit.toNanos(keepAliveTime);</span><br><span class="line">        this.threadFactory &#x3D; threadFactory;</span><br><span class="line">        this.handler &#x3D; handler;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p><strong>执行流程</strong></p>
-<ul>
-<li>判断当前线程池存活的线程数是否低于corePoolSize，如果低于corePoolSize就创建线程来执行；如果达到corePoolSize就把任务放入工作队列等待调度执行。</li>
-<li>当工作队列中任务满了，且存活线程数大于corePoolSize但是低于maximumPoolSize时，也通过创建线程来执行。如果线程数达到maximumPoolSize了，继续提交任务就交由RejectedExecutionHandler来执行拒绝操作。</li>
-</ul>
-<p><strong>corePoolSize</strong><br>corePoolSize是保持活动状态（不允许超时）的最小工作线程数，除非设置了allowCoreThreadTimeOut，在这种情况下，最小值为零。<br>线程池中会维护一个最小的线程数量，即使这些线程处于空闲状态，也不会被销毁。<br>allowCoreThreadTimeOut，如果为false（默认），则核心线程即使在空闲时也保持活动状态。如果为true，则核心线程使用keepAliveTime超时等待工作。</p>
-<p>当提交一个任务到线程池时，如果当前poolSize &lt; corePoolSize，线程池会创建一个线程来执行任务，即使其他空闲的基本线程也能够执行新任务，它也会创建线程，当前线程数量大于corePoolSize时就不再创建。如果调用了线程池的prestartAllCoreThreads()方法，线程池会提前创建并启动所有基本线程。</p>
-<p><strong>maximumPoolSize</strong><br>最大池大小（线程池最大线程数量）。请注意，实际最大值在内部由容量限制。</p>
-<p><strong>keepAliveTime</strong><br>空闲线程等待工作的超时（纳秒）。当存在多个corePoolSize或allowCoreThreadTimeOut时，线程使用此超时。否则，他们将永远等待新的工作。<br>一个线程如果处于空闲状态，并且当前线程数量大于corePoolSize，那么在指定时间后，这个空闲线程会被销毁，这里的指定时间由keepAliveTime设定。<br>只有当线程池中的线程数量大于corePoolSize时keepAliveTime才会起作用。</p>
-<p><strong>unit</strong><br>表示给定粒度单位的持续时间，并提供实用方法来跨单位转换，并在这些单位中执行计时和延迟操作。</p>
-<p><strong>workQueue</strong><br>BlockingQueue<Runnable> workQueue，用于保存任务并将其传递给工作线程的队列。</p>
-<p><strong>threadFactory</strong><br>ThreadFactory threadFactory，新线程的工厂，所有线程都是使用此工厂创建的（通过addWorker方法）。</p>
-<p><strong>handler</strong><br>RejectedExecutionHandler handler，在执行中饱和或关闭时调用的处理程序。队列和线程池都满了，说明线程池处于饱和状态，那么必须采取一种策略处理新提交的任务。这个策略默认情况下是AbortPolicy，表示无法处理新任务时抛出异常。</p>
-<p>拒绝策略<br>AbortPolicy：直接丢弃任务，并抛出RejectedExecutionException异常。<br>CallerRunsPolicy：在调用者线程中直接执行被拒绝任务的run方法，除非线程池已经shutdown，则直接抛弃任务。<br>DiscardOldestPolicy：抛弃进入队列最早的那个任务，并尝试执行当前任务。<br>DiscardPolicy：直接丢弃任务。</p>
-<p>workQueue的选择（阻塞队列的选择）<br>ArrayBlockingQueue：基于数组的有界阻塞队列。此队列对元素FIFO（先进先出）进行排序。队列的头部是在队列中停留时间最长的那个元素。队列的尾部是在队列中停留时间最短的那个元素。新元素插入队列尾部，队列检索操作获取队列头部元素。<br>ArrayBlockingQueue在创建时必须设置大小，当线程数量大于corePoolSize时，新任务被缓存到该阻塞队列中，任务缓存的数量只能为创建时设置的大小；若该阻塞队列满，则会为新的任务创建线程，直到线程池中的线程总数&gt;maximumPoolSize。</p>
-<p>LinkedBlockingQueue：基于链表的可选有界阻塞队列。此队列对元素FIFO（先进先出）进行排序。链接队列通常比基于数组的队列具有更高的吞吐量，但在大多数并发应用程序中的可预测性较差。静态工厂方法Executors.newFixedThreadPool()使用了这个队列。</p>
-<p>SynchronousQueue：一个阻塞队列，其中每个插入操作都必须等待另一个线程执行相应的移除操作，反之亦然。同步队列没有任何内部容量，甚至没有一个容量。您无法查看同步队列，因为元素仅在您尝试删除它时才存在；你不能插入一个元素（使用任何方法），除非另一个线程试图删除它；你不能迭代，因为没有什么可以迭代的。此队列不允许空元素。静态工厂方法Executors.newCachedThreadPool()使用了这个队列。<br>一个不缓存任务的阻塞队列，生产者放入一个任务必须等到消费者取出这个任务。也就是说新任务进来时，不会缓存，而是直接被调度执行该任务，如果没有可用线程，则创建新线程，如果线程数量达到maxPoolSize，则执行拒绝策略。</p>
-<p>PriorityBlockingQueue：具有优先级的无界阻塞队列，优先级通过参数Comparator实现。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -598,62 +596,6 @@
       </tags>
   </entry>
   <entry>
-    <title>mysql_index</title>
-    <url>/2021/11/27/11-27-Mysql/</url>
-    <content><![CDATA[<h3 id="1-索引"><a href="#1-索引" class="headerlink" title="1 索引"></a>1 索引</h3><p>索引的出现是为了提高数据的查询效率，就像书的目录一样。<br>MySQL索引的实现通常使用B树及其变种B+树。MySQL中使用较多的索引有Hash索引、B+树索引等。InnoDB存储引擎的默认索引实现为B+树索引。</p>
-<p>但是为表设置索引需要付出代价：一是增加了数据库的存储空间，二是在插入和修改数据时要花费较多的时间(因为索引也要随之变动)。</p>
-<p>建立索引的原则：<br>在频繁使用的、用以缩小查询范围的字段上建立索引；<br>在频繁使用的、需要排序的字段上建立索引。</p>
-<h3 id="2-索引分类"><a href="#2-索引分类" class="headerlink" title="2 索引分类"></a>2 索引分类</h3><p>数据结构角度：树索引、hash索引。<br>物理存储角度：聚簇索引、非聚簇索引。<br><strong>逻辑角度</strong>：普通索引、唯一索引、主键索引、联合索引、全文索引。<br>InnoDB主键使用的是聚簇索引，MyISAM不管是主键，还是二级索引使用的都是非聚簇索引。</p>
-<p>聚簇索引（主键索引）：<strong>按照每张表的主键构造一颗B+树，同时叶子节点存放表的记录数据</strong>。特点是存储数据的顺序和索引顺序一致。一般情况下主键会默认创建聚簇索引，且一张表只允许存在一个聚簇索引。</p>
-<p>非聚簇索引（辅助索引）：B+Tree叶子节点的data域存放的是数据记录的地址。在索引检索的时候，首先按照B+Tree搜索算法搜索索引，如果指定的Key存在，则取出其data域的值，然后以data域的值为地址读取相应的数据记录。索引文件和数据文件是独立分开的。</p>
-<p>聚簇索引的叶子节点就是数据节点，而非聚簇索引的叶子节点仍然是索引节点，只不过有指向对应数据的指针。</p>
-<p>哈希索引：哈希索引能以O(1)时间进行查找，但是失去了有序性。无法用于排序与分组、只支持精确查找，无法用于部分查找和范围查找。</p>
-<p>Mysql中InnoDB引擎有一个特殊的功能叫做自适应哈希索引，它会在内存中基于B+Tree索引的基础上创建一个哈希索引，这让B+Tree索引具备了一些哈希索引的优点。</p>
-<h3 id="3-索引为什么能提高查询速度？"><a href="#3-索引为什么能提高查询速度？" class="headerlink" title="3 索引为什么能提高查询速度？"></a>3 索引为什么能提高查询速度？</h3><p>MySQL的基本存储结构是页(记录都存在页里边)。各个数据页组成一个双向链表。每个数据页中的记录又组成一个单向链表。</p>
-<p>普通sql语句查询过程：<br>定位到记录所在的页，需要遍历双向链表，找到所在的页。<br>从所在的页中查找相应的记录，由于不是根据主键查询，只能遍历所在页的单链表了。时间复杂度0（n）。</p>
-<p>没有用索引我们是需要遍历双向链表来定位对应的页，用了索引之后通过“页目录”就可以很快地定位到对应的页！（二分查找，时间复杂度近似为O(logn)）</p>
-<h3 id="4-为什么InnoDB存储引擎选用B-树而不是B树？"><a href="#4-为什么InnoDB存储引擎选用B-树而不是B树？" class="headerlink" title="4 为什么InnoDB存储引擎选用B+树而不是B树？"></a>4 为什么InnoDB存储引擎选用B+树而不是B树？</h3><p>主要考虑的是IO对性能的影响，B树的每个节点都存储数据，而B+树只有叶子节点才存储数据，所以查找相同数据量的情况下，B树的高度大，IO更频繁。</p>
-<h3 id="5-最左前缀原则"><a href="#5-最左前缀原则" class="headerlink" title="5 最左前缀原则"></a>5 最左前缀原则</h3><p>MySQL中的索引可以以一定的顺序引用多列，这种索引就叫作联合索引。<br>比如User表的name和age字段加联合索引就是(name,age)，最左前缀原则指的是，<strong>查询的时候查询条件精确匹配索引的左边连续一列或几列</strong>。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select * from user where name&#x3D;xx and age&#x3D;xx ; &#x2F;&#x2F; 可以命中索引</span><br><span class="line">select * from user where name&#x3D;xx ; &#x2F;&#x2F; 可以命中索引</span><br><span class="line">select * from user where age&#x3D;xx; &#x2F;&#x2F; 无法命中索引</span><br></pre></td></tr></table></figure>
-<p>需要注意的是，查询的时候如果两个条件都用上了，但是顺序不同，如age = xx and name = xx，那么MySQL的查询优化器会自动调整 where 子句的条件顺序以使用适合的索引，这样是能够命中索引的。</p>
-<p>原理：<br>b+树的数据项是复合的数据结构，比如查询(name,age,sex)的时候，b+树是按照从左到右的顺序来建立搜索树的，比如当(张三,20,F)这样的数据来检索的时候，b+树会优先比较name来确定下一步的搜索方向，如果name相同再依次比较age和sex，最后得到检索的数据；但当(20,F)这样的没有name的数据来的时候，b+树就不知道第一步该查哪个节点，因为建立搜索树的时候name就是第一个比较因子，必须要先根据name来搜索才能知道下一步去哪里查询。<br>比如当(张三, F)这样的数据来检索时，b+树可以用name来指定搜索方向，但下一个字段age缺失，所以只能把名字等于张三的数据都找到，然后再匹配性别是F的数据了，这个是非常重要的性质，即索引的最左前缀原则。</p>
-<p>mysql会一直向右匹配直到遇到范围查询（&gt;、&lt;、between、like）就停止匹配。范围列可以用到索引，但是范围列后面的列无法用到索引。</p>
-<p><strong>覆盖索引</strong><br>如果一个索引包含所有需要的查询字段的值，我们称之为覆盖索引。覆盖索引是非常有用的工具，能够极大的提高性能。因为，只需要读取索引，而无需读表，极大减少数据访问量。</p>
-<h3 id="6-什么情况下索引会失效（查询不走索引）？"><a href="#6-什么情况下索引会失效（查询不走索引）？" class="headerlink" title="6 什么情况下索引会失效（查询不走索引）？"></a>6 什么情况下索引会失效（查询不走索引）？</h3><ul>
-<li>索引列参与表达式计算或函数运算</li>
-<li>like查询是以%开头，索引失效；以%结尾，索引有效</li>
-<li>查询条件中有or，即使其中有条件带索引也不会使用</li>
-<li>如果mysql估计使用全表扫描要比使用索引快，则不使用索引</li>
-<li>正则表达式不使用索引</li>
-</ul>
-<h3 id="7-一条SQL语句执行很慢的原因有哪些？"><a href="#7-一条SQL语句执行很慢的原因有哪些？" class="headerlink" title="7 一条SQL语句执行很慢的原因有哪些？"></a>7 一条SQL语句执行很慢的原因有哪些？</h3><p>1、大多数情况是正常的，只是偶尔会出现很慢的情况。<br>SQL语句的书写本身应该没有什么问题。</p>
-<ul>
-<li>数据库在刷新脏页<br>当我们要往数据库插入一条数据或者要更新一条数据的时候，我们知道数据库会在内存中把对应字段的数据更新，但是更新之后，这些更新的字段并不会马上同步持久化到磁盘中去，而是先把这些更新的记录写入到redo log日志中去，等到空闲的时候，再通过redo log日志把最新的数据同步到磁盘中去。<br>当内存数据页跟磁盘数据页内容不一致的时候，我们称这个内存页为“脏页”。内存数据写入到磁盘后，内存和磁盘上的数据页的内容就一致了，称为“干净页”。</li>
-<li>拿不到锁<br>我们要执行的这条语句涉及到别的表，别人在用并且加锁了，我们拿不到锁，只能等待别人释放锁了。</li>
-</ul>
-<p>2、在数据量不变的情况下，这条SQL语句一直以来都执行的很慢。</p>
-<ul>
-<li>未用上索引</li>
-<li>数据库选错了索引</li>
-</ul>
-<h3 id="8-水平拆分与垂直拆分"><a href="#8-水平拆分与垂直拆分" class="headerlink" title="8 水平拆分与垂直拆分"></a>8 水平拆分与垂直拆分</h3><p>水平拆分：将同一个表中的记录拆分到多个结构相同的表中。当一个表的数据不断增多时，水平拆分是必然的选择，它可以将数据分布到集群的不同节点上，从而缓存单个数据库的压力。水平拆分可以支撑非常大的数据量。</p>
-<p>垂直拆分：指数据表列的拆分，把一张列比较多的表拆分为多张表。通常是按照列的关系密集程度进行拆分，也可以利用垂直拆分将经常被使用的列和不经常被使用的列拆分到不同的表中。</p>
-<h3 id="9-主从复制"><a href="#9-主从复制" class="headerlink" title="9 主从复制"></a>9 主从复制</h3><p>主从复制：就是建立一个和主数据库完全一样的数据库环境，称为从数据库。<br>做数据的热备份，作为后备数据库，主数据库服务器故障后，可切换到从数据库继续工作，避免数据丢失。<br>架构的扩展。随着业务量越来越大，I/O访问频率越高，单机无法满足，此时做多库的存储，降低磁盘I/O访问的评率，提高单个机器的I/O性能。<br>读写分离，主库负责写，从库负责读，使数据库能支持更大的并发。</p>
-<p>三个线程</p>
-<ol>
-<li>bin log线程：负责将主服务器上的数据更改写入二进制日志（Binary log）中。</li>
-<li>I/O线程：负责从主服务器上读取二进制日志，并写入从服务器的重放日志（Relay log）中。</li>
-<li>SQL线程：负责读取重放日志并重放其中的SQL语句。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>jvm</title>
     <url>/2021/11/27/11-27-Java/</url>
     <content><![CDATA[<h3 id="1-JVM主要组成部分及其作用"><a href="#1-JVM主要组成部分及其作用" class="headerlink" title="1 JVM主要组成部分及其作用"></a>1 JVM主要组成部分及其作用</h3><ul>
@@ -680,6 +622,68 @@
 <p>运行时常量池（Runtime Constant Pool）是方法区的一部分。Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池表，用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后存放到方法区的运行时常量池中。<br>Java虚拟机对Class文件每一部分（当然也包括常量池）的格式都有严格的规定，每一个字节用于存储哪种数据都必须符合规范上的要求才会被虚拟机认可、装载和执行。</p>
 <p>直接内存（Direct Memory）并不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。但是这部分内存也被频繁地使用，而且也可能导致OutOfMemoryError异常。</p>
 <p>本机直接内存的分配不会受到Java堆大小的限制。但是，既然是内存，肯定还是会受到本机总内存大小以及处理器寻址空间的限制。如果各个内存区域总和大于物理内存限制，会导致动态扩展时出现OutOfMemoryError异常。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>jvm_gc</title>
+    <url>/2021/12/04/12-04-Java/</url>
+    <content><![CDATA[<h3 id="1-分代收集理论中新生代和老年代采用的收集算法"><a href="#1-分代收集理论中新生代和老年代采用的收集算法" class="headerlink" title="1 分代收集理论中新生代和老年代采用的收集算法"></a>1 分代收集理论中新生代和老年代采用的收集算法</h3><p>新生代（主要是复制算法）</p>
+<ol>
+<li>把新生代分为一块较大的Eden空间和两块较小的Survivor（Survivor0，Survivor1）空间，每次分配内存只使用Eden和其中一块Survivor。</li>
+<li>HotSpot虚拟机默认Eden和Survivor的大小比例为8：1。垃圾收集时，将Eden和Survivor0中仍然存活的对象一次性复制到Survivor1空间上，然后直接清理掉Eden和Survivor0空间。</li>
+<li>当Survivor1区域不足以存放Eden和Survivor0区域的存活对象时，就将存活对象直接存放到老年代。若是老年代也满了就会触发一次Full GC，也就是新生代、老年代都进行回收。</li>
+</ol>
+<p>老年代（主要是Mark-Compact算法）</p>
+<ol>
+<li>在新生代中经历了N次垃圾回收后仍然存活的对象，就会被放到老年代中。因此，可以认为老年代中存放的都是一些生命周期比较长的对象。</li>
+<li>当老年代内存满时会触发Full GC，Full GC发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
+</ol>
+<h3 id="2-常用的垃圾收集器"><a href="#2-常用的垃圾收集器" class="headerlink" title="2 常用的垃圾收集器"></a>2 常用的垃圾收集器</h3><ol>
+<li>Serial，它是最古老的垃圾收集器，这是一个单线程工作的收集器，“单线程”强调的是在它进行垃圾收集时，必须暂停其它所有工作线程，直到它收集结束。它会进入臭名昭著的“Stop The World”状态。当然，其单线程设计也意味着精简的GC实现，无需维护复杂的数据结构，初始化也简单，所以一直是Client模式下默认新生代收集器。</li>
+<li>Serial Old，它是Serial收集器的老年代版本，同样是一个单线程收集器，使用了标记-整理（Mark-Compact）算法。</li>
+<li>ParNew，是一款新生代收集器，它实际上是Serial的多线程并行版本，最常见的应用场景是配合老年代的CMS工作。</li>
+<li>Parrallel Scavenge，它是一款新生代收集器，基于复制算法实现的收集器。它的目标是达到一个可扩展的吞吐量，也被称为“吞吐量优先收集器”。</li>
+<li>Parrallel Old，它是Parrallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法实现。</li>
+<li>CMS（Concurrent Mark Sweep），基于标记-清除（Mark-Sweep）算法实现，设计目标是尽量缩短停顿时间，这一点对于Web等反应时间敏感的应用非常重要。一直到今天，仍然有很多系统使用CMS GC。但是，CMS采用的标记-清除算法，存在内存碎片化问题，所以难以避免在长时间运行情况下发生full GC，导致恶劣的停顿。另外，既然强调了并发（Concurrent），CMS会占用更多CPU资源，并和用户线程争抢。</li>
+<li>G1（Garbage First），这是一种兼顾吞吐量和停顿时间的GC实现，是Oracle JDK 9以后的默认GC选项，主要面向服务端应用的垃圾收集器。</li>
+</ol>
+<h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>它开创了收集器面向<strong>局部收集</strong>的设计思路和基于<strong>Region</strong>的堆内存布局形式。<br>一般的垃圾收集器收集范围要么是整个新生代、要么是整个老年代，再要么是整个Java堆。而G1可以面向堆内存任何部分来组成回收集（collection set）进行回收。<br>G1把连续的Java堆划分为多个大小相等的独立区域（region），每一个region都可以扮演新生代的Eden空间、Survivor空间或者老年代空间。<br>为了达到对回收时间的可预计性，G1在扫描了region以后，对其中活跃对象的大小进行排序，会首先收集那些活跃对象小的region，以便快速回收空间（要复制的活跃对象少了）。因为活跃对象小，可以认为多数对象都是垃圾，所以这种方式被称为Garbage First（G1）的垃圾回收算法。</p>
+<p><strong>cms vs g1</strong></p>
+<h3 id="4-内存分配的理解？大对象怎么分配？空间分配担保？"><a href="#4-内存分配的理解？大对象怎么分配？空间分配担保？" class="headerlink" title="4 内存分配的理解？大对象怎么分配？空间分配担保？"></a>4 内存分配的理解？大对象怎么分配？空间分配担保？</h3><ol>
+<li>对象优先在Eden分配。大多数情况下，对象在新生代Eden区中分配，当Eden区没有足够空间进行分配时，虚拟机将发起一次Minor GC。</li>
+<li>大对象直接进入老年代。大对象是指需要大量连续内存空间的Java对象，最典型的大对象便是那种很长的字符串，或者元素数量很庞大的数组。经常出现提前触发垃圾收集以获取足够的连续空间分配给大对象的情况。虚拟机提供了-XX:PretenureSizeThreshold参数，大于此值的对象直接在老年代分配，避免在Eden区和两个Survivor区之间的大量内存复制。</li>
+<li>长期存活的对象进入老年代。虚拟机给每个对象定义了一个对象年龄计数器，存储在对象头中。对象通常在Eden区诞生，如果经过一次Minor GC后依然存活，并且能被Survivor容纳的话，该对象会被移动到Survivor空间，并将其对象年龄增加1岁，当它的年龄增加到一定程度（默认为15），就移动到老年代中。</li>
+<li>动态对象年龄判定。为了更好的适应不同程序的内存情况，虚拟机不是永远要求对象年龄必须达到了阙值才能进入老年代，如果Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需等到阙值要求的年龄。</li>
+<li>空间分配担保。在发生Minor GC之前，虚拟机必须先检查老年代中最大可用的连续空间是否大于新生代所有对象总空间，如果大于的话，那么这一次Minor GC可以确保是安全的。</li>
+</ol>
+<h3 id="5-jvm性能监控、故障处理工具"><a href="#5-jvm性能监控、故障处理工具" class="headerlink" title="5 jvm性能监控、故障处理工具"></a>5 jvm性能监控、故障处理工具</h3><p>jps（jvm process status tool，虚拟机进程状况工具）：可以列出正在运行的虚拟机进程。<br>jstat（jvm statistics monitoring tool，虚拟机统计信息监视工具）：可以显示虚拟机进程中的类加载、内存、垃圾收集等运行时数据。<br>jinfo（Configuration info for Java，Java配置信息工具）：实时查看和调整虚拟机各项参数。<br>jmap（memory map for java，Java内存映像工具）：用于生成堆转储快照。<br>jhat（jvm heap analysis tool，虚拟机堆转储快照分析工具）：与jmap搭配使用，来分析jmap生成的堆转储快照。<br>jstack（stack trace for Java，Java堆栈跟踪工具）：用于生成虚拟机当前时刻的线程快照。</p>
+<h3 id="6-class类文件的结构"><a href="#6-class类文件的结构" class="headerlink" title="6 class类文件的结构"></a>6 class类文件的结构</h3><p>Class文件结构采用一种类似于C语言结构体的伪结构来存储数据，有两种数据类型，“无符号数”和“表”。<br>无符号数属于基本数据类型，以u1，u2，u4，u8来分别代表1个字节，2个字节，4个字节，8个字节的无符号数，无符号数可以用来描述数字，索引引用、数量值或者字符串值。<br>表是由多个无符号数或者其它表作为数据项构成的复合数据类型，习惯性地以_info结尾。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic;</span><br><span class="line">    u2             minor_version;</span><br><span class="line">    u2             major_version;</span><br><span class="line">    u2             constant_pool_count;</span><br><span class="line">    cp_info        constant_pool[constant_pool_count-1];</span><br><span class="line">    u2             access_flags;</span><br><span class="line">    u2             this_class;</span><br><span class="line">    u2             super_class;</span><br><span class="line">    u2             interfaces_count;</span><br><span class="line">    u2             interfaces[interfaces_count];</span><br><span class="line">    u2             fields_count;</span><br><span class="line">    field_info     fields[fields_count];</span><br><span class="line">    u2             methods_count;</span><br><span class="line">    method_info    methods[methods_count];</span><br><span class="line">    u2             attributes_count;</span><br><span class="line">    attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每个Class文件的头4个字节称为魔数（magic number），它的值固定为0xCAFEBABE，作用是确定这个文件是否是一个能被虚拟机接受的Class文件。<br>紧接着魔数的4个字节存储的是Class文件的版本号。第五和第六个字节是次版本号，第七和第八个字节是主版本号。<br>在主次版本号之后是常量池入口。常量池主要存放两大类常量：字面量和符号引用。</p>
+<h3 id="7-部分收集与整堆收集"><a href="#7-部分收集与整堆收集" class="headerlink" title="7 部分收集与整堆收集"></a>7 部分收集与整堆收集</h3><p>部分收集</p>
+<ul>
+<li>新生代收集（Minor GC）：目标只是新生代的垃圾收集。</li>
+<li>老年代收集（Major GC）：目标只是老年代的垃圾收集。目前只有CMS收集器会有单独收集老年代的行为。注意：有些场合“Major GC”是指整堆收集。</li>
+<li>混合收集（Mixed GC）：目标是收集整个新生代以及部分老年代的垃圾收集。目前只有G1收集器会有这种行为。</li>
+</ul>
+<p>整堆收集</p>
+<ul>
+<li>Full GC：目标是整个Java堆和方法区的垃圾收集。</li>
+</ul>
+<h3 id="8-堆栈的区别"><a href="#8-堆栈的区别" class="headerlink" title="8 堆栈的区别"></a>8 堆栈的区别</h3><ul>
+<li>堆存放的是对象实例。</li>
+<li>栈存放的是局部变量，操作数栈等信息。</li>
+<li>堆是所有线程所共享的一块内存区域，在虚拟机启动时创建。</li>
+<li>栈是线程私有的。</li>
+<li>栈的性能比堆要快，仅次于CPU中的寄存器。但是，在分配内存的时候，存放在栈中的数据大小与生存周期必须在编译时是确定的，缺乏灵活性。</li>
+<li>堆可以动态分配内存大小，编译器不必知道要从堆里分配多少存储空间，生存周期也不必事先告诉编译器。</li>
+</ul>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -753,91 +757,59 @@
       </tags>
   </entry>
   <entry>
-    <title>jvm_gc</title>
-    <url>/2021/12/04/12-04-Java/</url>
-    <content><![CDATA[<h3 id="1-分代收集理论中新生代和老年代采用的收集算法"><a href="#1-分代收集理论中新生代和老年代采用的收集算法" class="headerlink" title="1 分代收集理论中新生代和老年代采用的收集算法"></a>1 分代收集理论中新生代和老年代采用的收集算法</h3><p>新生代（主要是复制算法）</p>
-<ol>
-<li>把新生代分为一块较大的Eden空间和两块较小的Survivor（Survivor0，Survivor1）空间，每次分配内存只使用Eden和其中一块Survivor。</li>
-<li>HotSpot虚拟机默认Eden和Survivor的大小比例为8：1。垃圾收集时，将Eden和Survivor0中仍然存活的对象一次性复制到Survivor1空间上，然后直接清理掉Eden和Survivor0空间。</li>
-<li>当Survivor1区域不足以存放Eden和Survivor0区域的存活对象时，就将存活对象直接存放到老年代。若是老年代也满了就会触发一次Full GC，也就是新生代、老年代都进行回收。</li>
-</ol>
-<p>老年代（主要是Mark-Compact算法）</p>
-<ol>
-<li>在新生代中经历了N次垃圾回收后仍然存活的对象，就会被放到老年代中。因此，可以认为老年代中存放的都是一些生命周期比较长的对象。</li>
-<li>当老年代内存满时会触发Full GC，Full GC发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
-</ol>
-<h3 id="2-常用的垃圾收集器"><a href="#2-常用的垃圾收集器" class="headerlink" title="2 常用的垃圾收集器"></a>2 常用的垃圾收集器</h3><ol>
-<li>Serial，它是最古老的垃圾收集器，这是一个单线程工作的收集器，“单线程”强调的是在它进行垃圾收集时，必须暂停其它所有工作线程，直到它收集结束。它会进入臭名昭著的“Stop The World”状态。当然，其单线程设计也意味着精简的GC实现，无需维护复杂的数据结构，初始化也简单，所以一直是Client模式下默认新生代收集器。</li>
-<li>Serial Old，它是Serial收集器的老年代版本，同样是一个单线程收集器，使用了标记-整理（Mark-Compact）算法。</li>
-<li>ParNew，是一款新生代收集器，它实际上是Serial的多线程并行版本，最常见的应用场景是配合老年代的CMS工作。</li>
-<li>Parrallel Scavenge，它是一款新生代收集器，基于复制算法实现的收集器。它的目标是达到一个可扩展的吞吐量，也被称为“吞吐量优先收集器”。</li>
-<li>Parrallel Old，它是Parrallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法实现。</li>
-<li>CMS（Concurrent Mark Sweep），基于标记-清除（Mark-Sweep）算法实现，设计目标是尽量缩短停顿时间，这一点对于Web等反应时间敏感的应用非常重要。一直到今天，仍然有很多系统使用CMS GC。但是，CMS采用的标记-清除算法，存在内存碎片化问题，所以难以避免在长时间运行情况下发生full GC，导致恶劣的停顿。另外，既然强调了并发（Concurrent），CMS会占用更多CPU资源，并和用户线程争抢。</li>
-<li>G1（Garbage First），这是一种兼顾吞吐量和停顿时间的GC实现，是Oracle JDK 9以后的默认GC选项，主要面向服务端应用的垃圾收集器。</li>
-</ol>
-<h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>它开创了收集器面向<strong>局部收集</strong>的设计思路和基于<strong>Region</strong>的堆内存布局形式。<br>一般的垃圾收集器收集范围要么是整个新生代、要么是整个老年代，再要么是整个Java堆。而G1可以面向堆内存任何部分来组成回收集（collection set）进行回收。<br>G1把连续的Java堆划分为多个大小相等的独立区域（region），每一个region都可以扮演新生代的Eden空间、Survivor空间或者老年代空间。<br>为了达到对回收时间的可预计性，G1在扫描了region以后，对其中活跃对象的大小进行排序，会首先收集那些活跃对象小的region，以便快速回收空间（要复制的活跃对象少了）。因为活跃对象小，可以认为多数对象都是垃圾，所以这种方式被称为Garbage First（G1）的垃圾回收算法。</p>
-<p><strong>cms vs g1</strong></p>
-<h3 id="4-内存分配的理解？大对象怎么分配？空间分配担保？"><a href="#4-内存分配的理解？大对象怎么分配？空间分配担保？" class="headerlink" title="4 内存分配的理解？大对象怎么分配？空间分配担保？"></a>4 内存分配的理解？大对象怎么分配？空间分配担保？</h3><ol>
-<li>对象优先在Eden分配。大多数情况下，对象在新生代Eden区中分配，当Eden区没有足够空间进行分配时，虚拟机将发起一次Minor GC。</li>
-<li>大对象直接进入老年代。大对象是指需要大量连续内存空间的Java对象，最典型的大对象便是那种很长的字符串，或者元素数量很庞大的数组。经常出现提前触发垃圾收集以获取足够的连续空间分配给大对象的情况。虚拟机提供了-XX:PretenureSizeThreshold参数，大于此值的对象直接在老年代分配，避免在Eden区和两个Survivor区之间的大量内存复制。</li>
-<li>长期存活的对象进入老年代。虚拟机给每个对象定义了一个对象年龄计数器，存储在对象头中。对象通常在Eden区诞生，如果经过一次Minor GC后依然存活，并且能被Survivor容纳的话，该对象会被移动到Survivor空间，并将其对象年龄增加1岁，当它的年龄增加到一定程度（默认为15），就移动到老年代中。</li>
-<li>动态对象年龄判定。为了更好的适应不同程序的内存情况，虚拟机不是永远要求对象年龄必须达到了阙值才能进入老年代，如果Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需等到阙值要求的年龄。</li>
-<li>空间分配担保。在发生Minor GC之前，虚拟机必须先检查老年代中最大可用的连续空间是否大于新生代所有对象总空间，如果大于的话，那么这一次Minor GC可以确保是安全的。</li>
-</ol>
-<h3 id="5-jvm性能监控、故障处理工具"><a href="#5-jvm性能监控、故障处理工具" class="headerlink" title="5 jvm性能监控、故障处理工具"></a>5 jvm性能监控、故障处理工具</h3><p>jps（jvm process status tool，虚拟机进程状况工具）：可以列出正在运行的虚拟机进程。<br>jstat（jvm statistics monitoring tool，虚拟机统计信息监视工具）：可以显示虚拟机进程中的类加载、内存、垃圾收集等运行时数据。<br>jinfo（Configuration info for Java，Java配置信息工具）：实时查看和调整虚拟机各项参数。<br>jmap（memory map for java，Java内存映像工具）：用于生成堆转储快照。<br>jhat（jvm heap analysis tool，虚拟机堆转储快照分析工具）：与jmap搭配使用，来分析jmap生成的堆转储快照。<br>jstack（stack trace for Java，Java堆栈跟踪工具）：用于生成虚拟机当前时刻的线程快照。</p>
-<h3 id="6-class类文件的结构"><a href="#6-class类文件的结构" class="headerlink" title="6 class类文件的结构"></a>6 class类文件的结构</h3><p>Class文件结构采用一种类似于C语言结构体的伪结构来存储数据，有两种数据类型，“无符号数”和“表”。<br>无符号数属于基本数据类型，以u1，u2，u4，u8来分别代表1个字节，2个字节，4个字节，8个字节的无符号数，无符号数可以用来描述数字，索引引用、数量值或者字符串值。<br>表是由多个无符号数或者其它表作为数据项构成的复合数据类型，习惯性地以_info结尾。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic;</span><br><span class="line">    u2             minor_version;</span><br><span class="line">    u2             major_version;</span><br><span class="line">    u2             constant_pool_count;</span><br><span class="line">    cp_info        constant_pool[constant_pool_count-1];</span><br><span class="line">    u2             access_flags;</span><br><span class="line">    u2             this_class;</span><br><span class="line">    u2             super_class;</span><br><span class="line">    u2             interfaces_count;</span><br><span class="line">    u2             interfaces[interfaces_count];</span><br><span class="line">    u2             fields_count;</span><br><span class="line">    field_info     fields[fields_count];</span><br><span class="line">    u2             methods_count;</span><br><span class="line">    method_info    methods[methods_count];</span><br><span class="line">    u2             attributes_count;</span><br><span class="line">    attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>每个Class文件的头4个字节称为魔数（magic number），它的值固定为0xCAFEBABE，作用是确定这个文件是否是一个能被虚拟机接受的Class文件。<br>紧接着魔数的4个字节存储的是Class文件的版本号。第五和第六个字节是次版本号，第七和第八个字节是主版本号。<br>在主次版本号之后是常量池入口。常量池主要存放两大类常量：字面量和符号引用。</p>
-<h3 id="7-部分收集与整堆收集"><a href="#7-部分收集与整堆收集" class="headerlink" title="7 部分收集与整堆收集"></a>7 部分收集与整堆收集</h3><p>部分收集</p>
+    <title>mysql_index</title>
+    <url>/2021/11/27/11-27-Mysql/</url>
+    <content><![CDATA[<h3 id="1-索引"><a href="#1-索引" class="headerlink" title="1 索引"></a>1 索引</h3><p>索引的出现是为了提高数据的查询效率，就像书的目录一样。<br>MySQL索引的实现通常使用B树及其变种B+树。MySQL中使用较多的索引有Hash索引、B+树索引等。InnoDB存储引擎的默认索引实现为B+树索引。</p>
+<p>但是为表设置索引需要付出代价：一是增加了数据库的存储空间，二是在插入和修改数据时要花费较多的时间(因为索引也要随之变动)。</p>
+<p>建立索引的原则：<br>在频繁使用的、用以缩小查询范围的字段上建立索引；<br>在频繁使用的、需要排序的字段上建立索引。</p>
+<h3 id="2-索引分类"><a href="#2-索引分类" class="headerlink" title="2 索引分类"></a>2 索引分类</h3><p>数据结构角度：树索引、hash索引。<br>物理存储角度：聚簇索引、非聚簇索引。<br><strong>逻辑角度</strong>：普通索引、唯一索引、主键索引、联合索引、全文索引。<br>InnoDB主键使用的是聚簇索引，MyISAM不管是主键，还是二级索引使用的都是非聚簇索引。</p>
+<p>聚簇索引（主键索引）：<strong>按照每张表的主键构造一颗B+树，同时叶子节点存放表的记录数据</strong>。特点是存储数据的顺序和索引顺序一致。一般情况下主键会默认创建聚簇索引，且一张表只允许存在一个聚簇索引。</p>
+<p>非聚簇索引（辅助索引）：B+Tree叶子节点的data域存放的是数据记录的地址。在索引检索的时候，首先按照B+Tree搜索算法搜索索引，如果指定的Key存在，则取出其data域的值，然后以data域的值为地址读取相应的数据记录。索引文件和数据文件是独立分开的。</p>
+<p>聚簇索引的叶子节点就是数据节点，而非聚簇索引的叶子节点仍然是索引节点，只不过有指向对应数据的指针。</p>
+<p>哈希索引：哈希索引能以O(1)时间进行查找，但是失去了有序性。无法用于排序与分组、只支持精确查找，无法用于部分查找和范围查找。</p>
+<p>Mysql中InnoDB引擎有一个特殊的功能叫做自适应哈希索引，它会在内存中基于B+Tree索引的基础上创建一个哈希索引，这让B+Tree索引具备了一些哈希索引的优点。</p>
+<h3 id="3-索引为什么能提高查询速度？"><a href="#3-索引为什么能提高查询速度？" class="headerlink" title="3 索引为什么能提高查询速度？"></a>3 索引为什么能提高查询速度？</h3><p>MySQL的基本存储结构是页(记录都存在页里边)。各个数据页组成一个双向链表。每个数据页中的记录又组成一个单向链表。</p>
+<p>普通sql语句查询过程：<br>定位到记录所在的页，需要遍历双向链表，找到所在的页。<br>从所在的页中查找相应的记录，由于不是根据主键查询，只能遍历所在页的单链表了。时间复杂度0（n）。</p>
+<p>没有用索引我们是需要遍历双向链表来定位对应的页，用了索引之后通过“页目录”就可以很快地定位到对应的页！（二分查找，时间复杂度近似为O(logn)）</p>
+<h3 id="4-为什么InnoDB存储引擎选用B-树而不是B树？"><a href="#4-为什么InnoDB存储引擎选用B-树而不是B树？" class="headerlink" title="4 为什么InnoDB存储引擎选用B+树而不是B树？"></a>4 为什么InnoDB存储引擎选用B+树而不是B树？</h3><p>主要考虑的是IO对性能的影响，B树的每个节点都存储数据，而B+树只有叶子节点才存储数据，所以查找相同数据量的情况下，B树的高度大，IO更频繁。</p>
+<h3 id="5-最左前缀原则"><a href="#5-最左前缀原则" class="headerlink" title="5 最左前缀原则"></a>5 最左前缀原则</h3><p>MySQL中的索引可以以一定的顺序引用多列，这种索引就叫作联合索引。<br>比如User表的name和age字段加联合索引就是(name,age)，最左前缀原则指的是，<strong>查询的时候查询条件精确匹配索引的左边连续一列或几列</strong>。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select * from user where name&#x3D;xx and age&#x3D;xx ; &#x2F;&#x2F; 可以命中索引</span><br><span class="line">select * from user where name&#x3D;xx ; &#x2F;&#x2F; 可以命中索引</span><br><span class="line">select * from user where age&#x3D;xx; &#x2F;&#x2F; 无法命中索引</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，查询的时候如果两个条件都用上了，但是顺序不同，如age = xx and name = xx，那么MySQL的查询优化器会自动调整 where 子句的条件顺序以使用适合的索引，这样是能够命中索引的。</p>
+<p>原理：<br>b+树的数据项是复合的数据结构，比如查询(name,age,sex)的时候，b+树是按照从左到右的顺序来建立搜索树的，比如当(张三,20,F)这样的数据来检索的时候，b+树会优先比较name来确定下一步的搜索方向，如果name相同再依次比较age和sex，最后得到检索的数据；但当(20,F)这样的没有name的数据来的时候，b+树就不知道第一步该查哪个节点，因为建立搜索树的时候name就是第一个比较因子，必须要先根据name来搜索才能知道下一步去哪里查询。<br>比如当(张三, F)这样的数据来检索时，b+树可以用name来指定搜索方向，但下一个字段age缺失，所以只能把名字等于张三的数据都找到，然后再匹配性别是F的数据了，这个是非常重要的性质，即索引的最左前缀原则。</p>
+<p>mysql会一直向右匹配直到遇到范围查询（&gt;、&lt;、between、like）就停止匹配。范围列可以用到索引，但是范围列后面的列无法用到索引。</p>
+<p><strong>覆盖索引</strong><br>如果一个索引包含所有需要的查询字段的值，我们称之为覆盖索引。覆盖索引是非常有用的工具，能够极大的提高性能。因为，只需要读取索引，而无需读表，极大减少数据访问量。</p>
+<h3 id="6-什么情况下索引会失效（查询不走索引）？"><a href="#6-什么情况下索引会失效（查询不走索引）？" class="headerlink" title="6 什么情况下索引会失效（查询不走索引）？"></a>6 什么情况下索引会失效（查询不走索引）？</h3><ul>
+<li>索引列参与表达式计算或函数运算</li>
+<li>like查询是以%开头，索引失效；以%结尾，索引有效</li>
+<li>查询条件中有or，即使其中有条件带索引也不会使用</li>
+<li>如果mysql估计使用全表扫描要比使用索引快，则不使用索引</li>
+<li>正则表达式不使用索引</li>
+</ul>
+<h3 id="7-一条SQL语句执行很慢的原因有哪些？"><a href="#7-一条SQL语句执行很慢的原因有哪些？" class="headerlink" title="7 一条SQL语句执行很慢的原因有哪些？"></a>7 一条SQL语句执行很慢的原因有哪些？</h3><p>1、大多数情况是正常的，只是偶尔会出现很慢的情况。<br>SQL语句的书写本身应该没有什么问题。</p>
 <ul>
-<li>新生代收集（Minor GC）：目标只是新生代的垃圾收集。</li>
-<li>老年代收集（Major GC）：目标只是老年代的垃圾收集。目前只有CMS收集器会有单独收集老年代的行为。注意：有些场合“Major GC”是指整堆收集。</li>
-<li>混合收集（Mixed GC）：目标是收集整个新生代以及部分老年代的垃圾收集。目前只有G1收集器会有这种行为。</li>
+<li>数据库在刷新脏页<br>当我们要往数据库插入一条数据或者要更新一条数据的时候，我们知道数据库会在内存中把对应字段的数据更新，但是更新之后，这些更新的字段并不会马上同步持久化到磁盘中去，而是先把这些更新的记录写入到redo log日志中去，等到空闲的时候，再通过redo log日志把最新的数据同步到磁盘中去。<br>当内存数据页跟磁盘数据页内容不一致的时候，我们称这个内存页为“脏页”。内存数据写入到磁盘后，内存和磁盘上的数据页的内容就一致了，称为“干净页”。</li>
+<li>拿不到锁<br>我们要执行的这条语句涉及到别的表，别人在用并且加锁了，我们拿不到锁，只能等待别人释放锁了。</li>
 </ul>
-<p>整堆收集</p>
+<p>2、在数据量不变的情况下，这条SQL语句一直以来都执行的很慢。</p>
 <ul>
-<li>Full GC：目标是整个Java堆和方法区的垃圾收集。</li>
+<li>未用上索引</li>
+<li>数据库选错了索引</li>
 </ul>
-<h3 id="8-堆栈的区别"><a href="#8-堆栈的区别" class="headerlink" title="8 堆栈的区别"></a>8 堆栈的区别</h3><ul>
-<li>堆存放的是对象实例。</li>
-<li>栈存放的是局部变量，操作数栈等信息。</li>
-<li>堆是所有线程所共享的一块内存区域，在虚拟机启动时创建。</li>
-<li>栈是线程私有的。</li>
-<li>栈的性能比堆要快，仅次于CPU中的寄存器。但是，在分配内存的时候，存放在栈中的数据大小与生存周期必须在编译时是确定的，缺乏灵活性。</li>
-<li>堆可以动态分配内存大小，编译器不必知道要从堆里分配多少存储空间，生存周期也不必事先告诉编译器。</li>
-</ul>
+<h3 id="8-水平拆分与垂直拆分"><a href="#8-水平拆分与垂直拆分" class="headerlink" title="8 水平拆分与垂直拆分"></a>8 水平拆分与垂直拆分</h3><p>水平拆分：将同一个表中的记录拆分到多个结构相同的表中。当一个表的数据不断增多时，水平拆分是必然的选择，它可以将数据分布到集群的不同节点上，从而缓存单个数据库的压力。水平拆分可以支撑非常大的数据量。</p>
+<p>垂直拆分：指数据表列的拆分，把一张列比较多的表拆分为多张表。通常是按照列的关系密集程度进行拆分，也可以利用垂直拆分将经常被使用的列和不经常被使用的列拆分到不同的表中。</p>
+<h3 id="9-主从复制"><a href="#9-主从复制" class="headerlink" title="9 主从复制"></a>9 主从复制</h3><p>主从复制：就是建立一个和主数据库完全一样的数据库环境，称为从数据库。<br>做数据的热备份，作为后备数据库，主数据库服务器故障后，可切换到从数据库继续工作，避免数据丢失。<br>架构的扩展。随着业务量越来越大，I/O访问频率越高，单机无法满足，此时做多库的存储，降低磁盘I/O访问的评率，提高单个机器的I/O性能。<br>读写分离，主库负责写，从库负责读，使数据库能支持更大的并发。</p>
+<p>三个线程</p>
+<ol>
+<li>bin log线程：负责将主服务器上的数据更改写入二进制日志（Binary log）中。</li>
+<li>I/O线程：负责从主服务器上读取二进制日志，并写入从服务器的重放日志（Relay log）中。</li>
+<li>SQL线程：负责读取重放日志并重放其中的SQL语句。</li>
+</ol>
 ]]></content>
       <categories>
-        <category>Java</category>
+        <category>数据库</category>
       </categories>
       <tags>
-        <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>tcp_connect</title>
-    <url>/2021/12/11/12-11-Network/</url>
-    <content><![CDATA[<h3 id="1-三次握手"><a href="#1-三次握手" class="headerlink" title="1 三次握手"></a>1 三次握手</h3><p>为什么只有三次握手才能确认双方的接收与发送能力是否正常，而两次握手却不可以。<br>第一次握手：客户端发送网络包，服务端收到了。此时服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>第二次握手：服务端发包，客户端收到了。此时客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务端并不能确认客户端的接收能力是否正常。<br>第三次握手：客户端发包，服务端收到了。此时服务端就能得出结论：客户端的接收、发送能力正常，服务端的发送、接收能力也正常。<br>因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
-<p>三次握手过程：刚开始客户端处于closed的状态，服务端处于listen状态。<br>SYN，ACK都是标志位，可置为0或1，三次握手时为1。<br>在TCP报文段中，字段ACK=1时，确认号字段（ack）才有效。TCP规定，在连接建立后所有传送的报文段都必须把ACK置1。<br>确认号字段：该字段存放的信息为期望收到对方下一个报文段的第一个数据字节的序号。</p>
-<ol>
-<li>第一次握手：客户端向服务器发送一个同步数据包请求建立连接，并指明客户端的初始化序列号ISN(c)。此时客户端处于SYN_Send状态。</li>
-<li>第二次握手：服务器收到同步请求数据包后，会对客户端进行一个同步确认。数据包中指定了自己的初始化序列号ISN(s)，同时会把客户端的ISN + 1作为 确认号字段 的值，此时服务端处于SYN_RCVD的状态。</li>
-<li>第三次握手：客户端收到这个同步确认数据包后，会对服务器进行一个确认。数据包中把服务端的ISN + 1作为 确认号字段 的值，此时客户端处于establised状态。服务器收到数据包之后，也处于establised状态，此时，双方建立起了连接。</li>
-</ol>
-<p>三次握手好处：<br>确认双方的接收能力、发送能力是否正常。<br>指定自己的初始化序列号，为后面的可靠传送做准备。</p>
-<p>ISN不是固定的<br>三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。<br>如果ISN是固定的，攻击者很容易猜出后续的确认号(acknowledgement number)，因此ISN是动态生成的。</p>
-<p>半连接队列<br>服务端第一次收到客户端的SYN(Synchronize Sequence Numbers)之后，处于SYN_RCVD状态，此时双方还没有完全建立连接，服务端会把此种状态下的请求连接放在一个队列里，称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列里。如果队列满了就有可能会出现丢包现象。</p>
-<p>SYN-ACK重传次数问题<br>服务器发送完SYN－ACK包，如果未收到客户端的确认包，服务器进行首次重传，等待一段时间仍未收到客户端确认包，进行第二次重传，如果重传次数超过系统规定的最大重传次数，系统会将该连接信息从半连接队列中删除。</p>
-<p>三次握手过程中可以携带数据吗？<br>第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。<br>第三次握手时，客户端已经处于established状态，已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的，所以能携带数据。</p>
-<p>SYN洪泛攻击<br>服务器端的资源分配是在第二次握手时分配的，而客户端的资源分配是在完成三次握手后分配的，所以服务器容易受到SYN洪泛攻击。</p>
-<p>SYN攻击就是Client在短时间内伪造大量不存在的IP地址，并向Server不断地发送SYN包，Server回复确认包，并等待Client确认。由于源地址不存在，因此Server需要不断重发直至超时，这些伪造的SYN包将长时间占用半连接队列，导致正常的SYN请求因为队列满而被丢弃，从而引起网络拥塞甚至系统瘫痪。SYN攻击是一种典型的DoS/DDoS攻击。</p>
-<p>防御方法：<br>缩短超时时间（SYN Timeout)<br>增加最大半连接数<br>过滤网关防护<br>SYN cookies技术</p>
-]]></content>
-      <categories>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>三次握手</tag>
+        <tag>mysql</tag>
       </tags>
   </entry>
   <entry>
@@ -1012,6 +984,32 @@
       </tags>
   </entry>
   <entry>
+    <title>tcp_connect</title>
+    <url>/2021/12/11/12-11-Network/</url>
+    <content><![CDATA[<h3 id="1-三次握手"><a href="#1-三次握手" class="headerlink" title="1 三次握手"></a>1 三次握手</h3><p>为什么只有三次握手才能确认双方的接收与发送能力是否正常，而两次握手却不可以。<br>第一次握手：客户端发送网络包，服务端收到了。此时服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>第二次握手：服务端发包，客户端收到了。此时客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务端并不能确认客户端的接收能力是否正常。<br>第三次握手：客户端发包，服务端收到了。此时服务端就能得出结论：客户端的接收、发送能力正常，服务端的发送、接收能力也正常。<br>因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
+<p>三次握手过程：刚开始客户端处于closed的状态，服务端处于listen状态。<br>SYN，ACK都是标志位，可置为0或1，三次握手时为1。<br>在TCP报文段中，字段ACK=1时，确认号字段（ack）才有效。TCP规定，在连接建立后所有传送的报文段都必须把ACK置1。<br>确认号字段：该字段存放的信息为期望收到对方下一个报文段的第一个数据字节的序号。</p>
+<ol>
+<li>第一次握手：客户端向服务器发送一个同步数据包请求建立连接，并指明客户端的初始化序列号ISN(c)。此时客户端处于SYN_Send状态。</li>
+<li>第二次握手：服务器收到同步请求数据包后，会对客户端进行一个同步确认。数据包中指定了自己的初始化序列号ISN(s)，同时会把客户端的ISN + 1作为 确认号字段 的值，此时服务端处于SYN_RCVD的状态。</li>
+<li>第三次握手：客户端收到这个同步确认数据包后，会对服务器进行一个确认。数据包中把服务端的ISN + 1作为 确认号字段 的值，此时客户端处于establised状态。服务器收到数据包之后，也处于establised状态，此时，双方建立起了连接。</li>
+</ol>
+<p>三次握手好处：<br>确认双方的接收能力、发送能力是否正常。<br>指定自己的初始化序列号，为后面的可靠传送做准备。</p>
+<p>ISN不是固定的<br>三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。<br>如果ISN是固定的，攻击者很容易猜出后续的确认号(acknowledgement number)，因此ISN是动态生成的。</p>
+<p>半连接队列<br>服务端第一次收到客户端的SYN(Synchronize Sequence Numbers)之后，处于SYN_RCVD状态，此时双方还没有完全建立连接，服务端会把此种状态下的请求连接放在一个队列里，称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列里。如果队列满了就有可能会出现丢包现象。</p>
+<p>SYN-ACK重传次数问题<br>服务器发送完SYN－ACK包，如果未收到客户端的确认包，服务器进行首次重传，等待一段时间仍未收到客户端确认包，进行第二次重传，如果重传次数超过系统规定的最大重传次数，系统会将该连接信息从半连接队列中删除。</p>
+<p>三次握手过程中可以携带数据吗？<br>第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。<br>第三次握手时，客户端已经处于established状态，已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的，所以能携带数据。</p>
+<p>SYN洪泛攻击<br>服务器端的资源分配是在第二次握手时分配的，而客户端的资源分配是在完成三次握手后分配的，所以服务器容易受到SYN洪泛攻击。</p>
+<p>SYN攻击就是Client在短时间内伪造大量不存在的IP地址，并向Server不断地发送SYN包，Server回复确认包，并等待Client确认。由于源地址不存在，因此Server需要不断重发直至超时，这些伪造的SYN包将长时间占用半连接队列，导致正常的SYN请求因为队列满而被丢弃，从而引起网络拥塞甚至系统瘫痪。SYN攻击是一种典型的DoS/DDoS攻击。</p>
+<p>防御方法：<br>缩短超时时间（SYN Timeout)<br>增加最大半连接数<br>过滤网关防护<br>SYN cookies技术</p>
+]]></content>
+      <categories>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>三次握手</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>mybatis</title>
     <url>/2021/12/14/12-14-Mybatis/</url>
     <content><![CDATA[<h3 id="1-mybatis"><a href="#1-mybatis" class="headerlink" title="1 mybatis"></a>1 mybatis</h3><p>MyBatis是一个持久层框架，它内部封装了JDBC，开发者只需要关注SQL语句本身，不需要花费精力去处理加载驱动、创建连接、创建statement等过程。<br>它免除了几乎所有的JDBC代码以及设置参数和获取结果集的工作。MyBatis可以通过简单的 XML 或注解来配置和映射原始类型、接口和Java POJO（Plain Old Java Objects，普通老式Java对象）为数据库中的记录。<br>通过XML或注解的方式将要执行的各种statement配置起来，并通过java对象和statement中sql的动态参数进行映射生成最终执行的sql语句，最后由mybatis框架执行sql并将结果映射为java对象并返回。</p>
@@ -1029,6 +1027,33 @@
       </categories>
       <tags>
         <tag>mybatis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HTTP</title>
+    <url>/2021/12/14/12-14-Network/</url>
+    <content><![CDATA[<h3 id="1-http1-0、1-1、2-2"><a href="#1-http1-0、1-1、2-2" class="headerlink" title="1 http1.0、1.1、2.2"></a>1 http1.0、1.1、2.2</h3><p>http1.0：为了提高系统的效率，HTTP1.0规定浏览器与服务器只保持短暂的连接，浏览器的每次请求都需要与服务器建立一个TCP连接，服务器完成请求处理后立即断开TCP连接，服务器不跟踪每个客户端也不记录过去的请求。</p>
+<p>http1.1：HTTP1.1支持长连接（HTTP1.1默认模式使用带流水线的长连接），在一个TCP连接上可以传送多个HTTP请求和响应，减少了建立和关闭连接的消耗和延迟。HTTP1.1默认开启Connection：keep-alive，一定程度上弥补了HTTP1.0每次请求都要创建连接的缺点。</p>
+<p>http2.0：<br>针对HTTP高延迟的问题，采用多路复用，通过多个请求stream共享一个tcp连接的方式，解决了head of line blocking问题，降低延迟的同时又提高了带宽的利用率。</p>
+<p>header压缩，HTTP2.0使用了专门为首部压缩而设计的HPACK算法。<br>请求优先级，HTTP2.0允许给每个request设置优先级。<br>二进制分帧，HTTP2.0在应用层和传输层之间增加一个二进制分帧层。在不改动HTTP/1.x的语义、方法、状态码、URI以及首部字段的情况下, 解决了HTTP1.1的性能限制，改进传输性能，实现低延迟和高吞吐量。</p>
+<p>在二进制分帧层中，HTTP2.0会将所有传输的信息分割为更小的消息和帧（frame），并对它们采用二进制格式的编码，其中HTTP1.x的首部信息会被封装到HEADER frame，而相应的Request Body则封装到DATA frame里面。</p>
+<p><strong>HTTP 1.0与HTTP 1.1主要区别</strong><br>HTTP 1.0需要使用keep-alive参数来告知服务器端需要建立一个长连接，而HTTP1.1默认支持长连接。<br>HTTP是基于TCP/IP协议的，创建一个TCP连接需要经过三次握手，有一定的开销。如果每次通讯都要重新建立连接的话，对性能有影响。因此最好能维持一个长连接，可以用一个长连接来发起多个请求。</p>
+<p>HTTP 1.1支持只发送header信息(不带任何body信息)，如果服务器认为客户端有权限请求服务器，则返回100，否则返回401。客户端如果接受到100，才开始把请求body发送到服务器。这样当服务器返回401的时候，客户端就可以不用发送请求body了，节约了带宽。</p>
+<p><strong>HTTP 1.1与HTTP 2.0主要区别</strong><br><strong>多路复用</strong><br>HTTP 2.0使用了多路复用技术，做到同一个连接可以并发处理多个请求，而且并发请求的数量比HTTP 1.1大了好几个数量级。<br>当然HTTP 1.1也可以多建立几个TCP连接，来支持处理更多并发的请求，但是创建TCP连接本身也是有开销的。<br><strong>数据压缩</strong><br>HTTP 1.1不支持header数据的压缩，HTTP 2.0使用HPACK算法对header数据进行压缩，这样数据体积小了，在网络上传输就会更快。</p>
+<h3 id="2-XSS攻击"><a href="#2-XSS攻击" class="headerlink" title="2 XSS攻击"></a>2 XSS攻击</h3><p>XSS是跨站脚本攻击(Cross Site Scripting)，恶意攻击者往Web页面里插入恶意Script代码，当用户浏览该网页之时，嵌入Web里面的Script代码会被执行，从而达到恶意攻击用户的目的。</p>
+<p>XSS攻击大致上分为两类：<br>反射型XSS（非持久型XSS）：攻击相对于访问者而言是一次性的，把恶意脚本通过url的方式传递给了服务器，而服务器只是不加处理的把脚本“反射”回访问者的浏览器而使访问者的浏览器执行相应的脚本。也就是说想要触发漏洞，需要访问特定的链接才能够实现。</p>
+<p>持久型XSS：一般指XSS攻击代码存储在网站数据库，当一个页面被用户打开的时候执行。也就是说，每当用户使用浏览器打开指定页面时，脚本便执行。</p>
+<h3 id="3-http常用状态码"><a href="#3-http常用状态码" class="headerlink" title="3 http常用状态码"></a>3 http常用状态码</h3><p>1xx：表示请求已被接受，需要继续处理。这类响应是临时响应，只包含状态和某些可选的响应头信息，并以空行结束。</p>
+<p>2xx：表示请求已经成功被服务器接收。<br>3xx：表示要完成请求，需要进一步操作，这些状态代码用来重定向。<br>4xx：表示请求报文错误。<br>5xx：表示服务器在处理请求的过程中有错误或者异常状态发生，即服务器端错误。</p>
+<p>101：服务器根据客户端的请求切换协议，主要用于websocket或http2升级。<br>200：请求已成功，请求所希望的响应头或数据体将随此响应返回。<br>301：永久重定向，会缓存。表示为资源或页面永久性地转移到了另一个位置。<br>302：临时重定向，不会缓存。表示资源或页面暂时转移到另一个位置，常被用作网址劫持，容易导致网站降权，严重时网站会被封掉，不推荐使用。<br>301重定向是页面永久性转移，搜索引擎在抓取新内容的同时也将旧的网址替换成重定向之后的网址。<br>302重定向是页面暂时性转移，搜索引擎会抓取新的内容而保存旧的网址并认为新的网址只是暂时的。<br>304：协商缓存命中。<br>400：请求错误。<br>403：服务器禁止访问。<br>404：资源未找到。<br>500：服务器内部错误。<br>503：服务器不可用。</p>
+<p>IP地址<br>A类地址(1-126)：网络号占前8位，以0开头，主机号占后24位。<br>B类地址(128-191)：网络号占前16位，以10开头，主机号占后16位。<br>C类地址(192-223)：网络号占前24位，以110开头，主机号占后8位。<br>A、B、C三类地址都是单播地址（一对一通信）。<br>D类地址(224-239)：以1110开头，保留为多播地址。（一对多通信）<br>E类地址(240-255)：以1111开头，保留为今后使用。</p>
+<h3 id="4-http长连接（tcp长连接）"><a href="#4-http长连接（tcp长连接）" class="headerlink" title="4 http长连接（tcp长连接）"></a>4 http长连接（tcp长连接）</h3><p>HTTP协议是基于请求/响应模式的，因此只要服务端给了响应，本次HTTP请求就结束了，根本没有长短连接这一说。<br>HTTP分为长连接和短连接，其实本质上说的是TCP连接。TCP连接是一个双向的通道，它是可以保持一段时间不关闭的，因此TCP连接才有真正的长连接和短连接这一说。TCP长连接可以复用一个TCP连接来发起多次HTTP请求，这样可以减少资源消耗。<br>设置Connection为keep-alive就算是长连接了，但要服务器和客户端都要设置。HTTP1.1及以后默认都是长连接。</p>
+]]></content>
+      <categories>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>http</tag>
       </tags>
   </entry>
   <entry>
@@ -1070,33 +1095,6 @@
       </categories>
       <tags>
         <tag>网络协议</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>HTTP</title>
-    <url>/2021/12/14/12-14-Network/</url>
-    <content><![CDATA[<h3 id="1-http1-0、1-1、2-2"><a href="#1-http1-0、1-1、2-2" class="headerlink" title="1 http1.0、1.1、2.2"></a>1 http1.0、1.1、2.2</h3><p>http1.0：为了提高系统的效率，HTTP1.0规定浏览器与服务器只保持短暂的连接，浏览器的每次请求都需要与服务器建立一个TCP连接，服务器完成请求处理后立即断开TCP连接，服务器不跟踪每个客户端也不记录过去的请求。</p>
-<p>http1.1：HTTP1.1支持长连接（HTTP1.1默认模式使用带流水线的长连接），在一个TCP连接上可以传送多个HTTP请求和响应，减少了建立和关闭连接的消耗和延迟。HTTP1.1默认开启Connection：keep-alive，一定程度上弥补了HTTP1.0每次请求都要创建连接的缺点。</p>
-<p>http2.0：<br>针对HTTP高延迟的问题，采用多路复用，通过多个请求stream共享一个tcp连接的方式，解决了head of line blocking问题，降低延迟的同时又提高了带宽的利用率。</p>
-<p>header压缩，HTTP2.0使用了专门为首部压缩而设计的HPACK算法。<br>请求优先级，HTTP2.0允许给每个request设置优先级。<br>二进制分帧，HTTP2.0在应用层和传输层之间增加一个二进制分帧层。在不改动HTTP/1.x的语义、方法、状态码、URI以及首部字段的情况下, 解决了HTTP1.1的性能限制，改进传输性能，实现低延迟和高吞吐量。</p>
-<p>在二进制分帧层中，HTTP2.0会将所有传输的信息分割为更小的消息和帧（frame），并对它们采用二进制格式的编码，其中HTTP1.x的首部信息会被封装到HEADER frame，而相应的Request Body则封装到DATA frame里面。</p>
-<p><strong>HTTP 1.0与HTTP 1.1主要区别</strong><br>HTTP 1.0需要使用keep-alive参数来告知服务器端需要建立一个长连接，而HTTP1.1默认支持长连接。<br>HTTP是基于TCP/IP协议的，创建一个TCP连接需要经过三次握手，有一定的开销。如果每次通讯都要重新建立连接的话，对性能有影响。因此最好能维持一个长连接，可以用一个长连接来发起多个请求。</p>
-<p>HTTP 1.1支持只发送header信息(不带任何body信息)，如果服务器认为客户端有权限请求服务器，则返回100，否则返回401。客户端如果接受到100，才开始把请求body发送到服务器。这样当服务器返回401的时候，客户端就可以不用发送请求body了，节约了带宽。</p>
-<p><strong>HTTP 1.1与HTTP 2.0主要区别</strong><br><strong>多路复用</strong><br>HTTP 2.0使用了多路复用技术，做到同一个连接可以并发处理多个请求，而且并发请求的数量比HTTP 1.1大了好几个数量级。<br>当然HTTP 1.1也可以多建立几个TCP连接，来支持处理更多并发的请求，但是创建TCP连接本身也是有开销的。<br><strong>数据压缩</strong><br>HTTP 1.1不支持header数据的压缩，HTTP 2.0使用HPACK算法对header数据进行压缩，这样数据体积小了，在网络上传输就会更快。</p>
-<h3 id="2-XSS攻击"><a href="#2-XSS攻击" class="headerlink" title="2 XSS攻击"></a>2 XSS攻击</h3><p>XSS是跨站脚本攻击(Cross Site Scripting)，恶意攻击者往Web页面里插入恶意Script代码，当用户浏览该网页之时，嵌入Web里面的Script代码会被执行，从而达到恶意攻击用户的目的。</p>
-<p>XSS攻击大致上分为两类：<br>反射型XSS（非持久型XSS）：攻击相对于访问者而言是一次性的，把恶意脚本通过url的方式传递给了服务器，而服务器只是不加处理的把脚本“反射”回访问者的浏览器而使访问者的浏览器执行相应的脚本。也就是说想要触发漏洞，需要访问特定的链接才能够实现。</p>
-<p>持久型XSS：一般指XSS攻击代码存储在网站数据库，当一个页面被用户打开的时候执行。也就是说，每当用户使用浏览器打开指定页面时，脚本便执行。</p>
-<h3 id="3-http常用状态码"><a href="#3-http常用状态码" class="headerlink" title="3 http常用状态码"></a>3 http常用状态码</h3><p>1xx：表示请求已被接受，需要继续处理。这类响应是临时响应，只包含状态和某些可选的响应头信息，并以空行结束。</p>
-<p>2xx：表示请求已经成功被服务器接收。<br>3xx：表示要完成请求，需要进一步操作，这些状态代码用来重定向。<br>4xx：表示请求报文错误。<br>5xx：表示服务器在处理请求的过程中有错误或者异常状态发生，即服务器端错误。</p>
-<p>101：服务器根据客户端的请求切换协议，主要用于websocket或http2升级。<br>200：请求已成功，请求所希望的响应头或数据体将随此响应返回。<br>301：永久重定向，会缓存。表示为资源或页面永久性地转移到了另一个位置。<br>302：临时重定向，不会缓存。表示资源或页面暂时转移到另一个位置，常被用作网址劫持，容易导致网站降权，严重时网站会被封掉，不推荐使用。<br>301重定向是页面永久性转移，搜索引擎在抓取新内容的同时也将旧的网址替换成重定向之后的网址。<br>302重定向是页面暂时性转移，搜索引擎会抓取新的内容而保存旧的网址并认为新的网址只是暂时的。<br>304：协商缓存命中。<br>400：请求错误。<br>403：服务器禁止访问。<br>404：资源未找到。<br>500：服务器内部错误。<br>503：服务器不可用。</p>
-<p>IP地址<br>A类地址(1-126)：网络号占前8位，以0开头，主机号占后24位。<br>B类地址(128-191)：网络号占前16位，以10开头，主机号占后16位。<br>C类地址(192-223)：网络号占前24位，以110开头，主机号占后8位。<br>A、B、C三类地址都是单播地址（一对一通信）。<br>D类地址(224-239)：以1110开头，保留为多播地址。（一对多通信）<br>E类地址(240-255)：以1111开头，保留为今后使用。</p>
-<h3 id="4-http长连接（tcp长连接）"><a href="#4-http长连接（tcp长连接）" class="headerlink" title="4 http长连接（tcp长连接）"></a>4 http长连接（tcp长连接）</h3><p>HTTP协议是基于请求/响应模式的，因此只要服务端给了响应，本次HTTP请求就结束了，根本没有长短连接这一说。<br>HTTP分为长连接和短连接，其实本质上说的是TCP连接。TCP连接是一个双向的通道，它是可以保持一段时间不关闭的，因此TCP连接才有真正的长连接和短连接这一说。TCP长连接可以复用一个TCP连接来发起多次HTTP请求，这样可以减少资源消耗。<br>设置Connection为keep-alive就算是长连接了，但要服务器和客户端都要设置。HTTP1.1及以后默认都是长连接。</p>
-]]></content>
-      <categories>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>http</tag>
       </tags>
   </entry>
   <entry>
@@ -1254,6 +1252,21 @@
       </tags>
   </entry>
   <entry>
+    <title>long_for</title>
+    <url>/2021/12/04/12-life/</url>
+    <content><![CDATA[<img src="/2021/12/04/12-life/life.png" class="">
+
+<p>江城子 乙卯正月二十日夜记梦<br>宋 苏轼</p>
+<p>十年生死两茫茫，不思量，自难忘。千里孤坟，无处话凄凉。纵使相逢应不识，尘满面，鬓如霜。<br>夜来幽梦忽还乡，小轩窗，正梳妆。相顾无言，惟有泪千行。料得年年肠断处，明月夜，短松冈。</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>爱情</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Tree</title>
     <url>/2021/12/29/12-29-Tree/</url>
     <content><![CDATA[<h3 id="1-二叉树"><a href="#1-二叉树" class="headerlink" title="1 二叉树"></a>1 二叉树</h3><p>1）每个结点最多有两颗子树，所以二叉树中不存在度大于2的结点。<br>2）左子树和右子树是有顺序的，次序不能颠倒。<br>3）即使树中某结点只有一棵子树，也要区分它是左子树还是右子树。</p>
@@ -1278,21 +1291,6 @@
       </tags>
   </entry>
   <entry>
-    <title>long_for</title>
-    <url>/2021/12/04/12-life/</url>
-    <content><![CDATA[<img src="/2021/12/04/12-life/life.png" class="">
-
-<p>江城子 乙卯正月二十日夜记梦<br>宋 苏轼</p>
-<p>十年生死两茫茫，不思量，自难忘。千里孤坟，无处话凄凉。纵使相逢应不识，尘满面，鬓如霜。<br>夜来幽梦忽还乡，小轩窗，正梳妆。相顾无言，惟有泪千行。料得年年肠断处，明月夜，短松冈。</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>爱情</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>about_java</title>
     <url>/2022/03/18/about-java/</url>
     <content><![CDATA[<h3 id="1-Java中重写equals方法为什么要重写hashcode方法？"><a href="#1-Java中重写equals方法为什么要重写hashcode方法？" class="headerlink" title="1 Java中重写equals方法为什么要重写hashcode方法？"></a>1 Java中重写equals方法为什么要重写hashcode方法？</h3><p>如果一个类没有重写equals(Object obj)方法，则等价于通过==比较两个对象，即比较的是对象在内存中的地址是否相等；如果重写了equals(Object obj)方法，一般是比较值是否相等。<br>当我们将equals方法重写后有必要将hashCode方法也重写，这样做才能保证不违背hashCode方法中“相同对象必须有相同哈希值”的约定。<br>一个对象多次调用它的hashCode方法，应当返回相同的integer（哈希值）；<br>两个对象如果通过equals方法判定为相等，那么就应当返回相同integer；<br>hashCode方法实际上必须要完成的一件事情就是，为equals方法认定为相同的对象返回相同的哈希值。<br>为什么重写equals方法就得重写hashCode方法—–因为必须保证重写后的equals方法认定为相同的两个对象拥有相同的哈希值。</p>
@@ -1305,6 +1303,47 @@
       </categories>
       <tags>
         <tag>java_random</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>about_os</title>
+    <url>/2022/03/18/about-os/</url>
+    <content><![CDATA[<h3 id="1-用户态与内核态"><a href="#1-用户态与内核态" class="headerlink" title="1 用户态与内核态"></a>1 用户态与内核态</h3><p>用户态与内核态是操作系统的两种运行级别，大部分程序都是运行在用户态。</p>
+<p>运行在用户态下的程序不能直接访问操作系统内核数据结构和程序。当我们在系统中执行一个程序时，大部分时间是运行在用户态下的，在其需要操作系统帮助完成某些它没有权力和能力完成的工作时就会切换到内核态（比如操作硬件）。</p>
+<p>用户态就是提供应用程序运行的空间，为了使应用程序访问到内核管理的资源，例如CPU，内存，I/O。内核必须提供一组通用的访问接口，这些接口就叫系统调用。</p>
+<p>区别：权限不同。<br>用户态的进程能够访问的资源受到了极大的限制，而运行在内核态的进程可以“为所欲为”。<br>如果用户态和内核态拥有相同的特权，应用程序就可以直接访问物理内存，破坏它，读取私有数据或者完全控制系统，通过用户态模式可以限制应用程序。</p>
+<p>用户态切换到内核态</p>
+<ul>
+<li>系统调用，这是用户态进程主动要求切换到内核态的一种方式，用户态进程通过系统调用申请使用操作系统提供的服务程序完成工作。</li>
+<li>异常，运行在用户态下的程序发生了某些事先不可知的异常，这时会触发由当前运行进程切换到处理此异常的内核相关程序中，也就转到了内核态，比如缺页异常。</li>
+<li>外设中断，当外设完成用户的请求时，会向CPU发送中断信号。</li>
+</ul>
+<h3 id="2-进程切换为什么比线程切换慢"><a href="#2-进程切换为什么比线程切换慢" class="headerlink" title="2 进程切换为什么比线程切换慢?"></a>2 进程切换为什么比线程切换慢?</h3><p><strong>虚拟地址（逻辑地址）vs物理地址</strong><br>操作系统会给每个进程分配一个虚拟地址空间（vitural address），每个进程包含的栈、堆等这些都会从这个地址空间中被分配一个地址，这个地址就被称为虚拟地址。底层指令写入的地址也是虚拟地址。</p>
+<p>每个进程都拥有一个自己的虚拟地址空间，并且独立于其他进程的地址空间。</p>
+<p>有了虚拟地址空间后，CPU就可以通过生成一个虚拟地址来访问主存，这个虚拟地址在被送到内存之前会先被转换成物理地址，这个虚拟地址到物理地址的转换过程称为地址翻译/地址转换（address translation）。</p>
+<p>CPU上的内存管理单元（Memory Management Unit，MMU）就是专门用来进行虚拟地址到物理地址的转换的，不过MMU需要借助存放在内存中的页表，而这张表的内容正是由操作系统进行管理的。</p>
+<p>操作系统为每个进程建立了一张页表。一个进程对应一张页表，进程的每个页面对应一个页表项，每个页表项由页号和块号（页框号）组成，记录着进程页面和实际存放的内存块之间的映射关系。</p>
+<p>进程切换会涉及到虚拟地址空间的切换，而这正是导致进程切换比线程切换慢的原因。虚拟地址转换为物理地址需要两个东西：CPU上的MMU和内存中的页表。访问页表（内存）次数太多导致其成为了操作系统地一个性能瓶颈。</p>
+<p>转换检测缓冲区（Translation Lookaside Buffer，TLB）也称为快表，通常内置在CPU的MMU中。TLB的出现是基于这样一种现象的：大多数程序总是对少量的页面进行多次的访问。因此，只有很少的页表项会被反复读取，而其他的页表项很少被访问。</p>
+<p>TLB中存放的就是那些会被反复读取的页表项，若TLB命中，就不需要再访问内存了；若TLB中没有目标页表项，则还需要去查询内存中的页表（慢表），从页表中得到物理页框地址，同时将页表中的该表项添加到TLB中。</p>
+<p>由于进程切换会涉及到虚拟地址空间的切换，这就导致内存中的页表也需要进行切换，一个进程对应一个页表是不假，但是CPU中的TLB只有一个，页表切换后这个TLB就失效了。这样，TLB在一段时间内肯定是无法被命中的，操作系统就必须去访问内存，那么虚拟地址转换为物理地址就会变慢，表现出来的就是程序运行会变慢。<br>而线程切换呢，由于不涉及虚拟地址空间的切换，也就不存在这个问题了。</p>
+<h3 id="3-有了进程，为什么还需要线程？"><a href="#3-有了进程，为什么还需要线程？" class="headerlink" title="3 有了进程，为什么还需要线程？"></a>3 有了进程，为什么还需要线程？</h3><ul>
+<li>进程在同一时间只能干一件事，进程在执行的过程中如果被阻塞，整个进程就会挂起，即使进程中有些工作不依赖于等待的资源，仍然不会执行。</li>
+<li>从资源上来讲，创建进程，需要为其分配系统资源、创建进程控制块（PCB）等操作，代价比较大。而创建线程，则不需要分配系统资源，因为线程可以共享同一进程的资源。</li>
+<li>从调度角度来看，进程间的调度开销要比同一进程中的线程之间的大。</li>
+</ul>
+<h3 id="3-协程"><a href="#3-协程" class="headerlink" title="3 协程"></a>3 协程</h3><p>协程也被称为轻量级线程，协程运行在线程之上，当一个协程执行完成后，可以选择主动让出，让另一个协程运行在当前线程之上。<br>协程并没有增加线程数量，只是在线程的基础之上通过分时复用的方式运行多个协程，而且协程的切换在用户态完成，切换的代价比线程从用户态到内核态的代价小很多。<br>协程只有和异步IO结合起来才能发挥出最大的威力。</p>
+<h3 id="4-虚拟内存"><a href="#4-虚拟内存" class="headerlink" title="4 虚拟内存"></a>4 虚拟内存</h3><p>虚拟内存是计算机系统内存管理的一种技术。</p>
+<p>虚拟内存可以让程序拥有超过系统实际物理内存大小的可用内存空间，虚拟内存会为每个进程提供一个一致的，私有的地址空间，它让每个进程都拥有一片连续完整的内存空间，这样能更加有效管理内存并减少出错。</p>
+<p>由操作系统完成从虚拟内存的虚拟地址到真实内存的物理地址之间的映射工作。</p>
+<p>定义了一个连续的虚拟地址空间，并将内存扩展到了硬盘空间。</p>
+<p>虚拟内存使得应用程序认为它拥有连续的可用内存（一个连续完整的地址空间），而实际上，它通常是被分隔成多个物理内存碎片，还有部分暂时存储在外部磁盘存储器上，在需要时进行数据交换。</p>
+]]></content>
+      <categories>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>os_random</tag>
       </tags>
   </entry>
   <entry>
@@ -1343,6 +1382,18 @@
       </categories>
       <tags>
         <tag>二分查找</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>字节一面</title>
+    <url>/2022/03/11/bytedance-1/</url>
+    <content><![CDATA[<p>2022年3月10号</p>
+<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍项目（科研项目）"><a href="#2-介绍项目（科研项目）" class="headerlink" title="2 介绍项目（科研项目）"></a>2 介绍项目（科研项目）</h3><h3 id="3-Java常见集合"><a href="#3-Java常见集合" class="headerlink" title="3 Java常见集合"></a>3 Java常见集合</h3><h3 id="4-了解Java的并发包吗？（java-util-concurrent，JUC）"><a href="#4-了解Java的并发包吗？（java-util-concurrent，JUC）" class="headerlink" title="4 了解Java的并发包吗？（java.util.concurrent，JUC）"></a>4 了解Java的并发包吗？（java.util.concurrent，JUC）</h3><h3 id="5-ConcurrentHashMap原理"><a href="#5-ConcurrentHashMap原理" class="headerlink" title="5 ConcurrentHashMap原理"></a>5 ConcurrentHashMap原理</h3><h3 id="6-HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap"><a href="#6-HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap" class="headerlink" title="6 HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap"></a>6 HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap</h3><h3 id="7-JVM垃圾回收机制"><a href="#7-JVM垃圾回收机制" class="headerlink" title="7 JVM垃圾回收机制"></a>7 JVM垃圾回收机制</h3><h3 id="8-HTTPS"><a href="#8-HTTPS" class="headerlink" title="8 HTTPS"></a>8 HTTPS</h3><h3 id="9-NIO"><a href="#9-NIO" class="headerlink" title="9 NIO"></a>9 NIO</h3><h3 id="10-多路复用"><a href="#10-多路复用" class="headerlink" title="10 多路复用"></a>10 多路复用</h3><h3 id="11-堆内存和栈内存的区别？栈内存需要垃圾回收吗？"><a href="#11-堆内存和栈内存的区别？栈内存需要垃圾回收吗？" class="headerlink" title="11 堆内存和栈内存的区别？栈内存需要垃圾回收吗？"></a>11 堆内存和栈内存的区别？栈内存需要垃圾回收吗？</h3><h3 id="12-事务有几个等级（隔离级别）"><a href="#12-事务有几个等级（隔离级别）" class="headerlink" title="12 事务有几个等级（隔离级别）"></a>12 事务有几个等级（隔离级别）</h3><h3 id="13-读已提交和可重复读的区别？"><a href="#13-读已提交和可重复读的区别？" class="headerlink" title="13 读已提交和可重复读的区别？"></a>13 读已提交和可重复读的区别？</h3><h3 id="14-说说脏读、不可重复度、幻读"><a href="#14-说说脏读、不可重复度、幻读" class="headerlink" title="14 说说脏读、不可重复度、幻读"></a>14 说说脏读、不可重复度、幻读</h3><h3 id="15-算法题：二叉树的右视图"><a href="#15-算法题：二叉树的右视图" class="headerlink" title="15 算法题：二叉树的右视图"></a>15 算法题：二叉树的右视图</h3>]]></content>
+      <categories>
+        <category>面试</category>
+      </categories>
+      <tags>
+        <tag>字节</tag>
       </tags>
   </entry>
   <entry>
@@ -1402,59 +1453,6 @@
       </categories>
       <tags>
         <tag>位图</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>字节一面</title>
-    <url>/2022/03/11/bytedance-1/</url>
-    <content><![CDATA[<p>2022年3月10号</p>
-<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍项目（科研项目）"><a href="#2-介绍项目（科研项目）" class="headerlink" title="2 介绍项目（科研项目）"></a>2 介绍项目（科研项目）</h3><h3 id="3-Java常见集合"><a href="#3-Java常见集合" class="headerlink" title="3 Java常见集合"></a>3 Java常见集合</h3><h3 id="4-了解Java的并发包吗？（java-util-concurrent，JUC）"><a href="#4-了解Java的并发包吗？（java-util-concurrent，JUC）" class="headerlink" title="4 了解Java的并发包吗？（java.util.concurrent，JUC）"></a>4 了解Java的并发包吗？（java.util.concurrent，JUC）</h3><h3 id="5-ConcurrentHashMap原理"><a href="#5-ConcurrentHashMap原理" class="headerlink" title="5 ConcurrentHashMap原理"></a>5 ConcurrentHashMap原理</h3><h3 id="6-HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap"><a href="#6-HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap" class="headerlink" title="6 HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap"></a>6 HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap</h3><h3 id="7-JVM垃圾回收机制"><a href="#7-JVM垃圾回收机制" class="headerlink" title="7 JVM垃圾回收机制"></a>7 JVM垃圾回收机制</h3><h3 id="8-HTTPS"><a href="#8-HTTPS" class="headerlink" title="8 HTTPS"></a>8 HTTPS</h3><h3 id="9-NIO"><a href="#9-NIO" class="headerlink" title="9 NIO"></a>9 NIO</h3><h3 id="10-多路复用"><a href="#10-多路复用" class="headerlink" title="10 多路复用"></a>10 多路复用</h3><h3 id="11-堆内存和栈内存的区别？栈内存需要垃圾回收吗？"><a href="#11-堆内存和栈内存的区别？栈内存需要垃圾回收吗？" class="headerlink" title="11 堆内存和栈内存的区别？栈内存需要垃圾回收吗？"></a>11 堆内存和栈内存的区别？栈内存需要垃圾回收吗？</h3><h3 id="12-事务有几个等级（隔离级别）"><a href="#12-事务有几个等级（隔离级别）" class="headerlink" title="12 事务有几个等级（隔离级别）"></a>12 事务有几个等级（隔离级别）</h3><h3 id="13-读已提交和可重复读的区别？"><a href="#13-读已提交和可重复读的区别？" class="headerlink" title="13 读已提交和可重复读的区别？"></a>13 读已提交和可重复读的区别？</h3><h3 id="14-说说脏读、不可重复度、幻读"><a href="#14-说说脏读、不可重复度、幻读" class="headerlink" title="14 说说脏读、不可重复度、幻读"></a>14 说说脏读、不可重复度、幻读</h3><h3 id="15-算法题：二叉树的右视图"><a href="#15-算法题：二叉树的右视图" class="headerlink" title="15 算法题：二叉树的右视图"></a>15 算法题：二叉树的右视图</h3>]]></content>
-      <categories>
-        <category>面试</category>
-      </categories>
-      <tags>
-        <tag>字节</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>about_os</title>
-    <url>/2022/03/18/about-os/</url>
-    <content><![CDATA[<h3 id="1-用户态与内核态"><a href="#1-用户态与内核态" class="headerlink" title="1 用户态与内核态"></a>1 用户态与内核态</h3><p>用户态与内核态是操作系统的两种运行级别，大部分程序都是运行在用户态。</p>
-<p>运行在用户态下的程序不能直接访问操作系统内核数据结构和程序。当我们在系统中执行一个程序时，大部分时间是运行在用户态下的，在其需要操作系统帮助完成某些它没有权力和能力完成的工作时就会切换到内核态（比如操作硬件）。</p>
-<p>用户态就是提供应用程序运行的空间，为了使应用程序访问到内核管理的资源，例如CPU，内存，I/O。内核必须提供一组通用的访问接口，这些接口就叫系统调用。</p>
-<p>区别：权限不同。<br>用户态的进程能够访问的资源受到了极大的限制，而运行在内核态的进程可以“为所欲为”。<br>如果用户态和内核态拥有相同的特权，应用程序就可以直接访问物理内存，破坏它，读取私有数据或者完全控制系统，通过用户态模式可以限制应用程序。</p>
-<p>用户态切换到内核态</p>
-<ul>
-<li>系统调用，这是用户态进程主动要求切换到内核态的一种方式，用户态进程通过系统调用申请使用操作系统提供的服务程序完成工作。</li>
-<li>异常，运行在用户态下的程序发生了某些事先不可知的异常，这时会触发由当前运行进程切换到处理此异常的内核相关程序中，也就转到了内核态，比如缺页异常。</li>
-<li>外设中断，当外设完成用户的请求时，会向CPU发送中断信号。</li>
-</ul>
-<h3 id="2-进程切换为什么比线程切换慢"><a href="#2-进程切换为什么比线程切换慢" class="headerlink" title="2 进程切换为什么比线程切换慢?"></a>2 进程切换为什么比线程切换慢?</h3><p><strong>虚拟地址（逻辑地址）vs物理地址</strong><br>操作系统会给每个进程分配一个虚拟地址空间（vitural address），每个进程包含的栈、堆等这些都会从这个地址空间中被分配一个地址，这个地址就被称为虚拟地址。底层指令写入的地址也是虚拟地址。</p>
-<p>每个进程都拥有一个自己的虚拟地址空间，并且独立于其他进程的地址空间。</p>
-<p>有了虚拟地址空间后，CPU就可以通过生成一个虚拟地址来访问主存，这个虚拟地址在被送到内存之前会先被转换成物理地址，这个虚拟地址到物理地址的转换过程称为地址翻译/地址转换（address translation）。</p>
-<p>CPU上的内存管理单元（Memory Management Unit，MMU）就是专门用来进行虚拟地址到物理地址的转换的，不过MMU需要借助存放在内存中的页表，而这张表的内容正是由操作系统进行管理的。</p>
-<p>操作系统为每个进程建立了一张页表。一个进程对应一张页表，进程的每个页面对应一个页表项，每个页表项由页号和块号（页框号）组成，记录着进程页面和实际存放的内存块之间的映射关系。</p>
-<p>进程切换会涉及到虚拟地址空间的切换，而这正是导致进程切换比线程切换慢的原因。虚拟地址转换为物理地址需要两个东西：CPU上的MMU和内存中的页表。访问页表（内存）次数太多导致其成为了操作系统地一个性能瓶颈。</p>
-<p>转换检测缓冲区（Translation Lookaside Buffer，TLB）也称为快表，通常内置在CPU的MMU中。TLB的出现是基于这样一种现象的：大多数程序总是对少量的页面进行多次的访问。因此，只有很少的页表项会被反复读取，而其他的页表项很少被访问。</p>
-<p>TLB中存放的就是那些会被反复读取的页表项，若TLB命中，就不需要再访问内存了；若TLB中没有目标页表项，则还需要去查询内存中的页表（慢表），从页表中得到物理页框地址，同时将页表中的该表项添加到TLB中。</p>
-<p>由于进程切换会涉及到虚拟地址空间的切换，这就导致内存中的页表也需要进行切换，一个进程对应一个页表是不假，但是CPU中的TLB只有一个，页表切换后这个TLB就失效了。这样，TLB在一段时间内肯定是无法被命中的，操作系统就必须去访问内存，那么虚拟地址转换为物理地址就会变慢，表现出来的就是程序运行会变慢。<br>而线程切换呢，由于不涉及虚拟地址空间的切换，也就不存在这个问题了。</p>
-<h3 id="3-有了进程，为什么还需要线程？"><a href="#3-有了进程，为什么还需要线程？" class="headerlink" title="3 有了进程，为什么还需要线程？"></a>3 有了进程，为什么还需要线程？</h3><ul>
-<li>进程在同一时间只能干一件事，进程在执行的过程中如果被阻塞，整个进程就会挂起，即使进程中有些工作不依赖于等待的资源，仍然不会执行。</li>
-<li>从资源上来讲，创建进程，需要为其分配系统资源、创建进程控制块（PCB）等操作，代价比较大。而创建线程，则不需要分配系统资源，因为线程可以共享同一进程的资源。</li>
-<li>从调度角度来看，进程间的调度开销要比同一进程中的线程之间的大。</li>
-</ul>
-<h3 id="3-协程"><a href="#3-协程" class="headerlink" title="3 协程"></a>3 协程</h3><p>协程也被称为轻量级线程，协程运行在线程之上，当一个协程执行完成后，可以选择主动让出，让另一个协程运行在当前线程之上。<br>协程并没有增加线程数量，只是在线程的基础之上通过分时复用的方式运行多个协程，而且协程的切换在用户态完成，切换的代价比线程从用户态到内核态的代价小很多。<br>协程只有和异步IO结合起来才能发挥出最大的威力。</p>
-<h3 id="4-虚拟内存"><a href="#4-虚拟内存" class="headerlink" title="4 虚拟内存"></a>4 虚拟内存</h3><p>虚拟内存是计算机系统内存管理的一种技术。</p>
-<p>虚拟内存可以让程序拥有超过系统实际物理内存大小的可用内存空间，虚拟内存会为每个进程提供一个一致的，私有的地址空间，它让每个进程都拥有一片连续完整的内存空间，这样能更加有效管理内存并减少出错。</p>
-<p>由操作系统完成从虚拟内存的虚拟地址到真实内存的物理地址之间的映射工作。</p>
-<p>定义了一个连续的虚拟地址空间，并将内存扩展到了硬盘空间。</p>
-<p>虚拟内存使得应用程序认为它拥有连续的可用内存（一个连续完整的地址空间），而实际上，它通常是被分隔成多个物理内存碎片，还有部分暂时存储在外部磁盘存储器上，在需要时进行数据交换。</p>
-]]></content>
-      <categories>
-        <category>操作系统</category>
-      </categories>
-      <tags>
-        <tag>os_random</tag>
       </tags>
   </entry>
   <entry>
@@ -1610,19 +1608,6 @@
       </tags>
   </entry>
   <entry>
-    <title>human</title>
-    <url>/2021/10/25/human/</url>
-    <content><![CDATA[<p><strong>人性经得起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
-<p>农历九月二十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>humanity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>abstract,final,static</title>
     <url>/2021/04/07/java-keyword/</url>
     <content><![CDATA[<h3 id="1-abstract"><a href="#1-abstract" class="headerlink" title="1 abstract"></a>1 abstract</h3><p><strong>abstract</strong>关键字修饰类和方法。</p>
@@ -1645,6 +1630,19 @@
       </categories>
       <tags>
         <tag>keyword</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>human</title>
+    <url>/2021/10/25/human/</url>
+    <content><![CDATA[<p><strong>人性经得起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
+<p>农历九月二十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>humanity</tag>
       </tags>
   </entry>
   <entry>
@@ -1713,6 +1711,24 @@
       </tags>
   </entry>
   <entry>
+    <title>memory</title>
+    <url>/2021/03/21/memory/</url>
+    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
+<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
+<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
+<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
+<img src="/2021/03/21/memory/memory.jpg" class="">
+
+<p>辛丑牛年农历二月初十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>景点</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>markdown</title>
     <url>/2021/04/15/markdown/</url>
     <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
@@ -1751,24 +1767,6 @@
       </categories>
       <tags>
         <tag>密码学</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>memory</title>
-    <url>/2021/03/21/memory/</url>
-    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
-<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
-<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
-<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
-<img src="/2021/03/21/memory/memory.jpg" class="">
-
-<p>辛丑牛年农历二月初十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>景点</tag>
       </tags>
   </entry>
   <entry>
@@ -2032,6 +2030,87 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
 ]]></content>
       <tags>
         <tag>安全多方计算</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mysql_basic_2</title>
+    <url>/2022/03/20/mysql-basic-2/</url>
+    <content><![CDATA[<h3 id="1-3-约束"><a href="#1-3-约束" class="headerlink" title="1.3 约束"></a>1.3 约束</h3><table>
+<thead>
+<tr>
+<th align="center">约束</th>
+<th align="center">描述</th>
+<th align="center">关键字</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">非空约束</td>
+<td align="center">针对指定列进行非空约束，这样在插入数据的时候就不能设为null</td>
+<td align="center">not null</td>
+</tr>
+<tr>
+<td align="center">唯一约束</td>
+<td align="center">保证某列字段的数据是唯一的、不重复的，允许null值</td>
+<td align="center">unique</td>
+</tr>
+<tr>
+<td align="center">主键约束</td>
+<td align="center">一条记录的唯一标识符，不能为null，不能重复</td>
+<td align="center">primary key</td>
+</tr>
+<tr>
+<td align="center">默认约束</td>
+<td align="center">未指定约束，采用默认值</td>
+<td align="center">default</td>
+</tr>
+<tr>
+<td align="center">外键约束</td>
+<td align="center">一个表中的某个键是来自于另一个表的主键</td>
+<td align="center">foreign key</td>
+</tr>
+<tr>
+<td align="center">检查约束</td>
+<td align="center">强制在字段上的每个值都要满足检查约束的条件</td>
+<td align="center">check</td>
+</tr>
+</tbody></table>
+<img src="/2022/03/20/mysql-basic-2/yueshu.png" class="">
+
+<h4 id="外键约束"><a href="#外键约束" class="headerlink" title="外键约束"></a>外键约束</h4><p><strong>添加外键</strong><br>create table 表名(<br>    constraint 外键名称 foreign key 外键字段名 references 主表(主表列名)<br>);</p>
+<p>alter table 表名 add constraint 外键名称 foreign key(外键字段名) references 主表(主表列名);<br>alter table employee add constraint fk_dept_id foreign key(dept_id) references dept(id);</p>
+<p><strong>删除外键</strong><br>alter table employee drop foreign key fk_dept_id;</p>
+<p><strong>删除/更新</strong></p>
+<table>
+<thead>
+<tr>
+<th align="center">行为</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">no action</td>
+<td align="center">如果子表中有匹配的记录，则不允许对父表对应候选键进行update/delete操作</td>
+</tr>
+<tr>
+<td align="center">restrict</td>
+<td align="center">同上</td>
+</tr>
+<tr>
+<td align="center">cascade</td>
+<td align="center">在父表上update/delete记录时，同步update/delete子表的匹配记录</td>
+</tr>
+<tr>
+<td align="center">set null</td>
+<td align="center">在父表上update/delete记录时，将子表上匹配记录的列设为null，要注意子表的外键列不能为not null</td>
+</tr>
+</tbody></table>
+<p>alter table 表名 add constraint 外键名称 foreign key(外键字段名) references 主表(主表列名) on update cascade on delete cascade;</p>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
       </tags>
   </entry>
   <entry>
@@ -2314,84 +2393,16 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>mysql_basic_2</title>
-    <url>/2022/03/20/mysql-basic-2/</url>
-    <content><![CDATA[<h3 id="1-3-约束"><a href="#1-3-约束" class="headerlink" title="1.3 约束"></a>1.3 约束</h3><table>
-<thead>
-<tr>
-<th align="center">约束</th>
-<th align="center">描述</th>
-<th align="center">关键字</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">非空约束</td>
-<td align="center">针对指定列进行非空约束，这样在插入数据的时候就不能设为null</td>
-<td align="center">not null</td>
-</tr>
-<tr>
-<td align="center">唯一约束</td>
-<td align="center">保证某列字段的数据是唯一的、不重复的，允许null值</td>
-<td align="center">unique</td>
-</tr>
-<tr>
-<td align="center">主键约束</td>
-<td align="center">一条记录的唯一标识符，不能为null，不能重复</td>
-<td align="center">primary key</td>
-</tr>
-<tr>
-<td align="center">默认约束</td>
-<td align="center">未指定约束，采用默认值</td>
-<td align="center">default</td>
-</tr>
-<tr>
-<td align="center">外键约束</td>
-<td align="center">一个表中的某个键是来自于另一个表的主键</td>
-<td align="center">foreign key</td>
-</tr>
-<tr>
-<td align="center">检查约束</td>
-<td align="center">强制在字段上的每个值都要满足检查约束的条件</td>
-<td align="center">check</td>
-</tr>
-</tbody></table>
-<img src="/2022/03/20/mysql-basic-2/yueshu.png" class="">
-
-<h4 id="外键约束"><a href="#外键约束" class="headerlink" title="外键约束"></a>外键约束</h4><p><strong>添加外键</strong><br>create table 表名(<br>    constraint 外键名称 foreign key 外键字段名 references 主表(主表列名)<br>);</p>
-<p>alter table 表名 add constraint 外键名称 foreign key(外键字段名) references 主表(主表列名);<br>alter table employee add constraint fk_dept_id foreign key(dept_id) references dept(id);</p>
-<p><strong>删除外键</strong><br>alter table employee drop foreign key fk_dept_id;</p>
-<p><strong>删除/更新</strong></p>
-<table>
-<thead>
-<tr>
-<th align="center">行为</th>
-<th align="center">说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">no action</td>
-<td align="center">如果子表中有匹配的记录，则不允许对父表对应候选键进行update/delete操作</td>
-</tr>
-<tr>
-<td align="center">restrict</td>
-<td align="center">同上</td>
-</tr>
-<tr>
-<td align="center">cascade</td>
-<td align="center">在父表上update/delete记录时，同步update/delete子表的匹配记录</td>
-</tr>
-<tr>
-<td align="center">set null</td>
-<td align="center">在父表上update/delete记录时，将子表上匹配记录的列设为null，要注意子表的外键列不能为not null</td>
-</tr>
-</tbody></table>
-<p>alter table 表名 add constraint 外键名称 foreign key(外键字段名) references 主表(主表列名) on update cascade on delete cascade;</p>
+    <title>do_it</title>
+    <url>/2021/10/29/now-do-it/</url>
+    <content><![CDATA[<p>不知不觉已经10月29号了，时间如白驹过隙，还有一个月就要开题答辩了。昨天老师腾讯会议聊完开题的事情，我的上一届师兄师姐在这个时候或多或少都有一定的研究成果了。但我的研究成果似乎还停滞在了2个月之前，安全多方计算、区块链、物联网。一个热门又新的领域，但似乎对我不太友好，可能我就不适合做科研工作者吧！但是没办法，你必须得硬着头皮往前冲，科研就是这样，培养的就是解决未知问题的能力。就是找没有答案的问题，如果是有答案的问题，那用部着进行科学研究。科研的道路注定充满艰辛、孤独。科研工作者就像勇士一样，必须连续作战，保持胜利战果，所以他是孤独的，同时也是令人敬佩的。加油吧，年轻人！</p>
+<p>农历九月二十四号</p>
 ]]></content>
       <categories>
-        <category>数据库</category>
+        <category>生活</category>
       </categories>
       <tags>
-        <tag>mysql</tag>
+        <tag>going</tag>
       </tags>
   </entry>
   <entry>
@@ -2409,16 +2420,19 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>do_it</title>
-    <url>/2021/10/29/now-do-it/</url>
-    <content><![CDATA[<p>不知不觉已经10月29号了，时间如白驹过隙，还有一个月就要开题答辩了。昨天老师腾讯会议聊完开题的事情，我的上一届师兄师姐在这个时候或多或少都有一定的研究成果了。但我的研究成果似乎还停滞在了2个月之前，安全多方计算、区块链、物联网。一个热门又新的领域，但似乎对我不太友好，可能我就不适合做科研工作者吧！但是没办法，你必须得硬着头皮往前冲，科研就是这样，培养的就是解决未知问题的能力。就是找没有答案的问题，如果是有答案的问题，那用部着进行科学研究。科研的道路注定充满艰辛、孤独。科研工作者就像勇士一样，必须连续作战，保持胜利战果，所以他是孤独的，同时也是令人敬佩的。加油吧，年轻人！</p>
-<p>农历九月二十四号</p>
+    <title>rain</title>
+    <url>/2021/03/26/rain/</url>
+    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
+<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
+<p>辛丑年农历二月十四</p>
+<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
+<p>辛丑年农历二月十五</p>
 ]]></content>
       <categories>
         <category>生活</category>
       </categories>
       <tags>
-        <tag>going</tag>
+        <tag>如晴似雨</tag>
       </tags>
   </entry>
   <entry>
@@ -2547,52 +2561,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>rain</title>
-    <url>/2021/03/26/rain/</url>
-    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
-<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
-<p>辛丑年农历二月十四</p>
-<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
-<p>辛丑年农历二月十五</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>如晴似雨</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>uml</title>
-    <url>/2021/03/31/umlarrow/</url>
-    <content><![CDATA[<h3 id="泛化（继承）"><a href="#泛化（继承）" class="headerlink" title="泛化（继承）"></a>泛化（继承）</h3><p>泛化是一种一般与特殊、一般与具体关系的描述，具体建立在一般之上并对其进行扩展。<br><strong>实线空心三角箭头表示</strong></p>
-<img src="/2021/03/31/umlarrow/generate.png" class="">
-
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>实现是类与接口之间关系的描述，类是接口所有特征和行为的具体实现。<br><strong>虚线空心三角箭头表示</strong></p>
-<img src="/2021/03/31/umlarrow/implement.png" class="">
-
-<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><p>依赖是一种使用关系，即一个类的实现需要另一个类的帮助。通常一个类的方法参数中需要传入另一个类的对象，即表示依赖这个类。<br><strong>虚线箭头</strong></p>
-<img src="/2021/03/31/umlarrow/rely.png" class="">
-
-<h3 id="关联"><a href="#关联" class="headerlink" title="关联"></a>关联</h3><p>关联表示类与类之间的联接，一个类知道另一个类的方法和属性，这种关系比依赖更强。一般一个类作为另一个类的全局变量，即表示关联这个类。<br><strong>实线箭头</strong></p>
-<img src="/2021/03/31/umlarrow/relevance.png" class="">
-
-
-<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><p>聚合是关联的一种特例，是更强的关联。聚合是整体和个体之间的关系，即<strong>has-a</strong>的关系。关联关系中两个类是处于相同的层次,而聚合关系中两个类是处于不同的层次，一个表示整体, 一个表示个体。</p>
-<img src="/2021/03/31/umlarrow/juhe.png" class="">
-
-<h3 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h3><p>组合也是关联的一种特例。组合是整体与部分的关系，即<strong>contains-a</strong>的关系，比聚合更强。</p>
-<img src="/2021/03/31/umlarrow/union.png" class="">
-
-]]></content>
-      <categories>
-        <category>UML</category>
-      </categories>
-      <tags>
-        <tag>arrow</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>singleton</title>
     <url>/2022/03/20/singleton/</url>
     <content><![CDATA[<h3 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h3><p>一个类只有一个实例，且该类能自行创建这个实例的一种模式。通过单例模式可以保证，系统中使用单例模式的类只有一个对象实例。</p>
@@ -2670,6 +2638,36 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>design_mode</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>uml</title>
+    <url>/2021/03/31/umlarrow/</url>
+    <content><![CDATA[<h3 id="泛化（继承）"><a href="#泛化（继承）" class="headerlink" title="泛化（继承）"></a>泛化（继承）</h3><p>泛化是一种一般与特殊、一般与具体关系的描述，具体建立在一般之上并对其进行扩展。<br><strong>实线空心三角箭头表示</strong></p>
+<img src="/2021/03/31/umlarrow/generate.png" class="">
+
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>实现是类与接口之间关系的描述，类是接口所有特征和行为的具体实现。<br><strong>虚线空心三角箭头表示</strong></p>
+<img src="/2021/03/31/umlarrow/implement.png" class="">
+
+<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><p>依赖是一种使用关系，即一个类的实现需要另一个类的帮助。通常一个类的方法参数中需要传入另一个类的对象，即表示依赖这个类。<br><strong>虚线箭头</strong></p>
+<img src="/2021/03/31/umlarrow/rely.png" class="">
+
+<h3 id="关联"><a href="#关联" class="headerlink" title="关联"></a>关联</h3><p>关联表示类与类之间的联接，一个类知道另一个类的方法和属性，这种关系比依赖更强。一般一个类作为另一个类的全局变量，即表示关联这个类。<br><strong>实线箭头</strong></p>
+<img src="/2021/03/31/umlarrow/relevance.png" class="">
+
+
+<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><p>聚合是关联的一种特例，是更强的关联。聚合是整体和个体之间的关系，即<strong>has-a</strong>的关系。关联关系中两个类是处于相同的层次,而聚合关系中两个类是处于不同的层次，一个表示整体, 一个表示个体。</p>
+<img src="/2021/03/31/umlarrow/juhe.png" class="">
+
+<h3 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h3><p>组合也是关联的一种特例。组合是整体与部分的关系，即<strong>contains-a</strong>的关系，比聚合更强。</p>
+<img src="/2021/03/31/umlarrow/union.png" class="">
+
+]]></content>
+      <categories>
+        <category>UML</category>
+      </categories>
+      <tags>
+        <tag>arrow</tag>
       </tags>
   </entry>
   <entry>
