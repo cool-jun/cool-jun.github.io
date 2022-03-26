@@ -238,6 +238,31 @@
       </tags>
   </entry>
   <entry>
+    <title>string</title>
+    <url>/2021/11/10/11-10-Java/</url>
+    <content><![CDATA[<h3 id="1-Java中String为什么是final？"><a href="#1-Java中String为什么是final？" class="headerlink" title="1 Java中String为什么是final？"></a>1 Java中String为什么是final？</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
+<p>安全性：String被许多的Java类(库)用来当做参数，例如：网络连接地址URL、文件路径path、还有反射机制所需要的String参数等，假若String不是固定不变的，将会引起各种安全隐患；<br>允许String对象缓存HashCode：Java中String对象的哈希码被频繁地使用，比如在HashMap等容器中。字符串不变性保证了hashcode的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是Java堆内存中一个特殊的存储区域，当创建一个String对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
+<h3 id="3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
+<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量，它的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。此类提供与StringBuffer兼容的API，但不保证同步。此类旨在用作StringBuffer的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。在可能的情况下，建议优先使用此类而不是StringBuffer，因为在大多数实现下它会更快。StringBuilder上的主要操作是append和insert方法，它们被重载以接受任何类型的数据。每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。append方法总是在构建器的末尾添加这些字符；insert方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
+<h3 id="2-递归和迭代的区别"><a href="#2-递归和迭代的区别" class="headerlink" title="2 递归和迭代的区别"></a>2 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中，问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远到近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
+<p>以斐波那契数列为例。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>递归容易产生“栈溢出”问题（stack overflow）。<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>string</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>io</title>
     <url>/2021/11/14/11-14-Java/</url>
     <content><![CDATA[<h3 id="1-Java-IO-Stream"><a href="#1-Java-IO-Stream" class="headerlink" title="1 Java IO Stream"></a>1 Java IO Stream</h3><p>功能：输入流、输出流<br>类型：字节流、字符流</p>
@@ -310,31 +335,6 @@
       </categories>
       <tags>
         <tag>集合</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>string</title>
-    <url>/2021/11/10/11-10-Java/</url>
-    <content><![CDATA[<h3 id="1-Java中String为什么是final？"><a href="#1-Java中String为什么是final？" class="headerlink" title="1 Java中String为什么是final？"></a>1 Java中String为什么是final？</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
-<p>安全性：String被许多的Java类(库)用来当做参数，例如：网络连接地址URL、文件路径path、还有反射机制所需要的String参数等，假若String不是固定不变的，将会引起各种安全隐患；<br>允许String对象缓存HashCode：Java中String对象的哈希码被频繁地使用，比如在HashMap等容器中。字符串不变性保证了hashcode的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是Java堆内存中一个特殊的存储区域，当创建一个String对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
-<h3 id="3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
-<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量，它的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。此类提供与StringBuffer兼容的API，但不保证同步。此类旨在用作StringBuffer的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。在可能的情况下，建议优先使用此类而不是StringBuffer，因为在大多数实现下它会更快。StringBuilder上的主要操作是append和insert方法，它们被重载以接受任何类型的数据。每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。append方法总是在构建器的末尾添加这些字符；insert方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
-<h3 id="2-递归和迭代的区别"><a href="#2-递归和迭代的区别" class="headerlink" title="2 递归和迭代的区别"></a>2 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中，问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远到近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
-<p>以斐波那契数列为例。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>递归容易产生“栈溢出”问题（stack overflow）。<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>string</tag>
       </tags>
   </entry>
   <entry>
@@ -631,6 +631,62 @@
       </tags>
   </entry>
   <entry>
+    <title>mysql_index</title>
+    <url>/2021/11/27/11-27-Mysql/</url>
+    <content><![CDATA[<h3 id="1-索引"><a href="#1-索引" class="headerlink" title="1 索引"></a>1 索引</h3><p>索引的出现是为了提高数据的查询效率，就像书的目录一样。<br>MySQL索引的实现通常使用B树及其变种B+树。MySQL中使用较多的索引有Hash索引、B+树索引等。InnoDB存储引擎的默认索引实现为B+树索引。</p>
+<p>但是为表设置索引需要付出代价：一是增加了数据库的存储空间，二是在插入和修改数据时要花费较多的时间(因为索引也要随之变动)。</p>
+<p>建立索引的原则：<br>在频繁使用的、用以缩小查询范围的字段上建立索引；<br>在频繁使用的、需要排序的字段上建立索引。</p>
+<h3 id="2-索引分类"><a href="#2-索引分类" class="headerlink" title="2 索引分类"></a>2 索引分类</h3><p>数据结构角度：树索引、hash索引。<br>物理存储角度：聚簇索引、非聚簇索引。<br><strong>逻辑角度</strong>：普通索引、唯一索引、主键索引、联合索引、全文索引。<br>InnoDB主键使用的是聚簇索引，MyISAM不管是主键，还是二级索引使用的都是非聚簇索引。</p>
+<p>聚簇索引（主键索引）：<strong>按照每张表的主键构造一颗B+树，同时叶子节点存放表的记录数据</strong>。特点是存储数据的顺序和索引顺序一致。一般情况下主键会默认创建聚簇索引，且一张表只允许存在一个聚簇索引。</p>
+<p>非聚簇索引（辅助索引）：B+Tree叶子节点的data域存放的是数据记录的地址。在索引检索的时候，首先按照B+Tree搜索算法搜索索引，如果指定的Key存在，则取出其data域的值，然后以data域的值为地址读取相应的数据记录。索引文件和数据文件是独立分开的。</p>
+<p>聚簇索引的叶子节点就是数据节点，而非聚簇索引的叶子节点仍然是索引节点，只不过有指向对应数据的指针。</p>
+<p>哈希索引：哈希索引能以O(1)时间进行查找，但是失去了有序性。无法用于排序与分组、只支持精确查找，无法用于部分查找和范围查找。</p>
+<p>Mysql中InnoDB引擎有一个特殊的功能叫做自适应哈希索引，它会在内存中基于B+Tree索引的基础上创建一个哈希索引，这让B+Tree索引具备了一些哈希索引的优点。</p>
+<h3 id="3-索引为什么能提高查询速度？"><a href="#3-索引为什么能提高查询速度？" class="headerlink" title="3 索引为什么能提高查询速度？"></a>3 索引为什么能提高查询速度？</h3><p>MySQL的基本存储结构是页(记录都存在页里边)。各个数据页组成一个双向链表。每个数据页中的记录又组成一个单向链表。</p>
+<p>普通sql语句查询过程：<br>定位到记录所在的页，需要遍历双向链表，找到所在的页。<br>从所在的页中查找相应的记录，由于不是根据主键查询，只能遍历所在页的单链表了。时间复杂度0（n）。</p>
+<p>没有用索引我们是需要遍历双向链表来定位对应的页，用了索引之后通过“页目录”就可以很快地定位到对应的页！（二分查找，时间复杂度近似为O(logn)）</p>
+<h3 id="4-为什么InnoDB存储引擎选用B-树而不是B树？"><a href="#4-为什么InnoDB存储引擎选用B-树而不是B树？" class="headerlink" title="4 为什么InnoDB存储引擎选用B+树而不是B树？"></a>4 为什么InnoDB存储引擎选用B+树而不是B树？</h3><p>主要考虑的是IO对性能的影响，B树的每个节点都存储数据，而B+树只有叶子节点才存储数据，所以查找相同数据量的情况下，B树的高度大，IO更频繁。</p>
+<h3 id="5-最左前缀原则"><a href="#5-最左前缀原则" class="headerlink" title="5 最左前缀原则"></a>5 最左前缀原则</h3><p>MySQL中的索引可以以一定的顺序引用多列，这种索引就叫作联合索引。<br>比如User表的name和age字段加联合索引就是(name,age)，最左前缀原则指的是，<strong>查询的时候查询条件精确匹配索引的左边连续一列或几列</strong>。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select * from user where name&#x3D;xx and age&#x3D;xx ; &#x2F;&#x2F; 可以命中索引</span><br><span class="line">select * from user where name&#x3D;xx ; &#x2F;&#x2F; 可以命中索引</span><br><span class="line">select * from user where age&#x3D;xx; &#x2F;&#x2F; 无法命中索引</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，查询的时候如果两个条件都用上了，但是顺序不同，如age = xx and name = xx，那么MySQL的查询优化器会自动调整 where 子句的条件顺序以使用适合的索引，这样是能够命中索引的。</p>
+<p>原理：<br>b+树的数据项是复合的数据结构，比如查询(name,age,sex)的时候，b+树是按照从左到右的顺序来建立搜索树的，比如当(张三,20,F)这样的数据来检索的时候，b+树会优先比较name来确定下一步的搜索方向，如果name相同再依次比较age和sex，最后得到检索的数据；但当(20,F)这样的没有name的数据来的时候，b+树就不知道第一步该查哪个节点，因为建立搜索树的时候name就是第一个比较因子，必须要先根据name来搜索才能知道下一步去哪里查询。<br>比如当(张三, F)这样的数据来检索时，b+树可以用name来指定搜索方向，但下一个字段age缺失，所以只能把名字等于张三的数据都找到，然后再匹配性别是F的数据了，这个是非常重要的性质，即索引的最左前缀原则。</p>
+<p>mysql会一直向右匹配直到遇到范围查询（&gt;、&lt;、between、like）就停止匹配。范围列可以用到索引，但是范围列后面的列无法用到索引。</p>
+<p><strong>覆盖索引</strong><br>如果一个索引包含所有需要的查询字段的值，我们称之为覆盖索引。覆盖索引是非常有用的工具，能够极大的提高性能。因为，只需要读取索引，而无需读表，极大减少数据访问量。</p>
+<h3 id="6-什么情况下索引会失效（查询不走索引）？"><a href="#6-什么情况下索引会失效（查询不走索引）？" class="headerlink" title="6 什么情况下索引会失效（查询不走索引）？"></a>6 什么情况下索引会失效（查询不走索引）？</h3><ul>
+<li>索引列参与表达式计算或函数运算</li>
+<li>like查询是以%开头，索引失效；以%结尾，索引有效</li>
+<li>查询条件中有or，即使其中有条件带索引也不会使用</li>
+<li>如果mysql估计使用全表扫描要比使用索引快，则不使用索引</li>
+<li>正则表达式不使用索引</li>
+</ul>
+<h3 id="7-一条SQL语句执行很慢的原因有哪些？"><a href="#7-一条SQL语句执行很慢的原因有哪些？" class="headerlink" title="7 一条SQL语句执行很慢的原因有哪些？"></a>7 一条SQL语句执行很慢的原因有哪些？</h3><p>1、大多数情况是正常的，只是偶尔会出现很慢的情况。<br>SQL语句的书写本身应该没有什么问题。</p>
+<ul>
+<li>数据库在刷新脏页<br>当我们要往数据库插入一条数据或者要更新一条数据的时候，我们知道数据库会在内存中把对应字段的数据更新，但是更新之后，这些更新的字段并不会马上同步持久化到磁盘中去，而是先把这些更新的记录写入到redo log日志中去，等到空闲的时候，再通过redo log日志把最新的数据同步到磁盘中去。<br>当内存数据页跟磁盘数据页内容不一致的时候，我们称这个内存页为“脏页”。内存数据写入到磁盘后，内存和磁盘上的数据页的内容就一致了，称为“干净页”。</li>
+<li>拿不到锁<br>我们要执行的这条语句涉及到别的表，别人在用并且加锁了，我们拿不到锁，只能等待别人释放锁了。</li>
+</ul>
+<p>2、在数据量不变的情况下，这条SQL语句一直以来都执行的很慢。</p>
+<ul>
+<li>未用上索引</li>
+<li>数据库选错了索引</li>
+</ul>
+<h3 id="8-水平拆分与垂直拆分"><a href="#8-水平拆分与垂直拆分" class="headerlink" title="8 水平拆分与垂直拆分"></a>8 水平拆分与垂直拆分</h3><p>水平拆分：将同一个表中的记录拆分到多个结构相同的表中。当一个表的数据不断增多时，水平拆分是必然的选择，它可以将数据分布到集群的不同节点上，从而缓存单个数据库的压力。水平拆分可以支撑非常大的数据量。</p>
+<p>垂直拆分：指数据表列的拆分，把一张列比较多的表拆分为多张表。通常是按照列的关系密集程度进行拆分，也可以利用垂直拆分将经常被使用的列和不经常被使用的列拆分到不同的表中。</p>
+<h3 id="9-主从复制"><a href="#9-主从复制" class="headerlink" title="9 主从复制"></a>9 主从复制</h3><p>主从复制：就是建立一个和主数据库完全一样的数据库环境，称为从数据库。<br>做数据的热备份，作为后备数据库，主数据库服务器故障后，可切换到从数据库继续工作，避免数据丢失。<br>架构的扩展。随着业务量越来越大，I/O访问频率越高，单机无法满足，此时做多库的存储，降低磁盘I/O访问的评率，提高单个机器的I/O性能。<br>读写分离，主库负责写，从库负责读，使数据库能支持更大的并发。</p>
+<p>三个线程</p>
+<ol>
+<li>bin log线程：负责将主服务器上的数据更改写入二进制日志（Binary log）中。</li>
+<li>I/O线程：负责从主服务器上读取二进制日志，并写入从服务器的重放日志（Relay log）中。</li>
+<li>SQL线程：负责读取重放日志并重放其中的SQL语句。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>jvm_gc</title>
     <url>/2021/12/04/12-04-Java/</url>
     <content><![CDATA[<h3 id="1-分代收集理论中新生代和老年代采用的收集算法"><a href="#1-分代收集理论中新生代和老年代采用的收集算法" class="headerlink" title="1 分代收集理论中新生代和老年代采用的收集算法"></a>1 分代收集理论中新生代和老年代采用的收集算法</h3><p>新生代（主要是复制算法）</p>
@@ -754,62 +810,6 @@
       </categories>
       <tags>
         <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mysql_index</title>
-    <url>/2021/11/27/11-27-Mysql/</url>
-    <content><![CDATA[<h3 id="1-索引"><a href="#1-索引" class="headerlink" title="1 索引"></a>1 索引</h3><p>索引的出现是为了提高数据的查询效率，就像书的目录一样。<br>MySQL索引的实现通常使用B树及其变种B+树。MySQL中使用较多的索引有Hash索引、B+树索引等。InnoDB存储引擎的默认索引实现为B+树索引。</p>
-<p>但是为表设置索引需要付出代价：一是增加了数据库的存储空间，二是在插入和修改数据时要花费较多的时间(因为索引也要随之变动)。</p>
-<p>建立索引的原则：<br>在频繁使用的、用以缩小查询范围的字段上建立索引；<br>在频繁使用的、需要排序的字段上建立索引。</p>
-<h3 id="2-索引分类"><a href="#2-索引分类" class="headerlink" title="2 索引分类"></a>2 索引分类</h3><p>数据结构角度：树索引、hash索引。<br>物理存储角度：聚簇索引、非聚簇索引。<br><strong>逻辑角度</strong>：普通索引、唯一索引、主键索引、联合索引、全文索引。<br>InnoDB主键使用的是聚簇索引，MyISAM不管是主键，还是二级索引使用的都是非聚簇索引。</p>
-<p>聚簇索引（主键索引）：<strong>按照每张表的主键构造一颗B+树，同时叶子节点存放表的记录数据</strong>。特点是存储数据的顺序和索引顺序一致。一般情况下主键会默认创建聚簇索引，且一张表只允许存在一个聚簇索引。</p>
-<p>非聚簇索引（辅助索引）：B+Tree叶子节点的data域存放的是数据记录的地址。在索引检索的时候，首先按照B+Tree搜索算法搜索索引，如果指定的Key存在，则取出其data域的值，然后以data域的值为地址读取相应的数据记录。索引文件和数据文件是独立分开的。</p>
-<p>聚簇索引的叶子节点就是数据节点，而非聚簇索引的叶子节点仍然是索引节点，只不过有指向对应数据的指针。</p>
-<p>哈希索引：哈希索引能以O(1)时间进行查找，但是失去了有序性。无法用于排序与分组、只支持精确查找，无法用于部分查找和范围查找。</p>
-<p>Mysql中InnoDB引擎有一个特殊的功能叫做自适应哈希索引，它会在内存中基于B+Tree索引的基础上创建一个哈希索引，这让B+Tree索引具备了一些哈希索引的优点。</p>
-<h3 id="3-索引为什么能提高查询速度？"><a href="#3-索引为什么能提高查询速度？" class="headerlink" title="3 索引为什么能提高查询速度？"></a>3 索引为什么能提高查询速度？</h3><p>MySQL的基本存储结构是页(记录都存在页里边)。各个数据页组成一个双向链表。每个数据页中的记录又组成一个单向链表。</p>
-<p>普通sql语句查询过程：<br>定位到记录所在的页，需要遍历双向链表，找到所在的页。<br>从所在的页中查找相应的记录，由于不是根据主键查询，只能遍历所在页的单链表了。时间复杂度0（n）。</p>
-<p>没有用索引我们是需要遍历双向链表来定位对应的页，用了索引之后通过“页目录”就可以很快地定位到对应的页！（二分查找，时间复杂度近似为O(logn)）</p>
-<h3 id="4-为什么InnoDB存储引擎选用B-树而不是B树？"><a href="#4-为什么InnoDB存储引擎选用B-树而不是B树？" class="headerlink" title="4 为什么InnoDB存储引擎选用B+树而不是B树？"></a>4 为什么InnoDB存储引擎选用B+树而不是B树？</h3><p>主要考虑的是IO对性能的影响，B树的每个节点都存储数据，而B+树只有叶子节点才存储数据，所以查找相同数据量的情况下，B树的高度大，IO更频繁。</p>
-<h3 id="5-最左前缀原则"><a href="#5-最左前缀原则" class="headerlink" title="5 最左前缀原则"></a>5 最左前缀原则</h3><p>MySQL中的索引可以以一定的顺序引用多列，这种索引就叫作联合索引。<br>比如User表的name和age字段加联合索引就是(name,age)，最左前缀原则指的是，<strong>查询的时候查询条件精确匹配索引的左边连续一列或几列</strong>。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select * from user where name&#x3D;xx and age&#x3D;xx ; &#x2F;&#x2F; 可以命中索引</span><br><span class="line">select * from user where name&#x3D;xx ; &#x2F;&#x2F; 可以命中索引</span><br><span class="line">select * from user where age&#x3D;xx; &#x2F;&#x2F; 无法命中索引</span><br></pre></td></tr></table></figure>
-<p>需要注意的是，查询的时候如果两个条件都用上了，但是顺序不同，如age = xx and name = xx，那么MySQL的查询优化器会自动调整 where 子句的条件顺序以使用适合的索引，这样是能够命中索引的。</p>
-<p>原理：<br>b+树的数据项是复合的数据结构，比如查询(name,age,sex)的时候，b+树是按照从左到右的顺序来建立搜索树的，比如当(张三,20,F)这样的数据来检索的时候，b+树会优先比较name来确定下一步的搜索方向，如果name相同再依次比较age和sex，最后得到检索的数据；但当(20,F)这样的没有name的数据来的时候，b+树就不知道第一步该查哪个节点，因为建立搜索树的时候name就是第一个比较因子，必须要先根据name来搜索才能知道下一步去哪里查询。<br>比如当(张三, F)这样的数据来检索时，b+树可以用name来指定搜索方向，但下一个字段age缺失，所以只能把名字等于张三的数据都找到，然后再匹配性别是F的数据了，这个是非常重要的性质，即索引的最左前缀原则。</p>
-<p>mysql会一直向右匹配直到遇到范围查询（&gt;、&lt;、between、like）就停止匹配。范围列可以用到索引，但是范围列后面的列无法用到索引。</p>
-<p><strong>覆盖索引</strong><br>如果一个索引包含所有需要的查询字段的值，我们称之为覆盖索引。覆盖索引是非常有用的工具，能够极大的提高性能。因为，只需要读取索引，而无需读表，极大减少数据访问量。</p>
-<h3 id="6-什么情况下索引会失效（查询不走索引）？"><a href="#6-什么情况下索引会失效（查询不走索引）？" class="headerlink" title="6 什么情况下索引会失效（查询不走索引）？"></a>6 什么情况下索引会失效（查询不走索引）？</h3><ul>
-<li>索引列参与表达式计算或函数运算</li>
-<li>like查询是以%开头，索引失效；以%结尾，索引有效</li>
-<li>查询条件中有or，即使其中有条件带索引也不会使用</li>
-<li>如果mysql估计使用全表扫描要比使用索引快，则不使用索引</li>
-<li>正则表达式不使用索引</li>
-</ul>
-<h3 id="7-一条SQL语句执行很慢的原因有哪些？"><a href="#7-一条SQL语句执行很慢的原因有哪些？" class="headerlink" title="7 一条SQL语句执行很慢的原因有哪些？"></a>7 一条SQL语句执行很慢的原因有哪些？</h3><p>1、大多数情况是正常的，只是偶尔会出现很慢的情况。<br>SQL语句的书写本身应该没有什么问题。</p>
-<ul>
-<li>数据库在刷新脏页<br>当我们要往数据库插入一条数据或者要更新一条数据的时候，我们知道数据库会在内存中把对应字段的数据更新，但是更新之后，这些更新的字段并不会马上同步持久化到磁盘中去，而是先把这些更新的记录写入到redo log日志中去，等到空闲的时候，再通过redo log日志把最新的数据同步到磁盘中去。<br>当内存数据页跟磁盘数据页内容不一致的时候，我们称这个内存页为“脏页”。内存数据写入到磁盘后，内存和磁盘上的数据页的内容就一致了，称为“干净页”。</li>
-<li>拿不到锁<br>我们要执行的这条语句涉及到别的表，别人在用并且加锁了，我们拿不到锁，只能等待别人释放锁了。</li>
-</ul>
-<p>2、在数据量不变的情况下，这条SQL语句一直以来都执行的很慢。</p>
-<ul>
-<li>未用上索引</li>
-<li>数据库选错了索引</li>
-</ul>
-<h3 id="8-水平拆分与垂直拆分"><a href="#8-水平拆分与垂直拆分" class="headerlink" title="8 水平拆分与垂直拆分"></a>8 水平拆分与垂直拆分</h3><p>水平拆分：将同一个表中的记录拆分到多个结构相同的表中。当一个表的数据不断增多时，水平拆分是必然的选择，它可以将数据分布到集群的不同节点上，从而缓存单个数据库的压力。水平拆分可以支撑非常大的数据量。</p>
-<p>垂直拆分：指数据表列的拆分，把一张列比较多的表拆分为多张表。通常是按照列的关系密集程度进行拆分，也可以利用垂直拆分将经常被使用的列和不经常被使用的列拆分到不同的表中。</p>
-<h3 id="9-主从复制"><a href="#9-主从复制" class="headerlink" title="9 主从复制"></a>9 主从复制</h3><p>主从复制：就是建立一个和主数据库完全一样的数据库环境，称为从数据库。<br>做数据的热备份，作为后备数据库，主数据库服务器故障后，可切换到从数据库继续工作，避免数据丢失。<br>架构的扩展。随着业务量越来越大，I/O访问频率越高，单机无法满足，此时做多库的存储，降低磁盘I/O访问的评率，提高单个机器的I/O性能。<br>读写分离，主库负责写，从库负责读，使数据库能支持更大的并发。</p>
-<p>三个线程</p>
-<ol>
-<li>bin log线程：负责将主服务器上的数据更改写入二进制日志（Binary log）中。</li>
-<li>I/O线程：负责从主服务器上读取二进制日志，并写入从服务器的重放日志（Relay log）中。</li>
-<li>SQL线程：负责读取重放日志并重放其中的SQL语句。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
       </tags>
   </entry>
   <entry>
@@ -938,6 +938,32 @@
       </tags>
   </entry>
   <entry>
+    <title>tcp_connect</title>
+    <url>/2021/12/11/12-11-Network/</url>
+    <content><![CDATA[<h3 id="1-三次握手"><a href="#1-三次握手" class="headerlink" title="1 三次握手"></a>1 三次握手</h3><p>为什么只有三次握手才能确认双方的接收与发送能力是否正常，而两次握手却不可以。<br>第一次握手：客户端发送网络包，服务端收到了。此时服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>第二次握手：服务端发包，客户端收到了。此时客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务端并不能确认客户端的接收能力是否正常。<br>第三次握手：客户端发包，服务端收到了。此时服务端就能得出结论：客户端的接收、发送能力正常，服务端的发送、接收能力也正常。<br>因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
+<p>三次握手过程：刚开始客户端处于closed的状态，服务端处于listen状态。<br>SYN，ACK都是标志位，可置为0或1，三次握手时为1。<br>在TCP报文段中，字段ACK=1时，确认号字段（ack）才有效。TCP规定，在连接建立后所有传送的报文段都必须把ACK置1。<br>确认号字段：该字段存放的信息为期望收到对方下一个报文段的第一个数据字节的序号。</p>
+<ol>
+<li>第一次握手：客户端向服务器发送一个同步数据包请求建立连接，并指明客户端的初始化序列号ISN(c)。此时客户端处于SYN_Send状态。</li>
+<li>第二次握手：服务器收到同步请求数据包后，会对客户端进行一个同步确认。数据包中指定了自己的初始化序列号ISN(s)，同时会把客户端的ISN + 1作为 确认号字段 的值，此时服务端处于SYN_RCVD的状态。</li>
+<li>第三次握手：客户端收到这个同步确认数据包后，会对服务器进行一个确认。数据包中把服务端的ISN + 1作为 确认号字段 的值，此时客户端处于establised状态。服务器收到数据包之后，也处于establised状态，此时，双方建立起了连接。</li>
+</ol>
+<p>三次握手好处：<br>确认双方的接收能力、发送能力是否正常。<br>指定自己的初始化序列号，为后面的可靠传送做准备。</p>
+<p>ISN不是固定的<br>三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。<br>如果ISN是固定的，攻击者很容易猜出后续的确认号(acknowledgement number)，因此ISN是动态生成的。</p>
+<p>半连接队列<br>服务端第一次收到客户端的SYN(Synchronize Sequence Numbers)之后，处于SYN_RCVD状态，此时双方还没有完全建立连接，服务端会把此种状态下的请求连接放在一个队列里，称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列里。如果队列满了就有可能会出现丢包现象。</p>
+<p>SYN-ACK重传次数问题<br>服务器发送完SYN－ACK包，如果未收到客户端的确认包，服务器进行首次重传，等待一段时间仍未收到客户端确认包，进行第二次重传，如果重传次数超过系统规定的最大重传次数，系统会将该连接信息从半连接队列中删除。</p>
+<p>三次握手过程中可以携带数据吗？<br>第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。<br>第三次握手时，客户端已经处于established状态，已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的，所以能携带数据。</p>
+<p>SYN洪泛攻击<br>服务器端的资源分配是在第二次握手时分配的，而客户端的资源分配是在完成三次握手后分配的，所以服务器容易受到SYN洪泛攻击。</p>
+<p>SYN攻击就是Client在短时间内伪造大量不存在的IP地址，并向Server不断地发送SYN包，Server回复确认包，并等待Client确认。由于源地址不存在，因此Server需要不断重发直至超时，这些伪造的SYN包将长时间占用半连接队列，导致正常的SYN请求因为队列满而被丢弃，从而引起网络拥塞甚至系统瘫痪。SYN攻击是一种典型的DoS/DDoS攻击。</p>
+<p>防御方法：<br>缩短超时时间（SYN Timeout)<br>增加最大半连接数<br>过滤网关防护<br>SYN cookies技术</p>
+]]></content>
+      <categories>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>三次握手</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SpringMVC</title>
     <url>/2021/12/12/12-12-SpringMVC/</url>
     <content><![CDATA[<h3 id="1-MVC模式"><a href="#1-MVC模式" class="headerlink" title="1 MVC模式"></a>1 MVC模式</h3><p>模型－视图－控制器（MVC）。M指业务模型，V指用户界面，C则是控制器，使用MVC的目的是将M和V实现代码分离，从而使同一个程序可以使用不同的表现形式。</p>
@@ -984,32 +1010,6 @@
       </tags>
   </entry>
   <entry>
-    <title>tcp_connect</title>
-    <url>/2021/12/11/12-11-Network/</url>
-    <content><![CDATA[<h3 id="1-三次握手"><a href="#1-三次握手" class="headerlink" title="1 三次握手"></a>1 三次握手</h3><p>为什么只有三次握手才能确认双方的接收与发送能力是否正常，而两次握手却不可以。<br>第一次握手：客户端发送网络包，服务端收到了。此时服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>第二次握手：服务端发包，客户端收到了。此时客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务端并不能确认客户端的接收能力是否正常。<br>第三次握手：客户端发包，服务端收到了。此时服务端就能得出结论：客户端的接收、发送能力正常，服务端的发送、接收能力也正常。<br>因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
-<p>三次握手过程：刚开始客户端处于closed的状态，服务端处于listen状态。<br>SYN，ACK都是标志位，可置为0或1，三次握手时为1。<br>在TCP报文段中，字段ACK=1时，确认号字段（ack）才有效。TCP规定，在连接建立后所有传送的报文段都必须把ACK置1。<br>确认号字段：该字段存放的信息为期望收到对方下一个报文段的第一个数据字节的序号。</p>
-<ol>
-<li>第一次握手：客户端向服务器发送一个同步数据包请求建立连接，并指明客户端的初始化序列号ISN(c)。此时客户端处于SYN_Send状态。</li>
-<li>第二次握手：服务器收到同步请求数据包后，会对客户端进行一个同步确认。数据包中指定了自己的初始化序列号ISN(s)，同时会把客户端的ISN + 1作为 确认号字段 的值，此时服务端处于SYN_RCVD的状态。</li>
-<li>第三次握手：客户端收到这个同步确认数据包后，会对服务器进行一个确认。数据包中把服务端的ISN + 1作为 确认号字段 的值，此时客户端处于establised状态。服务器收到数据包之后，也处于establised状态，此时，双方建立起了连接。</li>
-</ol>
-<p>三次握手好处：<br>确认双方的接收能力、发送能力是否正常。<br>指定自己的初始化序列号，为后面的可靠传送做准备。</p>
-<p>ISN不是固定的<br>三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。<br>如果ISN是固定的，攻击者很容易猜出后续的确认号(acknowledgement number)，因此ISN是动态生成的。</p>
-<p>半连接队列<br>服务端第一次收到客户端的SYN(Synchronize Sequence Numbers)之后，处于SYN_RCVD状态，此时双方还没有完全建立连接，服务端会把此种状态下的请求连接放在一个队列里，称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列里。如果队列满了就有可能会出现丢包现象。</p>
-<p>SYN-ACK重传次数问题<br>服务器发送完SYN－ACK包，如果未收到客户端的确认包，服务器进行首次重传，等待一段时间仍未收到客户端确认包，进行第二次重传，如果重传次数超过系统规定的最大重传次数，系统会将该连接信息从半连接队列中删除。</p>
-<p>三次握手过程中可以携带数据吗？<br>第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。<br>第三次握手时，客户端已经处于established状态，已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的，所以能携带数据。</p>
-<p>SYN洪泛攻击<br>服务器端的资源分配是在第二次握手时分配的，而客户端的资源分配是在完成三次握手后分配的，所以服务器容易受到SYN洪泛攻击。</p>
-<p>SYN攻击就是Client在短时间内伪造大量不存在的IP地址，并向Server不断地发送SYN包，Server回复确认包，并等待Client确认。由于源地址不存在，因此Server需要不断重发直至超时，这些伪造的SYN包将长时间占用半连接队列，导致正常的SYN请求因为队列满而被丢弃，从而引起网络拥塞甚至系统瘫痪。SYN攻击是一种典型的DoS/DDoS攻击。</p>
-<p>防御方法：<br>缩短超时时间（SYN Timeout)<br>增加最大半连接数<br>过滤网关防护<br>SYN cookies技术</p>
-]]></content>
-      <categories>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>三次握手</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>mybatis</title>
     <url>/2021/12/14/12-14-Mybatis/</url>
     <content><![CDATA[<h3 id="1-mybatis"><a href="#1-mybatis" class="headerlink" title="1 mybatis"></a>1 mybatis</h3><p>MyBatis是一个持久层框架，它内部封装了JDBC，开发者只需要关注SQL语句本身，不需要花费精力去处理加载驱动、创建连接、创建statement等过程。<br>它免除了几乎所有的JDBC代码以及设置参数和获取结果集的工作。MyBatis可以通过简单的 XML 或注解来配置和映射原始类型、接口和Java POJO（Plain Old Java Objects，普通老式Java对象）为数据库中的记录。<br>通过XML或注解的方式将要执行的各种statement配置起来，并通过java对象和statement中sql的动态参数进行映射生成最终执行的sql语句，最后由mybatis框架执行sql并将结果映射为java对象并返回。</p>
@@ -1027,33 +1027,6 @@
       </categories>
       <tags>
         <tag>mybatis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>HTTP</title>
-    <url>/2021/12/14/12-14-Network/</url>
-    <content><![CDATA[<h3 id="1-http1-0、1-1、2-2"><a href="#1-http1-0、1-1、2-2" class="headerlink" title="1 http1.0、1.1、2.2"></a>1 http1.0、1.1、2.2</h3><p>http1.0：为了提高系统的效率，HTTP1.0规定浏览器与服务器只保持短暂的连接，浏览器的每次请求都需要与服务器建立一个TCP连接，服务器完成请求处理后立即断开TCP连接，服务器不跟踪每个客户端也不记录过去的请求。</p>
-<p>http1.1：HTTP1.1支持长连接（HTTP1.1默认模式使用带流水线的长连接），在一个TCP连接上可以传送多个HTTP请求和响应，减少了建立和关闭连接的消耗和延迟。HTTP1.1默认开启Connection：keep-alive，一定程度上弥补了HTTP1.0每次请求都要创建连接的缺点。</p>
-<p>http2.0：<br>针对HTTP高延迟的问题，采用多路复用，通过多个请求stream共享一个tcp连接的方式，解决了head of line blocking问题，降低延迟的同时又提高了带宽的利用率。</p>
-<p>header压缩，HTTP2.0使用了专门为首部压缩而设计的HPACK算法。<br>请求优先级，HTTP2.0允许给每个request设置优先级。<br>二进制分帧，HTTP2.0在应用层和传输层之间增加一个二进制分帧层。在不改动HTTP/1.x的语义、方法、状态码、URI以及首部字段的情况下, 解决了HTTP1.1的性能限制，改进传输性能，实现低延迟和高吞吐量。</p>
-<p>在二进制分帧层中，HTTP2.0会将所有传输的信息分割为更小的消息和帧（frame），并对它们采用二进制格式的编码，其中HTTP1.x的首部信息会被封装到HEADER frame，而相应的Request Body则封装到DATA frame里面。</p>
-<p><strong>HTTP 1.0与HTTP 1.1主要区别</strong><br>HTTP 1.0需要使用keep-alive参数来告知服务器端需要建立一个长连接，而HTTP1.1默认支持长连接。<br>HTTP是基于TCP/IP协议的，创建一个TCP连接需要经过三次握手，有一定的开销。如果每次通讯都要重新建立连接的话，对性能有影响。因此最好能维持一个长连接，可以用一个长连接来发起多个请求。</p>
-<p>HTTP 1.1支持只发送header信息(不带任何body信息)，如果服务器认为客户端有权限请求服务器，则返回100，否则返回401。客户端如果接受到100，才开始把请求body发送到服务器。这样当服务器返回401的时候，客户端就可以不用发送请求body了，节约了带宽。</p>
-<p><strong>HTTP 1.1与HTTP 2.0主要区别</strong><br><strong>多路复用</strong><br>HTTP 2.0使用了多路复用技术，做到同一个连接可以并发处理多个请求，而且并发请求的数量比HTTP 1.1大了好几个数量级。<br>当然HTTP 1.1也可以多建立几个TCP连接，来支持处理更多并发的请求，但是创建TCP连接本身也是有开销的。<br><strong>数据压缩</strong><br>HTTP 1.1不支持header数据的压缩，HTTP 2.0使用HPACK算法对header数据进行压缩，这样数据体积小了，在网络上传输就会更快。</p>
-<h3 id="2-XSS攻击"><a href="#2-XSS攻击" class="headerlink" title="2 XSS攻击"></a>2 XSS攻击</h3><p>XSS是跨站脚本攻击(Cross Site Scripting)，恶意攻击者往Web页面里插入恶意Script代码，当用户浏览该网页之时，嵌入Web里面的Script代码会被执行，从而达到恶意攻击用户的目的。</p>
-<p>XSS攻击大致上分为两类：<br>反射型XSS（非持久型XSS）：攻击相对于访问者而言是一次性的，把恶意脚本通过url的方式传递给了服务器，而服务器只是不加处理的把脚本“反射”回访问者的浏览器而使访问者的浏览器执行相应的脚本。也就是说想要触发漏洞，需要访问特定的链接才能够实现。</p>
-<p>持久型XSS：一般指XSS攻击代码存储在网站数据库，当一个页面被用户打开的时候执行。也就是说，每当用户使用浏览器打开指定页面时，脚本便执行。</p>
-<h3 id="3-http常用状态码"><a href="#3-http常用状态码" class="headerlink" title="3 http常用状态码"></a>3 http常用状态码</h3><p>1xx：表示请求已被接受，需要继续处理。这类响应是临时响应，只包含状态和某些可选的响应头信息，并以空行结束。</p>
-<p>2xx：表示请求已经成功被服务器接收。<br>3xx：表示要完成请求，需要进一步操作，这些状态代码用来重定向。<br>4xx：表示请求报文错误。<br>5xx：表示服务器在处理请求的过程中有错误或者异常状态发生，即服务器端错误。</p>
-<p>101：服务器根据客户端的请求切换协议，主要用于websocket或http2升级。<br>200：请求已成功，请求所希望的响应头或数据体将随此响应返回。<br>301：永久重定向，会缓存。表示为资源或页面永久性地转移到了另一个位置。<br>302：临时重定向，不会缓存。表示资源或页面暂时转移到另一个位置，常被用作网址劫持，容易导致网站降权，严重时网站会被封掉，不推荐使用。<br>301重定向是页面永久性转移，搜索引擎在抓取新内容的同时也将旧的网址替换成重定向之后的网址。<br>302重定向是页面暂时性转移，搜索引擎会抓取新的内容而保存旧的网址并认为新的网址只是暂时的。<br>304：协商缓存命中。<br>400：请求错误。<br>403：服务器禁止访问。<br>404：资源未找到。<br>500：服务器内部错误。<br>503：服务器不可用。</p>
-<p>IP地址<br>A类地址(1-126)：网络号占前8位，以0开头，主机号占后24位。<br>B类地址(128-191)：网络号占前16位，以10开头，主机号占后16位。<br>C类地址(192-223)：网络号占前24位，以110开头，主机号占后8位。<br>A、B、C三类地址都是单播地址（一对一通信）。<br>D类地址(224-239)：以1110开头，保留为多播地址。（一对多通信）<br>E类地址(240-255)：以1111开头，保留为今后使用。</p>
-<h3 id="4-http长连接（tcp长连接）"><a href="#4-http长连接（tcp长连接）" class="headerlink" title="4 http长连接（tcp长连接）"></a>4 http长连接（tcp长连接）</h3><p>HTTP协议是基于请求/响应模式的，因此只要服务端给了响应，本次HTTP请求就结束了，根本没有长短连接这一说。<br>HTTP分为长连接和短连接，其实本质上说的是TCP连接。TCP连接是一个双向的通道，它是可以保持一段时间不关闭的，因此TCP连接才有真正的长连接和短连接这一说。TCP长连接可以复用一个TCP连接来发起多次HTTP请求，这样可以减少资源消耗。<br>设置Connection为keep-alive就算是长连接了，但要服务器和客户端都要设置。HTTP1.1及以后默认都是长连接。</p>
-]]></content>
-      <categories>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>http</tag>
       </tags>
   </entry>
   <entry>
@@ -1095,6 +1068,33 @@
       </categories>
       <tags>
         <tag>网络协议</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HTTP</title>
+    <url>/2021/12/14/12-14-Network/</url>
+    <content><![CDATA[<h3 id="1-http1-0、1-1、2-2"><a href="#1-http1-0、1-1、2-2" class="headerlink" title="1 http1.0、1.1、2.2"></a>1 http1.0、1.1、2.2</h3><p>http1.0：为了提高系统的效率，HTTP1.0规定浏览器与服务器只保持短暂的连接，浏览器的每次请求都需要与服务器建立一个TCP连接，服务器完成请求处理后立即断开TCP连接，服务器不跟踪每个客户端也不记录过去的请求。</p>
+<p>http1.1：HTTP1.1支持长连接（HTTP1.1默认模式使用带流水线的长连接），在一个TCP连接上可以传送多个HTTP请求和响应，减少了建立和关闭连接的消耗和延迟。HTTP1.1默认开启Connection：keep-alive，一定程度上弥补了HTTP1.0每次请求都要创建连接的缺点。</p>
+<p>http2.0：<br>针对HTTP高延迟的问题，采用多路复用，通过多个请求stream共享一个tcp连接的方式，解决了head of line blocking问题，降低延迟的同时又提高了带宽的利用率。</p>
+<p>header压缩，HTTP2.0使用了专门为首部压缩而设计的HPACK算法。<br>请求优先级，HTTP2.0允许给每个request设置优先级。<br>二进制分帧，HTTP2.0在应用层和传输层之间增加一个二进制分帧层。在不改动HTTP/1.x的语义、方法、状态码、URI以及首部字段的情况下, 解决了HTTP1.1的性能限制，改进传输性能，实现低延迟和高吞吐量。</p>
+<p>在二进制分帧层中，HTTP2.0会将所有传输的信息分割为更小的消息和帧（frame），并对它们采用二进制格式的编码，其中HTTP1.x的首部信息会被封装到HEADER frame，而相应的Request Body则封装到DATA frame里面。</p>
+<p><strong>HTTP 1.0与HTTP 1.1主要区别</strong><br>HTTP 1.0需要使用keep-alive参数来告知服务器端需要建立一个长连接，而HTTP1.1默认支持长连接。<br>HTTP是基于TCP/IP协议的，创建一个TCP连接需要经过三次握手，有一定的开销。如果每次通讯都要重新建立连接的话，对性能有影响。因此最好能维持一个长连接，可以用一个长连接来发起多个请求。</p>
+<p>HTTP 1.1支持只发送header信息(不带任何body信息)，如果服务器认为客户端有权限请求服务器，则返回100，否则返回401。客户端如果接受到100，才开始把请求body发送到服务器。这样当服务器返回401的时候，客户端就可以不用发送请求body了，节约了带宽。</p>
+<p><strong>HTTP 1.1与HTTP 2.0主要区别</strong><br><strong>多路复用</strong><br>HTTP 2.0使用了多路复用技术，做到同一个连接可以并发处理多个请求，而且并发请求的数量比HTTP 1.1大了好几个数量级。<br>当然HTTP 1.1也可以多建立几个TCP连接，来支持处理更多并发的请求，但是创建TCP连接本身也是有开销的。<br><strong>数据压缩</strong><br>HTTP 1.1不支持header数据的压缩，HTTP 2.0使用HPACK算法对header数据进行压缩，这样数据体积小了，在网络上传输就会更快。</p>
+<h3 id="2-XSS攻击"><a href="#2-XSS攻击" class="headerlink" title="2 XSS攻击"></a>2 XSS攻击</h3><p>XSS是跨站脚本攻击(Cross Site Scripting)，恶意攻击者往Web页面里插入恶意Script代码，当用户浏览该网页之时，嵌入Web里面的Script代码会被执行，从而达到恶意攻击用户的目的。</p>
+<p>XSS攻击大致上分为两类：<br>反射型XSS（非持久型XSS）：攻击相对于访问者而言是一次性的，把恶意脚本通过url的方式传递给了服务器，而服务器只是不加处理的把脚本“反射”回访问者的浏览器而使访问者的浏览器执行相应的脚本。也就是说想要触发漏洞，需要访问特定的链接才能够实现。</p>
+<p>持久型XSS：一般指XSS攻击代码存储在网站数据库，当一个页面被用户打开的时候执行。也就是说，每当用户使用浏览器打开指定页面时，脚本便执行。</p>
+<h3 id="3-http常用状态码"><a href="#3-http常用状态码" class="headerlink" title="3 http常用状态码"></a>3 http常用状态码</h3><p>1xx：表示请求已被接受，需要继续处理。这类响应是临时响应，只包含状态和某些可选的响应头信息，并以空行结束。</p>
+<p>2xx：表示请求已经成功被服务器接收。<br>3xx：表示要完成请求，需要进一步操作，这些状态代码用来重定向。<br>4xx：表示请求报文错误。<br>5xx：表示服务器在处理请求的过程中有错误或者异常状态发生，即服务器端错误。</p>
+<p>101：服务器根据客户端的请求切换协议，主要用于websocket或http2升级。<br>200：请求已成功，请求所希望的响应头或数据体将随此响应返回。<br>301：永久重定向，会缓存。表示为资源或页面永久性地转移到了另一个位置。<br>302：临时重定向，不会缓存。表示资源或页面暂时转移到另一个位置，常被用作网址劫持，容易导致网站降权，严重时网站会被封掉，不推荐使用。<br>301重定向是页面永久性转移，搜索引擎在抓取新内容的同时也将旧的网址替换成重定向之后的网址。<br>302重定向是页面暂时性转移，搜索引擎会抓取新的内容而保存旧的网址并认为新的网址只是暂时的。<br>304：协商缓存命中。<br>400：请求错误。<br>403：服务器禁止访问。<br>404：资源未找到。<br>500：服务器内部错误。<br>503：服务器不可用。</p>
+<p>IP地址<br>A类地址(1-126)：网络号占前8位，以0开头，主机号占后24位。<br>B类地址(128-191)：网络号占前16位，以10开头，主机号占后16位。<br>C类地址(192-223)：网络号占前24位，以110开头，主机号占后8位。<br>A、B、C三类地址都是单播地址（一对一通信）。<br>D类地址(224-239)：以1110开头，保留为多播地址。（一对多通信）<br>E类地址(240-255)：以1111开头，保留为今后使用。</p>
+<h3 id="4-http长连接（tcp长连接）"><a href="#4-http长连接（tcp长连接）" class="headerlink" title="4 http长连接（tcp长连接）"></a>4 http长连接（tcp长连接）</h3><p>HTTP协议是基于请求/响应模式的，因此只要服务端给了响应，本次HTTP请求就结束了，根本没有长短连接这一说。<br>HTTP分为长连接和短连接，其实本质上说的是TCP连接。TCP连接是一个双向的通道，它是可以保持一段时间不关闭的，因此TCP连接才有真正的长连接和短连接这一说。TCP长连接可以复用一个TCP连接来发起多次HTTP请求，这样可以减少资源消耗。<br>设置Connection为keep-alive就算是长连接了，但要服务器和客户端都要设置。HTTP1.1及以后默认都是长连接。</p>
+]]></content>
+      <categories>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>http</tag>
       </tags>
   </entry>
   <entry>
@@ -1252,21 +1252,6 @@
       </tags>
   </entry>
   <entry>
-    <title>long_for</title>
-    <url>/2021/12/04/12-life/</url>
-    <content><![CDATA[<img src="/2021/12/04/12-life/life.png" class="">
-
-<p>江城子 乙卯正月二十日夜记梦<br>宋 苏轼</p>
-<p>十年生死两茫茫，不思量，自难忘。千里孤坟，无处话凄凉。纵使相逢应不识，尘满面，鬓如霜。<br>夜来幽梦忽还乡，小轩窗，正梳妆。相顾无言，惟有泪千行。料得年年肠断处，明月夜，短松冈。</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>爱情</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Tree</title>
     <url>/2021/12/29/12-29-Tree/</url>
     <content><![CDATA[<h3 id="1-二叉树"><a href="#1-二叉树" class="headerlink" title="1 二叉树"></a>1 二叉树</h3><p>1）每个结点最多有两颗子树，所以二叉树中不存在度大于2的结点。<br>2）左子树和右子树是有顺序的，次序不能颠倒。<br>3）即使树中某结点只有一棵子树，也要区分它是左子树还是右子树。</p>
@@ -1288,6 +1273,21 @@
       </categories>
       <tags>
         <tag>二叉树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>long_for</title>
+    <url>/2021/12/04/12-life/</url>
+    <content><![CDATA[<img src="/2021/12/04/12-life/life.png" class="">
+
+<p>江城子 乙卯正月二十日夜记梦<br>宋 苏轼</p>
+<p>十年生死两茫茫，不思量，自难忘。千里孤坟，无处话凄凉。纵使相逢应不识，尘满面，鬓如霜。<br>夜来幽梦忽还乡，小轩窗，正梳妆。相顾无言，惟有泪千行。料得年年肠断处，明月夜，短松冈。</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>爱情</tag>
       </tags>
   </entry>
   <entry>
@@ -1385,18 +1385,6 @@
       </tags>
   </entry>
   <entry>
-    <title>字节一面</title>
-    <url>/2022/03/11/bytedance-1/</url>
-    <content><![CDATA[<p>2022年3月10号</p>
-<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍项目（科研项目）"><a href="#2-介绍项目（科研项目）" class="headerlink" title="2 介绍项目（科研项目）"></a>2 介绍项目（科研项目）</h3><h3 id="3-Java常见集合"><a href="#3-Java常见集合" class="headerlink" title="3 Java常见集合"></a>3 Java常见集合</h3><h3 id="4-了解Java的并发包吗？（java-util-concurrent，JUC）"><a href="#4-了解Java的并发包吗？（java-util-concurrent，JUC）" class="headerlink" title="4 了解Java的并发包吗？（java.util.concurrent，JUC）"></a>4 了解Java的并发包吗？（java.util.concurrent，JUC）</h3><h3 id="5-ConcurrentHashMap原理"><a href="#5-ConcurrentHashMap原理" class="headerlink" title="5 ConcurrentHashMap原理"></a>5 ConcurrentHashMap原理</h3><h3 id="6-HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap"><a href="#6-HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap" class="headerlink" title="6 HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap"></a>6 HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap</h3><h3 id="7-JVM垃圾回收机制"><a href="#7-JVM垃圾回收机制" class="headerlink" title="7 JVM垃圾回收机制"></a>7 JVM垃圾回收机制</h3><h3 id="8-HTTPS"><a href="#8-HTTPS" class="headerlink" title="8 HTTPS"></a>8 HTTPS</h3><h3 id="9-NIO"><a href="#9-NIO" class="headerlink" title="9 NIO"></a>9 NIO</h3><h3 id="10-多路复用"><a href="#10-多路复用" class="headerlink" title="10 多路复用"></a>10 多路复用</h3><h3 id="11-堆内存和栈内存的区别？栈内存需要垃圾回收吗？"><a href="#11-堆内存和栈内存的区别？栈内存需要垃圾回收吗？" class="headerlink" title="11 堆内存和栈内存的区别？栈内存需要垃圾回收吗？"></a>11 堆内存和栈内存的区别？栈内存需要垃圾回收吗？</h3><h3 id="12-事务有几个等级（隔离级别）"><a href="#12-事务有几个等级（隔离级别）" class="headerlink" title="12 事务有几个等级（隔离级别）"></a>12 事务有几个等级（隔离级别）</h3><h3 id="13-读已提交和可重复读的区别？"><a href="#13-读已提交和可重复读的区别？" class="headerlink" title="13 读已提交和可重复读的区别？"></a>13 读已提交和可重复读的区别？</h3><h3 id="14-说说脏读、不可重复度、幻读"><a href="#14-说说脏读、不可重复度、幻读" class="headerlink" title="14 说说脏读、不可重复度、幻读"></a>14 说说脏读、不可重复度、幻读</h3><h3 id="15-算法题：二叉树的右视图"><a href="#15-算法题：二叉树的右视图" class="headerlink" title="15 算法题：二叉树的右视图"></a>15 算法题：二叉树的右视图</h3>]]></content>
-      <categories>
-        <category>面试</category>
-      </categories>
-      <tags>
-        <tag>字节</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>bitmap</title>
     <url>/2020/11/16/bitmap/</url>
     <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>在一个结构中，用一个比特位来描述一个数据的状态，这种结构就称为位图。0表示数据不存在，1表示数据存在。位图实际上是哈希表的一种变形。<br>在数据存储方面，位图的应用非常广泛。比如说现在要存储20亿个不重复的数据，int类型为4个字节，就需要80亿个字节来存储。1GB的内存表示的是10亿个字节，此时就需要8GB的内存来存放这些数据，而我们普通的电脑内存一般都是4G的内存，这显然是存放不下的。但是如果能用一个比特位来存放一个整型数据，则只需要0.5GB的内存。这大大节省了内存空间。</p>
@@ -1456,6 +1444,18 @@
       </tags>
   </entry>
   <entry>
+    <title>字节一面</title>
+    <url>/2022/03/11/bytedance-1/</url>
+    <content><![CDATA[<p>2022年3月10号</p>
+<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍项目（科研项目）"><a href="#2-介绍项目（科研项目）" class="headerlink" title="2 介绍项目（科研项目）"></a>2 介绍项目（科研项目）</h3><h3 id="3-Java常见集合"><a href="#3-Java常见集合" class="headerlink" title="3 Java常见集合"></a>3 Java常见集合</h3><h3 id="4-了解Java的并发包吗？（java-util-concurrent，JUC）"><a href="#4-了解Java的并发包吗？（java-util-concurrent，JUC）" class="headerlink" title="4 了解Java的并发包吗？（java.util.concurrent，JUC）"></a>4 了解Java的并发包吗？（java.util.concurrent，JUC）</h3><h3 id="5-ConcurrentHashMap原理"><a href="#5-ConcurrentHashMap原理" class="headerlink" title="5 ConcurrentHashMap原理"></a>5 ConcurrentHashMap原理</h3><h3 id="6-HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap"><a href="#6-HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap" class="headerlink" title="6 HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap"></a>6 HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap</h3><h3 id="7-JVM垃圾回收机制"><a href="#7-JVM垃圾回收机制" class="headerlink" title="7 JVM垃圾回收机制"></a>7 JVM垃圾回收机制</h3><h3 id="8-HTTPS"><a href="#8-HTTPS" class="headerlink" title="8 HTTPS"></a>8 HTTPS</h3><h3 id="9-NIO"><a href="#9-NIO" class="headerlink" title="9 NIO"></a>9 NIO</h3><h3 id="10-多路复用"><a href="#10-多路复用" class="headerlink" title="10 多路复用"></a>10 多路复用</h3><h3 id="11-堆内存和栈内存的区别？栈内存需要垃圾回收吗？"><a href="#11-堆内存和栈内存的区别？栈内存需要垃圾回收吗？" class="headerlink" title="11 堆内存和栈内存的区别？栈内存需要垃圾回收吗？"></a>11 堆内存和栈内存的区别？栈内存需要垃圾回收吗？</h3><h3 id="12-事务有几个等级（隔离级别）"><a href="#12-事务有几个等级（隔离级别）" class="headerlink" title="12 事务有几个等级（隔离级别）"></a>12 事务有几个等级（隔离级别）</h3><h3 id="13-读已提交和可重复读的区别？"><a href="#13-读已提交和可重复读的区别？" class="headerlink" title="13 读已提交和可重复读的区别？"></a>13 读已提交和可重复读的区别？</h3><h3 id="14-说说脏读、不可重复度、幻读"><a href="#14-说说脏读、不可重复度、幻读" class="headerlink" title="14 说说脏读、不可重复度、幻读"></a>14 说说脏读、不可重复度、幻读</h3><h3 id="15-算法题：二叉树的右视图"><a href="#15-算法题：二叉树的右视图" class="headerlink" title="15 算法题：二叉树的右视图"></a>15 算法题：二叉树的右视图</h3>]]></content>
+      <categories>
+        <category>面试</category>
+      </categories>
+      <tags>
+        <tag>字节</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Multithread</title>
     <url>/2020/09/23/concurrency/</url>
     <content><![CDATA[<h3 id="1-Thread"><a href="#1-Thread" class="headerlink" title="1 Thread"></a>1 Thread</h3><p>通过继承Thread类，重写run方法可以实现多线程。但由于Java单继承的特点，意味着继承了Thread类就不能再继承其它类了，这也是一个缺点。</p>
@@ -1497,6 +1497,22 @@
       </categories>
       <tags>
         <tag>拷贝</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>diffchain</title>
+    <url>/2020/11/16/difftimechain/</url>
+    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
+
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>差分链表</tag>
       </tags>
   </entry>
   <entry>
@@ -1557,22 +1573,6 @@
       </tags>
   </entry>
   <entry>
-    <title>diffchain</title>
-    <url>/2020/11/16/difftimechain/</url>
-    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
-
-]]></content>
-      <categories>
-        <category>数据结构</category>
-      </categories>
-      <tags>
-        <tag>差分链表</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>郁</title>
     <url>/2021/08/25/evening/</url>
     <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
@@ -1608,6 +1608,30 @@
       </tags>
   </entry>
   <entry>
+    <title>gnosis</title>
+    <url>/2022/03/26/gnosis/</url>
+    <content><![CDATA[<h3 id="面试感悟"><a href="#面试感悟" class="headerlink" title="面试感悟"></a>面试感悟</h3>]]></content>
+      <categories>
+        <category>面试</category>
+      </categories>
+      <tags>
+        <tag>感悟</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>human</title>
+    <url>/2021/10/25/human/</url>
+    <content><![CDATA[<p><strong>人性经得起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
+<p>农历九月二十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>humanity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>abstract,final,static</title>
     <url>/2021/04/07/java-keyword/</url>
     <content><![CDATA[<h3 id="1-abstract"><a href="#1-abstract" class="headerlink" title="1 abstract"></a>1 abstract</h3><p><strong>abstract</strong>关键字修饰类和方法。</p>
@@ -1633,16 +1657,16 @@
       </tags>
   </entry>
   <entry>
-    <title>human</title>
-    <url>/2021/10/25/human/</url>
-    <content><![CDATA[<p><strong>人性经得起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
-<p>农历九月二十</p>
+    <title>jd</title>
+    <url>/2022/03/26/jd/</url>
+    <content><![CDATA[<p>2022年3月23日</p>
+<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-讲一下static关键字，什么情况下会用到它，具体说说？"><a href="#2-讲一下static关键字，什么情况下会用到它，具体说说？" class="headerlink" title="2 讲一下static关键字，什么情况下会用到它，具体说说？"></a>2 讲一下static关键字，什么情况下会用到它，具体说说？</h3><h3 id="3-什么是线程安全？"><a href="#3-什么是线程安全？" class="headerlink" title="3 什么是线程安全？"></a>3 什么是线程安全？</h3><h3 id="4-springboot与spring的区别是什么？"><a href="#4-springboot与spring的区别是什么？" class="headerlink" title="4 springboot与spring的区别是什么？"></a>4 springboot与spring的区别是什么？</h3><h3 id="5-spring核心思想是什么？"><a href="#5-spring核心思想是什么？" class="headerlink" title="5 spring核心思想是什么？"></a>5 spring核心思想是什么？</h3><h3 id="6-synchronized"><a href="#6-synchronized" class="headerlink" title="6 synchronized"></a>6 synchronized</h3><p><strong>无算法题，面试共30分钟，后面都是一些开放性问题</strong></p>
 ]]></content>
       <categories>
-        <category>生活</category>
+        <category>面试</category>
       </categories>
       <tags>
-        <tag>humanity</tag>
+        <tag>京东</tag>
       </tags>
   </entry>
   <entry>
@@ -1711,24 +1735,6 @@
       </tags>
   </entry>
   <entry>
-    <title>memory</title>
-    <url>/2021/03/21/memory/</url>
-    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
-<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
-<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
-<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
-<img src="/2021/03/21/memory/memory.jpg" class="">
-
-<p>辛丑牛年农历二月初十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>景点</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>markdown</title>
     <url>/2021/04/15/markdown/</url>
     <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
@@ -1767,6 +1773,36 @@
       </categories>
       <tags>
         <tag>密码学</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>meituan</title>
+    <url>/2022/03/26/meituan/</url>
+    <content><![CDATA[<p>2022年3月22号</p>
+<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍项目"><a href="#2-介绍项目" class="headerlink" title="2 介绍项目"></a>2 介绍项目</h3><h3 id="3-Java类加载机制"><a href="#3-Java类加载机制" class="headerlink" title="3 Java类加载机制"></a>3 Java类加载机制</h3><h3 id="4-双亲委派模型，为什么这样设计？"><a href="#4-双亲委派模型，为什么这样设计？" class="headerlink" title="4 双亲委派模型，为什么这样设计？"></a>4 双亲委派模型，为什么这样设计？</h3><h3 id="5-Tomcat有那些自定义类加载器？"><a href="#5-Tomcat有那些自定义类加载器？" class="headerlink" title="5 Tomcat有那些自定义类加载器？"></a>5 Tomcat有那些自定义类加载器？</h3><h3 id="6-Java线程安全的集合有那些？"><a href="#6-Java线程安全的集合有那些？" class="headerlink" title="6 Java线程安全的集合有那些？"></a>6 Java线程安全的集合有那些？</h3><h3 id="7-ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？"><a href="#7-ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？" class="headerlink" title="7 ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？"></a>7 ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？</h3><h3 id="8-ConcurrentHashMap和Hashtable的区别？数据结构、锁？"><a href="#8-ConcurrentHashMap和Hashtable的区别？数据结构、锁？" class="headerlink" title="8 ConcurrentHashMap和Hashtable的区别？数据结构、锁？"></a>8 ConcurrentHashMap和Hashtable的区别？数据结构、锁？</h3><h3 id="9-线程池有哪些种类？"><a href="#9-线程池有哪些种类？" class="headerlink" title="9 线程池有哪些种类？"></a>9 线程池有哪些种类？</h3><h3 id="10-线程池参数"><a href="#10-线程池参数" class="headerlink" title="10 线程池参数"></a>10 线程池参数</h3><h3 id="11-来一个任务，线程池工作流程"><a href="#11-来一个任务，线程池工作流程" class="headerlink" title="11 来一个任务，线程池工作流程"></a>11 来一个任务，线程池工作流程</h3><h3 id="12-拒绝策略有那些？"><a href="#12-拒绝策略有那些？" class="headerlink" title="12 拒绝策略有那些？"></a>12 拒绝策略有那些？</h3><h3 id="13-IO模型有哪些？"><a href="#13-IO模型有哪些？" class="headerlink" title="13 IO模型有哪些？"></a>13 IO模型有哪些？</h3><h3 id="14-BIO和NIO区别？"><a href="#14-BIO和NIO区别？" class="headerlink" title="14 BIO和NIO区别？"></a>14 BIO和NIO区别？</h3><h3 id="15-MySQL事务隔离级别"><a href="#15-MySQL事务隔离级别" class="headerlink" title="15 MySQL事务隔离级别"></a>15 MySQL事务隔离级别</h3><h3 id="16-可重复读和读已提交怎么实现的，详细说说？"><a href="#16-可重复读和读已提交怎么实现的，详细说说？" class="headerlink" title="16 可重复读和读已提交怎么实现的，详细说说？"></a>16 可重复读和读已提交怎么实现的，详细说说？</h3><h3 id="17-Redis数据类型有哪些？"><a href="#17-Redis数据类型有哪些？" class="headerlink" title="17 Redis数据类型有哪些？"></a>17 Redis数据类型有哪些？</h3><h3 id="18-自身优势"><a href="#18-自身优势" class="headerlink" title="18 自身优势"></a>18 自身优势</h3><h3 id="19-算法题：二叉树最小深度"><a href="#19-算法题：二叉树最小深度" class="headerlink" title="19 算法题：二叉树最小深度"></a>19 算法题：二叉树最小深度</h3>]]></content>
+      <categories>
+        <category>面试</category>
+      </categories>
+      <tags>
+        <tag>美团</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>memory</title>
+    <url>/2021/03/21/memory/</url>
+    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
+<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
+<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
+<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
+<img src="/2021/03/21/memory/memory.jpg" class="">
+
+<p>辛丑牛年农历二月初十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>景点</tag>
       </tags>
   </entry>
   <entry>
@@ -2030,87 +2066,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
 ]]></content>
       <tags>
         <tag>安全多方计算</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mysql_basic_2</title>
-    <url>/2022/03/20/mysql-basic-2/</url>
-    <content><![CDATA[<h3 id="1-3-约束"><a href="#1-3-约束" class="headerlink" title="1.3 约束"></a>1.3 约束</h3><table>
-<thead>
-<tr>
-<th align="center">约束</th>
-<th align="center">描述</th>
-<th align="center">关键字</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">非空约束</td>
-<td align="center">针对指定列进行非空约束，这样在插入数据的时候就不能设为null</td>
-<td align="center">not null</td>
-</tr>
-<tr>
-<td align="center">唯一约束</td>
-<td align="center">保证某列字段的数据是唯一的、不重复的，允许null值</td>
-<td align="center">unique</td>
-</tr>
-<tr>
-<td align="center">主键约束</td>
-<td align="center">一条记录的唯一标识符，不能为null，不能重复</td>
-<td align="center">primary key</td>
-</tr>
-<tr>
-<td align="center">默认约束</td>
-<td align="center">未指定约束，采用默认值</td>
-<td align="center">default</td>
-</tr>
-<tr>
-<td align="center">外键约束</td>
-<td align="center">一个表中的某个键是来自于另一个表的主键</td>
-<td align="center">foreign key</td>
-</tr>
-<tr>
-<td align="center">检查约束</td>
-<td align="center">强制在字段上的每个值都要满足检查约束的条件</td>
-<td align="center">check</td>
-</tr>
-</tbody></table>
-<img src="/2022/03/20/mysql-basic-2/yueshu.png" class="">
-
-<h4 id="外键约束"><a href="#外键约束" class="headerlink" title="外键约束"></a>外键约束</h4><p><strong>添加外键</strong><br>create table 表名(<br>    constraint 外键名称 foreign key 外键字段名 references 主表(主表列名)<br>);</p>
-<p>alter table 表名 add constraint 外键名称 foreign key(外键字段名) references 主表(主表列名);<br>alter table employee add constraint fk_dept_id foreign key(dept_id) references dept(id);</p>
-<p><strong>删除外键</strong><br>alter table employee drop foreign key fk_dept_id;</p>
-<p><strong>删除/更新</strong></p>
-<table>
-<thead>
-<tr>
-<th align="center">行为</th>
-<th align="center">说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">no action</td>
-<td align="center">如果子表中有匹配的记录，则不允许对父表对应候选键进行update/delete操作</td>
-</tr>
-<tr>
-<td align="center">restrict</td>
-<td align="center">同上</td>
-</tr>
-<tr>
-<td align="center">cascade</td>
-<td align="center">在父表上update/delete记录时，同步update/delete子表的匹配记录</td>
-</tr>
-<tr>
-<td align="center">set null</td>
-<td align="center">在父表上update/delete记录时，将子表上匹配记录的列设为null，要注意子表的外键列不能为not null</td>
-</tr>
-</tbody></table>
-<p>alter table 表名 add constraint 外键名称 foreign key(外键字段名) references 主表(主表列名) on update cascade on delete cascade;</p>
-]]></content>
-      <categories>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
       </tags>
   </entry>
   <entry>
@@ -2393,16 +2348,84 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>do_it</title>
-    <url>/2021/10/29/now-do-it/</url>
-    <content><![CDATA[<p>不知不觉已经10月29号了，时间如白驹过隙，还有一个月就要开题答辩了。昨天老师腾讯会议聊完开题的事情，我的上一届师兄师姐在这个时候或多或少都有一定的研究成果了。但我的研究成果似乎还停滞在了2个月之前，安全多方计算、区块链、物联网。一个热门又新的领域，但似乎对我不太友好，可能我就不适合做科研工作者吧！但是没办法，你必须得硬着头皮往前冲，科研就是这样，培养的就是解决未知问题的能力。就是找没有答案的问题，如果是有答案的问题，那用部着进行科学研究。科研的道路注定充满艰辛、孤独。科研工作者就像勇士一样，必须连续作战，保持胜利战果，所以他是孤独的，同时也是令人敬佩的。加油吧，年轻人！</p>
-<p>农历九月二十四号</p>
+    <title>mysql_basic_2</title>
+    <url>/2022/03/20/mysql-basic-2/</url>
+    <content><![CDATA[<h3 id="1-3-约束"><a href="#1-3-约束" class="headerlink" title="1.3 约束"></a>1.3 约束</h3><table>
+<thead>
+<tr>
+<th align="center">约束</th>
+<th align="center">描述</th>
+<th align="center">关键字</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">非空约束</td>
+<td align="center">针对指定列进行非空约束，这样在插入数据的时候就不能设为null</td>
+<td align="center">not null</td>
+</tr>
+<tr>
+<td align="center">唯一约束</td>
+<td align="center">保证某列字段的数据是唯一的、不重复的，允许null值</td>
+<td align="center">unique</td>
+</tr>
+<tr>
+<td align="center">主键约束</td>
+<td align="center">一条记录的唯一标识符，不能为null，不能重复</td>
+<td align="center">primary key</td>
+</tr>
+<tr>
+<td align="center">默认约束</td>
+<td align="center">未指定约束，采用默认值</td>
+<td align="center">default</td>
+</tr>
+<tr>
+<td align="center">外键约束</td>
+<td align="center">一个表中的某个键是来自于另一个表的主键</td>
+<td align="center">foreign key</td>
+</tr>
+<tr>
+<td align="center">检查约束</td>
+<td align="center">强制在字段上的每个值都要满足检查约束的条件</td>
+<td align="center">check</td>
+</tr>
+</tbody></table>
+<img src="/2022/03/20/mysql-basic-2/yueshu.png" class="">
+
+<h4 id="外键约束"><a href="#外键约束" class="headerlink" title="外键约束"></a>外键约束</h4><p><strong>添加外键</strong><br>create table 表名(<br>    constraint 外键名称 foreign key 外键字段名 references 主表(主表列名)<br>);</p>
+<p>alter table 表名 add constraint 外键名称 foreign key(外键字段名) references 主表(主表列名);<br>alter table employee add constraint fk_dept_id foreign key(dept_id) references dept(id);</p>
+<p><strong>删除外键</strong><br>alter table employee drop foreign key fk_dept_id;</p>
+<p><strong>删除/更新</strong></p>
+<table>
+<thead>
+<tr>
+<th align="center">行为</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">no action</td>
+<td align="center">如果子表中有匹配的记录，则不允许对父表对应候选键进行update/delete操作</td>
+</tr>
+<tr>
+<td align="center">restrict</td>
+<td align="center">同上</td>
+</tr>
+<tr>
+<td align="center">cascade</td>
+<td align="center">在父表上update/delete记录时，同步update/delete子表的匹配记录</td>
+</tr>
+<tr>
+<td align="center">set null</td>
+<td align="center">在父表上update/delete记录时，将子表上匹配记录的列设为null，要注意子表的外键列不能为not null</td>
+</tr>
+</tbody></table>
+<p>alter table 表名 add constraint 外键名称 foreign key(外键字段名) references 主表(主表列名) on update cascade on delete cascade;</p>
 ]]></content>
       <categories>
-        <category>生活</category>
+        <category>数据库</category>
       </categories>
       <tags>
-        <tag>going</tag>
+        <tag>mysql</tag>
       </tags>
   </entry>
   <entry>
@@ -2420,19 +2443,16 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>rain</title>
-    <url>/2021/03/26/rain/</url>
-    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
-<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
-<p>辛丑年农历二月十四</p>
-<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
-<p>辛丑年农历二月十五</p>
+    <title>do_it</title>
+    <url>/2021/10/29/now-do-it/</url>
+    <content><![CDATA[<p>不知不觉已经10月29号了，时间如白驹过隙，还有一个月就要开题答辩了。昨天老师腾讯会议聊完开题的事情，我的上一届师兄师姐在这个时候或多或少都有一定的研究成果了。但我的研究成果似乎还停滞在了2个月之前，安全多方计算、区块链、物联网。一个热门又新的领域，但似乎对我不太友好，可能我就不适合做科研工作者吧！但是没办法，你必须得硬着头皮往前冲，科研就是这样，培养的就是解决未知问题的能力。就是找没有答案的问题，如果是有答案的问题，那用部着进行科学研究。科研的道路注定充满艰辛、孤独。科研工作者就像勇士一样，必须连续作战，保持胜利战果，所以他是孤独的，同时也是令人敬佩的。加油吧，年轻人！</p>
+<p>农历九月二十四号</p>
 ]]></content>
       <categories>
         <category>生活</category>
       </categories>
       <tags>
-        <tag>如晴似雨</tag>
+        <tag>going</tag>
       </tags>
   </entry>
   <entry>
@@ -2446,6 +2466,22 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>天气</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>rain</title>
+    <url>/2021/03/26/rain/</url>
+    <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
+<p>下午，一位考研的学妹联系我说调剂了中国石油大学，准备复试。听到这个消息为她高兴。作为一名考研的过来人，我深知考研的艰辛，特别是考好大学的艰辛。在这个日益内卷化，本科学历也越来越贬值的社会，读研也成为了一种标配。希望考验人都能成功上岸吧！</p>
+<p>辛丑年农历二月十四</p>
+<p>周六的北京似乎变得比平常安静了，在连续上班近一周后，大家也迎来了休息的机会。可我却怎么也休息不起来，心中的石头还没放下。昨天晚上做了一个奇怪的梦，怪到记忆犹新却不愿发生，怪到那么不真实。看来，日有所思夜有所梦这句话还是有一定道理的。不过没有什么能阻挡我学习的脚步，生活继续，梦在脚下。坚持才会有量变到质变。加油，读书人！</p>
+<p>辛丑年农历二月十五</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>如晴似雨</tag>
       </tags>
   </entry>
   <entry>
