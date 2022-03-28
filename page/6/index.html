@@ -187,6 +187,107 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/10/11-10-Java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/10/11-10-Java/" class="post-title-link" itemprop="url">string</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-11-10 18:53:20" itemprop="dateCreated datePublished" datetime="2021-11-10T18:53:20+08:00">2021-11-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-15 21:24:59" itemprop="dateModified" datetime="2022-03-15T21:24:59+08:00">2022-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/11/10/11-10-Java/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/10/11-10-Java/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-Java中String为什么是final？"><a href="#1-Java中String为什么是final？" class="headerlink" title="1 Java中String为什么是final？"></a>1 Java中String为什么是final？</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
+<p>安全性：String被许多的Java类(库)用来当做参数，例如：网络连接地址URL、文件路径path、还有反射机制所需要的String参数等，假若String不是固定不变的，将会引起各种安全隐患；<br>允许String对象缓存HashCode：Java中String对象的哈希码被频繁地使用，比如在HashMap等容器中。字符串不变性保证了hashcode的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是Java堆内存中一个特殊的存储区域，当创建一个String对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
+<h3 id="3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
+<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量，它的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。此类提供与StringBuffer兼容的API，但不保证同步。此类旨在用作StringBuffer的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。在可能的情况下，建议优先使用此类而不是StringBuffer，因为在大多数实现下它会更快。StringBuilder上的主要操作是append和insert方法，它们被重载以接受任何类型的数据。每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。append方法总是在构建器的末尾添加这些字符；insert方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
+<h3 id="2-递归和迭代的区别"><a href="#2-递归和迭代的区别" class="headerlink" title="2 递归和迭代的区别"></a>2 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中，问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远到近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
+<p>以斐波那契数列为例。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>递归容易产生“栈溢出”问题（stack overflow）。<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/31/1031-java/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1127,339 +1228,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/08/26/mpc/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/26/mpc/" class="post-title-link" itemprop="url">mpc</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-08-26 16:25:07" itemprop="dateCreated datePublished" datetime="2021-08-26T16:25:07+08:00">2021-08-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-21 11:44:26" itemprop="dateModified" datetime="2021-12-21T11:44:26+08:00">2021-12-21</time>
-              </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/08/26/mpc/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/26/mpc/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="SmartBid"><a href="#SmartBid" class="headerlink" title="SmartBid"></a>SmartBid</h1><h2 id="Getting-started"><a href="#Getting-started" class="headerlink" title="Getting started"></a>Getting started</h2><h3 id="Requirements"><a href="#Requirements" class="headerlink" title="Requirements"></a>Requirements</h3><p>Work with Hyperledger Fabric v. 1.1.1-mpc (WARNING you need to install 1.1.1-mpc as described below)</p>
-<p>Follow <a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html">https://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html</a> and <a target="_blank" rel="noopener" href="https://github.com/hyperledger/fabric-sdk-node">https://github.com/hyperledger/fabric-sdk-node</a>. In particular:</p>
-<ul>
-<li><p><code>go</code> <a target="_blank" rel="noopener" href="https://golang.org/">https://golang.org/</a> - most recent version. On Ubuntu DO NOT INSTALL USING <code>apt-get</code>. It will NOT work (outdated version). You may use the <code>snap</code> version but you might have the following issue: <a target="_blank" rel="noopener" href="https://github.com/golang/go/issues/24674#issuecomment-379919460">https://github.com/golang/go/issues/24674#issuecomment-379919460</a>. Instead, it is better to manually install it in your home directory:</p>
-<pre><code>  mkdir ~/opt
-  cd ~/opt
-  wget https://dl.google.com/go/go1.10.3.linux-amd64.tar.gz
-  tar xvzf go1.10.3.linux-amd64.tar.gz</code></pre>
-<p>  and add the following lines to <code>~/.zshrc</code> or <code>~/.bashrc</code></p>
-<pre><code>  export GOROOT=$HOME/opt/go
-  export PATH=$PATH:$GOROOT/bin</code></pre>
-</li>
-</ul>
-<ul>
-<li><code>docker</code> <a target="_blank" rel="noopener" href="https://www.docker.com/products/overview">https://www.docker.com/products/overview</a>- v1.13 or higher</li>
-<li><code>docker compose</code> <a target="_blank" rel="noopener" href="https://docs.docker.com/compose/overview/">https://docs.docker.com/compose/overview/</a> - v1.8 or higher (<code>sudo pip install docker-compose</code>)</li>
-<li><code>node.js</code>, <code>npm</code> <a target="_blank" rel="noopener" href="https://nodejs.org/en/download/">https://nodejs.org/en/download/</a><ul>
-<li>node runtime version and 8.4.0 or higher (NodeJS &gt; 8 is not supported by <code>fabric-node-sdk</code>, and we need NodeJS &gt;= 8 for async/await)</li>
-<li>npm v3.10.10</li>
-</ul>
-</li>
-<li>on MacOS: need <code>gnu-tar</code> and <code>coreutils</code>: with Homebrew: <code>brew install gnu-tar --with-default-names</code>, <code>brew install coreutils</code> (needs to change path)</li>
-</ul>
-<p>In addition:</p>
-<ul>
-<li><code>gulp</code> - install via <code>npm install -g gulp</code></li>
-<li><code>yarn</code> - install via <code>npm install -g yarn</code> / <code>brew install yarn</code> / … -&gt; npm might be used but it seems to be too unreliable</li>
-<li><code>tmux</code> &amp; <code>tmuxinator</code> - if you want to use them</li>
-</ul>
-<p><em>Warning</em>: Not using the indicated versions might lead to errors very hard to debug.</p>
-<p>The <code>$GOPATH</code> must be set.</p>
-<p>For <code>carbuy-go</code>: (this dependencies are OPTIONAL but highly recommended; they are required to locally compile the chaincode, outside the Docker container <code>fabric-ccenv-mpc</code>)</p>
-<ul>
-<li><p><code>swig</code> - We need a recent version of <code>swig</code>. The default version of swig in Ubuntu 16.04 has a bug: <a target="_blank" rel="noopener" href="https://github.com/swig/swig/issues/619">https://github.com/swig/swig/issues/619</a>. Tested with 3.0.12. For Ubuntu, inside <code>swig</code> source folder (downloaded from <a target="_blank" rel="noopener" href="http://www.swig.org/download.html">http://www.swig.org/download.html</a>):</p>
-<pre><code>  sudo apt-get install libpcre3 libpcre3-dev
-  ./configure
-  make
-  sudo make install</code></pre>
-</li>
-<li><p><code>emp-tookit</code> from the <code>carbuy</code> branch from <code>https://github.com/fabrice102/</code></p>
-<ul>
-<li><p>on Ubuntu:<br>go the the folder you want to install it:</p>
-<pre><code>wget https://raw.githubusercontent.com/fabrice102/emp-readme/carbuy/scripts/setup_new_machine.sh -O emp_install.sh &amp;&amp; bash emp_install.sh</code></pre>
-<p>and then follows instruction “on both” below</p>
-</li>
-<li><p>on macOS:<br>go the the folder you want to install it:</p>
-<ul>
-<li><p><code>git clone -b carbuy https://github.com/fabrice102/emp-readme.git</code></p>
-</li>
-<li><p>install pre-requisites using HomeBrew</p>
-</li>
-<li><p>add <code>export OPENSSL_ROOT_DIR=/usr/local/opt/openssl</code> to an init script (e.g., <code>~/.zshrc</code> if <code>zsh</code> is used) and run it</p>
-</li>
-<li><p>run</p>
-<pre><code>  bash emp-readme/scripts/install_emp-tool.sh
-  bash emp-readme/scripts/install_emp-ot.sh
-  bash emp-readme/scripts/install_emp-m2pc.sh
-  bash emp-readme/scripts/install_emp-sh2pc.sh</code></pre>
-</li>
-<li><p><em>warning</em>: the flag <code>-DUSE_RANDOM_DEVICE=yes</code> for <code>cmake</code> is required to not use <code>rdrand</code> on systems not supporting <code>rdrand</code></p>
-</li>
-<li><p>you can run <code>cmake</code> manually with the flags:</p>
-<pre><code>  -DCMAKE_INSTALL_PREFIX=$HOME/usr  # for a local install
-  -DCMAKE_BUILD_TYPE=DEBUG # for a debug version</code></pre>
-<p>in the latter case, as we cannot use <code>cmake</code> within <code>carbuy-go</code>, you need to set up correctly <code>LD_LIBRARY_PATH</code> before doing anything on <code>carbuy-go</code>.<br>To avoid breaking <code>rpath</code> mechanisms, it is not recommended to change <code>LD_LIBRARY_PATH</code>, <code>LIBRARY_PATH</code>, or <code>DYLD_LIBRARY_PATH</code> for all the system.</p>
-</li>
-</ul>
-</li>
-<li><p>on both, add to <code>~/.zshrc</code>, <code>~/.bashrc</code>, or a similar file:</p>
-<pre><code>export CPLUS_INCLUDE_PATH=$CPLUS_INCLUDE_PATH:/usr/local/include/emp-tool:/usr/local/include/emp-sh2pc:/usr/local/include/emp-ot</code></pre>
-</li>
-</ul>
-</li>
-<li><p><code>dep</code> <a target="_blank" rel="noopener" href="https://github.com/golang/dep">https://github.com/golang/dep</a></p>
-</li>
-</ul>
-<p>We assume that:</p>
-<ul>
-<li>The environment variable <code>$CARBUYDIR</code> points to an existing directory (e.g., <code>~/projects/carbuy</code>)</li>
-<li>This repository <code>carbuy-client</code> is cloned in <code>$CARBUYDIR/carbuy-client</code>.</li>
-<li>The repository <code>carbuy-go</code> is cloned in <code>$GOPATH/src/carbuy</code>.</li>
-</ul>
-<p>In other words:</p>
-<pre><code>cd $CARBUYDIR
-git clone [url carbuy-client] carbuy-client
-
-cd $GOPATH/src
-git clone [url carbuy-go] carbuy</code></pre>
-<h3 id="Compilation-installation-of-dependencies"><a href="#Compilation-installation-of-dependencies" class="headerlink" title="Compilation / installation of dependencies"></a>Compilation / installation of dependencies</h3><p><em>Important</em>: These steps might need to be done again after an update.</p>
-<h4 id="Fabric-v1-1-1-mpc"><a href="#Fabric-v1-1-1-mpc" class="headerlink" title="Fabric v1.1.1-mpc"></a>Fabric v1.1.1-mpc</h4><pre><code>mkdir -p $GOPATH/src/github.com/hyperledger
-cd $GOPATH/src/github.com/hyperledger
-git clone -b mpc_e2e https://github.com/fabrice102/fabric   # only the first time - if the folder &quot;fabric&quot; does not already exists, else check you are on the remote and mpc_e2e branch (cd fabric; git status)
-cd fabric
-git pull
-make docker</code></pre>
-<h4 id="carbuy-client"><a href="#carbuy-client" class="headerlink" title="carbuy-client"></a>carbuy-client</h4><pre><code>cd $CARBUYDIR/carbuy-client
-git submodule update --init
-cd fabric-sdk-node
-yarn
-gulp ca
-cd ..
-yarn
-
-cd $CARBUYDIR/carbuy-client/fabric
-./bootstrap.sh
-
-cd $CARBUYDIR/carbuy-client/fabric/fabric-ccenv-carbuy
-docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.1-mpc .</code></pre>
-<h4 id="carbuy-go"><a href="#carbuy-go" class="headerlink" title="carbuy-go"></a>carbuy-go</h4><p>This step is only required if you want to locally compile the chaincode.</p>
-<pre><code>cd $GOPATH/src/carbuy
-dep ensure</code></pre>
-<h3 id="1-Running-the-fabric"><a href="#1-Running-the-fabric" class="headerlink" title="1. Running the fabric"></a>1. Running the fabric</h3><p>Run</p>
-<pre><code>cd &quot;$CARBUYDIR/carbuy-client/fabric/network&quot;
-./byfn.sh -m generate
-./byfn.sh -m up</code></pre>
-<p>At the end, you should see</p>
-<pre><code>===================== Anchor peers for org &quot;Org1MSP&quot; on &quot;mychannel&quot; is updated successfully =====================
-
-========= All GOOD, BYFN execution completed ===========
-
-
- _____   _   _   ____
-| ____| | \ | | |  _ \
-|  _|   |  \| | | | | |
-| |___  | |\  | | |_| |
-|_____| |_| \_| |____/</code></pre>
-<p>To stop the fabric:</p>
-<pre><code>cd &quot;$CARBUYDIR/carbuy-client/fabric/network&quot;
-./byfn.sh -m down</code></pre>
-<p>In this case, the ledger is destroyed.</p>
-<h3 id="2-Deploying-the-carbuy-application"><a href="#2-Deploying-the-carbuy-application" class="headerlink" title="2. Deploying the carbuy application"></a>2. Deploying the carbuy application</h3><p>Now you need to deploy the chaincode:</p>
-<pre><code>cd $CARBUYDIR/carbuy-client
-node deploy</code></pre>
-<p>Each deploy generates a fresh <code>chaincodeID</code> which is stored in <code>chaincodeID.txt</code>.<br>Therefore only the last deployed chaincode is actually used (except if you change <code>chaincodeID.txt</code>).<br>Furthermore, each deployment starts from a fresh empty ledger that way.</p>
-<p><em>Note</em>: <code>node deploy</code> is equivalent to <code>node deploy.js</code>.</p>
-<h3 id="3-Populate-the-database"><a href="#3-Populate-the-database" class="headerlink" title="3. Populate the database"></a>3. Populate the database</h3><p>You can create initial entries into the database by using the <code>populate.sh</code> script:</p>
-<pre><code>cd $CARBUYDIR/carbuy-client
-./scripts/populate.sh</code></pre>
-<p>Other smaller populate scripts are available (look for <code>populate*.sh</code>).</p>
-<h3 id="4-Accessing-the-smartbid-application-using-command-line-OPTIONAL"><a href="#4-Accessing-the-smartbid-application-using-command-line-OPTIONAL" class="headerlink" title="4. Accessing the smartbid application using command line (OPTIONAL)"></a>4. Accessing the smartbid application using command line (OPTIONAL)</h3><p>Now, you can run the <code>invoke</code> (or <code>query</code> if you don’t need the transaction to be recorded) command with different parameters. The command gets the name of the function that is executed (e.g. createItem, etc.) and a structure that includes all of the variables for the command.</p>
-<p>For example:</p>
-<pre><code>cd $CARBUYDIR/carbuy-client
-
-node invoke org0 createItem &#39;&#123;
-    &quot;id&quot;:              &quot;715987522&quot;,
-    &quot;sellerID&quot;:        &quot;org0&quot;,
-    &quot;name&quot;:            &quot;House, White Plains&quot;,
-    &quot;category&quot;:        &quot;Real Estate&quot;,
-    &quot;description&quot;:     &quot;&quot;,
-    &quot;auctionDateTime&quot;: 1494648000,
-    &quot;startPrice&quot;:      10000,
-    &quot;reservePrice&quot;:    &#39;$(node encrypt org0 30000)&#39;,
-    &quot;soldPrice&quot;:       0,
-    &quot;owner&quot;:           &quot;&quot;,
-    &quot;status&quot;:          &quot;available&quot;
-&#125;&#39;
-
-node invoke org2 makeBid &#39;&#123;
-    &quot;sellerID&quot;:        &quot;org0&quot;,
-    &quot;itemID&quot;:          &quot;715987522&quot;,
-    &quot;buyerID&quot;:         &quot;org2&quot;,
-    &quot;price&quot;:           &#39;$(node encrypt org2 15000)&#39;,
-    &quot;bidDateTime&quot;:     1493152448,
-    &quot;valid&quot;:           true
-&#125;&#39;
-
-node invoke org1 createItem &#39;&#123;
-    &quot;id&quot;:              &quot;715987524&quot;,
-    &quot;sellerID&quot;:        &quot;org1&quot;,
-    &quot;name&quot;:            &quot;House, Yorktown&quot;,
-    &quot;category&quot;:        &quot;Real Estate&quot;,
-    &quot;description&quot;:     &quot;&quot;,
-    &quot;auctionDateTime&quot;: 1494648000,
-    &quot;startPrice&quot;:      10000,
-    &quot;reservePrice&quot;:    &#39;$(node encrypt org1 25000)&#39;,
-    &quot;soldPrice&quot;:       0,
-    &quot;owner&quot;:           &quot;&quot;,
-    &quot;status&quot;:          &quot;available&quot;
-&#125;&#39;
-
-node query org2 getMyItemsWithBids org2</code></pre>
-<p>The first argument is a comma-separated list of orgs to be contacted. The following arguments correspond to the invoke function of the chaincode and its arguments.</p>
-<p>The reserve price is confidential. Therefore, an encryption of the price is saved on the chaincode and not the plaintextValue.</p>
-<p><code>node encrypt</code> enables to encrypt data for a given organization.</p>
-<h3 id="5-Running-the-web-server-OPTIONAL"><a href="#5-Running-the-web-server-OPTIONAL" class="headerlink" title="5. Running the web server (OPTIONAL)"></a>5. Running the web server (OPTIONAL)</h3><p>The web server provides a nicer interface than the command line.<br>To run it:</p>
-<pre><code>cd $CARBUYDIR/carbuy-client
-node app</code></pre>
-<p>When developing for the web server, it is convenient to restart it whenever needed.<br>For that, you can use <code>nodemon</code>. To install it:</p>
-<pre><code>cd $CARBUYDIR/carbuy-client
-npm install -g nodemon</code></pre>
-<p>To run the web server using <code>nodemon</code>:</p>
-<pre><code>nodemon -e &#39;*&#39; app.js</code></pre>
-<h3 id="Running-everything-above-automatically"><a href="#Running-everything-above-automatically" class="headerlink" title="Running everything above automatically"></a>Running everything above automatically</h3><p>Just run</p>
-<pre><code>$CARBUYDIR/carbuy-client/scripts/start.sh</code></pre>
-<p><em>TIP</em>: You can add the option <code>--populate</code> to <code>$CARBUYDIR/carbuy-client/scripts/start.sh</code>  to automatically populate after deploy.</p>
-<p><em>TIP</em>: If you are in a hurry and want only a small set of data, you can just use <code>$CARBUYDIR/carbuy-client/scripts/populateQuick.sh</code> or <code>$CARBUYDIR/carbuy-client/scripts/populateMin.sh</code>.</p>
-<p><em>TIP</em>: You can add the option <code>--no-app</code> to <code>$CARBUYDIR/carbuy-client/scripts/start.sh</code> to not launch the server. You can then run <code>$CARBUYDIR/carbuy-client/scripts/simpleTest.sh</code> to run a simple test auction.</p>
-<h3 id="6-Stopping-everything"><a href="#6-Stopping-everything" class="headerlink" title="6. Stopping everything"></a>6. Stopping everything</h3><pre><code>$CARBUYDIR/carbuy-client/scripts/stop.sh</code></pre>
-<h3 id="Updating"><a href="#Updating" class="headerlink" title="Updating"></a>Updating</h3><p>If you want to update all repos and compile what needs to be compiled, you can use</p>
-<pre><code>$CARBUYDIR/carbuy-client/scripts/update.sh</code></pre>
-<h2 id="Organization"><a href="#Organization" class="headerlink" title="Organization"></a>Organization</h2><ul>
-<li><code>fabric/</code>: files used to run the fabric orderer, peers, …</li>
-<li><code>static/</code>: static files of the web server</li>
-<li><code>data/</code>: fake database for the web server, used to store e.g., picture of users and cars: picture of with <code>id</code> from org0 <code>org0ID</code> is stored in <code>data/&lt;org0ID&gt;/&lt;id&gt;.png</code></li>
-<li><code>lib/</code>: templates, plugins, and other tools for the web server and <code>deploy.js</code>, …</li>
-<li><code>scripts/</code>: various scripts to make life easier</li>
-<li><code>test/</code>: mocha test files (to be run with <code>npm test</code>)</li>
-<li><code>config.json</code>: configuration file for everything</li>
-<li><code>manifest.js</code>: configuration file for the web server</li>
-<li><code>deploy.js</code>, <code>invoke.js</code>, <code>query.js</code>: see above</li>
-<li><code>chaincodeID.txt</code>: file created by <code>deploy.js</code> containing the chaincode ID of the last deployed chaincode</li>
-</ul>
-<h2 id="Unit-testing"><a href="#Unit-testing" class="headerlink" title="Unit testing"></a>Unit testing</h2><p>For the JS part, we are using <code>mocha</code>.<br>To run the tests:</p>
-<pre><code>cd $CARBUYDIR/carbuy-client
-npm test</code></pre>
-<h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><h3 id="Peers"><a href="#Peers" class="headerlink" title="Peers"></a>Peers</h3><p>WARNING: This section is completely out of date.</p>
-<p>Following the tutorial above, you get three peers: <code>org0</code>, <code>org1</code>, and <code>org2</code>.<br>However, the chaincode is oblivious to this and can work with any number of peers for most function calls, except when holding an auction which can only be done between three peers.</p>
-<p>When the chaincode is deployed, the <code>init</code> function should be given the list of peer IDs.<br>This is automatically done by <code>deploy.js</code>.</p>
-<p><em>Warning</em>: Peer name should only contains alphanumerical characters, <code>-</code> and <code>_</code>.</p>
-<h3 id="Data-model-structures-stored-on-the-blockchain"><a href="#Data-model-structures-stored-on-the-blockchain" class="headerlink" title="Data model / structures stored on the blockchain"></a>Data model / structures stored on the blockchain</h3><p>The data model is defined explicitly in the chaincode (<code>carbuy-go</code>), and must be kept in synch manually.<br>More precisely, the structures are defined at the top of <code>seller.go</code>, <code>buyer.go</code>, and <code>encrypted.go</code>, in the folder <code>$GOPATH/src/carbuy/chaincode/</code>.</p>
-<p>Comments indicate under which key the structures are stored on the blockchain.</p>
-<h3 id="Invoke-queries"><a href="#Invoke-queries" class="headerlink" title="Invoke queries"></a>Invoke queries</h3><p>There are five functions which can be invoked: <code>createItem</code>, <code>getMyItemsWithBids</code>, <code>getOtherItemsWithBids</code>, <code>makeBid</code>, <code>holdAuction</code>. Each of these functions gets <code>(stub, args)</code>, where <code>args</code> includes all of the input parameters.</p>
-<p>The invoke queries are called in <code>$GOPATH/src/carbuy/chaincode/main.go</code>, function <code>Invoke</code>.</p>
-<h2 id="Workarounds-and-dirty-details"><a href="#Workarounds-and-dirty-details" class="headerlink" title="Workarounds and dirty details"></a>Workarounds and dirty details</h2><h3 id="carbuy-client-1"><a href="#carbuy-client-1" class="headerlink" title="carbuy-client"></a>carbuy-client</h3><h4 id="Npm-packages"><a href="#Npm-packages" class="headerlink" title="Npm packages"></a>Npm packages</h4><p>We use the following workarounds in <code>package.json</code>:</p>
-<ul>
-<li>The npm package <code>node-hashtable</code> does not compile on macos Sierra. We instead use <a target="_blank" rel="noopener" href="https://github.com/fabrice102/node-hashtable">https://github.com/fabrice102/node-hashtable</a>.</li>
-<li>The npm package <code>grpc</code> seems to be manually installed at least on macos Sierra.</li>
-<li>The npm package <code>winston</code> seems to be a dependency of fabric-client which has to be manually installed <code>node_modules/fabric-client/lib/utils.js:25:15</code>.</li>
-</ul>
-<h4 id="Events"><a href="#Events" class="headerlink" title="Events"></a>Events</h4><p>We only look at the events from the <code>org0</code> peer. This should never be an issue at least in our setting.</p>
-<h3 id="carbuy-go-1"><a href="#carbuy-go-1" class="headerlink" title="carbuy-go"></a>carbuy-go</h3><h4 id="Vendor-and-package-versions"><a href="#Vendor-and-package-versions" class="headerlink" title="Vendor and package versions"></a>Vendor and package versions</h4><p>We use <code>golang dep</code> to simplify dependencies management.</p>
-<p>However, for speed, we do not vendor anything in the chaincode. Instead <code>fabric-ccenv-carbuy</code> contains already everything that is requires.<br>Thus, no need for compilation each time and installation is faster.</p>
-<h4 id="SWIG"><a href="#SWIG" class="headerlink" title="SWIG"></a>SWIG</h4><p>We need <code>swig</code>. For that we need two changes:</p>
-<ul>
-<li>Patch <code>node_modules/fabric-client/lib/packager/Golang.js</code> to support <code>swig</code>; concretely, we use <code>fabric-sdk-node</code> as a submodule, from branch <code>swig-support</code> from <a target="_blank" rel="noopener" href="https://github.com/fabrice102/fabric-sdk-node.git">https://github.com/fabrice102/fabric-sdk-node.git</a>.</li>
-<li>Use of <code>CORE_CHAINCODE_BUILDER</code> and <code>$CARBUYDIR/carbuy-client/fabric/fabric-ccenv-carbuy</code>, cf above. We need a recent version of <code>swig</code>, because the default version of swig in Ubuntu 16.04 has a bug: <a target="_blank" rel="noopener" href="https://github.com/swig/swig/issues/619">https://github.com/swig/swig/issues/619</a>.</li>
-</ul>
-<h2 id="Other-remarks"><a href="#Other-remarks" class="headerlink" title="Other remarks"></a>Other remarks</h2><p>We use <a target="_blank" rel="noopener" href="https://github.com/hyperledger/fabric/blob/master/docs/source/asset_setup.rst">https://github.com/hyperledger/fabric/blob/master/docs/source/asset_setup.rst</a> as a base, with various changes.<br>In particular <code>peer0</code>, <code>peer1</code>, and <code>peer2</code> have been renamed <code>org0</code>, <code>org1</code>, and <code>org2</code>.<br>Furthermore the network id has been changed from <code>peer0</code> to <code>carbuy</code>.</p>
-<p>The web server uses <code>hapijs</code> <a target="_blank" rel="noopener" href="https://hapijs.com/">https://hapijs.com/</a>.<br>The pages use <code>bootstrap</code> <a target="_blank" rel="noopener" href="https://getbootstrap.com/">https://getbootstrap.com/</a>.</p>
-<p><em>IMPORTANT</em>: Keys must be changed on production. They are stored both in <code>$CARBUYDIR/carbuy-client/keys/</code> and in <code>$GOPATH/src/carbuy/helper/server/config/config.go</code>.</p>
-<h2 id="Troubleshooting"><a href="#Troubleshooting" class="headerlink" title="Troubleshooting"></a>Troubleshooting</h2><h3 id="Error-GRPC-client-got-an-error-response-from-the-peer-Error-Error-executing-chaincode-Failed-to-execute-transaction-when-invoking"><a href="#Error-GRPC-client-got-an-error-response-from-the-peer-Error-Error-executing-chaincode-Failed-to-execute-transaction-when-invoking" class="headerlink" title="Error GRPC client got an error response from the peer. Error: Error executing chaincode: Failed to execute transaction when invoking"></a>Error <code>GRPC client got an error response from the peer. Error: Error executing chaincode: Failed to execute transaction</code> when invoking</h3><p>To debug this error, look at the logs of the chaincode</p>
-<pre><code>docker logs carbuy-[peer]-[chaincodeid]-....</code></pre>
-<p>Use autocompletion to make your life easier.</p>
-<h3 id="Issues-with-npm-or-weird-JS-issues"><a href="#Issues-with-npm-or-weird-JS-issues" class="headerlink" title="Issues with npm or weird JS issues"></a>Issues with <code>npm</code> or weird JS issues</h3><p>Use <code>yarn</code> as <code>npm</code> often creates weird issues.</p>
-<p>If you insist on using <code>npm</code>, here are some comments.</p>
-<p>Might be useful to remove <code>node_modules</code> and <code>package-lock.json</code> and run <code>npm install</code> again.<br>True also inside <code>fabric-sdk-node</code>. (See requirements at the beginning.)</p>
-<p>If problems with versions, might be useful to remove <code>package-lock.json</code> too.</p>
-<p>See <a target="_blank" rel="noopener" href="https://github.com/npm/npm/issues/16839">https://github.com/npm/npm/issues/16839</a></p>
-<h3 id="Issues-with-installation-of-chaincode"><a href="#Issues-with-installation-of-chaincode" class="headerlink" title="Issues with installation of chaincode"></a>Issues with installation of chaincode</h3><p>Check that you gave the latest <code>fabric-ccenv-carbuy</code> Docker image.<br>Otherwise run:</p>
-<pre><code>cd $CARBUYDIR/carbuy-client/fabric/fabric-ccenv-carbuy
-docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></pre>
-<h3 id="Other-random-errors"><a href="#Other-random-errors" class="headerlink" title="Other random errors"></a>Other random errors</h3><p>In some cases just rebooting the machine solves some errors.</p>
-<h3 id="Chaincode-dead-lock"><a href="#Chaincode-dead-lock" class="headerlink" title="Chaincode dead lock"></a>Chaincode dead lock</h3><p>To debug send signal QUIT to process 1 in the docker container of the chaincode and look at the logs.<br><a target="_blank" rel="noopener" href="https://stackoverflow.com/a/28699595/2945326">https://stackoverflow.com/a/28699595/2945326</a></p>
-<h3 id="Errors-on-the-chaincode"><a href="#Errors-on-the-chaincode" class="headerlink" title="Errors on the chaincode"></a>Errors on the chaincode</h3><p>Debugging can be eased by changing PRINT_LINE define on top of <code>$GOPATH/src/carbuy/chaincode/mpc/mpc.cpp</code>.</p>
-<h3 id="Acknowledgement"><a href="#Acknowledgement" class="headerlink" title="Acknowledgement"></a>Acknowledgement</h3><p>Thanks to Research fellow, Shai Halevi for his guidance and help.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1531,7 +1299,7 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">73</span>
+          <span class="site-state-item-count">74</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1544,7 +1312,7 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">60</span>
+        <span class="site-state-item-count">61</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
