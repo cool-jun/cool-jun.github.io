@@ -187,6 +187,563 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/18/about-java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/03/18/about-java/" class="post-title-link" itemprop="url">about_java</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-18 14:36:37 / 修改时间：15:28:39" itemprop="dateCreated datePublished" datetime="2022-03-18T14:36:37+08:00">2022-03-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/03/18/about-java/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/18/about-java/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-Java中重写equals方法为什么要重写hashcode方法？"><a href="#1-Java中重写equals方法为什么要重写hashcode方法？" class="headerlink" title="1 Java中重写equals方法为什么要重写hashcode方法？"></a>1 Java中重写equals方法为什么要重写hashcode方法？</h3><p>如果一个类没有重写equals(Object obj)方法，则等价于通过==比较两个对象，即比较的是对象在内存中的地址是否相等；如果重写了equals(Object obj)方法，一般是比较值是否相等。<br>当我们将equals方法重写后有必要将hashCode方法也重写，这样做才能保证不违背hashCode方法中“相同对象必须有相同哈希值”的约定。<br>一个对象多次调用它的hashCode方法，应当返回相同的integer（哈希值）；<br>两个对象如果通过equals方法判定为相等，那么就应当返回相同integer；<br>hashCode方法实际上必须要完成的一件事情就是，为equals方法认定为相同的对象返回相同的哈希值。<br>为什么重写equals方法就得重写hashCode方法—–因为必须保证重写后的equals方法认定为相同的两个对象拥有相同的哈希值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">String类重写了equals方法和hashCode方法</span><br><span class="line">    public boolean equals(Object anObject) &#123;</span><br><span class="line">        if (this &#x3D;&#x3D; anObject) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        if (anObject instanceof String) &#123;</span><br><span class="line">            String anotherString &#x3D; (String)anObject;</span><br><span class="line">            int n &#x3D; value.length;</span><br><span class="line">            if (n &#x3D;&#x3D; anotherString.value.length) &#123;</span><br><span class="line">                char v1[] &#x3D; value;</span><br><span class="line">                char v2[] &#x3D; anotherString.value;</span><br><span class="line">                int i &#x3D; 0;</span><br><span class="line">                while (n-- !&#x3D; 0) &#123;</span><br><span class="line">                    if (v1[i] !&#x3D; v2[i])</span><br><span class="line">                        return false;</span><br><span class="line">                    i++;</span><br><span class="line">                &#125;</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int hashCode() &#123;</span><br><span class="line">        int h &#x3D; hash;</span><br><span class="line">        if (h &#x3D;&#x3D; 0 &amp;&amp; value.length &gt; 0) &#123;</span><br><span class="line">            char val[] &#x3D; value;</span><br><span class="line"></span><br><span class="line">            for (int i &#x3D; 0; i &lt; value.length; i++) &#123;</span><br><span class="line">                h &#x3D; 31 * h + val[i];</span><br><span class="line">            &#125;</span><br><span class="line">            hash &#x3D; h;</span><br><span class="line">        &#125;</span><br><span class="line">        return h;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>如果重写equals方法不重写hashCode方法会怎样？</strong><br>String类为例：String类中对equals方法进行了重写，但是如果此时我们不将hashCode方法也进行重写，那么String类调用的就是来自顶级父类Obejct类中的hashCode方法。即，对于两个字符串对象，使用它们各自的地址值映射为哈希值。也就是说，被String类中的equals方法认定为相等的两个对象拥有不同的哈希值——因为它们的地址值不同。<br>hashmap中会出现用equals比较相等的对象存在不同的地方（因为hash值不同）。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/18/about-os/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/03/18/about-os/" class="post-title-link" itemprop="url">about_os</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-18 10:10:51" itemprop="dateCreated datePublished" datetime="2022-03-18T10:10:51+08:00">2022-03-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-21 20:49:42" itemprop="dateModified" datetime="2022-03-21T20:49:42+08:00">2022-03-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/03/18/about-os/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/18/about-os/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-用户态与内核态"><a href="#1-用户态与内核态" class="headerlink" title="1 用户态与内核态"></a>1 用户态与内核态</h3><p>用户态与内核态是操作系统的两种运行级别，大部分程序都是运行在用户态。</p>
+<p>运行在用户态下的程序不能直接访问操作系统内核数据结构和程序。当我们在系统中执行一个程序时，大部分时间是运行在用户态下的，在其需要操作系统帮助完成某些它没有权力和能力完成的工作时就会切换到内核态（比如操作硬件）。</p>
+<p>用户态就是提供应用程序运行的空间，为了使应用程序访问到内核管理的资源，例如CPU，内存，I/O。内核必须提供一组通用的访问接口，这些接口就叫系统调用。</p>
+<p>区别：权限不同。<br>用户态的进程能够访问的资源受到了极大的限制，而运行在内核态的进程可以“为所欲为”。<br>如果用户态和内核态拥有相同的特权，应用程序就可以直接访问物理内存，破坏它，读取私有数据或者完全控制系统，通过用户态模式可以限制应用程序。</p>
+<p>用户态切换到内核态</p>
+<ul>
+<li>系统调用，这是用户态进程主动要求切换到内核态的一种方式，用户态进程通过系统调用申请使用操作系统提供的服务程序完成工作。</li>
+<li>异常，运行在用户态下的程序发生了某些事先不可知的异常，这时会触发由当前运行进程切换到处理此异常的内核相关程序中，也就转到了内核态，比如缺页异常。</li>
+<li>外设中断，当外设完成用户的请求时，会向CPU发送中断信号。</li>
+</ul>
+<h3 id="2-进程切换为什么比线程切换慢"><a href="#2-进程切换为什么比线程切换慢" class="headerlink" title="2 进程切换为什么比线程切换慢?"></a>2 进程切换为什么比线程切换慢?</h3><p><strong>虚拟地址（逻辑地址）vs物理地址</strong><br>操作系统会给每个进程分配一个虚拟地址空间（vitural address），每个进程包含的栈、堆等这些都会从这个地址空间中被分配一个地址，这个地址就被称为虚拟地址。底层指令写入的地址也是虚拟地址。</p>
+<p>每个进程都拥有一个自己的虚拟地址空间，并且独立于其他进程的地址空间。</p>
+<p>有了虚拟地址空间后，CPU就可以通过生成一个虚拟地址来访问主存，这个虚拟地址在被送到内存之前会先被转换成物理地址，这个虚拟地址到物理地址的转换过程称为地址翻译/地址转换（address translation）。</p>
+<p>CPU上的内存管理单元（Memory Management Unit，MMU）就是专门用来进行虚拟地址到物理地址的转换的，不过MMU需要借助存放在内存中的页表，而这张表的内容正是由操作系统进行管理的。</p>
+<p>操作系统为每个进程建立了一张页表。一个进程对应一张页表，进程的每个页面对应一个页表项，每个页表项由页号和块号（页框号）组成，记录着进程页面和实际存放的内存块之间的映射关系。</p>
+<p>进程切换会涉及到虚拟地址空间的切换，而这正是导致进程切换比线程切换慢的原因。虚拟地址转换为物理地址需要两个东西：CPU上的MMU和内存中的页表。访问页表（内存）次数太多导致其成为了操作系统地一个性能瓶颈。</p>
+<p>转换检测缓冲区（Translation Lookaside Buffer，TLB）也称为快表，通常内置在CPU的MMU中。TLB的出现是基于这样一种现象的：大多数程序总是对少量的页面进行多次的访问。因此，只有很少的页表项会被反复读取，而其他的页表项很少被访问。</p>
+<p>TLB中存放的就是那些会被反复读取的页表项，若TLB命中，就不需要再访问内存了；若TLB中没有目标页表项，则还需要去查询内存中的页表（慢表），从页表中得到物理页框地址，同时将页表中的该表项添加到TLB中。</p>
+<p>由于进程切换会涉及到虚拟地址空间的切换，这就导致内存中的页表也需要进行切换，一个进程对应一个页表是不假，但是CPU中的TLB只有一个，页表切换后这个TLB就失效了。这样，TLB在一段时间内肯定是无法被命中的，操作系统就必须去访问内存，那么虚拟地址转换为物理地址就会变慢，表现出来的就是程序运行会变慢。<br>而线程切换呢，由于不涉及虚拟地址空间的切换，也就不存在这个问题了。</p>
+<h3 id="3-有了进程，为什么还需要线程？"><a href="#3-有了进程，为什么还需要线程？" class="headerlink" title="3 有了进程，为什么还需要线程？"></a>3 有了进程，为什么还需要线程？</h3><ul>
+<li>进程在同一时间只能干一件事，进程在执行的过程中如果被阻塞，整个进程就会挂起，即使进程中有些工作不依赖于等待的资源，仍然不会执行。</li>
+<li>从资源上来讲，创建进程，需要为其分配系统资源、创建进程控制块（PCB）等操作，代价比较大。而创建线程，则不需要分配系统资源，因为线程可以共享同一进程的资源。</li>
+<li>从调度角度来看，进程间的调度开销要比同一进程中的线程之间的大。</li>
+</ul>
+<h3 id="3-协程"><a href="#3-协程" class="headerlink" title="3 协程"></a>3 协程</h3><p>协程也被称为轻量级线程，协程运行在线程之上，当一个协程执行完成后，可以选择主动让出，让另一个协程运行在当前线程之上。<br>协程并没有增加线程数量，只是在线程的基础之上通过分时复用的方式运行多个协程，而且协程的切换在用户态完成，切换的代价比线程从用户态到内核态的代价小很多。<br>协程只有和异步IO结合起来才能发挥出最大的威力。</p>
+<h3 id="4-虚拟内存"><a href="#4-虚拟内存" class="headerlink" title="4 虚拟内存"></a>4 虚拟内存</h3><p>虚拟内存是计算机系统内存管理的一种技术。</p>
+<p>虚拟内存可以让程序拥有超过系统实际物理内存大小的可用内存空间，虚拟内存会为每个进程提供一个一致的，私有的地址空间，它让每个进程都拥有一片连续完整的内存空间，这样能更加有效管理内存并减少出错。</p>
+<p>由操作系统完成从虚拟内存的虚拟地址到真实内存的物理地址之间的映射工作。</p>
+<p>定义了一个连续的虚拟地址空间，并将内存扩展到了硬盘空间。</p>
+<p>虚拟内存使得应用程序认为它拥有连续的可用内存（一个连续完整的地址空间），而实际上，它通常是被分隔成多个物理内存碎片，还有部分暂时存储在外部磁盘存储器上，在需要时进行数据交换。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/16/mysql-basic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/03/16/mysql-basic/" class="post-title-link" itemprop="url">sql_function</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-16 14:51:32" itemprop="dateCreated datePublished" datetime="2022-03-16T14:51:32+08:00">2022-03-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-20 20:50:10" itemprop="dateModified" datetime="2022-03-20T20:50:10+08:00">2022-03-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/03/16/mysql-basic/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/16/mysql-basic/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="1-mysql相关知识"><a href="#1-mysql相关知识" class="headerlink" title="1 mysql相关知识"></a>1 mysql相关知识</h2><p>事务、存储引擎、索引、SQL优化、锁、日志、主从复制、读写分离、分库分表等。</p>
+<p>基础篇：SQL（Structured Query Language）、函数、约束、多表查询、事务。</p>
+<h3 id="1-1-SQL"><a href="#1-1-SQL" class="headerlink" title="1.1 SQL"></a>1.1 SQL</h3><p>DDL（data definition language），用来定义数据库对象（数据库、表、字段）。<br>DML（data manipulation language），用来对数据库表中的数据进行增删改。<br>DQL（Data Query Language），用来查询数据库表中的记录（select）。<br>DCL（Data Control Language），用来创建数据库用户、控制数据库的访问权限。</p>
+<h4 id="DDL"><a href="#DDL" class="headerlink" title="DDL"></a>DDL</h4><p>show databases;<br>select database();  // 查询当前数据库<br>create database if not exists db_name;<br>drop database if exists db_name;<br>use db_name;</p>
+<p>show tables;<br>desc table_name;  // 查询表结构<br>show create table tb_name;</p>
+<img src="/2022/03/16/mysql-basic/1.png" class="">
+<img src="/2022/03/16/mysql-basic/2.png" class="">
+
+<p>alter table emp add nickname varchar(20) comment ‘昵称’;  // 添加字段<br>alter table emp modify nickname char(30);  // 修改字段类型<br>alter table emp change nickname username varchar(30) comment ‘用户名’;  // 修改字段名及其类型<br>alter table emp drop username;  // 删除字段<br>alter table emp rename to employee;  // 修改表名<br>drop table if exists tb_name;  // 删除表，表不存在<br>truncate table employee;  // 删除表的所有数据，表存在</p>
+<h4 id="DML"><a href="#DML" class="headerlink" title="DML"></a>DML</h4><p><strong>添加数据</strong><br>insert into 表名(字段名1,字段名2) values (值1,值2);  // 指定字段添加<br>insert into 表名 values (值1,值2);  // 全部字段添加<br>insert into 表名(字段名1,字段名2) values (值1,值2),(值1,值2),(值1,值2);  // 指定字段批量添加<br>insert into 表名 values (值1,值2),(值1,值2),(值1,值2);  // 全部字段批量添加</p>
+<p><strong>修改数据</strong><br>update 表名 set 字段名1=值1,字段名2=值2 where 条件;</p>
+<p><strong>删除数据</strong><br>delete from 表名 where 条件;</p>
+<h4 id="DQL"><a href="#DQL" class="headerlink" title="DQL"></a>DQL</h4><p>select 字段列表 from 表名列表 where 条件列表 group by 分组字段列表 having 分组后的条件列表 order by 排序字段列表 limit 分页参数</p>
+<p><strong>基本查询</strong><br>select 字段1,字段2 from 表名;<br>select 字段1 as 别名1,字段2 as 别名2 from 表名;<br>select distinct 字段列表 from 表名;  // 去除重复记录</p>
+<p><strong>条件查询</strong><br>select 字段列表 from 表名 where 条件列表;</p>
+<table>
+<thead>
+<tr>
+<th align="center">比较运算符</th>
+<th align="center">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">between and</td>
+<td align="center">某个范围之类（含最小、最大值）</td>
+</tr>
+<tr>
+<td align="center">in(…)</td>
+<td align="center">在in之后的列表中的值，多选一</td>
+</tr>
+<tr>
+<td align="center">like</td>
+<td align="center">模糊匹配（_匹配单个字符，%匹配多个字符）</td>
+</tr>
+<tr>
+<td align="center">is null</td>
+<td align="center">为空</td>
+</tr>
+<tr>
+<td align="center">is not null</td>
+<td align="center">不为空</td>
+</tr>
+</tbody></table>
+<p>select * from employee where age = 18 or age = 20 or age = 40;  等价于<br>select * from employee where age in(18,20,40);</p>
+<p>select * from employee where name like ‘__’;  // 查询姓名为两个字的员工<br>select * from employee where name like ‘%俊’;  // 查询姓名以俊结尾的员工</p>
+<p><strong>聚合函数</strong><br>一列数据作为一个整体，纵向计算。</p>
+<table>
+<thead>
+<tr>
+<th align="center">函数</th>
+<th align="center">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">count</td>
+<td align="center">统计数量</td>
+</tr>
+<tr>
+<td align="center">max</td>
+<td align="center">最大值</td>
+</tr>
+<tr>
+<td align="center">min</td>
+<td align="center">最小值</td>
+</tr>
+<tr>
+<td align="center">avg</td>
+<td align="center">平均值</td>
+</tr>
+<tr>
+<td align="center">sum</td>
+<td align="center">求和</td>
+</tr>
+</tbody></table>
+<p>select 聚合函数(字段列表) from 表名;</p>
+<img src="/2022/03/16/mysql-basic/juhe.png" class="">
+
+<p><strong>分组查询</strong><br>select 字段列表 from 表名 [where 条件列表] group by 分组字段列表 [having 分组后的条件列表]</p>
+<img src="/2022/03/16/mysql-basic/by1.png" class="">
+<img src="/2022/03/16/mysql-basic/by2.png" class="">
+
+<p><strong>排序查询</strong><br>select 字段列表 from 表名 order by 字段1 排序方式1，字段2 排序方式2;<br>asc：升序（默认）<br>desc：降序</p>
+<img src="/2022/03/16/mysql-basic/order.png" class="">
+
+<p><strong>分页查询</strong><br>select 字段列表 from 表名 limit 起始索引,记录数;<br>起始索引从0开始，起始索引=（页码-1）*每页记录数</p>
+<img src="/2022/03/16/mysql-basic/limit.png" class="">
+
+<p><strong>DQL执行顺序</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select 字段列表           4</span><br><span class="line">from 表名列表             1</span><br><span class="line">where 条件列表            2</span><br><span class="line">group by 分组字段列表      3</span><br><span class="line">having 分组后的条件列表     3</span><br><span class="line">order by 排序字段列表      5</span><br><span class="line">limit 分页参数            6</span><br></pre></td></tr></table></figure>
+
+<h4 id="DCL"><a href="#DCL" class="headerlink" title="DCL"></a>DCL</h4><p>查询用户<br>use mysql;<br>select * from user;</p>
+<p>创建用户<br>create user ‘用户名‘@’主机名’ identified by ‘密码’;</p>
+<p>修改用户密码<br>alter user ‘用户名‘@’主机名’ identified with mysql_native_password by ‘新密码’;</p>
+<p>删除用户<br>drop user ‘用户名‘@’主机名’;</p>
+<p><strong>权限控制</strong></p>
+<table>
+<thead>
+<tr>
+<th align="center">权限</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">all,all privileges</td>
+<td align="center">所有权限</td>
+</tr>
+<tr>
+<td align="center">select</td>
+<td align="center">查询数据</td>
+</tr>
+<tr>
+<td align="center">insert</td>
+<td align="center">插入数据</td>
+</tr>
+<tr>
+<td align="center">update</td>
+<td align="center">修改数据</td>
+</tr>
+<tr>
+<td align="center">delete</td>
+<td align="center">删除数据</td>
+</tr>
+<tr>
+<td align="center">alter</td>
+<td align="center">修改表</td>
+</tr>
+<tr>
+<td align="center">drop</td>
+<td align="center">删除数据库、表、视图</td>
+</tr>
+<tr>
+<td align="center">create</td>
+<td align="center">创建数据库、表</td>
+</tr>
+</tbody></table>
+<p>查询权限<br>show grants for ‘用户名‘@’主机名’;</p>
+<p>授予权限<br>grant 权限列表 on 数据库名.表名 to ‘用户名‘@’主机名’;</p>
+<p>撤销权限<br>revoke 权限列表 on 数据库名.表名 from ‘用户名‘@’主机名’;</p>
+<h3 id="1-2-函数"><a href="#1-2-函数" class="headerlink" title="1.2 函数"></a>1.2 函数</h3><h4 id="字符串函数"><a href="#字符串函数" class="headerlink" title="字符串函数"></a>字符串函数</h4><table>
+<thead>
+<tr>
+<th align="center">函数</th>
+<th align="center">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">concat(s1,s2,s3)</td>
+<td align="center">字符串拼接</td>
+</tr>
+<tr>
+<td align="center">lower(str)</td>
+<td align="center">将str全部转换为小写</td>
+</tr>
+<tr>
+<td align="center">upper(str)</td>
+<td align="center">将str全部转换为大写</td>
+</tr>
+<tr>
+<td align="center">lpad(str,n,pad)</td>
+<td align="center">左填充，用字符pad对str左边进行填充至长度为n</td>
+</tr>
+<tr>
+<td align="center">rpad(str,n,pad)</td>
+<td align="center">右填充，用字符pad对str右边进行填充至长度为n</td>
+</tr>
+<tr>
+<td align="center">trim(str)</td>
+<td align="center">去掉str头部和尾部的空格</td>
+</tr>
+<tr>
+<td align="center">substring(str,start,len)</td>
+<td align="center">返回子字符串</td>
+</tr>
+</tbody></table>
+<img src="/2022/03/16/mysql-basic/lpad.png" class="">
+
+<h4 id="数值函数"><a href="#数值函数" class="headerlink" title="数值函数"></a>数值函数</h4><table>
+<thead>
+<tr>
+<th align="center">函数</th>
+<th align="center">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">ceil(x)</td>
+<td align="center">向上取整</td>
+</tr>
+<tr>
+<td align="center">floor(x)</td>
+<td align="center">向下取整</td>
+</tr>
+<tr>
+<td align="center">mod(x,y)</td>
+<td align="center">返回x%y</td>
+</tr>
+<tr>
+<td align="center">rand()</td>
+<td align="center">返回0~1内的随机数</td>
+</tr>
+<tr>
+<td align="center">round(x,y)</td>
+<td align="center">求x四舍五入的值，保留y位小数</td>
+</tr>
+</tbody></table>
+<img src="/2022/03/16/mysql-basic/round.png" class="">
+
+<h4 id="日期函数"><a href="#日期函数" class="headerlink" title="日期函数"></a>日期函数</h4><table>
+<thead>
+<tr>
+<th align="center">函数</th>
+<th align="center">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">curdate()</td>
+<td align="center">当前日期</td>
+</tr>
+<tr>
+<td align="center">curtime()</td>
+<td align="center">当前时间</td>
+</tr>
+<tr>
+<td align="center">now()</td>
+<td align="center">当前日期和时间</td>
+</tr>
+<tr>
+<td align="center">year(date)</td>
+<td align="center">年份</td>
+</tr>
+<tr>
+<td align="center">month(date)</td>
+<td align="center">月份</td>
+</tr>
+<tr>
+<td align="center">day(date)</td>
+<td align="center">天</td>
+</tr>
+<tr>
+<td align="center">datediff(date1,date2)</td>
+<td align="center">返回两个时间之间相差的天数</td>
+</tr>
+</tbody></table>
+<img src="/2022/03/16/mysql-basic/date.png" class="">
+
+<h4 id="流程函数"><a href="#流程函数" class="headerlink" title="流程函数"></a>流程函数</h4><table>
+<thead>
+<tr>
+<th align="center">函数</th>
+<th align="center">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">if(value,t,f)</td>
+<td align="center">value为true，返回t，否则返回f</td>
+</tr>
+<tr>
+<td align="center">ifnull(value1,value2)</td>
+<td align="center">value1不为空，返回value1，否则返回value2</td>
+</tr>
+<tr>
+<td align="center">case when val1 then res1 else default end</td>
+<td align="center">val1为true，返回res1，否则返回默认值</td>
+</tr>
+<tr>
+<td align="center">case expr when val1 then res1 else default end</td>
+<td align="center">expr的值等于val1，返回res1，否则返回默认值</td>
+</tr>
+</tbody></table>
+<img src="/2022/03/16/mysql-basic/case.png" class="">
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/15/jingsuan-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -388,7 +945,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-20 15:35:22" itemprop="dateModified" datetime="2022-03-20T15:35:22+08:00">2022-03-20</time>
+                <time title="修改时间：2022-04-16 16:08:02" itemprop="dateModified" datetime="2022-04-16T16:08:02+08:00">2022-04-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -426,14 +983,7 @@
 
       
           <p>2022年3月9号<br>由于本次面试是线下面试，一些问题记不太清，本次面试基本都是拿着简历问问题。</p>
-<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍研究方向"><a href="#2-介绍研究方向" class="headerlink" title="2 介绍研究方向"></a>2 介绍研究方向</h3><h3 id="3-docker有哪些常用命令"><a href="#3-docker有哪些常用命令" class="headerlink" title="3 docker有哪些常用命令"></a>3 docker有哪些常用命令</h3><p>docker –help;  //帮助命令<br>docker pull image_name;  //下载镜像<br>docker run image_name  //运行镜像</p>
-<p>docker images;  //查看本地主机上的所有镜像<br>docker images -a;<br>docker images -q;<br>docker images -aq;<br>-a：列出所有镜像。<br>-q：只显示镜像id。</p>
-<p>docker search image_name;  //搜索镜像</p>
-<p>docker rmi image_name;  //删除镜像<br>docker rmi -f $(docker images -aq);</p>
-<p>docker rm container;  //删除容器</p>
-<p>docker run -it REPOSITORY/IMAGE ID;  //运行容器，可以使用容器的REPOSITORY或者IMAGE ID运行容器,其中参数-i表示以交互模式运行容器，-t表示为容器重新分配一个伪输入终端,-i与-t通常同时使用。</p>
-<p>docker ps;  //查看所有正在运行的容器<br>docker ps -a;  //查看所有运行过的容器<br>docker ps -n 5;  //表示查看最近运行过的5个容器</p>
-<p>docker stop CONTAINER ID;  //退出容器<br>docker kill CONTAINER ID;  //退出容器</p>
+<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍研究方向"><a href="#2-介绍研究方向" class="headerlink" title="2 介绍研究方向"></a>2 介绍研究方向</h3><h3 id="3-docker常用命令"><a href="#3-docker常用命令" class="headerlink" title="3 docker常用命令"></a>3 docker常用命令</h3><p><a href="">docker</a></p>
 <h3 id="4-redis数据类型"><a href="#4-redis数据类型" class="headerlink" title="4 redis数据类型"></a>4 redis数据类型</h3><p>string、list、hash、set、zset</p>
 <h3 id="5-说说spring-ioc与aop"><a href="#5-说说spring-ioc与aop" class="headerlink" title="5 说说spring ioc与aop"></a>5 说说spring ioc与aop</h3><p><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/12/05/12-05-Spring/">ioc</a><br><a target="_blank" rel="noopener" href="https://cool-jun.github.io/2021/12/10/12-10-Spring/">aop</a></p>
 <h3 id="6-创建多线程的方式"><a href="#6-创建多线程的方式" class="headerlink" title="6 创建多线程的方式"></a>6 创建多线程的方式</h3><p>见蔚来一面</p>
@@ -1045,416 +1595,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/13/01-13-sort/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/01/13/01-13-sort/" class="post-title-link" itemprop="url">sort</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-01-13 19:31:36" itemprop="dateCreated datePublished" datetime="2022-01-13T19:31:36+08:00">2022-01-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-21 11:19:02" itemprop="dateModified" datetime="2022-03-21T11:19:02+08:00">2022-03-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/sort/" itemprop="url" rel="index"><span itemprop="name">sort</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/01/13/01-13-sort/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/13/01-13-sort/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-排序算法分类"><a href="#1-排序算法分类" class="headerlink" title="1 排序算法分类"></a>1 排序算法分类</h3><img src="/2022/01/13/01-13-sort/sort.png" class="">
-
-<h3 id="2-内部排序和外部排序"><a href="#2-内部排序和外部排序" class="headerlink" title="2 内部排序和外部排序"></a>2 内部排序和外部排序</h3><p>排序有内部排序和外部排序，内部排序是指数据记录在内存中进行排序，而外部排序是指因为排序的数据很大，内存一次不能容纳全部的排序记录，在排序过程中需要访问外存。<br>我们通常所说的排序算法往往指的是内部排序算法，即数据记录在内存中进行排序。</p>
-<h3 id="3-比较和非比较"><a href="#3-比较和非比较" class="headerlink" title="3 比较和非比较"></a>3 比较和非比较</h3><p>常见的如快速排序、归并排序、堆排序、冒泡排序等属于比较排序。在排序的最终结果中，元素之间的次序依赖于它们之间的比较。每个数都必须和其他数进行比较，才能确定自己的位置。<br>比较排序的优势：适用于各种规模的数据，也不在乎数据的分布，都能进行排序。</p>
-<p>计数排序、基数排序、桶排序则属于非比较排序。非比较排序是通过确定每个元素之前应该有多少个元素来排序。针对数组arr，计算arr[i]之前有多少个元素，则唯一确定了arr[i]在排序后数组中的位置。<br>非比较排序只要确定每个元素之前的已有的元素个数即可，一次遍历解决。算法时间复杂度O(n)。<br>非比较排序的时间复杂度低，但由于非比较排序需要占用空间来确定唯一的位置。所以对数据规模和数据分布有一定的要求。</p>
-<h3 id="4-常用排序算法总结"><a href="#4-常用排序算法总结" class="headerlink" title="4 常用排序算法总结"></a>4 常用排序算法总结</h3><table>
-<thead>
-<tr>
-<th>排序算法</th>
-<th align="center">平均时间复杂度</th>
-<th align="center">最好情况</th>
-<th align="center">最坏情况</th>
-<th align="center">空间复杂度</th>
-<th align="center">稳定性</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>直接插入排序</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(n)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(1)</td>
-<td align="center">稳定</td>
-</tr>
-<tr>
-<td>希尔排序</td>
-<td align="center">o(n^1.3)~o(n^2)</td>
-<td align="center">o(n^1.3)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(1)</td>
-<td align="center">不稳定</td>
-</tr>
-<tr>
-<td>简单选择排序</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(1)</td>
-<td align="center">不稳定</td>
-</tr>
-<tr>
-<td>堆排序</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(1)</td>
-<td align="center">不稳定</td>
-</tr>
-<tr>
-<td>冒泡排序</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(n)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(1)</td>
-<td align="center">稳定</td>
-</tr>
-<tr>
-<td>快速排序</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(logn)~o(n)</td>
-<td align="center">不稳定</td>
-</tr>
-<tr>
-<td>归并排序</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(n)</td>
-<td align="center">稳定</td>
-</tr>
-<tr>
-<td>基数排序</td>
-<td align="center">o(d(n+r))</td>
-<td align="center">o(d(n+r))</td>
-<td align="center">o(d(n+r))</td>
-<td align="center">o(n+r)</td>
-<td align="center">稳定</td>
-</tr>
-</tbody></table>
-<h3 id="5-冒泡排序与快速排序"><a href="#5-冒泡排序与快速排序" class="headerlink" title="5 冒泡排序与快速排序"></a>5 冒泡排序与快速排序</h3><p><strong>冒泡排序</strong><br>每次比较相邻的两个元素，如果它们的顺序错误就把他们交换。<br>n个数需要进行n-1趟排序。每一趟只能确定一个数的位置，如果有n个数进行排序，只需将n-1个数置于正确位置，也就是说要进行n-1趟操作，而每一趟操作都需要从第1位开始进行相邻两个数的比较。</p>
-<p>优化：当第i趟冒泡排序一次都没有交换，说明该序列已经有序了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public int[] bubbleSort(int[] nums) &#123;</span><br><span class="line">        if (nums.length &lt; 2) &#123;</span><br><span class="line">            return nums;</span><br><span class="line">        &#125;</span><br><span class="line">        int flag &#x3D; 0;  &#x2F;&#x2F; 表示序列是否交换</span><br><span class="line">        for (int i &#x3D; 0; i &lt; nums.length - 1; i++) &#123;</span><br><span class="line">            flag &#x3D; 0;</span><br><span class="line">            for (int j &#x3D; 0; j &lt; nums.length - i - 1; j++) &#123;</span><br><span class="line">                if (nums[j] &gt; nums[j + 1]) &#123;</span><br><span class="line">                    int temp &#x3D; nums[j];</span><br><span class="line">                    nums[j] &#x3D; nums[j + 1];</span><br><span class="line">                    nums[j + 1] &#x3D; temp;</span><br><span class="line">                    flag &#x3D; 1;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F; 一次都没有交换，说明该序列已经有序了</span><br><span class="line">            if (flag &#x3D;&#x3D; 0) &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return nums;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>快速排序</strong><br>快速排序基于分治的思想，通过一趟排序将要排序的数据分割成独立的两部分：分割点左边都是比它小的数，右边都是比它大的数。然后再按此方法对这两部分数据分别进行快速排序，整个排序过程可以递归进行，以此达到整个数据有序。</p>
-<p>快速排序的优化<br>基准元素的选取：固定位置选取、随机位置选取、三数取中法。<br>优化小数组时的排序方案：当局部排序数组长度较小时，采用插入排序，因为长度分割到够小后，继续分割的效率要低于直接插入排序。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">public class QuickSort &#123;</span><br><span class="line">    &#x2F;&#x2F; 快速排序基于分治的思想，通过一趟排序将要排序的数据分割成独立的两部分：</span><br><span class="line">    &#x2F;&#x2F; 分割点左边都是比它小的数，右边都是比它大的数。</span><br><span class="line">    &#x2F;&#x2F; 然后再按此方法对这两部分数据分别进行快速排序，整个排序过程可以递归进行，</span><br><span class="line">    &#x2F;&#x2F; 以此达到整个数据有序。</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 快速排序的优化</span><br><span class="line">    &#x2F;&#x2F; 基准元素的选取：固定位置选取、随机位置选取、三数取中法</span><br><span class="line">    &#x2F;&#x2F; 优化小数组时的排序方案：当局部排序数组长度较小时，采用插入排序，</span><br><span class="line">    &#x2F;&#x2F; 因为长度分割到够小后，继续分割的效率要低于直接插入排序</span><br><span class="line">    public void quickSort(int[] nums, int low, int high) &#123;</span><br><span class="line">        if (low &lt; high) &#123;</span><br><span class="line">            int pos &#x3D; partition(nums, low, high);  &#x2F;&#x2F; 划分子数组的位置</span><br><span class="line">            quickSort(nums, low, pos - 1);    &#x2F;&#x2F; 左子数组递归调用</span><br><span class="line">            quickSort(nums, pos + 1, high);    &#x2F;&#x2F; 右子数组递归调用</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int partition(int[] nums, int low, int high) &#123;</span><br><span class="line">        int pivot &#x3D; nums[low];  &#x2F;&#x2F; 基准元素</span><br><span class="line">        while (low &lt; high) &#123;</span><br><span class="line">            while (low &lt; high &amp;&amp; nums[high] &gt;&#x3D; pivot) &#123;</span><br><span class="line">                high--;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F; 如果nums[j]小于基准元素，nums[i] &#x3D; nums[j]</span><br><span class="line">            nums[low] &#x3D; nums[high];</span><br><span class="line"></span><br><span class="line">            while (low &lt; high &amp;&amp; nums[low] &lt;&#x3D; pivot) &#123;</span><br><span class="line">                low++;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F; 如果nums[i]大于基准元素，nums[j] &#x3D; nums[i]</span><br><span class="line">            nums[high] &#x3D; nums[low];</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F; 基准元素将数据分成2部分</span><br><span class="line">        nums[low] &#x3D; pivot;</span><br><span class="line">        return low;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="6-归并排序"><a href="#6-归并排序" class="headerlink" title="6 归并排序"></a>6 归并排序</h3><p>归并排序（Merge Sort）是建立在归并操作上的一种有效的排序算法，该算法是采用分治思想的一个非常典型的应用。<br>分解–&gt;合并<br>它将已经有序的子序列合并，得到完全有序的序列。即先使每个子序列有序，再使子序列段间有序。若将两个有序表合并成一个有序表，称为二路归并。归并排序是一种稳定的排序方法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">public void merge(int[] nums, int l, int mid, int r, int[] temp) &#123;</span><br><span class="line">        int i &#x3D; l, j &#x3D; mid + 1;  &#x2F;&#x2F; 左边序列和右边序列下标指针</span><br><span class="line">        int t &#x3D; 0;  &#x2F;&#x2F; 临时数组下标指针</span><br><span class="line">        while (i &lt;&#x3D; mid &amp;&amp; j &lt;&#x3D; r) &#123;</span><br><span class="line">            if (nums[i] &lt; nums[j]) &#123;</span><br><span class="line">                temp[t++] &#x3D; nums[i++];</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                temp[t++] &#x3D; nums[j++];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F; 若左边序列还有元素，将其拷贝至数组temp</span><br><span class="line">        while (i &lt;&#x3D; mid) &#123;</span><br><span class="line">            temp[t++] &#x3D; nums[i++];</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F; 若右边序列还有元素，将其拷贝至数组temp</span><br><span class="line">        while (j &lt;&#x3D; r) &#123;</span><br><span class="line">            temp[t++] &#x3D; nums[j++];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 将temp中元素拷贝至原数组</span><br><span class="line">        t &#x3D; 0;</span><br><span class="line">        while (l &lt;&#x3D; r) &#123;</span><br><span class="line">            nums[l++] &#x3D; temp[t++];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void mergeSort(int[] nums, int l, int r, int[] temp) &#123;</span><br><span class="line">        if (l &lt; r) &#123;</span><br><span class="line">            int mid &#x3D; (l + r) &#x2F; 2;</span><br><span class="line">            mergeSort(nums, l, mid, temp);  &#x2F;&#x2F; 对左边序列进行归并排序</span><br><span class="line">            mergeSort(nums, mid+1, r, temp);  &#x2F;&#x2F; 对右边序列进行归并排序</span><br><span class="line">            merge(nums, l, mid, r, temp);  &#x2F;&#x2F; 合并两个有序序列</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="7-直接插入排序与希尔排序"><a href="#7-直接插入排序与希尔排序" class="headerlink" title="7 直接插入排序与希尔排序"></a>7 直接插入排序与希尔排序</h3><p><strong>直接插入排序</strong><br>把n个待排序的元素看成一个有序表和一个无序表。开始时有序表中只包含1个元素，无序表中包含有n-1个元素，排序过程中每次从无序表中取出第一个元素，将它插入到有序表中的适当位置，使之成为新的有序表，重复n-1次可完成排序过程。<br>将一个记录插入到已排序好的有序表中，从而得到一个新、记录数增1的有序表。即：先将序列的第1个记录看成是一个有序的子序列，然后从第2个记录逐个进行插入，直至整个序列有序为止。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 直接插入排序</span><br><span class="line">    &#x2F;&#x2F; 将一个记录插入到已排序好的有序表中，从而得到一个新、记录数增1的有序表。</span><br><span class="line">    &#x2F;&#x2F; 先将序列的第1个记录看成是一个有序的子序列，然后从第2个记录逐个进行插入，</span><br><span class="line">    &#x2F;&#x2F; 直至整个序列有序为止。</span><br><span class="line">    &#x2F;&#x2F; 局部有序--&gt;全局有序</span><br><span class="line">    public void insertSort(int[] nums) &#123;</span><br><span class="line">        for (int i &#x3D; 1; i &lt; nums.length; i++) &#123;</span><br><span class="line">            if (nums[i] &lt; nums[i-1]) &#123;</span><br><span class="line">                int temp &#x3D; nums[i];  &#x2F;&#x2F; 设置哨兵，保存待插入元素</span><br><span class="line">                int j &#x3D; i - 1;</span><br><span class="line">                &#x2F;&#x2F; 元素后移，直到找到插入位置</span><br><span class="line">                while (j &gt;&#x3D; 0 &amp;&amp; nums[j] &gt; temp) &#123;</span><br><span class="line">                    nums[j+1] &#x3D; nums[j];</span><br><span class="line">                    j--;</span><br><span class="line">                &#125;</span><br><span class="line">                nums[j+1] &#x3D; temp;  &#x2F;&#x2F; 插入正确位置</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>希尔排序</strong><br>希尔排序是把记录按下标的一定增量分组，对每组使用直接插入排序算法排序；随着增量逐渐减少，每组包含的关键词越来越多，当增量减至1时，整个文件恰被分成一组，算法便终止。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 希尔排序（缩小增量排序）</span><br><span class="line">    public void shellSort(int[] nums) &#123;</span><br><span class="line">        &#x2F;&#x2F; gap 增量</span><br><span class="line">        for (int gap &#x3D; nums.length &#x2F; 2; gap &gt; 0; gap &#x2F;&#x3D; 2) &#123;</span><br><span class="line">            &#x2F;&#x2F; 对一个增量区间进行比较</span><br><span class="line">            &#x2F;&#x2F; 例如：</span><br><span class="line">            &#x2F;&#x2F; 3  4  5  1  2  6</span><br><span class="line">            &#x2F;&#x2F; |--|--|--^  ^  ^</span><br><span class="line">            &#x2F;&#x2F;    |--|-----|  |</span><br><span class="line">            &#x2F;&#x2F;       |--------|</span><br><span class="line">            for (int i &#x3D; gap; i &lt; nums.length; i++) &#123;</span><br><span class="line">                int temp &#x3D; nums[i];</span><br><span class="line">                int j &#x3D; i - gap;</span><br><span class="line">                while (j &gt;&#x3D; 0 &amp;&amp; nums[j] &gt; temp) &#123;</span><br><span class="line">                    nums[j + gap] &#x3D; nums[j];  &#x2F;&#x2F; j为左区间的取值，j+gap为右区间与左区间的对应值</span><br><span class="line">                    j -&#x3D; gap;</span><br><span class="line">                &#125;</span><br><span class="line">                nums[j + gap] &#x3D; temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="8-简单选择排序与堆排序"><a href="#8-简单选择排序与堆排序" class="headerlink" title="8 简单选择排序与堆排序"></a>8 简单选择排序与堆排序</h3><p><strong>简单选择排序</strong><br>首先在未排序序列中找到最小（大）元素，存放到排序序列的起始位置，然后，再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。以此类推，直到所有元素均排序完毕。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public void selectSort(int[] nums) &#123;</span><br><span class="line">        int min;  &#x2F;&#x2F; 记录每一趟最小值记录的下标</span><br><span class="line">        for (int i &#x3D; 0; i &lt; nums.length - 1; i++) &#123;</span><br><span class="line">            min &#x3D; i;</span><br><span class="line">            for (int j &#x3D; i + 1; j &lt; nums.length; j++) &#123;</span><br><span class="line">                if (nums[min] &gt; nums[j]) &#123;</span><br><span class="line">                    min &#x3D; j;  &#x2F;&#x2F; 找到最小值的下标</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (min !&#x3D; i) &#123;</span><br><span class="line">                int temp &#x3D; nums[min];</span><br><span class="line">                nums[min] &#x3D; nums[i];</span><br><span class="line">                nums[i] &#x3D; temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>堆排序</strong><br>堆是具有以下性质的完全二叉树：<br>每个结点的值都大于或等于其左右孩子结点的值，称为大顶堆；每个结点的值都小于或等于其左右孩子结点的值，称为小顶堆。</p>
-<p>大顶堆：arr[i] &gt;= arr[2i+1] &amp;&amp; arr[i] &gt;= arr[2i+2]<br>小顶堆：arr[i] &lt;= arr[2i+1] &amp;&amp; arr[i] &lt;= arr[2i+2]</p>
-<p>堆排序的基本思想：将待排序序列构造成一个大顶堆，此时，整个序列的最大值就是堆顶的根节点。将其与末尾元素进行交换，此时末尾就为最大值。然后将剩余n-1个元素重新构造成一个堆，这样会得到n个元素的次小值。如此反复执行，便能得到一个有序序列。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">public void heapSort(int[] arr) &#123;</span><br><span class="line">    &#x2F;&#x2F; 以升序排列为例，构建大顶堆</span><br><span class="line">    int n &#x3D; arr.length;</span><br><span class="line">    for (int i &#x3D; n &#x2F; 2 - 1; i &gt;&#x3D; 0; i--) &#123;</span><br><span class="line">        adjustHeap(arr, i, n);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    for (int j &#x3D; n - 1; j &gt; 0; j--) &#123;</span><br><span class="line">        swap(arr, 0, j);  &#x2F;&#x2F; 将堆顶元素与末尾元素交换</span><br><span class="line">        adjustHeap(arr, 0, j);  &#x2F;&#x2F; 重新对堆进行调整</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 调整大顶堆</span><br><span class="line">public void adjustHeap(int[] arr, int i, int len) &#123;</span><br><span class="line">    int temp &#x3D; arr[i];</span><br><span class="line">    for (int k &#x3D; i * 2 + 1; k &lt; len; k &#x3D; k * 2 + 1) &#123;  &#x2F;&#x2F; 从i结点的左子结点开始，也就是2i+1处开始</span><br><span class="line">        if (k + 1 &lt; len &amp;&amp; arr[k] &lt; arr[k + 1]) &#123;  &#x2F;&#x2F; 如果左子结点小于右子结点，k指向右子结点</span><br><span class="line">            k++;</span><br><span class="line">        &#125;</span><br><span class="line">        if (arr[k] &gt; temp) &#123;  &#x2F;&#x2F; 如果子节点大于父节点，将子节点值赋给父节点</span><br><span class="line">            arr[i] &#x3D; arr[k];</span><br><span class="line">            i &#x3D; k;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            break;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    arr[i] &#x3D; temp;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void swap(int[] arr, int a, int b) &#123;</span><br><span class="line">    int t &#x3D; arr[a];</span><br><span class="line">    arr[a] &#x3D; arr[b];</span><br><span class="line">    arr[b] &#x3D; t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/08/01-08-git/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/01/08/01-08-git/" class="post-title-link" itemprop="url">git</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-01-08 16:26:36" itemprop="dateCreated datePublished" datetime="2022-01-08T16:26:36+08:00">2022-01-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-20 15:05:42" itemprop="dateModified" datetime="2022-03-20T15:05:42+08:00">2022-03-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Tool/" itemprop="url" rel="index"><span itemprop="name">Tool</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/01/08/01-08-git/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/08/01-08-git/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><strong>Git</strong>是一种分布式版本控制系统（Distributed Version Control System，DVCS），分为两种类型的仓库：本地仓库和远程仓库。</p>
-<p>本地仓库：开发人员自己电脑上的Git仓库。<br>远程仓库：远程服务器上的Git仓库。</p>
-<p>clone：就是将远程仓库代码复制到本地仓库。<br>push：就是将本地仓库代码上传到远程仓库。<br>pull：就是将远程仓库代码下载到本地仓库。</p>
-<p><strong>Git工作区、暂存区和版本库</strong></p>
-<ul>
-<li>工作区：就是电脑里存放项目代码的地方。</li>
-<li>暂存区：英文叫stage或index。一般存放在.git目录下的index文件（.git/index）中，暂存区有时也叫作索引（index）。用于临时存放你的改动，它只是一个文件，保存即将提交的文件列表信息。</li>
-<li>版本库（repository）：存放已提交的数据，这里边有你提交的所有版本的数据，push的时候，就是把这个区的数据push到远程仓库。其中，HEAD指向最新放入仓库的版本。</li>
-</ul>
-<p>工作流程：<br>在工作目录中添加、修改文件；<br>将需要进行版本管理的文件放入暂存区；<br>将暂存区的文件提交到版本库；<br>push到远端仓库。</p>
-<img src="/2022/01/08/01-08-git/git.png" class="">
-<p>Git管理的文件有三种状态：已修改（modified）、已暂存（staged）和已提交（committed）。</p>
-<p>将工作区的代码存放到暂存区：<br>git add . （将当前工作区的所有文件存放到暂存区）<br>git add -u （提交更新所有改变的文件，即提交所有变化的文件）<br>git add -A （提交已被修改和已被删除文件，但是不包括新的文件）</p>
-<p><strong>stage</strong><br>修改了4个文件，在不放弃任何修改的情况下，其中一个文件不想提交，如何操作？<br>（没add : git add；已经add: git reset –soft ）</p>
-<p>修改到一半的文件，突然间不需要或者放弃修改了，怎么恢复未修改前文件？<br>(git checkout)</p>
-<p>代码写一半，被打断去做其他功能开发，未完成代码保存？<br>(git stash)能够将所有未提交的修改（工作区和暂存区）保存至堆栈中，用于后续恢复当前工作目录。</p>
-<p>代码写一半，发现忘记切换分支了？<br>(git stash &amp; git checkout)</p>
-<p>代码需要回滚了？<br>（git reset）</p>
-<p><strong>常用命令</strong><br>备份当前工作区的内容<br>git stash</p>
-<p>从远程仓库克隆<br>git clone [url]</p>
-<p>从远程仓库中抓取与拉取<br>git fetch 是从远程仓库获取最新版本到本地仓库，不会自动merge。<br>git pull 是从远程仓库获取最新版本并merge到本地仓库。</p>
-<p>推送到远程仓库<br>git push remote-name branch-name</p>
-<p><strong>Git分支</strong><br>列出所有本地分支<br>git branch<br>列出所有远程分支<br>git branch -r<br>列出所有本地分支和远程分支<br>git branch -a<br>创建分支<br>git branch [branch_name]<br>切换分支<br>git checkout [branch_name]<br>合并分支<br>git merge [branch_name]</p>
-<p><strong>rebase</strong><br>假设现在有两个分支master和hj，其中hj是在提交点B处从master上拉出的分支，master上有一个新提交M，hj上有两个新提交C和D。<br>此时要切换到hj分支上，执行如下命令，相当于是想要把master分支合并到hj分支（可以类比为我们在自己的分支hj上开发了一段时间，现在准备从主干master上拉一下最新改动）。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git checkout hj</span><br><span class="line">git rebase master</span><br><span class="line">等价于git rebase master hj</span><br></pre></td></tr></table></figure>
-<img src="/2022/01/08/01-08-git/rebase.png" class="">
-<ul>
-<li>hj：待变基分支、当前分支</li>
-<li>master：基分支、目标分支</li>
-</ul>
-<p>当执行rebase操作时，git会从两个分支的共同祖先开始提取待变基分支上的修改，然后将待变基分支指向基分支的最新提交，最后将刚才提取的修改应用到基分支的最新提交的后面。</p>
-<p>场景：张三从B拉了代码进行开发，目前提交了两次，开发到D了；李四也从B拉代码开发并且开发完毕，他提交到了M，然后合到主干上了。<br>此时张三想拉下最新代码，于是他在hj分支上执行了git rebase master，即把master分支给rebase过来，由于李四更早开发完并合了主干，如此就相当于张三是基于李四的最新提交M进行的开发了。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/29/12-29-Tree/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/12/29/12-29-Tree/" class="post-title-link" itemprop="url">Tree</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-12-29 11:19:28" itemprop="dateCreated datePublished" datetime="2021-12-29T11:19:28+08:00">2021-12-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 20:48:55" itemprop="dateModified" datetime="2022-03-15T20:48:55+08:00">2022-03-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/12/29/12-29-Tree/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/29/12-29-Tree/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-二叉树"><a href="#1-二叉树" class="headerlink" title="1 二叉树"></a>1 二叉树</h3><p>1）每个结点最多有两颗子树，所以二叉树中不存在度大于2的结点。<br>2）左子树和右子树是有顺序的，次序不能颠倒。<br>3）即使树中某结点只有一棵子树，也要区分它是左子树还是右子树。</p>
-<p>性质：<br>1）在二叉树的第i层上最多有2^(i-1)个节点（i&gt;=1）。<br>2）二叉树深度为k，那么最多有2^k-1个节点（k&gt;=1）。<br>3）n0=n2+1。n0表示度数为0的节点个数（叶子节点个数），n2表示度数为2的节点个数。<br>4）在完全二叉树中，具有n个节点的完全二叉树的深度为[log2n]+1，其中[log2n]是向下取整。<br>5）若对含n个结点的完全二叉树从上到下且从左至右进行1至n的编号，则对完全二叉树中任意一个编号为i的结点有如下特性：<br>(1) 若i=1，则该结点是二叉树的根，无双亲，否则，编号为[i/2]的结点为其双亲结点;<br>(2) 若2i&gt;n，则该结点无左孩子，否则，编号为2i的结点为其左孩子结点；<br>(3) 若2i+1&gt;n，则该结点无右孩子结点，否则，编号为2i+1的结点为其右孩子结点。</p>
-<h3 id="2-满二叉树"><a href="#2-满二叉树" class="headerlink" title="2 满二叉树"></a>2 满二叉树</h3><p>高度为h，由2^h-1个节点构成的二叉树称为满二叉树。</p>
-<h3 id="3-完全二叉树"><a href="#3-完全二叉树" class="headerlink" title="3 完全二叉树"></a>3 完全二叉树</h3><p>完全二叉树是由满二叉树引出来的，若设二叉树的高度为h，则除第 h 层外，其它各层 (1～h-1) 的结点个数都达到最大值(即1~h-1层为一个满二叉树)，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。</p>
-<h3 id="4-平衡二叉树（AVL树）"><a href="#4-平衡二叉树（AVL树）" class="headerlink" title="4 平衡二叉树（AVL树）"></a>4 平衡二叉树（AVL树）</h3><p>它是一棵空树或者它的左右两棵子树的高度差的绝对值不超过1，并且左右两棵子树都是一棵平衡二叉树。</p>
-<h3 id="5-二叉排序树（二叉搜索树-二叉查找树）BST"><a href="#5-二叉排序树（二叉搜索树-二叉查找树）BST" class="headerlink" title="5 二叉排序树（二叉搜索树/二叉查找树）BST"></a>5 二叉排序树（二叉搜索树/二叉查找树）BST</h3><p>它是一棵空树，或者是具有下列性质的二叉树：<br>（1）若左子树不空，则左子树上所有结点的值均小于它的根结点的值；<br>（2）若右子树不空，则右子树上所有结点的值均大于它的根结点的值；<br>（3）左、右子树也分别为二叉排序树；<br>（4）一般来说没有键值相等的结点。</p>
-<h3 id="6-红黑树"><a href="#6-红黑树" class="headerlink" title="6 红黑树"></a>6 红黑树</h3><p>红黑树（Red Black Tree）是一种自平衡二叉查找树。红黑树是一种含有红黑结点并且能自平衡的二叉查找树。它必须满足下面性质：<br>性质1：每个结点要么是黑色，要么是红色。<br>性质2：根结点是黑色。<br>性质3：每个叶子结点（NIL）都是黑色。<br>性质4：每个红色结点的两个子结点一定都是黑色。<br>性质5：任意一个结点到每个叶子结点的路径都包含数量相同的黑色结点。<br>如果一个结点存在黑色子结点，那么该结点肯定有两个子结点。</p>
-<p>应用：TreeMap、TreeSet、JDK1.8 HashMap</p>
-<p><strong>红黑树vs平衡二叉树</strong><br>红黑树不追求”完全平衡”，它不像AVL树那样要求节点的|balFact| &lt;= 1，它只要求部分达到平衡。红黑树是用非严格的平衡来换取增删节点时旋转次数的降低，任何不平衡都会在三次旋转之内解决，而AVL树是严格的平衡树，因此在增加或者删除节点的时候，旋转的次数比红黑树要多。</p>
-<p>红黑树的查询性能略微逊色于AVL树，但是，红黑树在插入和删除上优于AVL树，AVL树每次插入删除会进行大量的平衡度计算，而红黑树为了维持红黑性质所做的红黑变换和旋转的开销，相较于AVL树为了维持平衡的开销要小得多。<br>实际应用中，若搜索的次数远大于插入和删除，那么选择AVL树；如果搜索，插入，删除次数几乎差不多，应该选择红黑树。</p>
-<h3 id="7-B树、B-树"><a href="#7-B树、B-树" class="headerlink" title="7 B树、B+树"></a>7 B树、B+树</h3><p><strong>B树</strong><br>一棵m阶B树是一棵平衡的m路搜索树。它或者是空树，或者是满足下列性质的树：<br>1、根结点至少有两棵子树；<br>2、树中每个结点至多有m棵子树；<br>3、除根结点以外的所有结点（不包括叶子结点）的度数正好是关键字总数加一。<br>4、所有结点都包含如下形式的数据：(n,A0 ,K1 ,A1 ,K2 ,A2 , … ,Kn,An )<br>其中n为关键字的个数，Ki(i=1, … , n)为关键字，且满足K1&lt;K2&lt;…&lt;Kn。Ai( i=0,1, … , n)为指向子树根结点的指针，且对于i=1,2, … , n-1，Ai所指子树上各结点的一切关键字均大于Ki，而小于Ki+1。A0所指子树上各结点的一切关键字均小于K1，An所指子树上各结点的一切关键字均大于Kn。<br>对于叶子结点，所有指针Ai皆为空。对于具有n个关键字的非叶结点，将有n+1棵子树。</p>
-<p><strong>B+树</strong><br>1.有n棵子树的结点中含有n个关键字；<br>2.根节点至少有一棵子树，除根节点外，其他结点至少有[ m/2 ]棵子树；<br>3.所有的叶子结点中包含了全部关键字的信息，及指向含有这些关键字信息的指针，且叶子结点依关键字的大小自小而大顺序链接。(而B树的叶子节点并没有包括全部关键字的信息)<br>4.所有的非叶子结点可以看成是索引部分，结点中仅含有其子树根结点中最大（或最小）关键字。</p>
-<p>B+树的搜索与B树基本相同，区别是B+树只有到达叶子结点才能命中（B树可以在非叶子结点命中）。<br>B树的优势是当你要查找的值恰好处在一个非叶子节点时，查找到该节点就成功返回并结束查询。<br>而B+树由于非叶子节点只是索引部分，这些节点中只含有其子树中的最大(或最小)关键字，当非终端节点上的关键字等于给点值时，查找并不终止，而是继续向下直到叶子节点。因此在B+树中，无论查找成功与否，都是走了一条从根到叶子节点的路径。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1526,7 +1666,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">75</span>
+          <span class="site-state-item-count">78</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1539,7 +1679,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">62</span>
+        <span class="site-state-item-count">65</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
