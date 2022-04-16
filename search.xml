@@ -44,26 +44,6 @@
       </tags>
   </entry>
   <entry>
-    <title>annotation</title>
-    <url>/2022/02/18/02-18-Spring/</url>
-    <content><![CDATA[<h3 id="1-SpringBootApplication"><a href="#1-SpringBootApplication" class="headerlink" title="1 @SpringBootApplication"></a>1 @SpringBootApplication</h3><p>这是Spring Boot最最最核心的注解，用在Spring Boot主类上，标识这是一个Spring Boot应用，用来开启Spring Boot。<br>这个注解是@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan这三个注解的组合，也可以用这三个注解来代替@SpringBootApplication注解。<br>@Configuration：Spring 3.0添加的一个注解，用来代替applicationContext.xml配置文件，所有这个配置文件里面能做到的事情都可以通过这个注解所在类来完成。</p>
-<ul>
-<li>@SpringBootConfiguration：@Configuration注解的变体，用来修饰Spring Boot配置。</li>
-<li>@EnableAutoConfiguration：允许Spring Boot自动配置注解，开启这个注解之后，Spring Boot就能根据当前类路径下的包或者类来配置Spring Bean。</li>
-<li>@ComponentScan：Spring 3.1添加的一个注解，用来代替配置文件中的component-scan配置，开启组件扫描，即自动扫描包路径下的@Component注解进行注册bean实例到context中。</li>
-</ul>
-<h3 id="2-RestController"><a href="#2-RestController" class="headerlink" title="2 @RestController"></a>2 @RestController</h3><p>@Controller用于标记一个类，使用它标记的类就是一个Spring MVC Controller对象，处理器会扫描使用该注解的类的方法，并检测该方法是否使用了@RequestMapping注解。</p>
-<p>@ResponseBody注解用于将@Controller修饰的类的方法返回的对象，通过适当的HttpMessageConverter转换为指定格式后，写入到Response对象的body数据区，通常用来返回JSON或者XML数据，返回JSON数据的情况比较多。</p>
-<p>@RestController=@Controller+@ResponseBody</p>
-]]></content>
-      <categories>
-        <category>Spring</category>
-      </categories>
-      <tags>
-        <tag>注解</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>sort</title>
     <url>/2022/01/13/01-13-sort/</url>
     <content><![CDATA[<h3 id="1-排序算法分类"><a href="#1-排序算法分类" class="headerlink" title="1 排序算法分类"></a>1 排序算法分类</h3><img src="/2022/01/13/01-13-sort/sort.png" class="">
@@ -179,62 +159,23 @@
       </tags>
   </entry>
   <entry>
-    <title>dynamic_proxy</title>
-    <url>/2021/10/31/1031-java/</url>
-    <content><![CDATA[<h3 id="1-Java创建对象的方法"><a href="#1-Java创建对象的方法" class="headerlink" title="1 Java创建对象的方法"></a>1 Java创建对象的方法</h3><p>new、反射newInstance()、clone()、反序列化。</p>
-<h3 id="2-Java动态代理、应用"><a href="#2-Java动态代理、应用" class="headerlink" title="2 Java动态代理、应用"></a>2 Java动态代理、应用</h3><p>静态代理：创建一个接口，被代理的类实现该接口。之后创建一个代理类，也实现这个接口。在代理类中持有一个被代理对象的引用，然后在代理类方法中调用该对象的方法。<br><strong>实现</strong><br>编写一个接口UserService，以及它的一个实现类UserServiceImpl</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface UserService &#123;</span><br><span class="line">    void hello();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class UserServiceImpl implements UserService &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void hello() &#123;</span><br><span class="line">        System.out.println(&quot;hello hj!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>现在想对UserServiceImpl类增加一些功能，这时可通过静态代理。编写一个代理类UserServiceProxy并实现UserService接口。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 代理类</span><br><span class="line">public class UserServiceProxy implements UserService &#123;</span><br><span class="line">    private UserService target;  &#x2F;&#x2F; 被代理的对象</span><br><span class="line"></span><br><span class="line">    public UserServiceProxy(UserService target) &#123;</span><br><span class="line">        this.target &#x3D; target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void hello() &#123;</span><br><span class="line">        System.out.println(&quot;invoke before!&quot;);</span><br><span class="line">        target.hello();</span><br><span class="line">        System.out.println(&quot;invoke after!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class TestProxy &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        UserService userService &#x3D; new UserServiceImpl();</span><br><span class="line">        UserService proxy &#x3D; new UserServiceProxy(userService);</span><br><span class="line">        proxy.hello();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>缺点：代理只能为一个类服务，如果需要代理的类很多，那么就需要编写大量的代理类。代码冗余、维护性差。</p>
-<p><strong>动态代理</strong>：让代理类动态的生成，在运行时创建代理类。相比于静态代理，动态代理在创建代理对象上更加的灵活，动态代理类的字节码在程序运行时，由Java反射机制动态产生。它会根据需要，通过反射机制在程序运行期间动态的为目标对象创建代理对象，无需程序员手动编写它的源代码。<br>1 通过实现接口的方式—-&gt;JDK动态代理<br>2 通过继承类的方式——&gt;CGLIB动态代理</p>
-<p><strong>JDK动态代理</strong><br>主要涉及 java.lang.reflect.Proxy 类和 java.lang.reflect.InvocationHandler 接口。</p>
-<p>编写一个处理器 LogHandler 类，提供日志增强功能，并实现 InvocationHandler 接口；<br>在 LogHandler 中维护一个目标对象，这个对象是被代理的对象；<br>在 invoke 方法中编写方法调用的处理逻辑。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LogHandler implements InvocationHandler &#123;</span><br><span class="line">    Object target;  &#x2F;&#x2F; 被代理的对象，类型不固定，创建时动态生成</span><br><span class="line"></span><br><span class="line">    public LogHandler(Object target) &#123;</span><br><span class="line">        this.target &#x3D; target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</span><br><span class="line">        System.out.printf(&quot;log start time [%s]%n&quot;, new Date());</span><br><span class="line">        Object result &#x3D; method.invoke(target, args);  &#x2F;&#x2F; 调用target的method方法</span><br><span class="line">        System.out.printf(&quot;log end time [%s]%n&quot;, new Date());</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 动态代理</span><br><span class="line">&#x2F;&#x2F; 创建被代理的对象</span><br><span class="line">UserServiceImpl userServiceImpl &#x3D; new UserServiceImpl();</span><br><span class="line">&#x2F;&#x2F; 获取对应的ClassLoader</span><br><span class="line">ClassLoader classLoader &#x3D; userServiceImpl.getClass().getClassLoader();</span><br><span class="line">&#x2F;&#x2F; 获取所有接口的Class，这里的UserServiceImpl类只实现了一个接口UserService</span><br><span class="line">Class[] interfaces &#x3D; userServiceImpl.getClass().getInterfaces();</span><br><span class="line">&#x2F;&#x2F; 创建一个将传递给代理类的 处理器，处理所有代理对象上的方法调用</span><br><span class="line">InvocationHandler logHandler &#x3D; new LogHandler(userServiceImpl);</span><br><span class="line">&#x2F;**</span><br><span class="line"> * 根据上面的信息，创建代理对象的过程如下：</span><br><span class="line"> * JDK会根据传入的参数动态地在内存中创建和.class文件等同的字节码</span><br><span class="line"> * 根据相应的字节码转换成对应的class</span><br><span class="line"> * 调用newInstance()方法创建代理实例</span><br><span class="line"> *&#x2F;</span><br><span class="line">UserService proxy &#x3D; (UserService) Proxy.newProxyInstance(classLoader, interfaces, logHandler);</span><br><span class="line">&#x2F;&#x2F; 调用代理的方法</span><br><span class="line">proxy.hello();</span><br></pre></td></tr></table></figure>
-
-<p><strong>InvocationHandler接口</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">在代理实例上处理方法调用并返回结果。当在与其关联的代理实例上调用方法时，将在调用处理程序上调用此方法。</span><br><span class="line">public interface InvocationHandler &#123;</span><br><span class="line">    public Object invoke(Object proxy, Method method, Object[] args)</span><br><span class="line">        throws Throwable;</span><br><span class="line">&#125;</span><br><span class="line">proxy：在其上调用方法的代理实例</span><br><span class="line">method：对应于在代理实例上调用的接口方法的方法实例</span><br><span class="line">args：包含在代理实例的方法调用中传递的参数值的对象数组，如果接口方法不接受参数，则为null</span><br></pre></td></tr></table></figure>
-
-<p><strong>Proxy类</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">提供了用于创建动态代理类和实例的静态方法。</span><br><span class="line">public static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces, InvocationHandler h) throws IllegalArgumentException</span><br><span class="line">loader – 定义代理类的类加载器</span><br><span class="line">interface - 代理类要实现的接口列表</span><br><span class="line">h – 调用处理程序，用于使用由指定类装入器定义并实现指定接口的代理类的指定调用处理程序将方法调用分派到代理实例。</span><br><span class="line">每个代理实例都具有一个关联的调用处理程序</span><br><span class="line"></span><br><span class="line">当且仅当使用 getProxyClass 方法或 newProxyInstance 方法将指定的类动态生成为代理类时，才返回 true。</span><br><span class="line">public static boolean isProxyClass(Class&lt;?&gt; cl) &#123;&#125;</span><br><span class="line"></span><br><span class="line">返回给定类加载器和接口数组的代理类的 java.lang.Class 对象。代理类将由指定的类加载器定义，并将实现所有提供的接口。</span><br><span class="line">如果任何给定的接口是非公共的，则代理类将是非公共的。</span><br><span class="line">如果类加载器已经定义了相同接口排列的代理类，则返回现有的代理类；否则，这些接口的代理类将动态生成并由类加载器定义。</span><br><span class="line">private static Class&lt;?&gt; getProxyClass(ClassLoader loader, Class&lt;?&gt;... interfaces)</span><br><span class="line"></span><br><span class="line">返回指定代理实例的调用处理程序。</span><br><span class="line">public static InvocationHandler getInvocationHandler(Object proxy) throws IllegalArgumentException</span><br></pre></td></tr></table></figure>
-
-<p><strong>JDK动态代理 VS CGLIB动态代理</strong><br>JDK动态代理：基于Java反射机制实现，必须要实现了接口的业务类才能用这种办法生成代理对象。<br>优势：最小化依赖关系，减少依赖意味着简化开发和维护，JDK本身的支持，可能比CGLIB更加可靠。<br>平滑进行JDK版本升级，而字节码类库通常需要进行更新以保证在新版Java上能够使用。</p>
-<p>CGLIB动态代理：基于ASM机制实现，通过生成业务类的子类作为代理类。<br>优势：无需实现接口，达到代理类无侵入。<br>只操作我们关心的类，而不必为其他相关类增加工作量。</p>
-<p>应用：Spring AOP、权限认证、日志以及事务管理。</p>
+    <title>annotation</title>
+    <url>/2022/02/18/02-18-Spring/</url>
+    <content><![CDATA[<h3 id="1-SpringBootApplication"><a href="#1-SpringBootApplication" class="headerlink" title="1 @SpringBootApplication"></a>1 @SpringBootApplication</h3><p>这是Spring Boot最最最核心的注解，用在Spring Boot主类上，标识这是一个Spring Boot应用，用来开启Spring Boot。<br>这个注解是@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan这三个注解的组合，也可以用这三个注解来代替@SpringBootApplication注解。<br>@Configuration：Spring 3.0添加的一个注解，用来代替applicationContext.xml配置文件，所有这个配置文件里面能做到的事情都可以通过这个注解所在类来完成。</p>
+<ul>
+<li>@SpringBootConfiguration：@Configuration注解的变体，用来修饰Spring Boot配置。</li>
+<li>@EnableAutoConfiguration：允许Spring Boot自动配置注解，开启这个注解之后，Spring Boot就能根据当前类路径下的包或者类来配置Spring Bean。</li>
+<li>@ComponentScan：Spring 3.1添加的一个注解，用来代替配置文件中的component-scan配置，开启组件扫描，即自动扫描包路径下的@Component注解进行注册bean实例到context中。</li>
+</ul>
+<h3 id="2-RestController"><a href="#2-RestController" class="headerlink" title="2 @RestController"></a>2 @RestController</h3><p>@Controller用于标记一个类，使用它标记的类就是一个Spring MVC Controller对象，处理器会扫描使用该注解的类的方法，并检测该方法是否使用了@RequestMapping注解。</p>
+<p>@ResponseBody注解用于将@Controller修饰的类的方法返回的对象，通过适当的HttpMessageConverter转换为指定格式后，写入到Response对象的body数据区，通常用来返回JSON或者XML数据，返回JSON数据的情况比较多。</p>
+<p>@RestController=@Controller+@ResponseBody</p>
 ]]></content>
       <categories>
-        <category>Java</category>
+        <category>Spring</category>
       </categories>
       <tags>
-        <tag>动态代理</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>string</title>
-    <url>/2021/11/10/11-10-Java/</url>
-    <content><![CDATA[<h3 id="1-Java中String为什么是final？"><a href="#1-Java中String为什么是final？" class="headerlink" title="1 Java中String为什么是final？"></a>1 Java中String为什么是final？</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
-<p>安全性：String被许多的Java类(库)用来当做参数，例如：网络连接地址URL、文件路径path、还有反射机制所需要的String参数等，假若String不是固定不变的，将会引起各种安全隐患；<br>允许String对象缓存HashCode：Java中String对象的哈希码被频繁地使用，比如在HashMap等容器中。字符串不变性保证了hashcode的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是Java堆内存中一个特殊的存储区域，当创建一个String对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
-<h3 id="3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
-<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量，它的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。此类提供与StringBuffer兼容的API，但不保证同步。此类旨在用作StringBuffer的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。在可能的情况下，建议优先使用此类而不是StringBuffer，因为在大多数实现下它会更快。StringBuilder上的主要操作是append和insert方法，它们被重载以接受任何类型的数据。每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。append方法总是在构建器的末尾添加这些字符；insert方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
-<h3 id="2-递归和迭代的区别"><a href="#2-递归和迭代的区别" class="headerlink" title="2 递归和迭代的区别"></a>2 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中，问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远到近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
-<p>以斐波那契数列为例。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>递归容易产生“栈溢出”问题（stack overflow）。<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>string</tag>
+        <tag>注解</tag>
       </tags>
   </entry>
   <entry>
@@ -260,6 +201,31 @@
       </categories>
       <tags>
         <tag>反射</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>string</title>
+    <url>/2021/11/10/11-10-Java/</url>
+    <content><![CDATA[<h3 id="1-Java中String为什么是final？"><a href="#1-Java中String为什么是final？" class="headerlink" title="1 Java中String为什么是final？"></a>1 Java中String为什么是final？</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
+<p>安全性：String被许多的Java类(库)用来当做参数，例如：网络连接地址URL、文件路径path、还有反射机制所需要的String参数等，假若String不是固定不变的，将会引起各种安全隐患；<br>允许String对象缓存HashCode：Java中String对象的哈希码被频繁地使用，比如在HashMap等容器中。字符串不变性保证了hashcode的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是Java堆内存中一个特殊的存储区域，当创建一个String对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
+<h3 id="3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
+<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量，它的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。此类提供与StringBuffer兼容的API，但不保证同步。此类旨在用作StringBuffer的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。在可能的情况下，建议优先使用此类而不是StringBuffer，因为在大多数实现下它会更快。StringBuilder上的主要操作是append和insert方法，它们被重载以接受任何类型的数据。每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。append方法总是在构建器的末尾添加这些字符；insert方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
+<h3 id="2-递归和迭代的区别"><a href="#2-递归和迭代的区别" class="headerlink" title="2 递归和迭代的区别"></a>2 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中，问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远到近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
+<p>以斐波那契数列为例。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>递归容易产生“栈溢出”问题（stack overflow）。<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>string</tag>
       </tags>
   </entry>
   <entry>
@@ -298,6 +264,40 @@
       </categories>
       <tags>
         <tag>io_stream</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>dynamic_proxy</title>
+    <url>/2021/10/31/1031-java/</url>
+    <content><![CDATA[<h3 id="1-Java创建对象的方法"><a href="#1-Java创建对象的方法" class="headerlink" title="1 Java创建对象的方法"></a>1 Java创建对象的方法</h3><p>new、反射newInstance()、clone()、反序列化。</p>
+<h3 id="2-Java动态代理、应用"><a href="#2-Java动态代理、应用" class="headerlink" title="2 Java动态代理、应用"></a>2 Java动态代理、应用</h3><p>静态代理：创建一个接口，被代理的类实现该接口。之后创建一个代理类，也实现这个接口。在代理类中持有一个被代理对象的引用，然后在代理类方法中调用该对象的方法。<br><strong>实现</strong><br>编写一个接口UserService，以及它的一个实现类UserServiceImpl</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public interface UserService &#123;</span><br><span class="line">    void hello();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class UserServiceImpl implements UserService &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void hello() &#123;</span><br><span class="line">        System.out.println(&quot;hello hj!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在想对UserServiceImpl类增加一些功能，这时可通过静态代理。编写一个代理类UserServiceProxy并实现UserService接口。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 代理类</span><br><span class="line">public class UserServiceProxy implements UserService &#123;</span><br><span class="line">    private UserService target;  &#x2F;&#x2F; 被代理的对象</span><br><span class="line"></span><br><span class="line">    public UserServiceProxy(UserService target) &#123;</span><br><span class="line">        this.target &#x3D; target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void hello() &#123;</span><br><span class="line">        System.out.println(&quot;invoke before!&quot;);</span><br><span class="line">        target.hello();</span><br><span class="line">        System.out.println(&quot;invoke after!&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public class TestProxy &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        UserService userService &#x3D; new UserServiceImpl();</span><br><span class="line">        UserService proxy &#x3D; new UserServiceProxy(userService);</span><br><span class="line">        proxy.hello();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>缺点：代理只能为一个类服务，如果需要代理的类很多，那么就需要编写大量的代理类。代码冗余、维护性差。</p>
+<p><strong>动态代理</strong>：让代理类动态的生成，在运行时创建代理类。相比于静态代理，动态代理在创建代理对象上更加的灵活，动态代理类的字节码在程序运行时，由Java反射机制动态产生。它会根据需要，通过反射机制在程序运行期间动态的为目标对象创建代理对象，无需程序员手动编写它的源代码。<br>1 通过实现接口的方式—-&gt;JDK动态代理<br>2 通过继承类的方式——&gt;CGLIB动态代理</p>
+<p><strong>JDK动态代理</strong><br>主要涉及 java.lang.reflect.Proxy 类和 java.lang.reflect.InvocationHandler 接口。</p>
+<p>编写一个处理器 LogHandler 类，提供日志增强功能，并实现 InvocationHandler 接口；<br>在 LogHandler 中维护一个目标对象，这个对象是被代理的对象；<br>在 invoke 方法中编写方法调用的处理逻辑。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LogHandler implements InvocationHandler &#123;</span><br><span class="line">    Object target;  &#x2F;&#x2F; 被代理的对象，类型不固定，创建时动态生成</span><br><span class="line"></span><br><span class="line">    public LogHandler(Object target) &#123;</span><br><span class="line">        this.target &#x3D; target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</span><br><span class="line">        System.out.printf(&quot;log start time [%s]%n&quot;, new Date());</span><br><span class="line">        Object result &#x3D; method.invoke(target, args);  &#x2F;&#x2F; 调用target的method方法</span><br><span class="line">        System.out.printf(&quot;log end time [%s]%n&quot;, new Date());</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 动态代理</span><br><span class="line">&#x2F;&#x2F; 创建被代理的对象</span><br><span class="line">UserServiceImpl userServiceImpl &#x3D; new UserServiceImpl();</span><br><span class="line">&#x2F;&#x2F; 获取对应的ClassLoader</span><br><span class="line">ClassLoader classLoader &#x3D; userServiceImpl.getClass().getClassLoader();</span><br><span class="line">&#x2F;&#x2F; 获取所有接口的Class，这里的UserServiceImpl类只实现了一个接口UserService</span><br><span class="line">Class[] interfaces &#x3D; userServiceImpl.getClass().getInterfaces();</span><br><span class="line">&#x2F;&#x2F; 创建一个将传递给代理类的 处理器，处理所有代理对象上的方法调用</span><br><span class="line">InvocationHandler logHandler &#x3D; new LogHandler(userServiceImpl);</span><br><span class="line">&#x2F;**</span><br><span class="line"> * 根据上面的信息，创建代理对象的过程如下：</span><br><span class="line"> * JDK会根据传入的参数动态地在内存中创建和.class文件等同的字节码</span><br><span class="line"> * 根据相应的字节码转换成对应的class</span><br><span class="line"> * 调用newInstance()方法创建代理实例</span><br><span class="line"> *&#x2F;</span><br><span class="line">UserService proxy &#x3D; (UserService) Proxy.newProxyInstance(classLoader, interfaces, logHandler);</span><br><span class="line">&#x2F;&#x2F; 调用代理的方法</span><br><span class="line">proxy.hello();</span><br></pre></td></tr></table></figure>
+
+<p><strong>InvocationHandler接口</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">在代理实例上处理方法调用并返回结果。当在与其关联的代理实例上调用方法时，将在调用处理程序上调用此方法。</span><br><span class="line">public interface InvocationHandler &#123;</span><br><span class="line">    public Object invoke(Object proxy, Method method, Object[] args)</span><br><span class="line">        throws Throwable;</span><br><span class="line">&#125;</span><br><span class="line">proxy：在其上调用方法的代理实例</span><br><span class="line">method：对应于在代理实例上调用的接口方法的方法实例</span><br><span class="line">args：包含在代理实例的方法调用中传递的参数值的对象数组，如果接口方法不接受参数，则为null</span><br></pre></td></tr></table></figure>
+
+<p><strong>Proxy类</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">提供了用于创建动态代理类和实例的静态方法。</span><br><span class="line">public static Object newProxyInstance(ClassLoader loader, Class&lt;?&gt;[] interfaces, InvocationHandler h) throws IllegalArgumentException</span><br><span class="line">loader – 定义代理类的类加载器</span><br><span class="line">interface - 代理类要实现的接口列表</span><br><span class="line">h – 调用处理程序，用于使用由指定类装入器定义并实现指定接口的代理类的指定调用处理程序将方法调用分派到代理实例。</span><br><span class="line">每个代理实例都具有一个关联的调用处理程序</span><br><span class="line"></span><br><span class="line">当且仅当使用 getProxyClass 方法或 newProxyInstance 方法将指定的类动态生成为代理类时，才返回 true。</span><br><span class="line">public static boolean isProxyClass(Class&lt;?&gt; cl) &#123;&#125;</span><br><span class="line"></span><br><span class="line">返回给定类加载器和接口数组的代理类的 java.lang.Class 对象。代理类将由指定的类加载器定义，并将实现所有提供的接口。</span><br><span class="line">如果任何给定的接口是非公共的，则代理类将是非公共的。</span><br><span class="line">如果类加载器已经定义了相同接口排列的代理类，则返回现有的代理类；否则，这些接口的代理类将动态生成并由类加载器定义。</span><br><span class="line">private static Class&lt;?&gt; getProxyClass(ClassLoader loader, Class&lt;?&gt;... interfaces)</span><br><span class="line"></span><br><span class="line">返回指定代理实例的调用处理程序。</span><br><span class="line">public static InvocationHandler getInvocationHandler(Object proxy) throws IllegalArgumentException</span><br></pre></td></tr></table></figure>
+
+<p><strong>JDK动态代理 VS CGLIB动态代理</strong><br>JDK动态代理：基于Java反射机制实现，必须要实现了接口的业务类才能用这种办法生成代理对象。<br>优势：最小化依赖关系，减少依赖意味着简化开发和维护，JDK本身的支持，可能比CGLIB更加可靠。<br>平滑进行JDK版本升级，而字节码类库通常需要进行更新以保证在新版Java上能够使用。</p>
+<p>CGLIB动态代理：基于ASM机制实现，通过生成业务类的子类作为代理类。<br>优势：无需实现接口，达到代理类无侵入。<br>只操作我们关心的类，而不必为其他相关类增加工作量。</p>
+<p>应用：Spring AOP、权限认证、日志以及事务管理。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>动态代理</tag>
       </tags>
   </entry>
   <entry>
@@ -1385,18 +1385,6 @@
       </tags>
   </entry>
   <entry>
-    <title>字节一面</title>
-    <url>/2022/03/11/bytedance-1/</url>
-    <content><![CDATA[<p>2022年3月10号</p>
-<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍项目（科研项目）"><a href="#2-介绍项目（科研项目）" class="headerlink" title="2 介绍项目（科研项目）"></a>2 介绍项目（科研项目）</h3><h3 id="3-Java常见集合"><a href="#3-Java常见集合" class="headerlink" title="3 Java常见集合"></a>3 Java常见集合</h3><h3 id="4-了解Java的并发包吗？（java-util-concurrent，JUC）"><a href="#4-了解Java的并发包吗？（java-util-concurrent，JUC）" class="headerlink" title="4 了解Java的并发包吗？（java.util.concurrent，JUC）"></a>4 了解Java的并发包吗？（java.util.concurrent，JUC）</h3><h3 id="5-ConcurrentHashMap原理"><a href="#5-ConcurrentHashMap原理" class="headerlink" title="5 ConcurrentHashMap原理"></a>5 ConcurrentHashMap原理</h3><h3 id="6-HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap"><a href="#6-HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap" class="headerlink" title="6 HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap"></a>6 HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap</h3><h3 id="7-JVM垃圾回收机制"><a href="#7-JVM垃圾回收机制" class="headerlink" title="7 JVM垃圾回收机制"></a>7 JVM垃圾回收机制</h3><h3 id="8-HTTPS"><a href="#8-HTTPS" class="headerlink" title="8 HTTPS"></a>8 HTTPS</h3><h3 id="9-NIO"><a href="#9-NIO" class="headerlink" title="9 NIO"></a>9 NIO</h3><h3 id="10-多路复用"><a href="#10-多路复用" class="headerlink" title="10 多路复用"></a>10 多路复用</h3><h3 id="11-堆内存和栈内存的区别？栈内存需要垃圾回收吗？"><a href="#11-堆内存和栈内存的区别？栈内存需要垃圾回收吗？" class="headerlink" title="11 堆内存和栈内存的区别？栈内存需要垃圾回收吗？"></a>11 堆内存和栈内存的区别？栈内存需要垃圾回收吗？</h3><h3 id="12-事务有几个等级（隔离级别）"><a href="#12-事务有几个等级（隔离级别）" class="headerlink" title="12 事务有几个等级（隔离级别）"></a>12 事务有几个等级（隔离级别）</h3><h3 id="13-读已提交和可重复读的区别？"><a href="#13-读已提交和可重复读的区别？" class="headerlink" title="13 读已提交和可重复读的区别？"></a>13 读已提交和可重复读的区别？</h3><h3 id="14-说说脏读、不可重复度、幻读"><a href="#14-说说脏读、不可重复度、幻读" class="headerlink" title="14 说说脏读、不可重复度、幻读"></a>14 说说脏读、不可重复度、幻读</h3><h3 id="15-算法题：二叉树的右视图"><a href="#15-算法题：二叉树的右视图" class="headerlink" title="15 算法题：二叉树的右视图"></a>15 算法题：二叉树的右视图</h3>]]></content>
-      <categories>
-        <category>面试</category>
-      </categories>
-      <tags>
-        <tag>字节</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>bitmap</title>
     <url>/2020/11/16/bitmap/</url>
     <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>在一个结构中，用一个比特位来描述一个数据的状态，这种结构就称为位图。0表示数据不存在，1表示数据存在。位图实际上是哈希表的一种变形。<br>在数据存储方面，位图的应用非常广泛。比如说现在要存储20亿个不重复的数据，int类型为4个字节，就需要80亿个字节来存储。1GB的内存表示的是10亿个字节，此时就需要8GB的内存来存放这些数据，而我们普通的电脑内存一般都是4G的内存，这显然是存放不下的。但是如果能用一个比特位来存放一个整型数据，则只需要0.5GB的内存。这大大节省了内存空间。</p>
@@ -1453,6 +1441,18 @@
       </categories>
       <tags>
         <tag>位图</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>字节一面</title>
+    <url>/2022/03/11/bytedance-1/</url>
+    <content><![CDATA[<p>2022年3月10号</p>
+<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍项目（科研项目）"><a href="#2-介绍项目（科研项目）" class="headerlink" title="2 介绍项目（科研项目）"></a>2 介绍项目（科研项目）</h3><h3 id="3-Java常见集合"><a href="#3-Java常见集合" class="headerlink" title="3 Java常见集合"></a>3 Java常见集合</h3><h3 id="4-了解Java的并发包吗？（java-util-concurrent，JUC）"><a href="#4-了解Java的并发包吗？（java-util-concurrent，JUC）" class="headerlink" title="4 了解Java的并发包吗？（java.util.concurrent，JUC）"></a>4 了解Java的并发包吗？（java.util.concurrent，JUC）</h3><h3 id="5-ConcurrentHashMap原理"><a href="#5-ConcurrentHashMap原理" class="headerlink" title="5 ConcurrentHashMap原理"></a>5 ConcurrentHashMap原理</h3><h3 id="6-HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap"><a href="#6-HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap" class="headerlink" title="6 HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap"></a>6 HashMap为什么是线程不安全的，如何实现一个线程安全的HashMap</h3><h3 id="7-JVM垃圾回收机制"><a href="#7-JVM垃圾回收机制" class="headerlink" title="7 JVM垃圾回收机制"></a>7 JVM垃圾回收机制</h3><h3 id="8-HTTPS"><a href="#8-HTTPS" class="headerlink" title="8 HTTPS"></a>8 HTTPS</h3><h3 id="9-NIO"><a href="#9-NIO" class="headerlink" title="9 NIO"></a>9 NIO</h3><h3 id="10-多路复用"><a href="#10-多路复用" class="headerlink" title="10 多路复用"></a>10 多路复用</h3><h3 id="11-堆内存和栈内存的区别？栈内存需要垃圾回收吗？"><a href="#11-堆内存和栈内存的区别？栈内存需要垃圾回收吗？" class="headerlink" title="11 堆内存和栈内存的区别？栈内存需要垃圾回收吗？"></a>11 堆内存和栈内存的区别？栈内存需要垃圾回收吗？</h3><h3 id="12-事务有几个等级（隔离级别）"><a href="#12-事务有几个等级（隔离级别）" class="headerlink" title="12 事务有几个等级（隔离级别）"></a>12 事务有几个等级（隔离级别）</h3><h3 id="13-读已提交和可重复读的区别？"><a href="#13-读已提交和可重复读的区别？" class="headerlink" title="13 读已提交和可重复读的区别？"></a>13 读已提交和可重复读的区别？</h3><h3 id="14-说说脏读、不可重复度、幻读"><a href="#14-说说脏读、不可重复度、幻读" class="headerlink" title="14 说说脏读、不可重复度、幻读"></a>14 说说脏读、不可重复度、幻读</h3><h3 id="15-算法题：二叉树的右视图"><a href="#15-算法题：二叉树的右视图" class="headerlink" title="15 算法题：二叉树的右视图"></a>15 算法题：二叉树的右视图</h3>]]></content>
+      <categories>
+        <category>面试</category>
+      </categories>
+      <tags>
+        <tag>字节</tag>
       </tags>
   </entry>
   <entry>
@@ -1516,37 +1516,6 @@
       </tags>
   </entry>
   <entry>
-    <title>docker</title>
-    <url>/2022/04/16/docker/</url>
-    <content><![CDATA[<p><strong>Docker</strong><br>Docker是一个用于开发、发布和运行应用程序的开放平台。Docker使您能够将应用程序与基础架构分离，以便快速交付软件。使用Docker，您可以用与管理应用程序相同的方式管理基础设施。通过利用Docker快速发布、测试和部署代码的方法，您可以显著减少编写代码和在生产中运行代码之间的延迟。</p>
-<p>Docker提供了在称为容器的松散隔离环境中打包和运行应用程序的能力。隔离和安全性允许您在给定主机上同时运行多个容器。容器是轻量级的，包含运行应用程序所需的所有内容，因此不需要依赖主机上当前安装的内容。你可以在工作时轻松地共享容器，并确保与你共享的每个人都能使用同样的容器。</p>
-<p>使用容器开发应用程序及其支持组件。<br>容器成为分发和测试应用程序的单元。<br>准备好后，将应用程序作为容器或协调服务部署到生产环境中。</p>
-<p><strong>Docker architecture</strong><br>Docker使用客户机-服务器体系结构。Docker客户端与Docker守护进程对话，后者负责构建、运行和分发Docker容器。Docker客户端和守护程序可以在同一个系统上运行，也可以将Docker客户端连接到远程Docker守护程序。Docker客户端和守护进程通过UNIX套接字或网络接口使用REST API进行通信。另一个Docker客户端是Docker Compose，它允许您使用由一组容器组成的应用程序。</p>
-<img src="/2022/04/16/docker/docker.png" class="">
-
-<p><strong>The Docker daemon</strong><br>Docker守护进程（Docker daemon）侦听Docker API请求并管理Docker对象，如图像、容器、网络和卷。守护进程还可以与其他守护进程通信以管理Docker服务。</p>
-<p><strong>Docker registries</strong><br>Docker注册表存储Docker镜像。Docker Hub是任何人都可以使用的公共注册表，默认情况下，Docker配置为在Docker Hub上查找镜像。你甚至可以运行自己的私人注册表。</p>
-<p>使用docker pull或docker run命令时，将从配置的注册表中提取所需的镜像。使用docker push命令时，镜像会被推送到已配置的注册表中。</p>
-<p><strong>Docker objects</strong><br>Images<br>镜像是只读模板，包含创建Docker容器的说明。通常，一个镜像基于另一个镜像，并进行了一些额外的定制。例如，您可以构建一个基于ubuntu镜像的镜像，但会安装Apache web服务器和应用程序，以及运行应用程序所需的配置细节。</p>
-<p>Containers<br>容器是镜像的可运行实例。可以使用Docker API或CLI创建、启动、停止、移动或删除容器。您可以将容器连接到一个或多个网络，将存储连接到容器，甚至可以基于其当前状态创建新镜像。</p>
-<p>Docker使用名为namespace的技术来提供调用容器的隔离工作区。运行容器时，Docker会为该容器创建一组namespaces。</p>
-<p><strong>常用命令</strong><br>docker pull image_name;  //下载镜像<br>docker run image_name  //运行镜像</p>
-<p>docker images;  //查看本地主机上的所有镜像<br>docker images -a;<br>docker images -q;<br>docker images -aq;<br>-a：列出所有镜像。<br>-q：只显示镜像id。</p>
-<p>docker search image_name;  //搜索镜像</p>
-<p>docker rmi image_name;  //删除镜像<br>docker rmi -f $(docker images -aq);</p>
-<p>docker rm container;  //删除容器</p>
-<p>docker run -it REPOSITORY/IMAGE ID;  //运行容器，可以使用容器的REPOSITORY或者IMAGE ID运行容器,其中参数-i表示以交互模式运行容器，-t表示为容器重新分配一个伪输入终端,-i与-t通常同时使用。</p>
-<p>docker ps;  //查看所有正在运行的容器<br>docker ps -a;  //查看所有运行过的容器<br>docker ps -n 5;  //表示查看最近运行过的5个容器</p>
-<p>docker stop CONTAINER ID;  //退出容器<br>docker kill CONTAINER ID;  //退出容器</p>
-]]></content>
-      <categories>
-        <category>Tool</category>
-      </categories>
-      <tags>
-        <tag>docker</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>double-pointer</title>
     <url>/2021/09/27/double-pointer/</url>
     <content><![CDATA[<h3 id="977-有序数组的平方"><a href="#977-有序数组的平方" class="headerlink" title="977 有序数组的平方"></a>977 有序数组的平方</h3><p>给你一个按非递减顺序排序的整数数组nums，返回每个数字的平方组成的新数组，要求也按非递减顺序排序。</p>
@@ -1601,6 +1570,37 @@
       </categories>
       <tags>
         <tag>双指针</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>docker</title>
+    <url>/2022/04/16/docker/</url>
+    <content><![CDATA[<p><strong>Docker</strong><br>Docker是一个用于开发、发布和运行应用程序的开放平台。Docker使您能够将应用程序与基础架构分离，以便快速交付软件。使用Docker，您可以用与管理应用程序相同的方式管理基础设施。通过利用Docker快速发布、测试和部署代码的方法，您可以显著减少编写代码和在生产中运行代码之间的延迟。</p>
+<p>Docker提供了在称为容器的松散隔离环境中打包和运行应用程序的能力。隔离和安全性允许您在给定主机上同时运行多个容器。容器是轻量级的，包含运行应用程序所需的所有内容，因此不需要依赖主机上当前安装的内容。你可以在工作时轻松地共享容器，并确保与你共享的每个人都能使用同样的容器。</p>
+<p>使用容器开发应用程序及其支持组件。<br>容器成为分发和测试应用程序的单元。<br>准备好后，将应用程序作为容器或协调服务部署到生产环境中。</p>
+<p><strong>Docker architecture</strong><br>Docker使用客户机-服务器体系结构。Docker客户端与Docker守护进程对话，后者负责构建、运行和分发Docker容器。Docker客户端和守护程序可以在同一个系统上运行，也可以将Docker客户端连接到远程Docker守护程序。Docker客户端和守护进程通过UNIX套接字或网络接口使用REST API进行通信。另一个Docker客户端是Docker Compose，它允许您使用由一组容器组成的应用程序。</p>
+<img src="/2022/04/16/docker/docker.png" class="">
+
+<p><strong>The Docker daemon</strong><br>Docker守护进程（Docker daemon）侦听Docker API请求并管理Docker对象，如图像、容器、网络和卷。守护进程还可以与其他守护进程通信以管理Docker服务。</p>
+<p><strong>Docker registries</strong><br>Docker注册表存储Docker镜像。Docker Hub是任何人都可以使用的公共注册表，默认情况下，Docker配置为在Docker Hub上查找镜像。你甚至可以运行自己的私人注册表。</p>
+<p>使用docker pull或docker run命令时，将从配置的注册表中提取所需的镜像。使用docker push命令时，镜像会被推送到已配置的注册表中。</p>
+<p><strong>Docker objects</strong><br>Images<br>镜像是只读模板，包含创建Docker容器的说明。通常，一个镜像基于另一个镜像，并进行了一些额外的定制。例如，您可以构建一个基于ubuntu镜像的镜像，但会安装Apache web服务器和应用程序，以及运行应用程序所需的配置细节。</p>
+<p>Containers<br>容器是镜像的可运行实例。可以使用Docker API或CLI创建、启动、停止、移动或删除容器。您可以将容器连接到一个或多个网络，将存储连接到容器，甚至可以基于其当前状态创建新镜像。</p>
+<p>Docker使用名为namespace的技术来提供调用容器的隔离工作区。运行容器时，Docker会为该容器创建一组namespaces。</p>
+<p><strong>常用命令</strong><br>docker pull image_name;  //下载镜像<br>docker run image_name  //运行镜像</p>
+<p>docker images;  //查看本地主机上的所有镜像<br>docker images -a;<br>docker images -q;<br>docker images -aq;<br>-a：列出所有镜像。<br>-q：只显示镜像id。</p>
+<p>docker search image_name;  //搜索镜像</p>
+<p>docker rmi image_name;  //删除镜像<br>docker rmi -f $(docker images -aq);</p>
+<p>docker rm container;  //删除容器</p>
+<p>docker run -it REPOSITORY/IMAGE ID;  //运行容器，可以使用容器的REPOSITORY或者IMAGE ID运行容器,其中参数-i表示以交互模式运行容器，-t表示为容器重新分配一个伪输入终端,-i与-t通常同时使用。</p>
+<p>docker ps;  //查看所有正在运行的容器<br>docker ps -a;  //查看所有运行过的容器<br>docker ps -n 5;  //表示查看最近运行过的5个容器</p>
+<p>docker stop CONTAINER ID;  //退出容器<br>docker kill CONTAINER ID;  //退出容器</p>
+]]></content>
+      <categories>
+        <category>Tool</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
       </tags>
   </entry>
   <entry>
@@ -1734,18 +1734,24 @@
     <url>/2022/03/29/jd1/</url>
     <content><![CDATA[<p>2022年3月29日</p>
 <h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍项目"><a href="#2-介绍项目" class="headerlink" title="2 介绍项目"></a>2 介绍项目</h3><p>此处略过十分钟</p>
-<h3 id="3-数据库三大范式"><a href="#3-数据库三大范式" class="headerlink" title="3 数据库三大范式"></a>3 数据库三大范式</h3><p>第一范式：数据表中的每一列(字段)，必须是不可拆分的最小单元，也就是确保每一列的原子性。<br><strong>反例</strong></p>
+<h3 id="3-数据库三大范式"><a href="#3-数据库三大范式" class="headerlink" title="3 数据库三大范式"></a>3 数据库三大范式</h3><p><strong>扩展</strong><br>函数依赖：A - &gt; B，如果通过A属性（或属性组）的值可以确定唯一B属性的值，则可以称B依赖于A。例如：可以通过学号来确定姓名，可以通过学号和课程来确定该课程的分数等等。</p>
+<ul>
+<li>完全函数依赖：A - &gt; B，如果A是一个属性组，则B属性的确定需要依赖A属性组中的所有属性值。例如：分数的确定需要依赖于学号和课程，而学号和课程可以称为一个属性组。如果有学号没有课程，我们只知道是谁的分数。如果有课程没有学号，那我们只知道是哪一个学科的分数。所以该属性组的两个值是必不可少的，这就是完全函数依赖。</li>
+<li>部分函数依赖：A - &gt; B，如果A是一个属性组，则B属性的确定需要依赖A属性组中的部分属性值。例如：如果一个属性组中有两个属性值，它们分别是学号和课程名称。那姓名的确定只依赖这个属性组中的学号，与课程名称无关。简单来说，依赖于属性组中的部分成员即可成为部分函数依赖。</li>
+<li>传递函数依赖：A - &gt; B - &gt; C，传递函数依赖就是一个依赖的传递关系。通过确定A来确定B，确定了B之后，也就可以确定C，三者的依赖关系就是C依赖于B，B依赖于A。例如：我们可以通过学号来确定这位学生所在的系部，再通过系部来确定系主任是谁。而这个三者的依赖关系就是一种传递函数依赖。</li>
+</ul>
+<p><strong>第一范式</strong><br>第一范式：数据表中的每个属性(字段)，必须是不可拆分的最小单元，也就是确保每一列的原子性。<br>第一范式强调每一列都是不可分割的原子数据项。<br><strong>反例</strong></p>
 <table>
 <thead>
 <tr>
-<th align="center">id</th>
-<th align="center">user_id</th>
-<th align="center">address</th>
+<th align="center">学号</th>
+<th align="center">姓名</th>
+<th align="center">地址</th>
 </tr>
 </thead>
 <tbody><tr>
 <td align="center">482048324</td>
-<td align="center">1232323</td>
+<td align="center">hj</td>
 <td align="center">xx省xx市xx县xx镇xx街道xx号</td>
 </tr>
 </tbody></table>
@@ -1754,14 +1760,14 @@
 <table>
 <thead>
 <tr>
-<th align="center">id</th>
-<th align="center">user_id</th>
-<th align="center">province</th>
-<th align="center">city</th>
-<th align="center">district</th>
-<th align="center">town</th>
-<th align="center">street</th>
-<th align="center">detail_address</th>
+<th align="center">学号</th>
+<th align="center">姓名</th>
+<th align="center">省</th>
+<th align="center">市</th>
+<th align="center">县</th>
+<th align="center">镇</th>
+<th align="center">街道</th>
+<th align="center">门牌号</th>
 </tr>
 </thead>
 <tbody><tr>
@@ -1775,35 +1781,61 @@
 <td align="center">xx号</td>
 </tr>
 </tbody></table>
-<p>第二范式：满足1NF的基础上，要求：表中所有的列，都必需依赖于主键，而不能有任何一列与主键没有关系（一个表只描述一件事情）。第二范式消除表的无关数据。<br>主键存在的意义就是唯一地标识表中的某一条记录，如果某一列和该行记录没关系，也就没必要存在。<br><strong>反例</strong></p>
+<p>第一范式会存在的问题：数据冗余、增加数据问题、删除数据问题。</p>
+<p><strong>第二范式</strong><br>第二范式：满足1NF，要求表中要有主键，其它字段都必须完全依赖于主键（在1NF的基础上消除部分依赖）。<br>主键存在的意义就是唯一的标识表中的某一条记录。<br><strong>反例</strong></p>
 <table>
 <thead>
 <tr>
-<th align="center">id</th>
-<th align="center">user_id</th>
-<th align="center">province</th>
-<th align="center">city</th>
-<th align="center">district</th>
-<th align="center">town</th>
-<th align="center">street</th>
-<th align="center">detail_address</th>
-<th align="center">weather</th>
+<th align="center">学号</th>
+<th align="center">姓名</th>
+<th align="center">系名</th>
+<th align="center">系主任</th>
+<th align="center">课程名</th>
+<th align="center">分数</th>
 </tr>
 </thead>
 <tbody><tr>
 <td align="center">482048324</td>
-<td align="center">1232323</td>
-<td align="center">xx省</td>
-<td align="center">xx市</td>
-<td align="center">xx县</td>
-<td align="center">xx镇</td>
-<td align="center">xx街道</td>
-<td align="center">xx号</td>
-<td align="center">晴</td>
+<td align="center">hj</td>
+<td align="center">软件学院</td>
+<td align="center">xxx</td>
+<td align="center">软件工程</td>
+<td align="center">99</td>
 </tr>
 </tbody></table>
-<p>此表中，天气和用户没啥关系，也就不存在依赖关系，所以不符合第二范式。正确的做法应该删除此列，如有其他需要可单独存在一张表中。</p>
-<p>第三范式：满足2NF的基础上，任何非主属性不依赖于其它非主属性（在2NF基础上消除传递依赖）。<br><strong>反例</strong></p>
+<p><strong>正例</strong></p>
+<table>
+<thead>
+<tr>
+<th align="center">学号</th>
+<th align="center">课程名</th>
+<th align="center">分数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">482048324</td>
+<td align="center">软件工程</td>
+<td align="center">99</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="center">学号</th>
+<th align="center">姓名</th>
+<th align="center">系名</th>
+<th align="center">系主任</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">482048324</td>
+<td align="center">hj</td>
+<td align="center">软件学院</td>
+<td align="center">xxx</td>
+</tr>
+</tbody></table>
+<p>第二范式会存在的问题：增加数据问题、删除数据问题。</p>
+<p><strong>第三范式</strong><br>第三范式：满足2NF，任何非主属性不依赖于其它非主属性（在2NF的基础上消除传递依赖）。<br><strong>反例</strong></p>
 <table>
 <thead>
 <tr>
@@ -1824,7 +1856,7 @@
 <td align="center">wait_pay</td>
 </tr>
 </tbody></table>
-<p><strong>正例</strong><br>订单表</p>
+<p><strong>正例</strong><br>存在传递依赖：order_id -&gt; buyer_id -&gt; buyer_name<br>订单表</p>
 <table>
 <thead>
 <tr>
@@ -1878,6 +1910,17 @@
       </tags>
   </entry>
   <entry>
+    <title>k8s</title>
+    <url>/2022/04/16/k8s/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>Tool</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>kaiyu</title>
     <url>/2022/03/28/kaiyu/</url>
     <content><![CDATA[<p>2022年3月28号，开域一面</p>
@@ -1888,17 +1931,6 @@
       </categories>
       <tags>
         <tag>开域</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>k8s</title>
-    <url>/2022/04/16/k8s/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>Tool</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
       </tags>
   </entry>
   <entry>
@@ -1955,6 +1987,19 @@
       </tags>
   </entry>
   <entry>
+    <title>markdown</title>
+    <url>/2021/04/15/markdown/</url>
+    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
+<p>格式如下图：</p>
+<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
+      <categories>
+        <category>Tool</category>
+      </categories>
+      <tags>
+        <tag>markdown</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>md5_salt</title>
     <url>/2020/10/10/md5-salt/</url>
     <content><![CDATA[<p>传统的md5算法通过产生一个128位（16字节）的散列值（hash value），用于确保信息的安全性。但随着技术的发展，md5无法防止碰撞（collision）且可以被加以破解。<br>salt的出现可以一定程度上解决这个问题。</p>
@@ -1983,31 +2028,6 @@
       </tags>
   </entry>
   <entry>
-    <title>markdown</title>
-    <url>/2021/04/15/markdown/</url>
-    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
-<p>格式如下图：</p>
-<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
-      <categories>
-        <category>Tool</category>
-      </categories>
-      <tags>
-        <tag>markdown</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>meituan</title>
-    <url>/2022/03/26/meituan/</url>
-    <content><![CDATA[<p>2022年3月22号</p>
-<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍项目"><a href="#2-介绍项目" class="headerlink" title="2 介绍项目"></a>2 介绍项目</h3><h3 id="3-Java类加载机制"><a href="#3-Java类加载机制" class="headerlink" title="3 Java类加载机制"></a>3 Java类加载机制</h3><h3 id="4-双亲委派模型，为什么这样设计？"><a href="#4-双亲委派模型，为什么这样设计？" class="headerlink" title="4 双亲委派模型，为什么这样设计？"></a>4 双亲委派模型，为什么这样设计？</h3><h3 id="5-Tomcat有那些自定义类加载器？"><a href="#5-Tomcat有那些自定义类加载器？" class="headerlink" title="5 Tomcat有那些自定义类加载器？"></a>5 Tomcat有那些自定义类加载器？</h3><h3 id="6-Java线程安全的集合有那些？"><a href="#6-Java线程安全的集合有那些？" class="headerlink" title="6 Java线程安全的集合有那些？"></a>6 Java线程安全的集合有那些？</h3><h3 id="7-ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？"><a href="#7-ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？" class="headerlink" title="7 ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？"></a>7 ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？</h3><h3 id="8-ConcurrentHashMap和Hashtable的区别？数据结构、锁？"><a href="#8-ConcurrentHashMap和Hashtable的区别？数据结构、锁？" class="headerlink" title="8 ConcurrentHashMap和Hashtable的区别？数据结构、锁？"></a>8 ConcurrentHashMap和Hashtable的区别？数据结构、锁？</h3><h3 id="9-线程池有哪些种类？"><a href="#9-线程池有哪些种类？" class="headerlink" title="9 线程池有哪些种类？"></a>9 线程池有哪些种类？</h3><h3 id="10-线程池参数"><a href="#10-线程池参数" class="headerlink" title="10 线程池参数"></a>10 线程池参数</h3><h3 id="11-来一个任务，线程池工作流程"><a href="#11-来一个任务，线程池工作流程" class="headerlink" title="11 来一个任务，线程池工作流程"></a>11 来一个任务，线程池工作流程</h3><h3 id="12-拒绝策略有那些？"><a href="#12-拒绝策略有那些？" class="headerlink" title="12 拒绝策略有那些？"></a>12 拒绝策略有那些？</h3><h3 id="13-IO模型有哪些？"><a href="#13-IO模型有哪些？" class="headerlink" title="13 IO模型有哪些？"></a>13 IO模型有哪些？</h3><h3 id="14-BIO和NIO区别？"><a href="#14-BIO和NIO区别？" class="headerlink" title="14 BIO和NIO区别？"></a>14 BIO和NIO区别？</h3><h3 id="15-MySQL事务隔离级别"><a href="#15-MySQL事务隔离级别" class="headerlink" title="15 MySQL事务隔离级别"></a>15 MySQL事务隔离级别</h3><h3 id="16-可重复读和读已提交怎么实现的，详细说说？"><a href="#16-可重复读和读已提交怎么实现的，详细说说？" class="headerlink" title="16 可重复读和读已提交怎么实现的，详细说说？"></a>16 可重复读和读已提交怎么实现的，详细说说？</h3><h3 id="17-Redis数据类型有哪些？"><a href="#17-Redis数据类型有哪些？" class="headerlink" title="17 Redis数据类型有哪些？"></a>17 Redis数据类型有哪些？</h3><h3 id="18-自身优势"><a href="#18-自身优势" class="headerlink" title="18 自身优势"></a>18 自身优势</h3><h3 id="19-算法题：二叉树最小深度"><a href="#19-算法题：二叉树最小深度" class="headerlink" title="19 算法题：二叉树最小深度"></a>19 算法题：二叉树最小深度</h3>]]></content>
-      <categories>
-        <category>面试</category>
-      </categories>
-      <tags>
-        <tag>美团</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>memory</title>
     <url>/2021/03/21/memory/</url>
     <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
@@ -2023,6 +2043,18 @@
       </categories>
       <tags>
         <tag>景点</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>meituan</title>
+    <url>/2022/03/26/meituan/</url>
+    <content><![CDATA[<p>2022年3月22号</p>
+<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍项目"><a href="#2-介绍项目" class="headerlink" title="2 介绍项目"></a>2 介绍项目</h3><h3 id="3-Java类加载机制"><a href="#3-Java类加载机制" class="headerlink" title="3 Java类加载机制"></a>3 Java类加载机制</h3><h3 id="4-双亲委派模型，为什么这样设计？"><a href="#4-双亲委派模型，为什么这样设计？" class="headerlink" title="4 双亲委派模型，为什么这样设计？"></a>4 双亲委派模型，为什么这样设计？</h3><h3 id="5-Tomcat有那些自定义类加载器？"><a href="#5-Tomcat有那些自定义类加载器？" class="headerlink" title="5 Tomcat有那些自定义类加载器？"></a>5 Tomcat有那些自定义类加载器？</h3><h3 id="6-Java线程安全的集合有那些？"><a href="#6-Java线程安全的集合有那些？" class="headerlink" title="6 Java线程安全的集合有那些？"></a>6 Java线程安全的集合有那些？</h3><h3 id="7-ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？"><a href="#7-ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？" class="headerlink" title="7 ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？"></a>7 ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？</h3><h3 id="8-ConcurrentHashMap和Hashtable的区别？数据结构、锁？"><a href="#8-ConcurrentHashMap和Hashtable的区别？数据结构、锁？" class="headerlink" title="8 ConcurrentHashMap和Hashtable的区别？数据结构、锁？"></a>8 ConcurrentHashMap和Hashtable的区别？数据结构、锁？</h3><h3 id="9-线程池有哪些种类？"><a href="#9-线程池有哪些种类？" class="headerlink" title="9 线程池有哪些种类？"></a>9 线程池有哪些种类？</h3><h3 id="10-线程池参数"><a href="#10-线程池参数" class="headerlink" title="10 线程池参数"></a>10 线程池参数</h3><h3 id="11-来一个任务，线程池工作流程"><a href="#11-来一个任务，线程池工作流程" class="headerlink" title="11 来一个任务，线程池工作流程"></a>11 来一个任务，线程池工作流程</h3><h3 id="12-拒绝策略有那些？"><a href="#12-拒绝策略有那些？" class="headerlink" title="12 拒绝策略有那些？"></a>12 拒绝策略有那些？</h3><h3 id="13-IO模型有哪些？"><a href="#13-IO模型有哪些？" class="headerlink" title="13 IO模型有哪些？"></a>13 IO模型有哪些？</h3><h3 id="14-BIO和NIO区别？"><a href="#14-BIO和NIO区别？" class="headerlink" title="14 BIO和NIO区别？"></a>14 BIO和NIO区别？</h3><h3 id="15-MySQL事务隔离级别"><a href="#15-MySQL事务隔离级别" class="headerlink" title="15 MySQL事务隔离级别"></a>15 MySQL事务隔离级别</h3><h3 id="16-可重复读和读已提交怎么实现的，详细说说？"><a href="#16-可重复读和读已提交怎么实现的，详细说说？" class="headerlink" title="16 可重复读和读已提交怎么实现的，详细说说？"></a>16 可重复读和读已提交怎么实现的，详细说说？</h3><h3 id="17-Redis数据类型有哪些？"><a href="#17-Redis数据类型有哪些？" class="headerlink" title="17 Redis数据类型有哪些？"></a>17 Redis数据类型有哪些？</h3><h3 id="18-自身优势"><a href="#18-自身优势" class="headerlink" title="18 自身优势"></a>18 自身优势</h3><h3 id="19-算法题：二叉树最小深度"><a href="#19-算法题：二叉树最小深度" class="headerlink" title="19 算法题：二叉树最小深度"></a>19 算法题：二叉树最小深度</h3>]]></content>
+      <categories>
+        <category>面试</category>
+      </categories>
+      <tags>
+        <tag>美团</tag>
       </tags>
   </entry>
   <entry>
@@ -2946,6 +2978,36 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
+    <title>uml</title>
+    <url>/2021/03/31/umlarrow/</url>
+    <content><![CDATA[<h3 id="泛化（继承）"><a href="#泛化（继承）" class="headerlink" title="泛化（继承）"></a>泛化（继承）</h3><p>泛化是一种一般与特殊、一般与具体关系的描述，具体建立在一般之上并对其进行扩展。<br><strong>实线空心三角箭头表示</strong></p>
+<img src="/2021/03/31/umlarrow/generate.png" class="">
+
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>实现是类与接口之间关系的描述，类是接口所有特征和行为的具体实现。<br><strong>虚线空心三角箭头表示</strong></p>
+<img src="/2021/03/31/umlarrow/implement.png" class="">
+
+<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><p>依赖是一种使用关系，即一个类的实现需要另一个类的帮助。通常一个类的方法参数中需要传入另一个类的对象，即表示依赖这个类。<br><strong>虚线箭头</strong></p>
+<img src="/2021/03/31/umlarrow/rely.png" class="">
+
+<h3 id="关联"><a href="#关联" class="headerlink" title="关联"></a>关联</h3><p>关联表示类与类之间的联接，一个类知道另一个类的方法和属性，这种关系比依赖更强。一般一个类作为另一个类的全局变量，即表示关联这个类。<br><strong>实线箭头</strong></p>
+<img src="/2021/03/31/umlarrow/relevance.png" class="">
+
+
+<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><p>聚合是关联的一种特例，是更强的关联。聚合是整体和个体之间的关系，即<strong>has-a</strong>的关系。关联关系中两个类是处于相同的层次,而聚合关系中两个类是处于不同的层次，一个表示整体, 一个表示个体。</p>
+<img src="/2021/03/31/umlarrow/juhe.png" class="">
+
+<h3 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h3><p>组合也是关联的一种特例。组合是整体与部分的关系，即<strong>contains-a</strong>的关系，比聚合更强。</p>
+<img src="/2021/03/31/umlarrow/union.png" class="">
+
+]]></content>
+      <categories>
+        <category>UML</category>
+      </categories>
+      <tags>
+        <tag>arrow</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>singleton</title>
     <url>/2022/03/20/singleton/</url>
     <content><![CDATA[<h3 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h3><p>一个类只有一个实例，且该类能自行创建这个实例的一种模式。通过单例模式可以保证，系统中使用单例模式的类只有一个对象实例。</p>
@@ -3023,36 +3085,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>design_mode</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>uml</title>
-    <url>/2021/03/31/umlarrow/</url>
-    <content><![CDATA[<h3 id="泛化（继承）"><a href="#泛化（继承）" class="headerlink" title="泛化（继承）"></a>泛化（继承）</h3><p>泛化是一种一般与特殊、一般与具体关系的描述，具体建立在一般之上并对其进行扩展。<br><strong>实线空心三角箭头表示</strong></p>
-<img src="/2021/03/31/umlarrow/generate.png" class="">
-
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>实现是类与接口之间关系的描述，类是接口所有特征和行为的具体实现。<br><strong>虚线空心三角箭头表示</strong></p>
-<img src="/2021/03/31/umlarrow/implement.png" class="">
-
-<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><p>依赖是一种使用关系，即一个类的实现需要另一个类的帮助。通常一个类的方法参数中需要传入另一个类的对象，即表示依赖这个类。<br><strong>虚线箭头</strong></p>
-<img src="/2021/03/31/umlarrow/rely.png" class="">
-
-<h3 id="关联"><a href="#关联" class="headerlink" title="关联"></a>关联</h3><p>关联表示类与类之间的联接，一个类知道另一个类的方法和属性，这种关系比依赖更强。一般一个类作为另一个类的全局变量，即表示关联这个类。<br><strong>实线箭头</strong></p>
-<img src="/2021/03/31/umlarrow/relevance.png" class="">
-
-
-<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><p>聚合是关联的一种特例，是更强的关联。聚合是整体和个体之间的关系，即<strong>has-a</strong>的关系。关联关系中两个类是处于相同的层次,而聚合关系中两个类是处于不同的层次，一个表示整体, 一个表示个体。</p>
-<img src="/2021/03/31/umlarrow/juhe.png" class="">
-
-<h3 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h3><p>组合也是关联的一种特例。组合是整体与部分的关系，即<strong>contains-a</strong>的关系，比聚合更强。</p>
-<img src="/2021/03/31/umlarrow/union.png" class="">
-
-]]></content>
-      <categories>
-        <category>UML</category>
-      </categories>
-      <tags>
-        <tag>arrow</tag>
       </tags>
   </entry>
   <entry>
@@ -3156,20 +3188,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>冬至</title>
-    <url>/2021/12/21/winter-solstice/</url>
-    <content><![CDATA[<p>距离开题答辩也快有一周时间了，感叹时间消逝如此之快。<br>今天是冬至日，不知道大家吃饺子了吗？反正我是没吃，哈哈。我的印象中似乎没有冬至这个概念，更没有冬至吃饺子的记忆。不过美食圆卖饺子的档口今天排的队确是够长，看来北方人似乎比较喜欢吃饺子。</p>
-<p>开完题了，自己却并没有感到诸如如释重负的感觉，下一步就要开始动真格的了，以发论文为导向，争取发个英文的CCF-C类期刊。但是又觉得实习似乎更重要，没有实习经验也找不到好的工作，唉。争取在1月份左右能够找到一份实习。加油吧，打工人！</p>
-<p>2021-12-21<br>农历十一月十八</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>饺子</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>圆明园</title>
     <url>/2022/03/03/ymy/</url>
     <content><![CDATA[<p>圆明园游记！<br>虽漫天大雪，吾往矣。</p>
@@ -3182,6 +3200,20 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>景点</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>冬至</title>
+    <url>/2021/12/21/winter-solstice/</url>
+    <content><![CDATA[<p>距离开题答辩也快有一周时间了，感叹时间消逝如此之快。<br>今天是冬至日，不知道大家吃饺子了吗？反正我是没吃，哈哈。我的印象中似乎没有冬至这个概念，更没有冬至吃饺子的记忆。不过美食圆卖饺子的档口今天排的队确是够长，看来北方人似乎比较喜欢吃饺子。</p>
+<p>开完题了，自己却并没有感到诸如如释重负的感觉，下一步就要开始动真格的了，以发论文为导向，争取发个英文的CCF-C类期刊。但是又觉得实习似乎更重要，没有实习经验也找不到好的工作，唉。争取在1月份左右能够找到一份实习。加油吧，打工人！</p>
+<p>2021-12-21<br>农历十一月十八</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>饺子</tag>
       </tags>
   </entry>
   <entry>
