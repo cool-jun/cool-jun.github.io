@@ -1,46 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>git</title>
-    <url>/2022/01/08/01-08-git/</url>
-    <content><![CDATA[<p><strong>Git</strong><br>Git是一种分布式版本控制系统（Distributed Version Control System，DVCS），分为两种类型的仓库：本地仓库和远程仓库。</p>
-<p>本地仓库：开发人员自己电脑上的Git仓库。<br>远程仓库：远程服务器上的Git仓库。</p>
-<p>clone：就是将远程仓库代码复制到本地仓库。<br>push：就是将本地仓库代码上传到远程仓库。<br>pull：就是将远程仓库代码下载到本地仓库。</p>
-<p><strong>Git工作区、暂存区和版本库</strong></p>
+    <title>annotation</title>
+    <url>/2022/02/18/02-18-Spring/</url>
+    <content><![CDATA[<h3 id="1-SpringBootApplication"><a href="#1-SpringBootApplication" class="headerlink" title="1 @SpringBootApplication"></a>1 @SpringBootApplication</h3><p>这是Spring Boot最最最核心的注解，用在Spring Boot主类上，标识这是一个Spring Boot应用，用来开启Spring Boot。<br>这个注解是@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan这三个注解的组合，也可以用这三个注解来代替@SpringBootApplication注解。<br>@Configuration：Spring 3.0添加的一个注解，用来代替applicationContext.xml配置文件，所有这个配置文件里面能做到的事情都可以通过这个注解所在类来完成。</p>
 <ul>
-<li>工作区：就是电脑里存放项目代码的地方。</li>
-<li>暂存区：英文叫stage或index。一般存放在.git目录下的index文件（.git/index）中，暂存区有时也叫作索引（index）。用于临时存放你的改动，它只是一个文件，保存即将提交的文件列表信息。</li>
-<li>版本库（repository）：存放已提交的数据，这里边有你提交的所有版本的数据，push的时候，就是把这个区的数据push到远程仓库。其中，HEAD指向最新放入仓库的版本。</li>
+<li>@SpringBootConfiguration：@Configuration注解的变体，用来修饰Spring Boot配置。</li>
+<li>@EnableAutoConfiguration：允许Spring Boot自动配置注解，开启这个注解之后，Spring Boot就能根据当前类路径下的包或者类来配置Spring Bean。</li>
+<li>@ComponentScan：Spring 3.1添加的一个注解，用来代替配置文件中的component-scan配置，开启组件扫描，即自动扫描包路径下的@Component注解进行注册bean实例到context中。</li>
 </ul>
-<p>工作流程：<br>在工作目录中添加、修改文件；<br>将需要进行版本管理的文件放入暂存区；<br>将暂存区的文件提交到版本库；<br>push到远端仓库。</p>
-<img src="/2022/01/08/01-08-git/git.png" class="">
-<p>Git管理的文件有三种状态：已修改（modified）、已暂存（staged）和已提交（committed）。</p>
-<p>将工作区的代码存放到暂存区：<br>git add . （将当前工作区的所有文件存放到暂存区）<br>git add -u （提交更新所有改变的文件，即提交所有变化的文件）<br>git add -A （提交已被修改和已被删除文件，但是不包括新的文件）</p>
-<p><strong>stage</strong><br>修改了4个文件，在不放弃任何修改的情况下，其中一个文件不想提交，如何操作？<br>（没add : git add；已经add: git reset –soft ）</p>
-<p>修改到一半的文件，突然间不需要或者放弃修改了，怎么恢复未修改前文件？<br>(git checkout)</p>
-<p>代码写一半，被打断去做其他功能开发，未完成代码保存？<br>(git stash)能够将所有未提交的修改（工作区和暂存区）保存至堆栈中，用于后续恢复当前工作目录。</p>
-<p>代码写一半，发现忘记切换分支了？<br>(git stash &amp; git checkout)</p>
-<p>代码需要回滚了？<br>（git reset）</p>
-<p><strong>常用命令</strong><br>备份当前工作区的内容<br>git stash</p>
-<p>从远程仓库克隆<br>git clone [url]</p>
-<p>从远程仓库中抓取与拉取<br>git fetch 是从远程仓库获取最新版本到本地仓库，不会自动merge。<br>git pull 是从远程仓库获取最新版本并merge到本地仓库。</p>
-<p>推送到远程仓库<br>git push remote-name branch-name</p>
-<p><strong>Git分支</strong><br>列出所有本地分支<br>git branch<br>列出所有远程分支<br>git branch -r<br>列出所有本地分支和远程分支<br>git branch -a<br>创建分支<br>git branch [branch_name]<br>切换分支<br>git checkout [branch_name]<br>合并分支<br>git merge [branch_name]</p>
-<p><strong>rebase</strong><br>假设现在有两个分支master和hj，其中hj是在提交点B处从master上拉出的分支，master上有一个新提交M，hj上有两个新提交C和D。<br>此时要切换到hj分支上，执行如下命令，相当于是想要把master分支合并到hj分支（可以类比为我们在自己的分支hj上开发了一段时间，现在准备从主干master上拉一下最新改动）。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git checkout hj</span><br><span class="line">git rebase master</span><br><span class="line">等价于git rebase master hj</span><br></pre></td></tr></table></figure>
-<img src="/2022/01/08/01-08-git/rebase.png" class="">
-<ul>
-<li>hj：待变基分支、当前分支</li>
-<li>master：基分支、目标分支</li>
-</ul>
-<p>当执行rebase操作时，git会从两个分支的共同祖先开始提取待变基分支上的修改，然后将待变基分支指向基分支的最新提交，最后将刚才提取的修改应用到基分支的最新提交的后面。</p>
-<p>场景：张三从B拉了代码进行开发，目前提交了两次，开发到D了；李四也从B拉代码开发并且开发完毕，他提交到了M，然后合到主干上了。<br>此时张三想拉下最新代码，于是他在hj分支上执行了git rebase master，即把master分支给rebase过来，由于李四更早开发完并合了主干，如此就相当于张三是基于李四的最新提交M进行的开发了。</p>
+<h3 id="2-RestController"><a href="#2-RestController" class="headerlink" title="2 @RestController"></a>2 @RestController</h3><p>@Controller用于标记一个类，使用它标记的类就是一个Spring MVC Controller对象，处理器会扫描使用该注解的类的方法，并检测该方法是否使用了@RequestMapping注解。</p>
+<p>@ResponseBody注解用于将@Controller修饰的类的方法返回的对象，通过适当的HttpMessageConverter转换为指定格式后，写入到Response对象的body数据区，通常用来返回JSON或者XML数据，返回JSON数据的情况比较多。</p>
+<p>@RestController=@Controller+@ResponseBody</p>
 ]]></content>
       <categories>
-        <category>Tool</category>
+        <category>Spring</category>
       </categories>
       <tags>
-        <tag>git</tag>
+        <tag>注解</tag>
       </tags>
   </entry>
   <entry>
@@ -159,23 +136,96 @@
       </tags>
   </entry>
   <entry>
-    <title>annotation</title>
-    <url>/2022/02/18/02-18-Spring/</url>
-    <content><![CDATA[<h3 id="1-SpringBootApplication"><a href="#1-SpringBootApplication" class="headerlink" title="1 @SpringBootApplication"></a>1 @SpringBootApplication</h3><p>这是Spring Boot最最最核心的注解，用在Spring Boot主类上，标识这是一个Spring Boot应用，用来开启Spring Boot。<br>这个注解是@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan这三个注解的组合，也可以用这三个注解来代替@SpringBootApplication注解。<br>@Configuration：Spring 3.0添加的一个注解，用来代替applicationContext.xml配置文件，所有这个配置文件里面能做到的事情都可以通过这个注解所在类来完成。</p>
+    <title>reflect</title>
+    <url>/2021/10/30/1030-java/</url>
+    <content><![CDATA[<h3 id="1-深克隆和浅克隆的区别？"><a href="#1-深克隆和浅克隆的区别？" class="headerlink" title="1 深克隆和浅克隆的区别？"></a>1 深克隆和浅克隆的区别？</h3><p>浅克隆：<strong>简单复制了原始对象的引用地址，两个对象指向同一个内存地址</strong>。所以任意修改一个的值，另一个都会随之变化。<br>深克隆：将原始对象及值复制过来，任意修改其中一个的值，另一个不会改变。<br>深克隆就是所在类实现Cloneable接口，并使用public修饰符重写clone方法。但Java中clone没有深浅之分，都是统一调用Object的clone方法。只是我们刻意的重写了clone方法。</p>
+<h3 id="2-Java序列化，怎样实现？"><a href="#2-Java序列化，怎样实现？" class="headerlink" title="2 Java序列化，怎样实现？"></a>2 Java序列化，怎样实现？</h3><p>序列化是将对象转换为字节流的过程，可以将其保存到磁盘文件或进行网络传输。序列化为了解决在对象流进行读写操作时所引发的问题。所有可在网络上传输的对象都必须是可序列化的。比如RMI（remote method invoke）。<br>如果要将某个对象保存到磁盘上或者通过网络传输，那么这个类应该实现Serializable接口。<br>反序列化则是相反的过程。</p>
+<p><strong>注意</strong><br>Java序列化过程：<br>所有保存到磁盘的对象都有一个序列化编码，当程序试图序列化一个对象时，会先检查此对象是否已经序列化过，只有此对象未（在此虚拟机）被序列化过，才会将此对象序列化为字节流输出。<br>如果此对象已经序列化过，则直接输出编号。<br>如果想让某个变量不被序列化，使用<strong>transient</strong>修饰。</p>
+<h3 id="3-Java泛型、类型擦除"><a href="#3-Java泛型、类型擦除" class="headerlink" title="3 Java泛型、类型擦除"></a>3 Java泛型、类型擦除</h3><p>泛型通过在编译时检测到更多错误来增加代码的稳定性。简而言之，<strong>泛型使类型（类和接口）在定义类、接口和方法时成为参数</strong>。类型参数为您提供了一种对不同输入重复使用相同代码的方法。<br>区别在于形式参数的输入是值，而类型参数的输入是类型。<br>泛型的使用：泛型类、泛型接口和泛型方法。</p>
+<p>类型擦除：泛型信息只存在于代码编译阶段，在进入JVM之前，与泛型相关的信息会被擦除。类型擦除确保不会为参数化类型创建新类，因此，泛型不会产生运行时开销。<br>在类型擦除过程中，Java编译器擦除所有类型参数，如果类型参数有界，则用其第一个边界替换每个参数，如果类型参数无界，则用Object替换。</p>
+<p>上限通配符，&lt;? extends Foo&gt;，其中Foo是任何类型，匹配Foo和Foo的任何子类型。<br>下限通配符将未知类型限制为特定类型或该类型的超类型。下限通配符使用通配符(‘?’)表示，后跟super关键字，最后跟其下限。即&lt;? super A&gt;。</p>
+<h3 id="4-Java反射、应用场景、优缺点"><a href="#4-Java反射、应用场景、优缺点" class="headerlink" title="4 Java反射、应用场景、优缺点"></a>4 Java反射、应用场景、优缺点</h3><p>反射：<strong>在程序运行时动态的获取信息以及动态的调用对象方法的一种机制</strong>。<br>一般来说，程序中对象是new出来的，程序相当于写死了给jvm去跑。假如这时需要用到某个类，但这个类还没有加载进jvm，此时就需要动态的加载这个类。<br>举个例子：假如我们的项目数据库用到了mysql和oracle，需要动态地根据实际情况加载驱动类。</p>
 <ul>
-<li>@SpringBootConfiguration：@Configuration注解的变体，用来修饰Spring Boot配置。</li>
-<li>@EnableAutoConfiguration：允许Spring Boot自动配置注解，开启这个注解之后，Spring Boot就能根据当前类路径下的包或者类来配置Spring Bean。</li>
-<li>@ComponentScan：Spring 3.1添加的一个注解，用来代替配置文件中的component-scan配置，开启组件扫描，即自动扫描包路径下的@Component注解进行注册bean实例到context中。</li>
+<li>根据类名创建实例（类名可以从配置文件读取，不用new，达到解耦）</li>
+<li>调用Method.invoke</li>
 </ul>
-<h3 id="2-RestController"><a href="#2-RestController" class="headerlink" title="2 @RestController"></a>2 @RestController</h3><p>@Controller用于标记一个类，使用它标记的类就是一个Spring MVC Controller对象，处理器会扫描使用该注解的类的方法，并检测该方法是否使用了@RequestMapping注解。</p>
-<p>@ResponseBody注解用于将@Controller修饰的类的方法返回的对象，通过适当的HttpMessageConverter转换为指定格式后，写入到Response对象的body数据区，通常用来返回JSON或者XML数据，返回JSON数据的情况比较多。</p>
-<p>@RestController=@Controller+@ResponseBody</p>
+<p>Reflection可以在运行时加载、探知和使用编译期间完全未知的classes。即Java程序可以加载一个运行时才得知名称的class，获取其完整构造，并生成其对象实体、或对其fields设值、或唤起其methods。<br>java.lang.reflect包中的主要类：Class、Field、Method、Constructor、Array。</p>
+<p>应用：工厂模式，使用了反射机制。</p>
+<p>优点：运行时类型的判断，class.forName()动态加载类，提高代码灵活度。<br>缺点：性能开销；安全限制；内部暴露。</p>
 ]]></content>
       <categories>
-        <category>Spring</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>注解</tag>
+        <tag>反射</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>git</title>
+    <url>/2022/01/08/01-08-git/</url>
+    <content><![CDATA[<p><strong>Git</strong><br>Git是一种分布式版本控制系统（Distributed Version Control System，DVCS），分为两种类型的仓库：本地仓库和远程仓库。</p>
+<p>本地仓库：开发人员自己电脑上的Git仓库。<br>远程仓库：远程服务器上的Git仓库。</p>
+<p>clone：就是将远程仓库代码复制到本地仓库。<br>push：就是将本地仓库代码上传到远程仓库。<br>pull：就是将远程仓库代码下载到本地仓库。</p>
+<p><strong>Git工作区、暂存区和版本库</strong></p>
+<ul>
+<li>工作区：就是电脑里存放项目代码的地方。</li>
+<li>暂存区：英文叫stage或index。一般存放在.git目录下的index文件（.git/index）中，暂存区有时也叫作索引（index）。用于临时存放你的改动，它只是一个文件，保存即将提交的文件列表信息。</li>
+<li>版本库（repository）：存放已提交的数据，这里边有你提交的所有版本的数据，push的时候，就是把这个区的数据push到远程仓库。其中，HEAD指向最新放入仓库的版本。</li>
+</ul>
+<p>工作流程：<br>在工作目录中添加、修改文件；<br>将需要进行版本管理的文件放入暂存区；<br>将暂存区的文件提交到版本库；<br>push到远端仓库。</p>
+<img src="/2022/01/08/01-08-git/git.png" class="">
+<p>Git管理的文件有三种状态：已修改（modified）、已暂存（staged）和已提交（committed）。</p>
+<p>将工作区的代码存放到暂存区：<br>git add . （将当前工作区的所有文件存放到暂存区）<br>git add -u （提交更新所有改变的文件，即提交所有变化的文件）<br>git add -A （提交已被修改和已被删除文件，但是不包括新的文件）</p>
+<p><strong>stage</strong><br>修改了4个文件，在不放弃任何修改的情况下，其中一个文件不想提交，如何操作？<br>（没add : git add；已经add: git reset –soft ）</p>
+<p>修改到一半的文件，突然间不需要或者放弃修改了，怎么恢复未修改前文件？<br>(git checkout)</p>
+<p>代码写一半，被打断去做其他功能开发，未完成代码保存？<br>(git stash)能够将所有未提交的修改（工作区和暂存区）保存至堆栈中，用于后续恢复当前工作目录。</p>
+<p>代码写一半，发现忘记切换分支了？<br>(git stash &amp; git checkout)</p>
+<p>代码需要回滚了？<br>（git reset）</p>
+<p><strong>常用命令</strong><br>备份当前工作区的内容<br>git stash</p>
+<p>从远程仓库克隆<br>git clone [url]</p>
+<p>从远程仓库中抓取与拉取<br>git fetch 是从远程仓库获取最新版本到本地仓库，不会自动merge。<br>git pull 是从远程仓库获取最新版本并merge到本地仓库。</p>
+<p>推送到远程仓库<br>git push remote-name branch-name</p>
+<p><strong>Git分支</strong><br>列出所有本地分支<br>git branch<br>列出所有远程分支<br>git branch -r<br>列出所有本地分支和远程分支<br>git branch -a<br>创建分支<br>git branch [branch_name]<br>切换分支<br>git checkout [branch_name]<br>合并分支<br>git merge [branch_name]</p>
+<p><strong>rebase</strong><br>假设现在有两个分支master和hj，其中hj是在提交点B处从master上拉出的分支，master上有一个新提交M，hj上有两个新提交C和D。<br>此时要切换到hj分支上，执行如下命令，相当于是想要把master分支合并到hj分支（可以类比为我们在自己的分支hj上开发了一段时间，现在准备从主干master上拉一下最新改动）。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git checkout hj</span><br><span class="line">git rebase master</span><br><span class="line">等价于git rebase master hj</span><br></pre></td></tr></table></figure>
+<img src="/2022/01/08/01-08-git/rebase.png" class="">
+<ul>
+<li>hj：待变基分支、当前分支</li>
+<li>master：基分支、目标分支</li>
+</ul>
+<p>当执行rebase操作时，git会从两个分支的共同祖先开始提取待变基分支上的修改，然后将待变基分支指向基分支的最新提交，最后将刚才提取的修改应用到基分支的最新提交的后面。</p>
+<p>场景：张三从B拉了代码进行开发，目前提交了两次，开发到D了；李四也从B拉代码开发并且开发完毕，他提交到了M，然后合到主干上了。<br>此时张三想拉下最新代码，于是他在hj分支上执行了git rebase master，即把master分支给rebase过来，由于李四更早开发完并合了主干，如此就相当于张三是基于李四的最新提交M进行的开发了。</p>
+]]></content>
+      <categories>
+        <category>Tool</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>string</title>
+    <url>/2021/11/10/11-10-Java/</url>
+    <content><![CDATA[<h3 id="1-Java中String为什么是final？"><a href="#1-Java中String为什么是final？" class="headerlink" title="1 Java中String为什么是final？"></a>1 Java中String为什么是final？</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
+<p>安全性：String被许多的Java类(库)用来当做参数，例如：网络连接地址URL、文件路径path、还有反射机制所需要的String参数等，假若String不是固定不变的，将会引起各种安全隐患；<br>允许String对象缓存HashCode：Java中String对象的哈希码被频繁地使用，比如在HashMap等容器中。字符串不变性保证了hashcode的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是Java堆内存中一个特殊的存储区域，当创建一个String对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
+<h3 id="3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
+<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量，它的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。此类提供与StringBuffer兼容的API，但不保证同步。此类旨在用作StringBuffer的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。在可能的情况下，建议优先使用此类而不是StringBuffer，因为在大多数实现下它会更快。StringBuilder上的主要操作是append和insert方法，它们被重载以接受任何类型的数据。每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。append方法总是在构建器的末尾添加这些字符；insert方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
+<h3 id="2-递归和迭代的区别"><a href="#2-递归和迭代的区别" class="headerlink" title="2 递归和迭代的区别"></a>2 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中，问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远到近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
+<p>以斐波那契数列为例。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>递归容易产生“栈溢出”问题（stack overflow）。<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>string</tag>
       </tags>
   </entry>
   <entry>
@@ -210,56 +260,6 @@
       </categories>
       <tags>
         <tag>动态代理</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>string</title>
-    <url>/2021/11/10/11-10-Java/</url>
-    <content><![CDATA[<h3 id="1-Java中String为什么是final？"><a href="#1-Java中String为什么是final？" class="headerlink" title="1 Java中String为什么是final？"></a>1 Java中String为什么是final？</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
-<p>安全性：String被许多的Java类(库)用来当做参数，例如：网络连接地址URL、文件路径path、还有反射机制所需要的String参数等，假若String不是固定不变的，将会引起各种安全隐患；<br>允许String对象缓存HashCode：Java中String对象的哈希码被频繁地使用，比如在HashMap等容器中。字符串不变性保证了hashcode的唯一性，因此可以放心地进行缓存。这也是一种性能优化手段，意味着不必每次都去计算新的哈希码；<br>字符串常量池的需要：字符串常量池是Java堆内存中一个特殊的存储区域，当创建一个String对象时，假如此字符串值已经存在于常量池中，则不会创建一个新的对象，而是引用已经存在的对象。</p>
-<h3 id="3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？"><a href="#3-String-str1-“abc”与String-str3-new-String-“abc”-相等吗？" class="headerlink" title="3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？"></a>3 String str1 = “abc”与String str3 = new String(“abc”)相等吗？</h3><p>不相等。内存分配的方式不一样。前者Java虚拟机将其分配到常量池中，后者被分配到堆内存中。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str2 &#x3D; &quot;abc&quot;;</span><br><span class="line">String str3 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">String str4 &#x3D; new String(&quot;abc&quot;);</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str2);  &#x2F;&#x2F; true</span><br><span class="line">System.out.println(str3 &#x3D;&#x3D; str4);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1 &#x3D;&#x3D; str3);  &#x2F;&#x2F; false</span><br><span class="line">System.out.println(str1.equals(str3));  &#x2F;&#x2F; true</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-String字符串拼接原理"><a href="#4-String字符串拼接原理" class="headerlink" title="4 String字符串拼接原理"></a>4 String字符串拼接原理</h3><p>通过建立临时的StringBuilder对象，然后调用append方法实现，最后再调用StringBuilder对象的toString方法将该StringBuilder对象转化为String对象。<br>String类中每一个看起来会修改值的方法，实际上都是创建了一个全新的String对象，以包含修改后的字符串内容。</p>
-<h3 id="5-String、StringBuilder、StringBuffer"><a href="#5-String、StringBuilder、StringBuffer" class="headerlink" title="5 String、StringBuilder、StringBuffer"></a>5 String、StringBuilder、StringBuffer</h3><p>String：字符串是常量，它的值在创建后无法更改。<br>StringBuilder：一个可变的字符序列。此类提供与StringBuffer兼容的API，但不保证同步。此类旨在用作StringBuffer的替代品，用于在单个线程使用字符串缓冲区的地方（通常是这种情况）。在可能的情况下，建议优先使用此类而不是StringBuffer，因为在大多数实现下它会更快。StringBuilder上的主要操作是append和insert方法，它们被重载以接受任何类型的数据。每个都有效地将给定的数据转换为字符串，然后将该字符串的字符附加或插入到字符串构建器中。append方法总是在构建器的末尾添加这些字符；insert方法在指定点添加字符。<br>StringBuffer：线程安全的、可变的字符序列。在任何时候，它都包含一些特定的字符序列，但可以通过某些方法调用来更改序列的长度和内容。</p>
-<h3 id="2-递归和迭代的区别"><a href="#2-递归和迭代的区别" class="headerlink" title="2 递归和迭代的区别"></a>2 递归和迭代的区别</h3><p><strong>递归</strong>：重复调用函数自身实现循环，即自己调用自己。递归过程中，问题的规模在缩小，最终得到问题的解。<br><strong>迭代</strong>：函数内某段代码实现循环。迭代是一种由远到近的逼近，问题的规模不见得缩小了，但是慢慢在接近答案。</p>
-<p>以斐波那契数列为例。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">递归实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        if (n &gt; 1) &#123;</span><br><span class="line">            return fib(n - 1) + fib(n - 2);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return n;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">迭代实现</span><br><span class="line">int fib(int n) &#123;</span><br><span class="line">        int ans, fib1, fib2;</span><br><span class="line">        if (n &lt;&#x3D; 1)</span><br><span class="line">            return n;</span><br><span class="line">        fib1 &#x3D; 0;</span><br><span class="line">        fib2 &#x3D; 1;</span><br><span class="line">        for (int i &#x3D; 2; i &lt;&#x3D; n; i++) &#123;</span><br><span class="line">            ans &#x3D; fib1 + fib2;</span><br><span class="line">            fib1 &#x3D; fib2;</span><br><span class="line">            fib2 &#x3D; ans;</span><br><span class="line">        &#125;</span><br><span class="line">        return ans;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>递归容易产生“栈溢出”问题（stack overflow）。<br>递归可能存在冗余计算，效率不高。<br>能用迭代的尽量不用递归。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>string</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>reflect</title>
-    <url>/2021/10/30/1030-java/</url>
-    <content><![CDATA[<h3 id="1-深克隆和浅克隆的区别？"><a href="#1-深克隆和浅克隆的区别？" class="headerlink" title="1 深克隆和浅克隆的区别？"></a>1 深克隆和浅克隆的区别？</h3><p>浅克隆：<strong>简单复制了原始对象的引用地址，两个对象指向同一个内存地址</strong>。所以任意修改一个的值，另一个都会随之变化。<br>深克隆：将原始对象及值复制过来，任意修改其中一个的值，另一个不会改变。<br>深克隆就是所在类实现Cloneable接口，并使用public修饰符重写clone方法。但Java中clone没有深浅之分，都是统一调用Object的clone方法。只是我们刻意的重写了clone方法。</p>
-<h3 id="2-Java序列化，怎样实现？"><a href="#2-Java序列化，怎样实现？" class="headerlink" title="2 Java序列化，怎样实现？"></a>2 Java序列化，怎样实现？</h3><p>序列化是将对象转换为字节流的过程，可以将其保存到磁盘文件或进行网络传输。序列化为了解决在对象流进行读写操作时所引发的问题。所有可在网络上传输的对象都必须是可序列化的。比如RMI（remote method invoke）。<br>如果要将某个对象保存到磁盘上或者通过网络传输，那么这个类应该实现Serializable接口。<br>反序列化则是相反的过程。</p>
-<p><strong>注意</strong><br>Java序列化过程：<br>所有保存到磁盘的对象都有一个序列化编码，当程序试图序列化一个对象时，会先检查此对象是否已经序列化过，只有此对象未（在此虚拟机）被序列化过，才会将此对象序列化为字节流输出。<br>如果此对象已经序列化过，则直接输出编号。<br>如果想让某个变量不被序列化，使用<strong>transient</strong>修饰。</p>
-<h3 id="3-Java泛型、类型擦除"><a href="#3-Java泛型、类型擦除" class="headerlink" title="3 Java泛型、类型擦除"></a>3 Java泛型、类型擦除</h3><p>泛型通过在编译时检测到更多错误来增加代码的稳定性。简而言之，<strong>泛型使类型（类和接口）在定义类、接口和方法时成为参数</strong>。类型参数为您提供了一种对不同输入重复使用相同代码的方法。<br>区别在于形式参数的输入是值，而类型参数的输入是类型。<br>泛型的使用：泛型类、泛型接口和泛型方法。</p>
-<p>类型擦除：泛型信息只存在于代码编译阶段，在进入JVM之前，与泛型相关的信息会被擦除。类型擦除确保不会为参数化类型创建新类，因此，泛型不会产生运行时开销。<br>在类型擦除过程中，Java编译器擦除所有类型参数，如果类型参数有界，则用其第一个边界替换每个参数，如果类型参数无界，则用Object替换。</p>
-<p>上限通配符，&lt;? extends Foo&gt;，其中Foo是任何类型，匹配Foo和Foo的任何子类型。<br>下限通配符将未知类型限制为特定类型或该类型的超类型。下限通配符使用通配符(‘?’)表示，后跟super关键字，最后跟其下限。即&lt;? super A&gt;。</p>
-<h3 id="4-Java反射、应用场景、优缺点"><a href="#4-Java反射、应用场景、优缺点" class="headerlink" title="4 Java反射、应用场景、优缺点"></a>4 Java反射、应用场景、优缺点</h3><p>反射：<strong>在程序运行时动态的获取信息以及动态的调用对象方法的一种机制</strong>。<br>一般来说，程序中对象是new出来的，程序相当于写死了给jvm去跑。假如这时需要用到某个类，但这个类还没有加载进jvm，此时就需要动态的加载这个类。<br>举个例子：假如我们的项目数据库用到了mysql和oracle，需要动态地根据实际情况加载驱动类。</p>
-<ul>
-<li>根据类名创建实例（类名可以从配置文件读取，不用new，达到解耦）</li>
-<li>调用Method.invoke</li>
-</ul>
-<p>Reflection可以在运行时加载、探知和使用编译期间完全未知的classes。即Java程序可以加载一个运行时才得知名称的class，获取其完整构造，并生成其对象实体、或对其fields设值、或唤起其methods。<br>java.lang.reflect包中的主要类：Class、Field、Method、Constructor、Array。</p>
-<p>应用：工厂模式，使用了反射机制。</p>
-<p>优点：运行时类型的判断，class.forName()动态加载类，提高代码灵活度。<br>缺点：性能开销；安全限制；内部暴露。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>反射</tag>
       </tags>
   </entry>
   <entry>
@@ -301,43 +301,6 @@
       </tags>
   </entry>
   <entry>
-    <title>collection</title>
-    <url>/2021/11/15/11-15-Java/</url>
-    <content><![CDATA[<h3 id="1-Java-Collection"><a href="#1-Java-Collection" class="headerlink" title="1 Java Collection"></a>1 Java Collection</h3><p>集合（也称为容器）是一个将多个元素组合成一个单元的对象。<br>常见的集合层次结构如下图：</p>
-<img src="/2021/11/15/11-15-Java/JavaCore.png" class="">
-
-<p>Collection：集合层次结构的根。集合表示一组称为其元素的对象。某些类型的集合允许重复元素，而其他类型则不允许。有些是有序的，有些是无序的。Java平台不提供该接口的任何直接实现，但提供了更具体的子接口的实现，例如Set和List。</p>
-<p>Set：<strong>不能包含重复元素的集合</strong>。Set接口仅包含继承自Collection的方法，并添加了禁止重复元素的限制。</p>
-<p>List：有序集合。List可以包含重复的元素。List的用户通常可以精确控制每个元素在列表中的插入位置，并且可以通过它们的整数索引（位置）访问元素。</p>
-<p>Queue：用于在处理之前保存多个元素的集合。除了基本的Collection操作，Queue还提供了额外的插入、提取和检查操作。队列通常但不一定以FIFO（先进先出）方式对元素进行排序。例外情况是优先级队列，它根据提供的比较器或元素的自然顺序对元素进行排序。无论使用何种顺序，队列的头部都是将通过调用remove或poll方法删除元素。在FIFO队列中，所有新元素都插入到队列的尾部。其他类型的队列可能使用不同的放置规则。每个Queue实现都必须指定其排序属性。</p>
-<p>Deque：用于在处理之前保存多个元素的集合。Deque是双端队列。双端队列既可以用作FIFO（先进先出），也可以用作LIFO（后进先出）。双端队列是元素的线性集合，支持在两个端点插入和删除元素。<strong>Deque接口是比Stack和Queue更丰富的抽象数据类型，因为它同时实现了栈和队列。</strong>Deque接口定义了访问Deque实例两端元素的方法。提供了插入、删除和检查元素的方法。ArrayDeque和LinkedList等预定义类实现了Deque接口。</p>
-<p>Map：将键映射到值的对象。<strong>Map不能包含重复的键</strong>，每个键最多可以映射到一个值。</p>
-<p>SortedSet—按升序维护其元素的Set。提供了几个额外的操作来利用排序。<br>SortedMap—以键升序维护其映射的Map。这是SortedSet的Map模拟。</p>
-<p>HashSet：这个类实现了Set接口，由一个哈希表（实际上是一个HashMap实例）支持。此类允许空元素。HashSet将其元素存储在哈希表中，是性能最好的实现，但它不保证迭代的顺序。</p>
-<p>LinkedHashSet：此实现与HashSet的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，也就是元素被插入到集合中的顺序（插入顺序）。</p>
-<p>TreeSet：基于TreeMap的NavigableSet实现。元素使用它们的自然顺序进行排序，或者通过在集合创建时提供的Comparator进行排序，具体取决于使用的构造函数。<br>TreeSet将其元素存储在红黑树中，根据元素的值对其进行排序，它比HashSet慢得多。此实现为基本操作提供有保证的log(n)时间成本（添加、删除和包含）。</p>
-<p>ArrayList：List接口的可调整大小的数组实现。实现所有可选的列表操作，并允许所有元素，包括null。除了实现List接口之外，该类还提供了操作内部用于存储列表的数组大小的方法。（这个类大致相当于Vector，只是它是不同步的）。size、isEmpty、get、set、iterator和listIterator操作在恒定时间内运行。add操作在分摊常数时间内运行，即添加 n 个元素需要 O(n) 时间。所有其他操作都在线性时间内运行（粗略地说）。与LinkedList实现相比，常量因子较低。</p>
-<p>LinkedList：List和Deque接口的双向链表实现。实现所有可选的列表操作，并允许所有元素（包括空值）。</p>
-<p>ArrayList通常是性能更好的实现，而LinkedList在某些情况下提供更好的性能。</p>
-<p>HashMap：Map接口的基于哈希表的实现。此实现提供了所有可选的映射操作，并允许空值和空键。（HashMap类大致等同于Hashtable，只是hashmap是不同步的并且允许空值），该类不保证映射的顺序。</p>
-<p>LinkedHashMap：Map接口的哈希表和链表实现，迭代顺序可预测。此实现与HashMap的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
-<p>TreeMap：基于红黑树的NavigableMap实现。映射根据其键的自然顺序进行排序，或者通过映射创建时提供的Comparator进行排序，具体取决于使用的构造函数。此实现为containsKey、get、put和remove操作提供有保证的log(n)时间成本。</p>
-<ol>
-<li>对于Set接口，HashSet是最常用的实现。</li>
-<li>对于List接口，ArrayList是最常用的实现。</li>
-<li>对于Map接口，HashMap是最常用的实现。</li>
-<li>对于Queue接口，LinkedList是最常用的实现。</li>
-<li>对于Deque接口，ArrayDeque是最常用的实现。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>集合</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>list</title>
     <url>/2021/11/17/11-17-Java/</url>
     <content><![CDATA[<h3 id="1-ArrayList和LinkedList"><a href="#1-ArrayList和LinkedList" class="headerlink" title="1 ArrayList和LinkedList"></a>1 ArrayList和LinkedList</h3><p>ArrayList：List接口的可调整大小的数组实现。除了实现List接口之外，该类还提供了操作内部用于存储列表的数组大小的方法。（这个类大致相当于Vector，只是它是不同步的）。它提供恒定时间的位置访问，而且速度非常快。<br>它不必为List中的每个元素分配一个节点对象，当它必须同时移动多个元素时，它可以利用System.arraycopy。可以将ArrayList视为没有同步开销的Vector。</p>
@@ -375,30 +338,34 @@
       </tags>
   </entry>
   <entry>
-    <title>hashmap</title>
-    <url>/2021/11/19/11-19-Java/</url>
-    <content><![CDATA[<h3 id="1-HashMap的底层实现原理？"><a href="#1-HashMap的底层实现原理？" class="headerlink" title="1 HashMap的底层实现原理？"></a>1 HashMap的底层实现原理？</h3><p>JDK1.7：数组+链表。使用链表来处理冲突，同一hash值的链表都存储在一个数组中。但是当位于一个桶中的元素较多，即hash值相等的元素较多时，通过key值依次查找的效率较低。<br>JDK1.8：数组+链表+红黑树。当每个数组（桶）中元素大于8的时候，会转变为红黑树，目的就是优化查询效率，1.8重写了resize()方法。</p>
-<p>1.7数组+链表 ==&gt; 1.8数组+链表+红黑树</p>
-<p>链表的插入方式从头插法改成了尾插法，头插法会使链表发生反转，多线程环境下会产生环。<br>扩容的时候1.7需要对原数组中的元素进行重新hash以定位在新数组的位置，1.8采用更简单的判断逻辑，位置不变或索引+旧容量大小；</p>
-<p>在插入时，1.7先判断是否需要扩容，再插入；1.8先进行插入，插入完成再判断是否需要扩容。<br>在进行添加元素时，当一个桶中存储元素的数量 &gt; 8 时，会自动转换为红黑树。<br>在进行删除元素时，如果一个桶中存储元素的数量 &lt; 6 后，会自动转换为链表。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; Node节点是用来存储HashMap的一个个实例，它实现了Map.Entry接口。</span><br><span class="line">static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</span><br><span class="line">        final int hash;</span><br><span class="line">        final K key;</span><br><span class="line">        V value;</span><br><span class="line">        Node&lt;K,V&gt; next;</span><br><span class="line"></span><br><span class="line">        Node(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            this.hash &#x3D; hash;</span><br><span class="line">            this.key &#x3D; key;</span><br><span class="line">            this.value &#x3D; value;</span><br><span class="line">            this.next &#x3D; next;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
-<p>默认初始容量 - 必须是2的幂<br>static final int DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4;  // aka 16<br>使用树而不是列表的bin计数阈值，将元素添加到至少具有这么多节点的bin时，bin会转换为树。<br>static final int TREEIFY_THRESHOLD = 8;<br>可以将bin树化的最小表容量。（否则，如果bin中的节点过多，则表将调整大小）应至少为 4 * TREEIFY_THRESHOLD，以避免调整大小和树化阈值之间发生冲突。<br>static final int MIN_TREEIFY_CAPACITY = 64;<br>Node数组，在第一次使用时初始化，并根据需要调整大小。分配时，长度始终是2的幂。<br>transient Node&lt;K,V&gt;[] table;<br>此映射中包含的键值映射数<br>transient int size;</p>
-<h3 id="2-HashMap的put和get方法实现原理"><a href="#2-HashMap的put和get方法实现原理" class="headerlink" title="2 HashMap的put和get方法实现原理"></a>2 HashMap的put和get方法实现原理</h3><p><strong>put</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public V put(K key, V value) &#123;</span><br><span class="line">        return putVal(hash(key), key, value, false, true);</span><br><span class="line">    &#125;</span><br><span class="line">   hash – hash for key</span><br><span class="line">   key – the key</span><br><span class="line">   value – the value to put</span><br><span class="line">   onlyIfAbsent – 如果为true，则不更改现有值。</span><br><span class="line">   evict – 如果为false，则表处于创建模式。</span><br><span class="line">final V putVal(int hash, K key, V value, boolean onlyIfAbsent,</span><br><span class="line">                   boolean evict) &#123;</span><br><span class="line">        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;</span><br><span class="line">        if ((tab &#x3D; table) &#x3D;&#x3D; null || (n &#x3D; tab.length) &#x3D;&#x3D; 0)</span><br><span class="line">            n &#x3D; (tab &#x3D; resize()).length;</span><br><span class="line">        if ((p &#x3D; tab[i &#x3D; (n - 1) &amp; hash]) &#x3D;&#x3D; null)</span><br><span class="line">            tab[i] &#x3D; newNode(hash, key, value, null);</span><br><span class="line">        else &#123;</span><br><span class="line">            Node&lt;K,V&gt; e; K k;</span><br><span class="line">            if (p.hash &#x3D;&#x3D; hash &amp;&amp;</span><br><span class="line">                ((k &#x3D; p.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                e &#x3D; p;</span><br><span class="line">            else if (p instanceof TreeNode)</span><br><span class="line">                e &#x3D; ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);</span><br><span class="line">            else &#123;</span><br><span class="line">                for (int binCount &#x3D; 0; ; ++binCount) &#123;</span><br><span class="line">                    if ((e &#x3D; p.next) &#x3D;&#x3D; null) &#123;</span><br><span class="line">                        p.next &#x3D; newNode(hash, key, value, null);</span><br><span class="line">                        if (binCount &gt;&#x3D; TREEIFY_THRESHOLD - 1) &#x2F;&#x2F; -1 for 1st</span><br><span class="line">                            treeifyBin(tab, hash);</span><br><span class="line">                        break;</span><br><span class="line">                    &#125;</span><br><span class="line">                    if (e.hash &#x3D;&#x3D; hash &amp;&amp;</span><br><span class="line">                        ((k &#x3D; e.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                        break;</span><br><span class="line">                    p &#x3D; e;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (e !&#x3D; null) &#123; &#x2F;&#x2F; existing mapping for key</span><br><span class="line">                V oldValue &#x3D; e.value;</span><br><span class="line">                if (!onlyIfAbsent || oldValue &#x3D;&#x3D; null)</span><br><span class="line">                    e.value &#x3D; value;</span><br><span class="line">                afterNodeAccess(e);</span><br><span class="line">                return oldValue;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        ++modCount;</span><br><span class="line">        if (++size &gt; threshold)</span><br><span class="line">            resize();</span><br><span class="line">        afterNodeInsertion(evict);</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>当我们往HashMap中添加key-value时，系统会先计算key的hash值，然后根据hash值确认在table中的存储位置。若该位置没有元素，则直接插入。如果对应bucket已经有Node节点，会对链表长度进行分析，判断长度是否大于8，如果链表长度小于8，在JDK1.7前会使用头插法，在JDK1.8之后更改为尾插法。如果链表长度大于8会进行树化操作，把链表转换为红黑树，在红黑树上进行存储。如果hash值相等且key值相等，则用新value覆盖原来节点的value。</p>
-<p><strong>get</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public V get(Object key) &#123;</span><br><span class="line">        Node&lt;K,V&gt; e;</span><br><span class="line">        return (e &#x3D; getNode(hash(key), key)) &#x3D;&#x3D; null ? null : e.value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">final Node&lt;K,V&gt; getNode(int hash, Object key) &#123;</span><br><span class="line">        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; int n; K k;</span><br><span class="line">        if ((tab &#x3D; table) !&#x3D; null &amp;&amp; (n &#x3D; tab.length) &gt; 0 &amp;&amp;</span><br><span class="line">            (first &#x3D; tab[(n - 1) &amp; hash]) !&#x3D; null) &#123;</span><br><span class="line">            if (first.hash &#x3D;&#x3D; hash &amp;&amp; &#x2F;&#x2F; always check first node</span><br><span class="line">                ((k &#x3D; first.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                return first;</span><br><span class="line">            if ((e &#x3D; first.next) !&#x3D; null) &#123;</span><br><span class="line">                if (first instanceof TreeNode)</span><br><span class="line">                    return ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);</span><br><span class="line">                do &#123;</span><br><span class="line">                    if (e.hash &#x3D;&#x3D; hash &amp;&amp;</span><br><span class="line">                        ((k &#x3D; e.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                        return e;</span><br><span class="line">                &#125; while ((e &#x3D; e.next) !&#x3D; null);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>通过key的hash值找到在table数组中的索引处的Node，然后返回该 key 对应的 value 即可。在这里能够根据key快速的取到 value 除了和 HashMap 的数据结构密不可分外，还和 Node 有莫大的关系。<br>HashMap在存储过程中并没有将key，value分开来存储，而是当做一个整体key-value来处理的，这个整体就是Node对象。同时 value 也只相当于 key 的附属而已。<br>在存储的过程中，系统根据 key 的 HashCode 来决定Node在 table 数组中的存储位置，在取的过程中同样根据 key 的 HashCode 取出相对应的 Node 对象。</p>
-<h3 id="3-HashMap的resize方法"><a href="#3-HashMap的resize方法" class="headerlink" title="3 HashMap的resize方法"></a>3 HashMap的resize方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">初始化或加倍表大小。如果为空，则根据字段阈值中持有的初始容量目标进行分配。</span><br><span class="line">否则，因为我们使用的是二次幂扩展，所以每个bin中的元素必须保持相同的索引，</span><br><span class="line">或者在新表中以二次幂的偏移量移动。</span><br><span class="line">final Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">        Node&lt;K,V&gt;[] oldTab &#x3D; table;</span><br><span class="line">        int oldCap &#x3D; (oldTab &#x3D;&#x3D; null) ? 0 : oldTab.length;</span><br><span class="line">        int oldThr &#x3D; threshold;</span><br><span class="line">        int newCap, newThr &#x3D; 0;</span><br><span class="line">        if (oldCap &gt; 0) &#123;</span><br><span class="line">            if (oldCap &gt;&#x3D; MAXIMUM_CAPACITY) &#123;</span><br><span class="line">                threshold &#x3D; Integer.MAX_VALUE;</span><br><span class="line">                return oldTab;</span><br><span class="line">            &#125;</span><br><span class="line">            else if ((newCap &#x3D; oldCap &lt;&lt; 1) &lt; MAXIMUM_CAPACITY &amp;&amp;</span><br><span class="line">                     oldCap &gt;&#x3D; DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">                newThr &#x3D; oldThr &lt;&lt; 1; &#x2F;&#x2F; double threshold</span><br><span class="line">        &#125;</span><br><span class="line">        else if (oldThr &gt; 0) &#x2F;&#x2F; initial capacity was placed in threshold</span><br><span class="line">            newCap &#x3D; oldThr;</span><br><span class="line">        else &#123;               &#x2F;&#x2F; zero initial threshold signifies using defaults</span><br><span class="line">            newCap &#x3D; DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">            newThr &#x3D; (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">        &#125;</span><br><span class="line">        if (newThr &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            float ft &#x3D; (float)newCap * loadFactor;</span><br><span class="line">            newThr &#x3D; (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (float)MAXIMUM_CAPACITY ?</span><br><span class="line">                      (int)ft : Integer.MAX_VALUE);</span><br><span class="line">        &#125;</span><br><span class="line">        threshold &#x3D; newThr;</span><br><span class="line">        @SuppressWarnings(&#123;&quot;rawtypes&quot;,&quot;unchecked&quot;&#125;)</span><br><span class="line">        Node&lt;K,V&gt;[] newTab &#x3D; (Node&lt;K,V&gt;[])new Node[newCap];</span><br><span class="line">        table &#x3D; newTab;</span><br><span class="line">        if (oldTab !&#x3D; null) &#123;</span><br><span class="line">            for (int j &#x3D; 0; j &lt; oldCap; ++j) &#123;</span><br><span class="line">                Node&lt;K,V&gt; e;</span><br><span class="line">                if ((e &#x3D; oldTab[j]) !&#x3D; null) &#123;</span><br><span class="line">                    oldTab[j] &#x3D; null;</span><br><span class="line">                    if (e.next &#x3D;&#x3D; null)</span><br><span class="line">                        newTab[e.hash &amp; (newCap - 1)] &#x3D; e;</span><br><span class="line">                    else if (e instanceof TreeNode)</span><br><span class="line">                        ((TreeNode&lt;K,V&gt;)e).split(this, newTab, j, oldCap);</span><br><span class="line">                    else &#123; &#x2F;&#x2F; preserve order</span><br><span class="line">                        Node&lt;K,V&gt; loHead &#x3D; null, loTail &#x3D; null;</span><br><span class="line">                        Node&lt;K,V&gt; hiHead &#x3D; null, hiTail &#x3D; null;</span><br><span class="line">                        Node&lt;K,V&gt; next;</span><br><span class="line">                        do &#123;</span><br><span class="line">                            next &#x3D; e.next;</span><br><span class="line">                            if ((e.hash &amp; oldCap) &#x3D;&#x3D; 0) &#123;</span><br><span class="line">                                if (loTail &#x3D;&#x3D; null)</span><br><span class="line">                                    loHead &#x3D; e;</span><br><span class="line">                                else</span><br><span class="line">                                    loTail.next &#x3D; e;</span><br><span class="line">                                loTail &#x3D; e;</span><br><span class="line">                            &#125;</span><br><span class="line">                            else &#123;</span><br><span class="line">                                if (hiTail &#x3D;&#x3D; null)</span><br><span class="line">                                    hiHead &#x3D; e;</span><br><span class="line">                                else</span><br><span class="line">                                    hiTail.next &#x3D; e;</span><br><span class="line">                                hiTail &#x3D; e;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125; while ((e &#x3D; next) !&#x3D; null);</span><br><span class="line">                        if (loTail !&#x3D; null) &#123;</span><br><span class="line">                            loTail.next &#x3D; null;</span><br><span class="line">                            newTab[j] &#x3D; loHead;</span><br><span class="line">                        &#125;</span><br><span class="line">                        if (hiTail !&#x3D; null) &#123;</span><br><span class="line">                            hiTail.next &#x3D; null;</span><br><span class="line">                            newTab[j + oldCap] &#x3D; hiHead;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return newTab;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>有两种情况会调用resize方法：</p>
+    <title>collection</title>
+    <url>/2021/11/15/11-15-Java/</url>
+    <content><![CDATA[<h3 id="1-Java-Collection"><a href="#1-Java-Collection" class="headerlink" title="1 Java Collection"></a>1 Java Collection</h3><p>集合（也称为容器）是一个将多个元素组合成一个单元的对象。<br>常见的集合层次结构如下图：</p>
+<img src="/2021/11/15/11-15-Java/JavaCore.png" class="">
+
+<p>Collection：集合层次结构的根。集合表示一组称为其元素的对象。某些类型的集合允许重复元素，而其他类型则不允许。有些是有序的，有些是无序的。Java平台不提供该接口的任何直接实现，但提供了更具体的子接口的实现，例如Set和List。</p>
+<p>Set：<strong>不能包含重复元素的集合</strong>。Set接口仅包含继承自Collection的方法，并添加了禁止重复元素的限制。</p>
+<p>List：有序集合。List可以包含重复的元素。List的用户通常可以精确控制每个元素在列表中的插入位置，并且可以通过它们的整数索引（位置）访问元素。</p>
+<p>Queue：用于在处理之前保存多个元素的集合。除了基本的Collection操作，Queue还提供了额外的插入、提取和检查操作。队列通常但不一定以FIFO（先进先出）方式对元素进行排序。例外情况是优先级队列，它根据提供的比较器或元素的自然顺序对元素进行排序。无论使用何种顺序，队列的头部都是将通过调用remove或poll方法删除元素。在FIFO队列中，所有新元素都插入到队列的尾部。其他类型的队列可能使用不同的放置规则。每个Queue实现都必须指定其排序属性。</p>
+<p>Deque：用于在处理之前保存多个元素的集合。Deque是双端队列。双端队列既可以用作FIFO（先进先出），也可以用作LIFO（后进先出）。双端队列是元素的线性集合，支持在两个端点插入和删除元素。<strong>Deque接口是比Stack和Queue更丰富的抽象数据类型，因为它同时实现了栈和队列。</strong>Deque接口定义了访问Deque实例两端元素的方法。提供了插入、删除和检查元素的方法。ArrayDeque和LinkedList等预定义类实现了Deque接口。</p>
+<p>Map：将键映射到值的对象。<strong>Map不能包含重复的键</strong>，每个键最多可以映射到一个值。</p>
+<p>SortedSet—按升序维护其元素的Set。提供了几个额外的操作来利用排序。<br>SortedMap—以键升序维护其映射的Map。这是SortedSet的Map模拟。</p>
+<p>HashSet：这个类实现了Set接口，由一个哈希表（实际上是一个HashMap实例）支持。此类允许空元素。HashSet将其元素存储在哈希表中，是性能最好的实现，但它不保证迭代的顺序。</p>
+<p>LinkedHashSet：此实现与HashSet的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，也就是元素被插入到集合中的顺序（插入顺序）。</p>
+<p>TreeSet：基于TreeMap的NavigableSet实现。元素使用它们的自然顺序进行排序，或者通过在集合创建时提供的Comparator进行排序，具体取决于使用的构造函数。<br>TreeSet将其元素存储在红黑树中，根据元素的值对其进行排序，它比HashSet慢得多。此实现为基本操作提供有保证的log(n)时间成本（添加、删除和包含）。</p>
+<p>ArrayList：List接口的可调整大小的数组实现。实现所有可选的列表操作，并允许所有元素，包括null。除了实现List接口之外，该类还提供了操作内部用于存储列表的数组大小的方法。（这个类大致相当于Vector，只是它是不同步的）。size、isEmpty、get、set、iterator和listIterator操作在恒定时间内运行。add操作在分摊常数时间内运行，即添加 n 个元素需要 O(n) 时间。所有其他操作都在线性时间内运行（粗略地说）。与LinkedList实现相比，常量因子较低。</p>
+<p>LinkedList：List和Deque接口的双向链表实现。实现所有可选的列表操作，并允许所有元素（包括空值）。</p>
+<p>ArrayList通常是性能更好的实现，而LinkedList在某些情况下提供更好的性能。</p>
+<p>HashMap：Map接口的基于哈希表的实现。此实现提供了所有可选的映射操作，并允许空值和空键。（HashMap类大致等同于Hashtable，只是hashmap是不同步的并且允许空值），该类不保证映射的顺序。</p>
+<p>LinkedHashMap：Map接口的哈希表和链表实现，迭代顺序可预测。此实现与HashMap的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
+<p>TreeMap：基于红黑树的NavigableMap实现。映射根据其键的自然顺序进行排序，或者通过映射创建时提供的Comparator进行排序，具体取决于使用的构造函数。此实现为containsKey、get、put和remove操作提供有保证的log(n)时间成本。</p>
 <ol>
-<li>第一次调用 HashMap 的 put 方法时，会调用 resize 方法对 table 数组进行初始化，如果不传入指定值，默认大小为16。</li>
-<li>扩容时会调用resize方法，即size &gt; threshold（容量*0.75）时，table数组大小翻倍。</li>
+<li>对于Set接口，HashSet是最常用的实现。</li>
+<li>对于List接口，ArrayList是最常用的实现。</li>
+<li>对于Map接口，HashMap是最常用的实现。</li>
+<li>对于Queue接口，LinkedList是最常用的实现。</li>
+<li>对于Deque接口，ArrayDeque是最常用的实现。</li>
 </ol>
-<p>当我们把 table[i] 位置的所有 Node 迁移到 newtab 中去的时候，node要么在 newtab 的 i 位置（不变），要么在 newtab 的 i + n 位置。<br>也就是我们可以这样处理：把 table[i] 这个桶中的 node 拆分为两个链表l1和l2。如果 hash &amp; n == 0，那么当前这个 node 被连接到 l1 链表；否则连接到 l2 链表。这样下来，当遍历完table[i]处的所有node的时候，我们得到两个链表l1和l2，这时我们令 newtab[i] = l1，newtab[i + n] = l2，这就完成了table[i]位置所有 node 的迁移（rehash），这也是 HashMap 中容量一定的是 2 的整数次幂带来的方便之处。</p>
-<h3 id="4-HashMap的size为什么必须是2的整数次幂"><a href="#4-HashMap的size为什么必须是2的整数次幂" class="headerlink" title="4 HashMap的size为什么必须是2的整数次幂"></a>4 HashMap的size为什么必须是2的整数次幂</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">static final int hash(Object key) &#123;</span><br><span class="line">        int h;</span><br><span class="line">        return (key &#x3D;&#x3D; null) ? 0 : (h &#x3D; key.hashCode()) ^ (h &gt;&gt;&gt; 16);</span><br><span class="line">    &#125;</span><br><span class="line">        int n;</span><br><span class="line">        if (tab &#x3D;&#x3D; null || (n &#x3D; tab.length) &#x3D;&#x3D; 0)</span><br><span class="line">            return;</span><br><span class="line">        int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
-<p>1、能够保证 HashMap 的底层数组长度为 2 的 n 次幂。当 length 为 2 的 n 次幂时，h &amp; (length - 1)就相当于对 length 取模，而且速度比直接取模快得多，这是 HashMap 在速度上的一个优化。而且每次扩容时都是翻倍。<br>2、如果 length 为 2 的次幂，则 length - 1 转化为二进制必定是11111……的形式，在与 h 的二进制进行&amp;操作时效率会非常的快，而且不浪费空间。这些都是1的二进制码跟hash值进行‘&amp;’操作，就可以确保每一个位置发生hash冲突的概率是相同的。<br>如果 length 不是 2 的次幂，比如：length为15，则 length - 1 为14，对应的二进制为1110，在与h进行&amp;操作，最后一位都为0，而0001，0011，0101，1001，1011，0111，1101这几个位置永远都不能存放元素了，空间浪费相当大，更糟的是这种情况中，数组可以使用的位置比数组长度小了很多，这意味着进一步增加了碰撞的概率，减慢了查询的效率，这样就会造成空间的浪费。</p>
-<p>HashMap的 get 函数的返回值不能判断一个 key 是否包含在 map 中，因为 get 返回 null 有可能是不包含该key，也有可能该 key 对应的 value 为null。因为 HashMap 中允许 key 为null，也允许 value 为null。<br>可以使用 Collections.synchronizedMap(new HashMap) 来创建一个线程安全的Map。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -437,6 +404,39 @@
 <p>元素值是作为map的key，map的value则是PRESENT变量，这个变量只作为放入map时的一个占位符存在。HashMap的key是不能重复的，HashSet的元素作为map的key，当然也不能重复了。</p>
 <h3 id="5-Iterator"><a href="#5-Iterator" class="headerlink" title="5 Iterator"></a>5 Iterator</h3><p>集合上的迭代器。迭代器取代了Java集合框架中的枚举。<br>迭代器在两个方面不同于枚举：<br>迭代器允许调用者在具有明确定义语义的迭代期间从底层集合中删除元素。<br>方法名称已得到改进。</p>
 <p>ListIterator<br>public interface ListIterator<E> extends Iterator<E><br>列表的迭代器，允许程序员沿任一方向遍历列表，在迭代期间修改列表，并获取迭代器在列表中的当前位置。ListIterator没有当前元素，它的光标位置始终位于调用previous()返回的元素和调用next()返回的元素之间。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>集合</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hashmap</title>
+    <url>/2021/11/19/11-19-Java/</url>
+    <content><![CDATA[<h3 id="1-HashMap的底层实现原理？"><a href="#1-HashMap的底层实现原理？" class="headerlink" title="1 HashMap的底层实现原理？"></a>1 HashMap的底层实现原理？</h3><p>JDK1.7：数组+链表。使用链表来处理冲突，同一hash值的链表都存储在一个数组中。但是当位于一个桶中的元素较多，即hash值相等的元素较多时，通过key值依次查找的效率较低。<br>JDK1.8：数组+链表+红黑树。当每个数组（桶）中元素大于8的时候，会转变为红黑树，目的就是优化查询效率，1.8重写了resize()方法。</p>
+<p>1.7数组+链表 ==&gt; 1.8数组+链表+红黑树</p>
+<p>链表的插入方式从头插法改成了尾插法，头插法会使链表发生反转，多线程环境下会产生环。<br>扩容的时候1.7需要对原数组中的元素进行重新hash以定位在新数组的位置，1.8采用更简单的判断逻辑，位置不变或索引+旧容量大小；</p>
+<p>在插入时，1.7先判断是否需要扩容，再插入；1.8先进行插入，插入完成再判断是否需要扩容。<br>在进行添加元素时，当一个桶中存储元素的数量 &gt; 8 时，会自动转换为红黑树。<br>在进行删除元素时，如果一个桶中存储元素的数量 &lt; 6 后，会自动转换为链表。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; Node节点是用来存储HashMap的一个个实例，它实现了Map.Entry接口。</span><br><span class="line">static class Node&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</span><br><span class="line">        final int hash;</span><br><span class="line">        final K key;</span><br><span class="line">        V value;</span><br><span class="line">        Node&lt;K,V&gt; next;</span><br><span class="line"></span><br><span class="line">        Node(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            this.hash &#x3D; hash;</span><br><span class="line">            this.key &#x3D; key;</span><br><span class="line">            this.value &#x3D; value;</span><br><span class="line">            this.next &#x3D; next;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>默认初始容量 - 必须是2的幂<br>static final int DEFAULT_INITIAL_CAPACITY = 1 &lt;&lt; 4;  // aka 16<br>使用树而不是列表的bin计数阈值，将元素添加到至少具有这么多节点的bin时，bin会转换为树。<br>static final int TREEIFY_THRESHOLD = 8;<br>可以将bin树化的最小表容量。（否则，如果bin中的节点过多，则表将调整大小）应至少为 4 * TREEIFY_THRESHOLD，以避免调整大小和树化阈值之间发生冲突。<br>static final int MIN_TREEIFY_CAPACITY = 64;<br>Node数组，在第一次使用时初始化，并根据需要调整大小。分配时，长度始终是2的幂。<br>transient Node&lt;K,V&gt;[] table;<br>此映射中包含的键值映射数<br>transient int size;</p>
+<h3 id="2-HashMap的put和get方法实现原理"><a href="#2-HashMap的put和get方法实现原理" class="headerlink" title="2 HashMap的put和get方法实现原理"></a>2 HashMap的put和get方法实现原理</h3><p><strong>put</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public V put(K key, V value) &#123;</span><br><span class="line">        return putVal(hash(key), key, value, false, true);</span><br><span class="line">    &#125;</span><br><span class="line">   hash – hash for key</span><br><span class="line">   key – the key</span><br><span class="line">   value – the value to put</span><br><span class="line">   onlyIfAbsent – 如果为true，则不更改现有值。</span><br><span class="line">   evict – 如果为false，则表处于创建模式。</span><br><span class="line">final V putVal(int hash, K key, V value, boolean onlyIfAbsent,</span><br><span class="line">                   boolean evict) &#123;</span><br><span class="line">        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; int n, i;</span><br><span class="line">        if ((tab &#x3D; table) &#x3D;&#x3D; null || (n &#x3D; tab.length) &#x3D;&#x3D; 0)</span><br><span class="line">            n &#x3D; (tab &#x3D; resize()).length;</span><br><span class="line">        if ((p &#x3D; tab[i &#x3D; (n - 1) &amp; hash]) &#x3D;&#x3D; null)</span><br><span class="line">            tab[i] &#x3D; newNode(hash, key, value, null);</span><br><span class="line">        else &#123;</span><br><span class="line">            Node&lt;K,V&gt; e; K k;</span><br><span class="line">            if (p.hash &#x3D;&#x3D; hash &amp;&amp;</span><br><span class="line">                ((k &#x3D; p.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                e &#x3D; p;</span><br><span class="line">            else if (p instanceof TreeNode)</span><br><span class="line">                e &#x3D; ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value);</span><br><span class="line">            else &#123;</span><br><span class="line">                for (int binCount &#x3D; 0; ; ++binCount) &#123;</span><br><span class="line">                    if ((e &#x3D; p.next) &#x3D;&#x3D; null) &#123;</span><br><span class="line">                        p.next &#x3D; newNode(hash, key, value, null);</span><br><span class="line">                        if (binCount &gt;&#x3D; TREEIFY_THRESHOLD - 1) &#x2F;&#x2F; -1 for 1st</span><br><span class="line">                            treeifyBin(tab, hash);</span><br><span class="line">                        break;</span><br><span class="line">                    &#125;</span><br><span class="line">                    if (e.hash &#x3D;&#x3D; hash &amp;&amp;</span><br><span class="line">                        ((k &#x3D; e.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                        break;</span><br><span class="line">                    p &#x3D; e;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (e !&#x3D; null) &#123; &#x2F;&#x2F; existing mapping for key</span><br><span class="line">                V oldValue &#x3D; e.value;</span><br><span class="line">                if (!onlyIfAbsent || oldValue &#x3D;&#x3D; null)</span><br><span class="line">                    e.value &#x3D; value;</span><br><span class="line">                afterNodeAccess(e);</span><br><span class="line">                return oldValue;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        ++modCount;</span><br><span class="line">        if (++size &gt; threshold)</span><br><span class="line">            resize();</span><br><span class="line">        afterNodeInsertion(evict);</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>当我们往HashMap中添加key-value时，系统会先计算key的hash值，然后根据hash值确认在table中的存储位置。若该位置没有元素，则直接插入。如果对应bucket已经有Node节点，会对链表长度进行分析，判断长度是否大于8，如果链表长度小于8，在JDK1.7前会使用头插法，在JDK1.8之后更改为尾插法。如果链表长度大于8会进行树化操作，把链表转换为红黑树，在红黑树上进行存储。如果hash值相等且key值相等，则用新value覆盖原来节点的value。</p>
+<p><strong>get</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public V get(Object key) &#123;</span><br><span class="line">        Node&lt;K,V&gt; e;</span><br><span class="line">        return (e &#x3D; getNode(hash(key), key)) &#x3D;&#x3D; null ? null : e.value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">final Node&lt;K,V&gt; getNode(int hash, Object key) &#123;</span><br><span class="line">        Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; int n; K k;</span><br><span class="line">        if ((tab &#x3D; table) !&#x3D; null &amp;&amp; (n &#x3D; tab.length) &gt; 0 &amp;&amp;</span><br><span class="line">            (first &#x3D; tab[(n - 1) &amp; hash]) !&#x3D; null) &#123;</span><br><span class="line">            if (first.hash &#x3D;&#x3D; hash &amp;&amp; &#x2F;&#x2F; always check first node</span><br><span class="line">                ((k &#x3D; first.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                return first;</span><br><span class="line">            if ((e &#x3D; first.next) !&#x3D; null) &#123;</span><br><span class="line">                if (first instanceof TreeNode)</span><br><span class="line">                    return ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);</span><br><span class="line">                do &#123;</span><br><span class="line">                    if (e.hash &#x3D;&#x3D; hash &amp;&amp;</span><br><span class="line">                        ((k &#x3D; e.key) &#x3D;&#x3D; key || (key !&#x3D; null &amp;&amp; key.equals(k))))</span><br><span class="line">                        return e;</span><br><span class="line">                &#125; while ((e &#x3D; e.next) !&#x3D; null);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>通过key的hash值找到在table数组中的索引处的Node，然后返回该 key 对应的 value 即可。在这里能够根据key快速的取到 value 除了和 HashMap 的数据结构密不可分外，还和 Node 有莫大的关系。<br>HashMap在存储过程中并没有将key，value分开来存储，而是当做一个整体key-value来处理的，这个整体就是Node对象。同时 value 也只相当于 key 的附属而已。<br>在存储的过程中，系统根据 key 的 HashCode 来决定Node在 table 数组中的存储位置，在取的过程中同样根据 key 的 HashCode 取出相对应的 Node 对象。</p>
+<h3 id="3-HashMap的resize方法"><a href="#3-HashMap的resize方法" class="headerlink" title="3 HashMap的resize方法"></a>3 HashMap的resize方法</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">初始化或加倍表大小。如果为空，则根据字段阈值中持有的初始容量目标进行分配。</span><br><span class="line">否则，因为我们使用的是二次幂扩展，所以每个bin中的元素必须保持相同的索引，</span><br><span class="line">或者在新表中以二次幂的偏移量移动。</span><br><span class="line">final Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">        Node&lt;K,V&gt;[] oldTab &#x3D; table;</span><br><span class="line">        int oldCap &#x3D; (oldTab &#x3D;&#x3D; null) ? 0 : oldTab.length;</span><br><span class="line">        int oldThr &#x3D; threshold;</span><br><span class="line">        int newCap, newThr &#x3D; 0;</span><br><span class="line">        if (oldCap &gt; 0) &#123;</span><br><span class="line">            if (oldCap &gt;&#x3D; MAXIMUM_CAPACITY) &#123;</span><br><span class="line">                threshold &#x3D; Integer.MAX_VALUE;</span><br><span class="line">                return oldTab;</span><br><span class="line">            &#125;</span><br><span class="line">            else if ((newCap &#x3D; oldCap &lt;&lt; 1) &lt; MAXIMUM_CAPACITY &amp;&amp;</span><br><span class="line">                     oldCap &gt;&#x3D; DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">                newThr &#x3D; oldThr &lt;&lt; 1; &#x2F;&#x2F; double threshold</span><br><span class="line">        &#125;</span><br><span class="line">        else if (oldThr &gt; 0) &#x2F;&#x2F; initial capacity was placed in threshold</span><br><span class="line">            newCap &#x3D; oldThr;</span><br><span class="line">        else &#123;               &#x2F;&#x2F; zero initial threshold signifies using defaults</span><br><span class="line">            newCap &#x3D; DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">            newThr &#x3D; (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">        &#125;</span><br><span class="line">        if (newThr &#x3D;&#x3D; 0) &#123;</span><br><span class="line">            float ft &#x3D; (float)newCap * loadFactor;</span><br><span class="line">            newThr &#x3D; (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (float)MAXIMUM_CAPACITY ?</span><br><span class="line">                      (int)ft : Integer.MAX_VALUE);</span><br><span class="line">        &#125;</span><br><span class="line">        threshold &#x3D; newThr;</span><br><span class="line">        @SuppressWarnings(&#123;&quot;rawtypes&quot;,&quot;unchecked&quot;&#125;)</span><br><span class="line">        Node&lt;K,V&gt;[] newTab &#x3D; (Node&lt;K,V&gt;[])new Node[newCap];</span><br><span class="line">        table &#x3D; newTab;</span><br><span class="line">        if (oldTab !&#x3D; null) &#123;</span><br><span class="line">            for (int j &#x3D; 0; j &lt; oldCap; ++j) &#123;</span><br><span class="line">                Node&lt;K,V&gt; e;</span><br><span class="line">                if ((e &#x3D; oldTab[j]) !&#x3D; null) &#123;</span><br><span class="line">                    oldTab[j] &#x3D; null;</span><br><span class="line">                    if (e.next &#x3D;&#x3D; null)</span><br><span class="line">                        newTab[e.hash &amp; (newCap - 1)] &#x3D; e;</span><br><span class="line">                    else if (e instanceof TreeNode)</span><br><span class="line">                        ((TreeNode&lt;K,V&gt;)e).split(this, newTab, j, oldCap);</span><br><span class="line">                    else &#123; &#x2F;&#x2F; preserve order</span><br><span class="line">                        Node&lt;K,V&gt; loHead &#x3D; null, loTail &#x3D; null;</span><br><span class="line">                        Node&lt;K,V&gt; hiHead &#x3D; null, hiTail &#x3D; null;</span><br><span class="line">                        Node&lt;K,V&gt; next;</span><br><span class="line">                        do &#123;</span><br><span class="line">                            next &#x3D; e.next;</span><br><span class="line">                            if ((e.hash &amp; oldCap) &#x3D;&#x3D; 0) &#123;</span><br><span class="line">                                if (loTail &#x3D;&#x3D; null)</span><br><span class="line">                                    loHead &#x3D; e;</span><br><span class="line">                                else</span><br><span class="line">                                    loTail.next &#x3D; e;</span><br><span class="line">                                loTail &#x3D; e;</span><br><span class="line">                            &#125;</span><br><span class="line">                            else &#123;</span><br><span class="line">                                if (hiTail &#x3D;&#x3D; null)</span><br><span class="line">                                    hiHead &#x3D; e;</span><br><span class="line">                                else</span><br><span class="line">                                    hiTail.next &#x3D; e;</span><br><span class="line">                                hiTail &#x3D; e;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125; while ((e &#x3D; next) !&#x3D; null);</span><br><span class="line">                        if (loTail !&#x3D; null) &#123;</span><br><span class="line">                            loTail.next &#x3D; null;</span><br><span class="line">                            newTab[j] &#x3D; loHead;</span><br><span class="line">                        &#125;</span><br><span class="line">                        if (hiTail !&#x3D; null) &#123;</span><br><span class="line">                            hiTail.next &#x3D; null;</span><br><span class="line">                            newTab[j + oldCap] &#x3D; hiHead;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return newTab;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>有两种情况会调用resize方法：</p>
+<ol>
+<li>第一次调用 HashMap 的 put 方法时，会调用 resize 方法对 table 数组进行初始化，如果不传入指定值，默认大小为16。</li>
+<li>扩容时会调用resize方法，即size &gt; threshold（容量*0.75）时，table数组大小翻倍。</li>
+</ol>
+<p>当我们把 table[i] 位置的所有 Node 迁移到 newtab 中去的时候，node要么在 newtab 的 i 位置（不变），要么在 newtab 的 i + n 位置。<br>也就是我们可以这样处理：把 table[i] 这个桶中的 node 拆分为两个链表l1和l2。如果 hash &amp; n == 0，那么当前这个 node 被连接到 l1 链表；否则连接到 l2 链表。这样下来，当遍历完table[i]处的所有node的时候，我们得到两个链表l1和l2，这时我们令 newtab[i] = l1，newtab[i + n] = l2，这就完成了table[i]位置所有 node 的迁移（rehash），这也是 HashMap 中容量一定的是 2 的整数次幂带来的方便之处。</p>
+<h3 id="4-HashMap的size为什么必须是2的整数次幂"><a href="#4-HashMap的size为什么必须是2的整数次幂" class="headerlink" title="4 HashMap的size为什么必须是2的整数次幂"></a>4 HashMap的size为什么必须是2的整数次幂</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">static final int hash(Object key) &#123;</span><br><span class="line">        int h;</span><br><span class="line">        return (key &#x3D;&#x3D; null) ? 0 : (h &#x3D; key.hashCode()) ^ (h &gt;&gt;&gt; 16);</span><br><span class="line">    &#125;</span><br><span class="line">        int n;</span><br><span class="line">        if (tab &#x3D;&#x3D; null || (n &#x3D; tab.length) &#x3D;&#x3D; 0)</span><br><span class="line">            return;</span><br><span class="line">        int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
+<p>1、能够保证 HashMap 的底层数组长度为 2 的 n 次幂。当 length 为 2 的 n 次幂时，h &amp; (length - 1)就相当于对 length 取模，而且速度比直接取模快得多，这是 HashMap 在速度上的一个优化。而且每次扩容时都是翻倍。<br>2、如果 length 为 2 的次幂，则 length - 1 转化为二进制必定是11111……的形式，在与 h 的二进制进行&amp;操作时效率会非常的快，而且不浪费空间。这些都是1的二进制码跟hash值进行‘&amp;’操作，就可以确保每一个位置发生hash冲突的概率是相同的。<br>如果 length 不是 2 的次幂，比如：length为15，则 length - 1 为14，对应的二进制为1110，在与h进行&amp;操作，最后一位都为0，而0001，0011，0101，1001，1011，0111，1101这几个位置永远都不能存放元素了，空间浪费相当大，更糟的是这种情况中，数组可以使用的位置比数组长度小了很多，这意味着进一步增加了碰撞的概率，减慢了查询的效率，这样就会造成空间的浪费。</p>
+<p>HashMap的 get 函数的返回值不能判断一个 key 是否包含在 map 中，因为 get 返回 null 有可能是不包含该key，也有可能该 key 对应的 value 为null。因为 HashMap 中允许 key 为null，也允许 value 为null。<br>可以使用 Collections.synchronizedMap(new HashMap) 来创建一个线程安全的Map。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -507,33 +507,6 @@
       </tags>
   </entry>
   <entry>
-    <title>create_thread_pool</title>
-    <url>/2021/11/26/11-26-Java/</url>
-    <content><![CDATA[<h3 id="1-创建线程池的方式"><a href="#1-创建线程池的方式" class="headerlink" title="1 创建线程池的方式"></a>1 创建线程池的方式</h3><p>通过<strong>ThreadPoolExecutor</strong>类的构造方法实现</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue) &#123;</span><br><span class="line">        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,</span><br><span class="line">             Executors.defaultThreadFactory(), defaultHandler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              ThreadFactory threadFactory) &#123;</span><br><span class="line">        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,</span><br><span class="line">             threadFactory, defaultHandler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              RejectedExecutionHandler handler) &#123;</span><br><span class="line">        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,</span><br><span class="line">             Executors.defaultThreadFactory(), handler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              ThreadFactory threadFactory,</span><br><span class="line">                              RejectedExecutionHandler handler) &#123;</span><br><span class="line">        if (corePoolSize &lt; 0 ||</span><br><span class="line">            maximumPoolSize &lt;&#x3D; 0 ||</span><br><span class="line">            maximumPoolSize &lt; corePoolSize ||</span><br><span class="line">            keepAliveTime &lt; 0)</span><br><span class="line">            throw new IllegalArgumentException();</span><br><span class="line">        if (workQueue &#x3D;&#x3D; null || threadFactory &#x3D;&#x3D; null || handler &#x3D;&#x3D; null)</span><br><span class="line">            throw new NullPointerException();</span><br><span class="line">        this.acc &#x3D; System.getSecurityManager() &#x3D;&#x3D; null ?</span><br><span class="line">                null :</span><br><span class="line">                AccessController.getContext();</span><br><span class="line">        this.corePoolSize &#x3D; corePoolSize;</span><br><span class="line">        this.maximumPoolSize &#x3D; maximumPoolSize;</span><br><span class="line">        this.workQueue &#x3D; workQueue;</span><br><span class="line">        this.keepAliveTime &#x3D; unit.toNanos(keepAliveTime);</span><br><span class="line">        this.threadFactory &#x3D; threadFactory;</span><br><span class="line">        this.handler &#x3D; handler;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>通过<strong>Executors</strong>类实现<br>可以创建三种类型的ThreadPoolExecutor。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">创建一个线程池，该线程池重用固定数量的线程，这些线程在共享的无界队列中运行，</span><br><span class="line">并在需要时使用提供的ThreadFactory创建新线程。</span><br><span class="line">在任何时候，最多有nThreads个线程是活动的处理任务。</span><br><span class="line">如果在所有线程都处于活动状态时提交了额外的任务，它们将在队列中等待，直到有线程可用。</span><br><span class="line">如果任何线程在关闭前的执行过程中由于失败而终止，则在需要执行后续任务时，将有一个新线程代替它。</span><br><span class="line">池中的线程将一直存在，直到它被明确关闭。</span><br><span class="line">public static ExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) &#123;</span><br><span class="line">        return new ThreadPoolExecutor(nThreads, nThreads,</span><br><span class="line">                                      0L, TimeUnit.MILLISECONDS,</span><br><span class="line">                                      new LinkedBlockingQueue&lt;Runnable&gt;(),</span><br><span class="line">                                      threadFactory);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">创建一个Executor，它使用单个工作线程在无界队列中运行。</span><br><span class="line">（但是请注意，如果这个单线程在关闭之前的执行过程中由于失败而终止，</span><br><span class="line">如果需要执行后续任务，一个新线程将取而代之）任务保证按顺序执行，</span><br><span class="line">并且在任何给定时间不会有超过一个任务处于活动状态。</span><br><span class="line">public static ExecutorService newSingleThreadExecutor() &#123;</span><br><span class="line">        return new FinalizableDelegatedExecutorService</span><br><span class="line">            (new ThreadPoolExecutor(1, 1,</span><br><span class="line">                                    0L, TimeUnit.MILLISECONDS,</span><br><span class="line">                                    new LinkedBlockingQueue&lt;Runnable&gt;()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">创建一个线程池，根据需要创建新线程，但在可用时将重用先前构造的线程。</span><br><span class="line">这些池通常会提高执行许多短期异步任务的程序的性能。</span><br><span class="line">如果可用，调用execute将重用先前构造的线程。</span><br><span class="line">如果没有可用的现有线程，则会创建一个新线程并将其添加到池中。</span><br><span class="line">60秒内未使用的线程将被终止并从缓存中删除。</span><br><span class="line">因此，保持空闲足够长时间的池不会消耗任何资源。</span><br><span class="line">public static ExecutorService newCachedThreadPool() &#123;</span><br><span class="line">        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,</span><br><span class="line">                                      60L, TimeUnit.SECONDS,</span><br><span class="line">                                      new SynchronousQueue&lt;Runnable&gt;());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p><strong>注意</strong><br>线程池不允许使用Executors去创建，而是通过ThreadPoolExecutor的方式。<br>Executors创建并返回的线程池对象的弊端如下：<br>FixedThreadPool和SingleThreadPool: 允许的请求队列长度为Integer.MAX_VALUE，可能会堆积大量的请求，从而导致OOM（out of memory）。<br>CachedThreadPool和ScheduledThreadPool: 允许的创建线程数量为Integer.MAX_VALUE，可能会创建大量的线程，从而导致OOM。</p>
-<h3 id="2-execute方法与submit方法"><a href="#2-execute方法与submit方法" class="headerlink" title="2 execute方法与submit方法"></a>2 execute方法与submit方法</h3><p>execute()方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功。<br>submit()方法用于提交需要返回值的任务。线程池会返回一个Future类型的对象，通过这个Future对象可以判断任务是否执行成功，并且可以通过Future的get()方法来获取返回值，get()方法会阻塞当前线程直到任务完成。</p>
-<h3 id="3-Fork-Join并行计算框架"><a href="#3-Fork-Join并行计算框架" class="headerlink" title="3 Fork/Join并行计算框架"></a>3 Fork/Join并行计算框架</h3><p>Fork/Join并行计算框架主要解决的是分治任务。分治的核心思想是“分而治之”。<br>分治分为两个阶段，第一个阶段分解任务，把任务分解为一个个小任务直至小任务可以简单的计算返回结果。第二阶段合并结果，把每个小任务的结果合并返回并得到最终结果。而Fork就是分解任务，Join就是合并结果。</p>
-<p>Fork/Join框架的核心是ForkJoinPool。<br>ForkJoinPool支持任务窃取机制，能够让所有线程的工作量基本均衡，不会出现有的线程很忙，有的线程很闲的情况，所以性能很好。<br>ForkJoinPool中的任务队列采用的是双端队列，工作线程正常获取任务和“窃取任务”分别是从任务队列不同的端消费，这样能避免很多不必要的数据竞争。当某个工作线程对应消费的任务队列空闲的时候它会去别的忙的任务队列的尾部分担(stealing)任务过来执行。</p>
-<h3 id="4-Java提供的并发容器"><a href="#4-Java提供的并发容器" class="headerlink" title="4 Java提供的并发容器"></a>4 Java提供的并发容器</h3><p><strong>ConcurrentHashMap</strong></p>
-<p><strong>CopyOnWriteArrayList</strong><br>java.util.ArrayList的线程安全变体，其中所有可变操作（添加、设置等）都是通过创建底层数组的新副本来实现的。允许所有元素，包括null。<br>在很多应用场景中，读操作可能会远远大于写操作。由于读操作根本不会修改原有的数据，因此如果每次读取都进行加锁操作，其实是一种资源浪费。我们应该允许多个线程同时访问List的内部数据，毕竟读操作是线程安全的。</p>
-<p>当List需要被修改的时候，并不直接修改原有数组对象，而是对原有数据进行一次拷贝，将修改的内容写入副本中。写完之后，再将修改完的副本替换成原来的数据，这样就可以保证写操作不会影响读操作了。</p>
-<p>CopyOnWrite：对一块内存进行修改时，不直接在原有内存块中进行写操作，而是将内存拷贝一份，在新的内存中进行写操作，写完之后，再将原来指向的内存指针指到新的内存，原来的内存就可以被回收。<br>读取操作没有任何同步控制和锁操作，理由就是内部数组array不会发生修改，只会被另外一个array替换，因此可以保证数据安全。<br>CopyOnWriteArrayList写入操作add()方法在添加集合的时候加了锁，保证同步，避免多线程写的时候会copy出多个副本。</p>
-<p><strong>ConcurrentLinkedQueue</strong><br>基于链接节点的无界线程安全队列。此队列对元素FIFO（先进先出）进行排序。队列的头部是在队列中停留时间最长的那个元素。队列的尾部是在队列中停留时间最短的那个元素。新元素插入队列尾部，队列检索操作获取队列头部元素。<br>当多个线程将共享对公共集合的访问时，ConcurrentLinkedQueue是合适的选择。与大多数其他并发集合实现一样，此类不允许使用空元素。</p>
-<p><strong>BlockingQueue</strong><br>一个Queue额外支持在检索元素时等待队列变为非空的操作，并在存储元素时等待队列中有可用空间。<br>在队列为空时，获取元素的线程会等待队列变为非空。当队列满时，存储元素的线程会等待队列有可用空间。阻塞队列常用于生产者-消费者的场景，生产者是往队列里添加元素的线程，消费者是从队列里拿元素的线程。<br>BlockingQueue是一个接口，继承了Queue。<br>BlockingQueue的实现类有ArrayBlockingQueue、DelayQueue、LinkedBlockingDeque、PriorityBlockingQueue、SynchronousQueue。</p>
-<p><strong>ConcurrentSkipListMap</strong><br>一个可扩展的并发ConcurrentNavigableMap实现。映射根据其键的自然顺序进行排序，或者通过映射创建时提供的Comparator进行排序，具体取决于使用的构造函数。<br>此类实现了SkipLists的并发变体，为containsKey、get、put和remove操作及其变体提供预期的平均log(n)时间成本。插入、移除、更新和访问操作由多个线程安全地并发执行。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>线程池</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>thread_pool</title>
     <url>/2021/11/24/11-24-Java/</url>
     <content><![CDATA[<h3 id="1-线程池"><a href="#1-线程池" class="headerlink" title="1 线程池"></a>1 线程池</h3><p>线程池是一种工具，提供了一种限制和管理线程资源的方式。<br>降低资源消耗：通过重复利用已创建的线程可以降低线程创建和销毁所造成的消耗;<br>提高响应速度：当任务到达时，可以不需要等到线程创建就能立即执行;<br>提高线程的可管理性：线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。</p>
@@ -554,6 +527,33 @@
 <p>SynchronousQueue：一个阻塞队列，其中每个插入操作都必须等待另一个线程执行相应的移除操作，反之亦然。同步队列没有任何内部容量，甚至没有一个容量。您无法查看同步队列，因为元素仅在您尝试删除它时才存在；你不能插入一个元素（使用任何方法），除非另一个线程试图删除它；你不能迭代，因为没有什么可以迭代的。此队列不允许空元素。静态工厂方法Executors.newCachedThreadPool()使用了这个队列。</p>
 <p>一个不缓存任务的阻塞队列，生产者放入一个任务必须等到消费者取出这个任务。也就是说新任务进来时，不会缓存，而是直接执行该任务，如果没有可用线程，则创建新线程，如果线程数量达到maxPoolSize，则执行拒绝策略。</p>
 <p>PriorityBlockingQueue：具有优先级的无界阻塞队列，优先级通过参数Comparator实现。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>线程池</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>create_thread_pool</title>
+    <url>/2021/11/26/11-26-Java/</url>
+    <content><![CDATA[<h3 id="1-创建线程池的方式"><a href="#1-创建线程池的方式" class="headerlink" title="1 创建线程池的方式"></a>1 创建线程池的方式</h3><p>通过<strong>ThreadPoolExecutor</strong>类的构造方法实现</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue) &#123;</span><br><span class="line">        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,</span><br><span class="line">             Executors.defaultThreadFactory(), defaultHandler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              ThreadFactory threadFactory) &#123;</span><br><span class="line">        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,</span><br><span class="line">             threadFactory, defaultHandler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              RejectedExecutionHandler handler) &#123;</span><br><span class="line">        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,</span><br><span class="line">             Executors.defaultThreadFactory(), handler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">public ThreadPoolExecutor(int corePoolSize,</span><br><span class="line">                              int maximumPoolSize,</span><br><span class="line">                              long keepAliveTime,</span><br><span class="line">                              TimeUnit unit,</span><br><span class="line">                              BlockingQueue&lt;Runnable&gt; workQueue,</span><br><span class="line">                              ThreadFactory threadFactory,</span><br><span class="line">                              RejectedExecutionHandler handler) &#123;</span><br><span class="line">        if (corePoolSize &lt; 0 ||</span><br><span class="line">            maximumPoolSize &lt;&#x3D; 0 ||</span><br><span class="line">            maximumPoolSize &lt; corePoolSize ||</span><br><span class="line">            keepAliveTime &lt; 0)</span><br><span class="line">            throw new IllegalArgumentException();</span><br><span class="line">        if (workQueue &#x3D;&#x3D; null || threadFactory &#x3D;&#x3D; null || handler &#x3D;&#x3D; null)</span><br><span class="line">            throw new NullPointerException();</span><br><span class="line">        this.acc &#x3D; System.getSecurityManager() &#x3D;&#x3D; null ?</span><br><span class="line">                null :</span><br><span class="line">                AccessController.getContext();</span><br><span class="line">        this.corePoolSize &#x3D; corePoolSize;</span><br><span class="line">        this.maximumPoolSize &#x3D; maximumPoolSize;</span><br><span class="line">        this.workQueue &#x3D; workQueue;</span><br><span class="line">        this.keepAliveTime &#x3D; unit.toNanos(keepAliveTime);</span><br><span class="line">        this.threadFactory &#x3D; threadFactory;</span><br><span class="line">        this.handler &#x3D; handler;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过<strong>Executors</strong>类实现<br>可以创建三种类型的ThreadPoolExecutor。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">创建一个线程池，该线程池重用固定数量的线程，这些线程在共享的无界队列中运行，</span><br><span class="line">并在需要时使用提供的ThreadFactory创建新线程。</span><br><span class="line">在任何时候，最多有nThreads个线程是活动的处理任务。</span><br><span class="line">如果在所有线程都处于活动状态时提交了额外的任务，它们将在队列中等待，直到有线程可用。</span><br><span class="line">如果任何线程在关闭前的执行过程中由于失败而终止，则在需要执行后续任务时，将有一个新线程代替它。</span><br><span class="line">池中的线程将一直存在，直到它被明确关闭。</span><br><span class="line">public static ExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) &#123;</span><br><span class="line">        return new ThreadPoolExecutor(nThreads, nThreads,</span><br><span class="line">                                      0L, TimeUnit.MILLISECONDS,</span><br><span class="line">                                      new LinkedBlockingQueue&lt;Runnable&gt;(),</span><br><span class="line">                                      threadFactory);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">创建一个Executor，它使用单个工作线程在无界队列中运行。</span><br><span class="line">（但是请注意，如果这个单线程在关闭之前的执行过程中由于失败而终止，</span><br><span class="line">如果需要执行后续任务，一个新线程将取而代之）任务保证按顺序执行，</span><br><span class="line">并且在任何给定时间不会有超过一个任务处于活动状态。</span><br><span class="line">public static ExecutorService newSingleThreadExecutor() &#123;</span><br><span class="line">        return new FinalizableDelegatedExecutorService</span><br><span class="line">            (new ThreadPoolExecutor(1, 1,</span><br><span class="line">                                    0L, TimeUnit.MILLISECONDS,</span><br><span class="line">                                    new LinkedBlockingQueue&lt;Runnable&gt;()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">创建一个线程池，根据需要创建新线程，但在可用时将重用先前构造的线程。</span><br><span class="line">这些池通常会提高执行许多短期异步任务的程序的性能。</span><br><span class="line">如果可用，调用execute将重用先前构造的线程。</span><br><span class="line">如果没有可用的现有线程，则会创建一个新线程并将其添加到池中。</span><br><span class="line">60秒内未使用的线程将被终止并从缓存中删除。</span><br><span class="line">因此，保持空闲足够长时间的池不会消耗任何资源。</span><br><span class="line">public static ExecutorService newCachedThreadPool() &#123;</span><br><span class="line">        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,</span><br><span class="line">                                      60L, TimeUnit.SECONDS,</span><br><span class="line">                                      new SynchronousQueue&lt;Runnable&gt;());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong><br>线程池不允许使用Executors去创建，而是通过ThreadPoolExecutor的方式。<br>Executors创建并返回的线程池对象的弊端如下：<br>FixedThreadPool和SingleThreadPool: 允许的请求队列长度为Integer.MAX_VALUE，可能会堆积大量的请求，从而导致OOM（out of memory）。<br>CachedThreadPool和ScheduledThreadPool: 允许的创建线程数量为Integer.MAX_VALUE，可能会创建大量的线程，从而导致OOM。</p>
+<h3 id="2-execute方法与submit方法"><a href="#2-execute方法与submit方法" class="headerlink" title="2 execute方法与submit方法"></a>2 execute方法与submit方法</h3><p>execute()方法用于提交不需要返回值的任务，所以无法判断任务是否被线程池执行成功。<br>submit()方法用于提交需要返回值的任务。线程池会返回一个Future类型的对象，通过这个Future对象可以判断任务是否执行成功，并且可以通过Future的get()方法来获取返回值，get()方法会阻塞当前线程直到任务完成。</p>
+<h3 id="3-Fork-Join并行计算框架"><a href="#3-Fork-Join并行计算框架" class="headerlink" title="3 Fork/Join并行计算框架"></a>3 Fork/Join并行计算框架</h3><p>Fork/Join并行计算框架主要解决的是分治任务。分治的核心思想是“分而治之”。<br>分治分为两个阶段，第一个阶段分解任务，把任务分解为一个个小任务直至小任务可以简单的计算返回结果。第二阶段合并结果，把每个小任务的结果合并返回并得到最终结果。而Fork就是分解任务，Join就是合并结果。</p>
+<p>Fork/Join框架的核心是ForkJoinPool。<br>ForkJoinPool支持任务窃取机制，能够让所有线程的工作量基本均衡，不会出现有的线程很忙，有的线程很闲的情况，所以性能很好。<br>ForkJoinPool中的任务队列采用的是双端队列，工作线程正常获取任务和“窃取任务”分别是从任务队列不同的端消费，这样能避免很多不必要的数据竞争。当某个工作线程对应消费的任务队列空闲的时候它会去别的忙的任务队列的尾部分担(stealing)任务过来执行。</p>
+<h3 id="4-Java提供的并发容器"><a href="#4-Java提供的并发容器" class="headerlink" title="4 Java提供的并发容器"></a>4 Java提供的并发容器</h3><p><strong>ConcurrentHashMap</strong></p>
+<p><strong>CopyOnWriteArrayList</strong><br>java.util.ArrayList的线程安全变体，其中所有可变操作（添加、设置等）都是通过创建底层数组的新副本来实现的。允许所有元素，包括null。<br>在很多应用场景中，读操作可能会远远大于写操作。由于读操作根本不会修改原有的数据，因此如果每次读取都进行加锁操作，其实是一种资源浪费。我们应该允许多个线程同时访问List的内部数据，毕竟读操作是线程安全的。</p>
+<p>当List需要被修改的时候，并不直接修改原有数组对象，而是对原有数据进行一次拷贝，将修改的内容写入副本中。写完之后，再将修改完的副本替换成原来的数据，这样就可以保证写操作不会影响读操作了。</p>
+<p>CopyOnWrite：对一块内存进行修改时，不直接在原有内存块中进行写操作，而是将内存拷贝一份，在新的内存中进行写操作，写完之后，再将原来指向的内存指针指到新的内存，原来的内存就可以被回收。<br>读取操作没有任何同步控制和锁操作，理由就是内部数组array不会发生修改，只会被另外一个array替换，因此可以保证数据安全。<br>CopyOnWriteArrayList写入操作add()方法在添加集合的时候加了锁，保证同步，避免多线程写的时候会copy出多个副本。</p>
+<p><strong>ConcurrentLinkedQueue</strong><br>基于链接节点的无界线程安全队列。此队列对元素FIFO（先进先出）进行排序。队列的头部是在队列中停留时间最长的那个元素。队列的尾部是在队列中停留时间最短的那个元素。新元素插入队列尾部，队列检索操作获取队列头部元素。<br>当多个线程将共享对公共集合的访问时，ConcurrentLinkedQueue是合适的选择。与大多数其他并发集合实现一样，此类不允许使用空元素。</p>
+<p><strong>BlockingQueue</strong><br>一个Queue额外支持在检索元素时等待队列变为非空的操作，并在存储元素时等待队列中有可用空间。<br>在队列为空时，获取元素的线程会等待队列变为非空。当队列满时，存储元素的线程会等待队列有可用空间。阻塞队列常用于生产者-消费者的场景，生产者是往队列里添加元素的线程，消费者是从队列里拿元素的线程。<br>BlockingQueue是一个接口，继承了Queue。<br>BlockingQueue的实现类有ArrayBlockingQueue、DelayQueue、LinkedBlockingDeque、PriorityBlockingQueue、SynchronousQueue。</p>
+<p><strong>ConcurrentSkipListMap</strong><br>一个可扩展的并发ConcurrentNavigableMap实现。映射根据其键的自然顺序进行排序，或者通过映射创建时提供的Comparator进行排序，具体取决于使用的构造函数。<br>此类实现了SkipLists的并发变体，为containsKey、get、put和remove操作及其变体提供预期的平均log(n)时间成本。插入、移除、更新和访问操作由多个线程安全地并发执行。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -593,41 +593,6 @@
       </categories>
       <tags>
         <tag>redis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>jvm</title>
-    <url>/2021/11/27/11-27-Java/</url>
-    <content><![CDATA[<h3 id="1-JVM主要组成部分及其作用"><a href="#1-JVM主要组成部分及其作用" class="headerlink" title="1 JVM主要组成部分及其作用"></a>1 JVM主要组成部分及其作用</h3><ul>
-<li>类加载器（ClassLoader）</li>
-<li>运行时数据区（Runtime Data Area)</li>
-<li>执行引擎（Execution Engine）</li>
-<li>本地库接口（Native Interface）</li>
-</ul>
-<p>首先通过类加载器（ClassLoader）会把Java代码转换成字节码，运行时数据区（Runtime Data Area）会把字节码加载到内存中，而字节码只是JVM的一套指令集规范，并不能直接交给底层操作系统去执行，因此需要特定的命令解析器执行引擎（Execution Engine），将字节码翻译成底层系统指令，再交由CPU去执行，而这个过程中需要调用其他语言的本地库接口（Native Interface）来实现整个程序的功能。</p>
-<h3 id="2-运行时数据区"><a href="#2-运行时数据区" class="headerlink" title="2 运行时数据区"></a>2 运行时数据区</h3><img src="/2021/11/27/11-27-Java/jvm.png" class="">
-<p><strong>程序计数器</strong><br>程序计数器（Program Counter Register）是一块较小的内存空间，它可以看作是当前线程所执行的字节码的行号指示器。</p>
-<p>字节码解释器执行时通过改变这个计数器的值来选取下一条需要执行的字节码指令。程序的分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。</p>
-<p>由于Java虚拟机的多线程是通过线程轮流切换、分配处理器执行时间的方式来实现的，在任何一个确定的时刻，一个处理器都只会执行一条线程中的命令。因此，<strong>为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器</strong>，各线程之间的计数器互不影响，独立存储，我们程这块内存区域为“线程私有”的内存。<br>此区域是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。</p>
-<p><strong>Java虚拟机栈</strong><br>与程序计数器一样，Java虚拟机栈（Java Virtual Machine Stacks）也是线程私有的，它的生命周期与线程相同。</p>
-<p>每个Java方法被执行的时候，jvm都会同步创建一个栈帧（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法被调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
-<p>局部变量表存放了编译期可知的各种基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用和returnAddress类型（指向了一条字节码指令的地址）。<br>Java虚拟机栈的局部变量表的空间单位是槽（Slot），其中64位长度的double和long类型会占用两个Slot。局部变量表所需的内存空间在编译期间完成分配，当进入一个方法时，该方法需要在栈帧中分配多大的局部变量空间是完全确定的，在方法运行期间不会改变局部变量表的大小。</p>
-<p>Java虚拟机栈有两种异常状况：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出StackOverflowErro异常；如果Java虚拟机栈扩展时无法申请到足够的内存，就会抛出OutOfMemoryError异常。</p>
-<p><strong>本地方法栈</strong><br>本地方法栈（Native Method Stack）与虚拟机栈所发挥的作用是非常相似的，其区别只是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的本地（Native）方法服务。</p>
-<p>Java虚拟机规范没有对本地方法栈中方法使用的语言、使用的方式和数据结构做出强制规定，因此具体的虚拟机可以自由地实现它。例如：HotSpot虚拟机直接把Java虚拟机栈和本地方法栈合二为一。<br>与Java虚拟机栈一样，本地方法栈也会抛出StackOverflowError和OutOfMemoryError异常。</p>
-<p><strong>Java堆</strong><br>Java堆（Java Heap）是被所有线程所共享的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是存放对象实例，几乎所有的对象实例都在这里分配内存。</p>
-<p>Java堆是垃圾收集器管理的主要区域，因此很多时候也被称做“GC”堆（Garbage Collected Heap）。<br>从回收内存的角度看，由于现代垃圾收集器大部分都是基于分代收集理论设计的，所以Java堆中会出现新生代、老年代、永久代等名词。<br>从分配内存的角度来看，所有线程共享的Java堆中可以划分出多个线程私有的分配缓冲区（Thread Local Allocation Buffer，TLAB），以提升对象分配时的效率。不过无论如何划分，无论哪个区域，存储的只能是对象实例，进一步划分的目的是为了更好地回收内存，或者更快地分配内存。<br>Java虚拟机规范规定，Java堆可以处于物理上不连续的内存空间中，只要逻辑上是连续的即可。在实现时，可以是固定大小的，也可以是可扩展的。如果在堆中没有内存完成实例分配，并且堆也无法扩展时，将会抛出OutOfMemoryError异常。</p>
-<p><strong>方法区</strong><br>方法区（Method Area）与Java堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。<br>虽然Java虚拟机规范中把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做Non-Heap（非堆），目的是与Java堆区分开来。</p>
-<p>Java虚拟机规范对方法区的限制非常宽松，除了和Java堆一样不需要连续的内存和可以选择固定大小或者可扩展外，还可以选择不实现垃圾收集。这个区域的内存回收目标主要是针对常量池的回收和对类型的卸载。根据Java虚拟机规范规定，当方法区无法满足新的内存分配需求时，将抛出OutOfMemoryError异常。</p>
-<p>运行时常量池（Runtime Constant Pool）是方法区的一部分。Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池表，用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后存放到方法区的运行时常量池中。<br>Java虚拟机对Class文件每一部分（当然也包括常量池）的格式都有严格的规定，每一个字节用于存储哪种数据都必须符合规范上的要求才会被虚拟机认可、装载和执行。</p>
-<p>直接内存（Direct Memory）并不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。但是这部分内存也被频繁地使用，而且也可能导致OutOfMemoryError异常。</p>
-<p>本机直接内存的分配不会受到Java堆大小的限制。但是，既然是内存，肯定还是会受到本机总内存大小以及处理器寻址空间的限制。如果各个内存区域总和大于物理内存限制，会导致动态扩展时出现OutOfMemoryError异常。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>jvm</tag>
       </tags>
   </entry>
   <entry>
@@ -742,6 +707,41 @@
 </tbody></table>
 <p>在JVM中，内存分为堆内存跟栈内存。当我们创建一个对象（new Object）时，就会调用对象的构造函数来开辟空间，将对象数据存储到堆内存中，与此同时在栈内存中生成对应的引用，当我们在后续代码中调用的时候都是栈内存中的引用。还需注意的一点，基本数据类型是存储在栈内存中。</p>
 <p>Java在方法调用传递参数时，都是值传递。只不过对于对象参数，值的内容是对象的引用。会影响原始对象只是因为传递的时候拷贝的是对象的引用地址。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>jvm</title>
+    <url>/2021/11/27/11-27-Java/</url>
+    <content><![CDATA[<h3 id="1-JVM主要组成部分及其作用"><a href="#1-JVM主要组成部分及其作用" class="headerlink" title="1 JVM主要组成部分及其作用"></a>1 JVM主要组成部分及其作用</h3><ul>
+<li>类加载器（ClassLoader）</li>
+<li>运行时数据区（Runtime Data Area)</li>
+<li>执行引擎（Execution Engine）</li>
+<li>本地库接口（Native Interface）</li>
+</ul>
+<p>首先通过类加载器（ClassLoader）会把Java代码转换成字节码，运行时数据区（Runtime Data Area）会把字节码加载到内存中，而字节码只是JVM的一套指令集规范，并不能直接交给底层操作系统去执行，因此需要特定的命令解析器执行引擎（Execution Engine），将字节码翻译成底层系统指令，再交由CPU去执行，而这个过程中需要调用其他语言的本地库接口（Native Interface）来实现整个程序的功能。</p>
+<h3 id="2-运行时数据区"><a href="#2-运行时数据区" class="headerlink" title="2 运行时数据区"></a>2 运行时数据区</h3><img src="/2021/11/27/11-27-Java/jvm.png" class="">
+<p><strong>程序计数器</strong><br>程序计数器（Program Counter Register）是一块较小的内存空间，它可以看作是当前线程所执行的字节码的行号指示器。</p>
+<p>字节码解释器执行时通过改变这个计数器的值来选取下一条需要执行的字节码指令。程序的分支、循环、跳转、异常处理、线程恢复等基础功能都需要依赖这个计数器来完成。</p>
+<p>由于Java虚拟机的多线程是通过线程轮流切换、分配处理器执行时间的方式来实现的，在任何一个确定的时刻，一个处理器都只会执行一条线程中的命令。因此，<strong>为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器</strong>，各线程之间的计数器互不影响，独立存储，我们程这块内存区域为“线程私有”的内存。<br>此区域是唯一一个在Java虚拟机规范中没有规定任何OutOfMemoryError情况的区域。</p>
+<p><strong>Java虚拟机栈</strong><br>与程序计数器一样，Java虚拟机栈（Java Virtual Machine Stacks）也是线程私有的，它的生命周期与线程相同。</p>
+<p>每个Java方法被执行的时候，jvm都会同步创建一个栈帧（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法被调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中入栈到出栈的过程。</p>
+<p>局部变量表存放了编译期可知的各种基本数据类型（boolean、byte、char、short、int、float、long、double）、对象引用和returnAddress类型（指向了一条字节码指令的地址）。<br>Java虚拟机栈的局部变量表的空间单位是槽（Slot），其中64位长度的double和long类型会占用两个Slot。局部变量表所需的内存空间在编译期间完成分配，当进入一个方法时，该方法需要在栈帧中分配多大的局部变量空间是完全确定的，在方法运行期间不会改变局部变量表的大小。</p>
+<p>Java虚拟机栈有两种异常状况：如果线程请求的栈深度大于虚拟机所允许的深度，将抛出StackOverflowErro异常；如果Java虚拟机栈扩展时无法申请到足够的内存，就会抛出OutOfMemoryError异常。</p>
+<p><strong>本地方法栈</strong><br>本地方法栈（Native Method Stack）与虚拟机栈所发挥的作用是非常相似的，其区别只是虚拟机栈为虚拟机执行Java方法（也就是字节码）服务，而本地方法栈则是为虚拟机使用到的本地（Native）方法服务。</p>
+<p>Java虚拟机规范没有对本地方法栈中方法使用的语言、使用的方式和数据结构做出强制规定，因此具体的虚拟机可以自由地实现它。例如：HotSpot虚拟机直接把Java虚拟机栈和本地方法栈合二为一。<br>与Java虚拟机栈一样，本地方法栈也会抛出StackOverflowError和OutOfMemoryError异常。</p>
+<p><strong>Java堆</strong><br>Java堆（Java Heap）是被所有线程所共享的一块内存区域，在虚拟机启动时创建。此内存区域的唯一目的就是存放对象实例，几乎所有的对象实例都在这里分配内存。</p>
+<p>Java堆是垃圾收集器管理的主要区域，因此很多时候也被称做“GC”堆（Garbage Collected Heap）。<br>从回收内存的角度看，由于现代垃圾收集器大部分都是基于分代收集理论设计的，所以Java堆中会出现新生代、老年代、永久代等名词。<br>从分配内存的角度来看，所有线程共享的Java堆中可以划分出多个线程私有的分配缓冲区（Thread Local Allocation Buffer，TLAB），以提升对象分配时的效率。不过无论如何划分，无论哪个区域，存储的只能是对象实例，进一步划分的目的是为了更好地回收内存，或者更快地分配内存。<br>Java虚拟机规范规定，Java堆可以处于物理上不连续的内存空间中，只要逻辑上是连续的即可。在实现时，可以是固定大小的，也可以是可扩展的。如果在堆中没有内存完成实例分配，并且堆也无法扩展时，将会抛出OutOfMemoryError异常。</p>
+<p><strong>方法区</strong><br>方法区（Method Area）与Java堆一样，是各个线程共享的内存区域，它用于存储已被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等数据。<br>虽然Java虚拟机规范中把方法区描述为堆的一个逻辑部分，但是它却有一个别名叫做Non-Heap（非堆），目的是与Java堆区分开来。</p>
+<p>Java虚拟机规范对方法区的限制非常宽松，除了和Java堆一样不需要连续的内存和可以选择固定大小或者可扩展外，还可以选择不实现垃圾收集。这个区域的内存回收目标主要是针对常量池的回收和对类型的卸载。根据Java虚拟机规范规定，当方法区无法满足新的内存分配需求时，将抛出OutOfMemoryError异常。</p>
+<p>运行时常量池（Runtime Constant Pool）是方法区的一部分。Class文件中除了有类的版本、字段、方法、接口等描述信息外，还有一项信息是常量池表，用于存放编译期生成的各种字面量和符号引用，这部分内容将在类加载后存放到方法区的运行时常量池中。<br>Java虚拟机对Class文件每一部分（当然也包括常量池）的格式都有严格的规定，每一个字节用于存储哪种数据都必须符合规范上的要求才会被虚拟机认可、装载和执行。</p>
+<p>直接内存（Direct Memory）并不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。但是这部分内存也被频繁地使用，而且也可能导致OutOfMemoryError异常。</p>
+<p>本机直接内存的分配不会受到Java堆大小的限制。但是，既然是内存，肯定还是会受到本机总内存大小以及处理器寻址空间的限制。如果各个内存区域总和大于物理内存限制，会导致动态扩展时出现OutOfMemoryError异常。</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -936,6 +936,52 @@
       </tags>
   </entry>
   <entry>
+    <title>SpringMVC</title>
+    <url>/2021/12/12/12-12-SpringMVC/</url>
+    <content><![CDATA[<h3 id="1-MVC模式"><a href="#1-MVC模式" class="headerlink" title="1 MVC模式"></a>1 MVC模式</h3><p>模型－视图－控制器（MVC）。M指业务模型，V指用户界面，C则是控制器，使用MVC的目的是将M和V实现代码分离，从而使同一个程序可以使用不同的表现形式。</p>
+<img src="/2021/12/12/12-12-SpringMVC/mvc.png" class="">
+<p>Model（模型）：是程序的主体部分，主要包含业务数据和业务逻辑。在模型层，还会涉及到用户发布的服务，在服务中会根据不同的业务需求，更新业务模型中的数据。<br>View（视图）：是程序呈现给用户的部分，是用户和程序交互的接口，用户会根据具体的业务需求，在View层输出特定的业务数据，并通过界面的事件交互，将对应的输入参数提交给后台控制器进行处理。<br>Controller（控制器）：Controller是用来处理用户输入数据，以及更新业务模型的部分。控制器中接收了用户与界面交互时传递过来的数据，并根据数据业务逻辑来执行服务的调用和更新业务模型的数据和状态。</p>
+<h3 id="2-SpringMVC的工作原理（执行流程）"><a href="#2-SpringMVC的工作原理（执行流程）" class="headerlink" title="2 SpringMVC的工作原理（执行流程）"></a>2 SpringMVC的工作原理（执行流程）</h3><p>SpringWebMVC是基于ServletAPI构建的原始Web框架，从一开始就包含在Spring框架中。正式名称“SpringWebMVC”来自其源模块（SpringWebMVC）的名称，但更常见的名称是“SpringMVC”。</p>
+<p>区域设置解析器绑定到请求，以使流程中的元素在处理请求（呈现视图、准备数据等）时解析要使用的区域设置。如果不需要区域设置解析，则不需要区域设置解析程序。<br>主题解析器绑定到请求，以让视图等元素确定要使用的主题。如果不使用主题，可以忽略它。<br>如果指定多部分文件解析器，则会检查请求的多部分。如果找到multipart，请求将被包装在multipartttpServletRequest中，以供流程中的其他元素进一步处理。</p>
+<p>将搜索适当的处理程序。如果找到处理程序，将运行与该处理程序（预处理器、后处理器和控制器）关联的执行链，以准备用于渲染的模型。或者，对于带注释的控制器，可以呈现响应（在HandlerAdapter中），而不是返回视图。<br>如果返回模型，则渲染视图。如果没有返回任何模型（可能是由于预处理器或后处理器拦截了请求，可能是出于安全原因），则不会呈现任何视图，因为请求可能已经完成。</p>
+<img src="/2021/12/12/12-12-SpringMVC/springmvc_process.png" class="">
+<ol>
+<li>客户端(浏览器)发送请求到前端控制器DispatcherServlet。</li>
+<li>DispatcherServlet根据请求信息调用HandlerMapping去查找处理程序（Handler）（通过xml配置或者注解进行查找）。</li>
+<li>找到相应的Handler后，向DispatcherServlet返回执行链（HandlerExecutionChain）。</li>
+<li>DispatcherServlet调用HandlerAdapter去执行处理程序（Handler）。</li>
+<li>HandlerAdapter会根据Handler来调用真正的处理程序处理请求，并处理相应的业务逻辑。</li>
+<li>处理完后返回ModelAndView对象。</li>
+<li>DispatcherServlet调用ViewResolver进行视图解析。解析完后返回一个view。</li>
+<li>DispatcherServlet对视图进行渲染，向用户响应结果。</li>
+</ol>
+<p><strong>核心组件</strong><br>DispatcherServlet：SpringMVC和许多其他web框架一样，是围绕前端控制器模式设计的，其中一个中央Servlet（DispatcherServlet）为请求处理提供了一个共享算法，而实际工作是由可配置的委托组件执行的。该模型灵活，支持多种工作流。<br>DispatcherServlet与任何Servlet一样，需要使用Java配置或者在web.xml中根据Servlet规范声明和映射。反过来，DispatcherServlet使用Spring配置来发现请求映射、视图解析、异常处理等所需的委托组件。<br>DispatcherServlet将委托给特殊bean来处理请求并提供适当的响应。</p>
+<p>HandlerMapping：将请求映射到处理程序，以及用于预处理和后处理的拦截器列表。映射基于一些标准，这些标准的细节因HandlerMapping实现而异。两个主要的HandlerMapping实现是RequestMappingHandlerMapping（支持@RequestMapping注释方法）和SimpleUrlHandlerMapping（维护URI路径模式到处理程序的显式注册）。</p>
+<p>HandlerAdapter：帮助DispatcherServlet调用映射到请求的处理程序，而不管实际如何调用该处理程序。例如，调用带注释的控制器需要解析注释。HandlerAdapter的主要用途是保护DispatcherServlet不受此类细节的影响。</p>
+<p>ViewResolver：将处理程序返回的基于逻辑字符串的视图名称解析为实际视图，并将其呈现给响应。</p>
+<h3 id="3-常用注解"><a href="#3-常用注解" class="headerlink" title="3 常用注解"></a>3 常用注解</h3><p>@RequestMapping：您可以使用@RequestMapping注释将请求映射到控制器方法。它具有各种属性，可以通过URL、HTTP方法、请求参数、头和媒体类型进行匹配。您可以在类级别使用它来表示共享映射，或者在方法级别使用它来缩小到特定的端点映射。</p>
+<p>@RequestBody：此注解用于接收前端传来的实体，接收参数也是对应的实体，比如前端通过 JSON 提交传来两个参数username和password，此时我们需要在后端封装一个实体来接收。在传递的参数比较多的情况下，使用@RequestBody接收会非常方便。</p>
+<p>@ResponseBody：此注解将返回的数据结构转换为JSON格式。</p>
+<h3 id="3-forward与redirect"><a href="#3-forward与redirect" class="headerlink" title="3 forward与redirect"></a>3 forward与redirect</h3><p>request.getRequestDispatcher(“hj.jsp”).forward(request, response);<br>// 转发到 hj.jsp<br>response.sendRedirect(“hj.jsp”);             // 重定向到 hj.jsp<br>可以知道的是一个是用request对象调用，一个是用response对象调用。</p>
+<p>两者区别如下：</p>
+<ol>
+<li>地址栏显示<br>forword是服务器内部的重定向，服务器直接访问目标地址（url），把里面的东西读取出来。但是客户端并不知道，因此客户端（浏览器）的网址是不会发生变化的。<br>redirect是服务器根据逻辑发送一个状态码，告诉浏览器重新去请求目标地址，所以地址栏显示的是新的地址。</li>
+<li>数据共享<br>由于在整个定向的过程中用的是同一个request，因此forward会将request的信息带到被重定向的jsp或者servlet中使用。即可以共享数据。<br>redirect不能共享数据。</li>
+<li>场景<br>forword一般用于用户登录的时候，根据角色转发到相应的模块。<br>redirect一般用于用户注销时返回主页面或者跳转到其他网站。</li>
+<li>效率<br>forword效率高，而redirect效率低。</li>
+</ol>
+<p><strong>本质</strong><br>forword是服务器行为，而redirect是客户端行为。</p>
+<p>转发过程：浏览器发送http请求—&gt;web服务器接受此请求—&gt;调用内部的一个方法在容器内部完成请求处理和转发动作—&gt;将目标资源发送给客户端。在这里，转发的路径必须是同一个web容器下的url，其不能转向到其他的web路径上去，中间传递的是自己的容器内的request。在浏览器路径栏显示的仍然是其第一次访问的路径，也就是说客户端是感觉不到服务器做了转发的。转发行为是浏览器只做了一次访问请求。</p>
+<p>重定向过程：浏览器发送http请求—&gt;web服务器接受后发送302状态码及对应新的location给浏览器—&gt;浏览器发现是302响应，则自动再发送一个新的http请求，请求的url是新的location地址—&gt;服务器根据此请求寻找资源并发送给客户端。在这里location可以重定向到任意URL，既然是浏览器重新发出了请求，则就没有什么request传递的概念了。在浏览器路径栏显示的是其重定向的路径，客户端可以观察到地址的变化的。重定向行为是浏览器做了至少两次的访问请求的。</p>
+]]></content>
+      <categories>
+        <category>SpringMVC</category>
+      </categories>
+      <tags>
+        <tag>mvc</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>spring_transaction</title>
     <url>/2021/12/11/12-11-Spring/</url>
     <content><![CDATA[<h3 id="1-Spring事务"><a href="#1-Spring事务" class="headerlink" title="1 Spring事务"></a>1 Spring事务</h3><p>Spring事务的本质其实就是数据库对事务的支持，没有数据库的事务支持，Spring是无法提供事务功能的。对于纯JDBC操作数据库，想要用到事务，可以按照以下步骤进行：</p>
@@ -981,52 +1027,6 @@
       </categories>
       <tags>
         <tag>mybatis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SpringMVC</title>
-    <url>/2021/12/12/12-12-SpringMVC/</url>
-    <content><![CDATA[<h3 id="1-MVC模式"><a href="#1-MVC模式" class="headerlink" title="1 MVC模式"></a>1 MVC模式</h3><p>模型－视图－控制器（MVC）。M指业务模型，V指用户界面，C则是控制器，使用MVC的目的是将M和V实现代码分离，从而使同一个程序可以使用不同的表现形式。</p>
-<img src="/2021/12/12/12-12-SpringMVC/mvc.png" class="">
-<p>Model（模型）：是程序的主体部分，主要包含业务数据和业务逻辑。在模型层，还会涉及到用户发布的服务，在服务中会根据不同的业务需求，更新业务模型中的数据。<br>View（视图）：是程序呈现给用户的部分，是用户和程序交互的接口，用户会根据具体的业务需求，在View层输出特定的业务数据，并通过界面的事件交互，将对应的输入参数提交给后台控制器进行处理。<br>Controller（控制器）：Controller是用来处理用户输入数据，以及更新业务模型的部分。控制器中接收了用户与界面交互时传递过来的数据，并根据数据业务逻辑来执行服务的调用和更新业务模型的数据和状态。</p>
-<h3 id="2-SpringMVC的工作原理（执行流程）"><a href="#2-SpringMVC的工作原理（执行流程）" class="headerlink" title="2 SpringMVC的工作原理（执行流程）"></a>2 SpringMVC的工作原理（执行流程）</h3><p>SpringWebMVC是基于ServletAPI构建的原始Web框架，从一开始就包含在Spring框架中。正式名称“SpringWebMVC”来自其源模块（SpringWebMVC）的名称，但更常见的名称是“SpringMVC”。</p>
-<p>区域设置解析器绑定到请求，以使流程中的元素在处理请求（呈现视图、准备数据等）时解析要使用的区域设置。如果不需要区域设置解析，则不需要区域设置解析程序。<br>主题解析器绑定到请求，以让视图等元素确定要使用的主题。如果不使用主题，可以忽略它。<br>如果指定多部分文件解析器，则会检查请求的多部分。如果找到multipart，请求将被包装在multipartttpServletRequest中，以供流程中的其他元素进一步处理。</p>
-<p>将搜索适当的处理程序。如果找到处理程序，将运行与该处理程序（预处理器、后处理器和控制器）关联的执行链，以准备用于渲染的模型。或者，对于带注释的控制器，可以呈现响应（在HandlerAdapter中），而不是返回视图。<br>如果返回模型，则渲染视图。如果没有返回任何模型（可能是由于预处理器或后处理器拦截了请求，可能是出于安全原因），则不会呈现任何视图，因为请求可能已经完成。</p>
-<img src="/2021/12/12/12-12-SpringMVC/springmvc_process.png" class="">
-<ol>
-<li>客户端(浏览器)发送请求到前端控制器DispatcherServlet。</li>
-<li>DispatcherServlet根据请求信息调用HandlerMapping去查找处理程序（Handler）（通过xml配置或者注解进行查找）。</li>
-<li>找到相应的Handler后，向DispatcherServlet返回执行链（HandlerExecutionChain）。</li>
-<li>DispatcherServlet调用HandlerAdapter去执行处理程序（Handler）。</li>
-<li>HandlerAdapter会根据Handler来调用真正的处理程序处理请求，并处理相应的业务逻辑。</li>
-<li>处理完后返回ModelAndView对象。</li>
-<li>DispatcherServlet调用ViewResolver进行视图解析。解析完后返回一个view。</li>
-<li>DispatcherServlet对视图进行渲染，向用户响应结果。</li>
-</ol>
-<p><strong>核心组件</strong><br>DispatcherServlet：SpringMVC和许多其他web框架一样，是围绕前端控制器模式设计的，其中一个中央Servlet（DispatcherServlet）为请求处理提供了一个共享算法，而实际工作是由可配置的委托组件执行的。该模型灵活，支持多种工作流。<br>DispatcherServlet与任何Servlet一样，需要使用Java配置或者在web.xml中根据Servlet规范声明和映射。反过来，DispatcherServlet使用Spring配置来发现请求映射、视图解析、异常处理等所需的委托组件。<br>DispatcherServlet将委托给特殊bean来处理请求并提供适当的响应。</p>
-<p>HandlerMapping：将请求映射到处理程序，以及用于预处理和后处理的拦截器列表。映射基于一些标准，这些标准的细节因HandlerMapping实现而异。两个主要的HandlerMapping实现是RequestMappingHandlerMapping（支持@RequestMapping注释方法）和SimpleUrlHandlerMapping（维护URI路径模式到处理程序的显式注册）。</p>
-<p>HandlerAdapter：帮助DispatcherServlet调用映射到请求的处理程序，而不管实际如何调用该处理程序。例如，调用带注释的控制器需要解析注释。HandlerAdapter的主要用途是保护DispatcherServlet不受此类细节的影响。</p>
-<p>ViewResolver：将处理程序返回的基于逻辑字符串的视图名称解析为实际视图，并将其呈现给响应。</p>
-<h3 id="3-常用注解"><a href="#3-常用注解" class="headerlink" title="3 常用注解"></a>3 常用注解</h3><p>@RequestMapping：您可以使用@RequestMapping注释将请求映射到控制器方法。它具有各种属性，可以通过URL、HTTP方法、请求参数、头和媒体类型进行匹配。您可以在类级别使用它来表示共享映射，或者在方法级别使用它来缩小到特定的端点映射。</p>
-<p>@RequestBody：此注解用于接收前端传来的实体，接收参数也是对应的实体，比如前端通过 JSON 提交传来两个参数username和password，此时我们需要在后端封装一个实体来接收。在传递的参数比较多的情况下，使用@RequestBody接收会非常方便。</p>
-<p>@ResponseBody：此注解将返回的数据结构转换为JSON格式。</p>
-<h3 id="3-forward与redirect"><a href="#3-forward与redirect" class="headerlink" title="3 forward与redirect"></a>3 forward与redirect</h3><p>request.getRequestDispatcher(“hj.jsp”).forward(request, response);<br>// 转发到 hj.jsp<br>response.sendRedirect(“hj.jsp”);             // 重定向到 hj.jsp<br>可以知道的是一个是用request对象调用，一个是用response对象调用。</p>
-<p>两者区别如下：</p>
-<ol>
-<li>地址栏显示<br>forword是服务器内部的重定向，服务器直接访问目标地址（url），把里面的东西读取出来。但是客户端并不知道，因此客户端（浏览器）的网址是不会发生变化的。<br>redirect是服务器根据逻辑发送一个状态码，告诉浏览器重新去请求目标地址，所以地址栏显示的是新的地址。</li>
-<li>数据共享<br>由于在整个定向的过程中用的是同一个request，因此forward会将request的信息带到被重定向的jsp或者servlet中使用。即可以共享数据。<br>redirect不能共享数据。</li>
-<li>场景<br>forword一般用于用户登录的时候，根据角色转发到相应的模块。<br>redirect一般用于用户注销时返回主页面或者跳转到其他网站。</li>
-<li>效率<br>forword效率高，而redirect效率低。</li>
-</ol>
-<p><strong>本质</strong><br>forword是服务器行为，而redirect是客户端行为。</p>
-<p>转发过程：浏览器发送http请求—&gt;web服务器接受此请求—&gt;调用内部的一个方法在容器内部完成请求处理和转发动作—&gt;将目标资源发送给客户端。在这里，转发的路径必须是同一个web容器下的url，其不能转向到其他的web路径上去，中间传递的是自己的容器内的request。在浏览器路径栏显示的仍然是其第一次访问的路径，也就是说客户端是感觉不到服务器做了转发的。转发行为是浏览器只做了一次访问请求。</p>
-<p>重定向过程：浏览器发送http请求—&gt;web服务器接受后发送302状态码及对应新的location给浏览器—&gt;浏览器发现是302响应，则自动再发送一个新的http请求，请求的url是新的location地址—&gt;服务器根据此请求寻找资源并发送给客户端。在这里location可以重定向到任意URL，既然是浏览器重新发出了请求，则就没有什么request传递的概念了。在浏览器路径栏显示的是其重定向的路径，客户端可以观察到地址的变化的。重定向行为是浏览器做了至少两次的访问请求的。</p>
-]]></content>
-      <categories>
-        <category>SpringMVC</category>
-      </categories>
-      <tags>
-        <tag>mvc</tag>
       </tags>
   </entry>
   <entry>
@@ -1134,27 +1134,6 @@
       </tags>
   </entry>
   <entry>
-    <title>页面置换算法</title>
-    <url>/2021/12/21/12-21-OS/</url>
-    <content><![CDATA[<h3 id="1-分段与分页的区别"><a href="#1-分段与分页的区别" class="headerlink" title="1 分段与分页的区别"></a>1 分段与分页的区别</h3><p>段是信息的逻辑单位，它是根据用户的需要划分的，因此段对用户是可见的；<br>页是信息的物理单位，是为了管理主存的方便而划分的，对用户是不可见的；<br>段的大小不固定，由它所完成的功能决定；<br>页面大小固定，由系统决定；<br>段向用户提供二维地址空间；<br>页向用户提供一维地址空间；</p>
-<h3 id="2-死锁产生的必要条件"><a href="#2-死锁产生的必要条件" class="headerlink" title="2 死锁产生的必要条件"></a>2 死锁产生的必要条件</h3><p>互斥条件：资源是独占的且排它使用，进程互斥使用资源，即任意时刻一个资源只能给一个进程使用。其他进程若申请一个资源，而该资源被另一进程占有时，申请者等待直到资源被占有者释放。<br>不可剥夺条件：进程所获得的资源在未使用完毕之前，不能被其他进程强行剥夺，而只能由获得该资源的进程释放。<br>请求和保持条件：进程每次申请它所需要的一部分资源，在申请新的资源的同时，继续占用已分配到的资源。<br>环路等待条件：在发生死锁时必然存在一个进程等待队列{P1,P2,…,Pn}，其中P1等待P2占有的资源，P2等待P3占有的资源，…，Pn等待P1占有的资源，形成一个进程等待环路，环路中每一个进程所占有的资源同时被另一个进程申请，也就是前一个进程占有后一个进程所申请的资源。</p>
-<h3 id="3-页面置换算法"><a href="#3-页面置换算法" class="headerlink" title="3 页面置换算法"></a>3 页面置换算法</h3><p>缺页中断：要访问的页不在主存，需要操作系统将其调入主存后再进行访问。<br>当发生缺页中断时，如果操作系统内存中没有空闲页面，则操作系统必须在内存中选择一个页面将其移出，以便为即将调入的页面让出空间，而用来选择淘汰哪一页的规则叫做页面置换算法。</p>
-<p><strong>先进先出置换算法（FIFO）</strong><br>总是选择在主存中停留时间最长（即最老）的一页置换，即先进入内存的页先退出内存。理由是：最早调入内存的页，其不再被使用的可能性比刚调入内存的可能性大。建立一个FIFO队列，收容所有在内存中的页。被置换页面总是在队列头上进行。当一个页面被放入内存时，就把它插入到队尾。<br>性能较差，调出的页面可能是要经常访问的页面（驻留时间长，本身就说明可能常用）。</p>
-<p><strong>最佳置换算法（OPT）</strong><br>这是一种理想情况下的页面置换算法，但实际上不可能实现。该算法的基本思想是：发生缺页中断时，计算每个页面的下一次访问时间，选择未来最长时间不访问的页面进行置换。<br>这个算法唯一的一个问题就是它无法实现。当缺页发生时，操作系统无法知道各个页面下一次是在什么时候被访问。虽然这个算法不可能实现，但是最佳页面置换算法可以用于对可实现算法的性能进行衡量比较。</p>
-<p><strong>最近最久未使用算法（least recently used，LRU）</strong><br>当一个缺页中断发生时，选择最久未使用的那个页面进行置换。LRU算法需要记录各个页面使用时间的先后顺序，开销比较大。</p>
-<p><strong>时钟算法</strong><br>需要用到页表项的访问位（access bit），当一个页面被装入内存时，把该位初始化为0，然后如果这个页被访问（读/写），把它置为1。把各个页面组织成环形链表，指针指向最老的页面（最先进来）。<br>当发生缺页中断，考察指针所指向的最老的页面。若它的访问位为0，则立即淘汰。若访问为1，则置为0，然后指针往下移动一格。如此下去，直到找到被淘汰的页面，然后把指针移动到它的下一格。</p>
-<h3 id="4-动态链接库和静态链接库"><a href="#4-动态链接库和静态链接库" class="headerlink" title="4 动态链接库和静态链接库"></a>4 动态链接库和静态链接库</h3><p>本质上来说库是一种可执行代码的二进制形式，可以被操作系统载入内存执行。静态库（.a、.lib）和动态库（.so、.dll）。windows上对应的是.lib、.dll；linux上对应的是.a、.so。</p>
-<p>静态库对函数库的链接是放在编译时期完成的。<br>浪费空间和资源，因为所有相关的目标文件与牵涉到的函数库被链接形成一个可执行文件。</p>
-<p>动态库在程序编译时并不会被链接到目标代码中，而是在程序运行时才被载入。<br>动态库在程序运行时才被载入，解决了静态库对程序的更新、部署和发布带来的麻烦。用户只需要更新动态库即可，增量更新。</p>
-]]></content>
-      <categories>
-        <category>操作系统</category>
-      </categories>
-      <tags>
-        <tag>段页</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>mysql</title>
     <url>/2021/12/23/12-23-Mysql/</url>
     <content><![CDATA[<h3 id="1-事务的特性"><a href="#1-事务的特性" class="headerlink" title="1 事务的特性"></a>1 事务的特性</h3><p><strong>原子性（Atomicity）</strong><br>原子性指事务是一个不可分割的工作单元，事务中的操作要么全部成功，要么全部失败。<br>如果事务中的一个sql语句执行失败，则已执行的语句也必须回滚，数据库退回到事务前的状态。</p>
@@ -1217,6 +1196,27 @@
       </categories>
       <tags>
         <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>页面置换算法</title>
+    <url>/2021/12/21/12-21-OS/</url>
+    <content><![CDATA[<h3 id="1-分段与分页的区别"><a href="#1-分段与分页的区别" class="headerlink" title="1 分段与分页的区别"></a>1 分段与分页的区别</h3><p>段是信息的逻辑单位，它是根据用户的需要划分的，因此段对用户是可见的；<br>页是信息的物理单位，是为了管理主存的方便而划分的，对用户是不可见的；<br>段的大小不固定，由它所完成的功能决定；<br>页面大小固定，由系统决定；<br>段向用户提供二维地址空间；<br>页向用户提供一维地址空间；</p>
+<h3 id="2-死锁产生的必要条件"><a href="#2-死锁产生的必要条件" class="headerlink" title="2 死锁产生的必要条件"></a>2 死锁产生的必要条件</h3><p>互斥条件：资源是独占的且排它使用，进程互斥使用资源，即任意时刻一个资源只能给一个进程使用。其他进程若申请一个资源，而该资源被另一进程占有时，申请者等待直到资源被占有者释放。<br>不可剥夺条件：进程所获得的资源在未使用完毕之前，不能被其他进程强行剥夺，而只能由获得该资源的进程释放。<br>请求和保持条件：进程每次申请它所需要的一部分资源，在申请新的资源的同时，继续占用已分配到的资源。<br>环路等待条件：在发生死锁时必然存在一个进程等待队列{P1,P2,…,Pn}，其中P1等待P2占有的资源，P2等待P3占有的资源，…，Pn等待P1占有的资源，形成一个进程等待环路，环路中每一个进程所占有的资源同时被另一个进程申请，也就是前一个进程占有后一个进程所申请的资源。</p>
+<h3 id="3-页面置换算法"><a href="#3-页面置换算法" class="headerlink" title="3 页面置换算法"></a>3 页面置换算法</h3><p>缺页中断：要访问的页不在主存，需要操作系统将其调入主存后再进行访问。<br>当发生缺页中断时，如果操作系统内存中没有空闲页面，则操作系统必须在内存中选择一个页面将其移出，以便为即将调入的页面让出空间，而用来选择淘汰哪一页的规则叫做页面置换算法。</p>
+<p><strong>先进先出置换算法（FIFO）</strong><br>总是选择在主存中停留时间最长（即最老）的一页置换，即先进入内存的页先退出内存。理由是：最早调入内存的页，其不再被使用的可能性比刚调入内存的可能性大。建立一个FIFO队列，收容所有在内存中的页。被置换页面总是在队列头上进行。当一个页面被放入内存时，就把它插入到队尾。<br>性能较差，调出的页面可能是要经常访问的页面（驻留时间长，本身就说明可能常用）。</p>
+<p><strong>最佳置换算法（OPT）</strong><br>这是一种理想情况下的页面置换算法，但实际上不可能实现。该算法的基本思想是：发生缺页中断时，计算每个页面的下一次访问时间，选择未来最长时间不访问的页面进行置换。<br>这个算法唯一的一个问题就是它无法实现。当缺页发生时，操作系统无法知道各个页面下一次是在什么时候被访问。虽然这个算法不可能实现，但是最佳页面置换算法可以用于对可实现算法的性能进行衡量比较。</p>
+<p><strong>最近最久未使用算法（least recently used，LRU）</strong><br>当一个缺页中断发生时，选择最久未使用的那个页面进行置换。LRU算法需要记录各个页面使用时间的先后顺序，开销比较大。</p>
+<p><strong>时钟算法</strong><br>需要用到页表项的访问位（access bit），当一个页面被装入内存时，把该位初始化为0，然后如果这个页被访问（读/写），把它置为1。把各个页面组织成环形链表，指针指向最老的页面（最先进来）。<br>当发生缺页中断，考察指针所指向的最老的页面。若它的访问位为0，则立即淘汰。若访问为1，则置为0，然后指针往下移动一格。如此下去，直到找到被淘汰的页面，然后把指针移动到它的下一格。</p>
+<h3 id="4-动态链接库和静态链接库"><a href="#4-动态链接库和静态链接库" class="headerlink" title="4 动态链接库和静态链接库"></a>4 动态链接库和静态链接库</h3><p>本质上来说库是一种可执行代码的二进制形式，可以被操作系统载入内存执行。静态库（.a、.lib）和动态库（.so、.dll）。windows上对应的是.lib、.dll；linux上对应的是.a、.so。</p>
+<p>静态库对函数库的链接是放在编译时期完成的。<br>浪费空间和资源，因为所有相关的目标文件与牵涉到的函数库被链接形成一个可执行文件。</p>
+<p>动态库在程序编译时并不会被链接到目标代码中，而是在程序运行时才被载入。<br>动态库在程序运行时才被载入，解决了静态库对程序的更新、部署和发布带来的麻烦。用户只需要更新动态库即可，增量更新。</p>
+]]></content>
+      <categories>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>段页</tag>
       </tags>
   </entry>
   <entry>
@@ -1500,22 +1500,6 @@
       </tags>
   </entry>
   <entry>
-    <title>diffchain</title>
-    <url>/2020/11/16/difftimechain/</url>
-    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
-<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
-
-]]></content>
-      <categories>
-        <category>数据结构</category>
-      </categories>
-      <tags>
-        <tag>差分链表</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>docker</title>
     <url>/2022/04/16/docker/</url>
     <content><![CDATA[<p><strong>Docker</strong><br>Docker是一个用于开发、发布和运行应用程序的开放平台。Docker使您能够将应用程序与基础架构分离，以便快速交付软件。使用Docker，您可以用与管理应用程序相同的方式管理基础设施。通过利用Docker快速发布、测试和部署代码的方法，您可以显著减少编写代码和在生产中运行代码之间的延迟。</p>
@@ -1544,6 +1528,22 @@
       </categories>
       <tags>
         <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>diffchain</title>
+    <url>/2020/11/16/difftimechain/</url>
+    <content><![CDATA[<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>在差分时间链中，每个表项所包含的计时值并非当前时刻到表项激活时刻的绝对计数，而是该表项先于它的所有表项的计数值之和。<br>例如，在当前时刻，A对象需要等待3个时间单位就应被激活，B对象需要等待5（3+2）个时间单位就应被激活，C对象需要等待10（3+2+5）个时间单位就应被激活。如果有一个等待9个时间单位的对象D需要插入到队列中，由于9-3-2=4，而9-3-2-5=-1，因此D对象需要插入到差分链中介于对象B和对象C之间的位置。<br>系统每接收到一个tick，链首对象的值就减1。当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</p>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line"></span><br><span class="line">struct Node</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *next;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 创建新节点并插入正确位置，返回插入后链表的头指针。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *createNode(struct Node *head, int value)</span><br><span class="line">&#123;</span><br><span class="line">	int temp;</span><br><span class="line">	struct Node *p &#x3D; NULL, *current &#x3D; head, *back &#x3D; NULL;</span><br><span class="line">	p &#x3D; (struct Node *)malloc(sizeof(struct Node));</span><br><span class="line"></span><br><span class="line">	if (head &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">		head &#x3D; p;</span><br><span class="line">		p-&gt;value &#x3D; value;</span><br><span class="line">		p-&gt;next &#x3D; NULL;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		back &#x3D; head-&gt;next;</span><br><span class="line">		temp &#x3D; head-&gt;value;</span><br><span class="line"></span><br><span class="line">		if (value &lt;&#x3D; temp) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value;</span><br><span class="line">			p-&gt;next &#x3D; current;</span><br><span class="line">			head &#x3D; p;</span><br><span class="line">		&#125; else if (value &gt; temp &amp;&amp; back &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			while (value &gt; temp &amp;&amp; back !&#x3D; NULL)</span><br><span class="line">			&#123;</span><br><span class="line">				if ((value-(temp+back-&gt;value)) &lt;&#x3D; 0)</span><br><span class="line">				&#123;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">				temp &#x3D; temp + back-&gt;value;</span><br><span class="line">				current &#x3D; current-&gt;next;</span><br><span class="line">				back &#x3D; back-&gt;next;</span><br><span class="line">			&#125;</span><br><span class="line">			p-&gt;value &#x3D; value - temp;</span><br><span class="line">			p-&gt;next &#x3D; back;</span><br><span class="line">			current-&gt;next &#x3D; p;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 系统每接收到一个tick，链首对象的值就减1。</span><br><span class="line">* 当减到0时，链首对象就被激活，并从差分时间链中取下来，下一个对象又成为链首对象。</span><br><span class="line">*&#x2F;</span><br><span class="line">struct Node *handleTick(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	if (head &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		return NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	struct Node *p &#x3D; head;</span><br><span class="line">	p-&gt;value &#x3D; p-&gt;value - 1;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;指针head被free以后其地址仍然不变(非NULL),只是该地址对应的内存是垃圾,head成了&quot;野指针&quot;。</span><br><span class="line">	&#x2F;&#x2F;指针head被free或者delete之后,要置为NULL。</span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next &#x3D;&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		free(head);</span><br><span class="line">		head &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	if (p-&gt;value &#x3D;&#x3D; 0 &amp;&amp; p-&gt;next !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		head &#x3D; p-&gt;next;</span><br><span class="line">		free(p);</span><br><span class="line">		p &#x3D; NULL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return head;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line">* 遍历输出链表</span><br><span class="line">*&#x2F;</span><br><span class="line">void displayNode(struct Node *head)</span><br><span class="line">&#123;</span><br><span class="line">	std::cout &lt;&lt; &quot;输出：&quot;; </span><br><span class="line"></span><br><span class="line">	while (head !&#x3D; NULL)</span><br><span class="line">	&#123;</span><br><span class="line">		std::cout &lt;&lt; head-&gt;value &lt;&lt; &quot; &quot;;</span><br><span class="line">		head &#x3D; head-&gt;next;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int value;</span><br><span class="line">	struct Node *head &#x3D; NULL;</span><br><span class="line"></span><br><span class="line">	std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">	std::cin &gt;&gt; value;</span><br><span class="line"></span><br><span class="line">	while (value &gt;&#x3D; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		if (value &#x3D;&#x3D; 0)</span><br><span class="line">		&#123;</span><br><span class="line">			head &#x3D; handleTick(head);</span><br><span class="line">			displayNode(head);</span><br><span class="line">			std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			head &#x3D; createNode(head, value);</span><br><span class="line">		    displayNode(head);</span><br><span class="line">		    std::cout &lt;&lt; &quot;请输入节点值（输入0处理一次tick；输入负数终止）&quot; &lt;&lt; std::endl;</span><br><span class="line">		    std::cin &gt;&gt; value;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><img src="/2020/11/16/difftimechain/difftimechain.png" class="">
+
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>差分链表</tag>
       </tags>
   </entry>
   <entry>
@@ -1652,19 +1652,6 @@
       </tags>
   </entry>
   <entry>
-    <title>human</title>
-    <url>/2021/10/25/human/</url>
-    <content><![CDATA[<p><strong>人性经得起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
-<p>农历九月二十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>humanity</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>abstract,final,static</title>
     <url>/2021/04/07/java-keyword/</url>
     <content><![CDATA[<h3 id="1-abstract"><a href="#1-abstract" class="headerlink" title="1 abstract"></a>1 abstract</h3><p><strong>abstract</strong>关键字修饰类和方法。</p>
@@ -1719,14 +1706,16 @@
       </tags>
   </entry>
   <entry>
-    <title>jenkins</title>
-    <url>/2022/04/16/jenkins/</url>
-    <content><![CDATA[]]></content>
+    <title>human</title>
+    <url>/2021/10/25/human/</url>
+    <content><![CDATA[<p><strong>人性经得起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
+<p>农历九月二十</p>
+]]></content>
       <categories>
-        <category>Tool</category>
+        <category>生活</category>
       </categories>
       <tags>
-        <tag>jenkins</tag>
+        <tag>humanity</tag>
       </tags>
   </entry>
   <entry>
@@ -1745,26 +1734,14 @@
       </tags>
   </entry>
   <entry>
-    <title>k8s</title>
-    <url>/2022/04/16/k8s/</url>
+    <title>jenkins</title>
+    <url>/2022/04/16/jenkins/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>Tool</category>
       </categories>
       <tags>
-        <tag>k8s</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>鲸算二面</title>
-    <url>/2022/03/15/jingsuan-2/</url>
-    <content><![CDATA[<p>2022年3月15号，鲸算二面。</p>
-]]></content>
-      <categories>
-        <category>面试</category>
-      </categories>
-      <tags>
-        <tag>鲸算</tag>
+        <tag>jenkins</tag>
       </tags>
   </entry>
   <entry>
@@ -1778,6 +1755,17 @@
       </categories>
       <tags>
         <tag>开域</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>k8s</title>
+    <url>/2022/04/16/k8s/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>Tool</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
       </tags>
   </entry>
   <entry>
@@ -1834,6 +1822,19 @@
       </tags>
   </entry>
   <entry>
+    <title>markdown</title>
+    <url>/2021/04/15/markdown/</url>
+    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
+<p>格式如下图：</p>
+<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
+      <categories>
+        <category>Tool</category>
+      </categories>
+      <tags>
+        <tag>markdown</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>md5_salt</title>
     <url>/2020/10/10/md5-salt/</url>
     <content><![CDATA[<p>传统的md5算法通过产生一个128位（16字节）的散列值（hash value），用于确保信息的安全性。但随着技术的发展，md5无法防止碰撞（collision）且可以被加以破解。<br>salt的出现可以一定程度上解决这个问题。</p>
@@ -1862,6 +1863,30 @@
       </tags>
   </entry>
   <entry>
+    <title>meituan</title>
+    <url>/2022/03/26/meituan/</url>
+    <content><![CDATA[<p>2022年3月22号</p>
+<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍项目"><a href="#2-介绍项目" class="headerlink" title="2 介绍项目"></a>2 介绍项目</h3><h3 id="3-Java类加载机制"><a href="#3-Java类加载机制" class="headerlink" title="3 Java类加载机制"></a>3 Java类加载机制</h3><h3 id="4-双亲委派模型，为什么这样设计？"><a href="#4-双亲委派模型，为什么这样设计？" class="headerlink" title="4 双亲委派模型，为什么这样设计？"></a>4 双亲委派模型，为什么这样设计？</h3><h3 id="5-Tomcat有那些自定义类加载器？"><a href="#5-Tomcat有那些自定义类加载器？" class="headerlink" title="5 Tomcat有那些自定义类加载器？"></a>5 Tomcat有那些自定义类加载器？</h3><h3 id="6-Java线程安全的集合有那些？"><a href="#6-Java线程安全的集合有那些？" class="headerlink" title="6 Java线程安全的集合有那些？"></a>6 Java线程安全的集合有那些？</h3><h3 id="7-ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？"><a href="#7-ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？" class="headerlink" title="7 ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？"></a>7 ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？</h3><h3 id="8-ConcurrentHashMap和Hashtable的区别？数据结构、锁？"><a href="#8-ConcurrentHashMap和Hashtable的区别？数据结构、锁？" class="headerlink" title="8 ConcurrentHashMap和Hashtable的区别？数据结构、锁？"></a>8 ConcurrentHashMap和Hashtable的区别？数据结构、锁？</h3><h3 id="9-线程池有哪些种类？"><a href="#9-线程池有哪些种类？" class="headerlink" title="9 线程池有哪些种类？"></a>9 线程池有哪些种类？</h3><h3 id="10-线程池参数"><a href="#10-线程池参数" class="headerlink" title="10 线程池参数"></a>10 线程池参数</h3><h3 id="11-来一个任务，线程池工作流程"><a href="#11-来一个任务，线程池工作流程" class="headerlink" title="11 来一个任务，线程池工作流程"></a>11 来一个任务，线程池工作流程</h3><h3 id="12-拒绝策略有那些？"><a href="#12-拒绝策略有那些？" class="headerlink" title="12 拒绝策略有那些？"></a>12 拒绝策略有那些？</h3><h3 id="13-IO模型有哪些？"><a href="#13-IO模型有哪些？" class="headerlink" title="13 IO模型有哪些？"></a>13 IO模型有哪些？</h3><h3 id="14-BIO和NIO区别？"><a href="#14-BIO和NIO区别？" class="headerlink" title="14 BIO和NIO区别？"></a>14 BIO和NIO区别？</h3><h3 id="15-MySQL事务隔离级别"><a href="#15-MySQL事务隔离级别" class="headerlink" title="15 MySQL事务隔离级别"></a>15 MySQL事务隔离级别</h3><h3 id="16-可重复读和读已提交怎么实现的，详细说说？"><a href="#16-可重复读和读已提交怎么实现的，详细说说？" class="headerlink" title="16 可重复读和读已提交怎么实现的，详细说说？"></a>16 可重复读和读已提交怎么实现的，详细说说？</h3><h3 id="17-Redis数据类型有哪些？"><a href="#17-Redis数据类型有哪些？" class="headerlink" title="17 Redis数据类型有哪些？"></a>17 Redis数据类型有哪些？</h3><h3 id="18-自身优势"><a href="#18-自身优势" class="headerlink" title="18 自身优势"></a>18 自身优势</h3><h3 id="19-算法题：二叉树最小深度"><a href="#19-算法题：二叉树最小深度" class="headerlink" title="19 算法题：二叉树最小深度"></a>19 算法题：二叉树最小深度</h3>]]></content>
+      <categories>
+        <category>面试</category>
+      </categories>
+      <tags>
+        <tag>美团</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>鲸算二面</title>
+    <url>/2022/03/15/jingsuan-2/</url>
+    <content><![CDATA[<p>2022年3月15号，鲸算二面。</p>
+]]></content>
+      <categories>
+        <category>面试</category>
+      </categories>
+      <tags>
+        <tag>鲸算</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>memory</title>
     <url>/2021/03/21/memory/</url>
     <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
@@ -1877,31 +1902,6 @@
       </categories>
       <tags>
         <tag>景点</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>meituan</title>
-    <url>/2022/03/26/meituan/</url>
-    <content><![CDATA[<p>2022年3月22号</p>
-<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍项目"><a href="#2-介绍项目" class="headerlink" title="2 介绍项目"></a>2 介绍项目</h3><h3 id="3-Java类加载机制"><a href="#3-Java类加载机制" class="headerlink" title="3 Java类加载机制"></a>3 Java类加载机制</h3><h3 id="4-双亲委派模型，为什么这样设计？"><a href="#4-双亲委派模型，为什么这样设计？" class="headerlink" title="4 双亲委派模型，为什么这样设计？"></a>4 双亲委派模型，为什么这样设计？</h3><h3 id="5-Tomcat有那些自定义类加载器？"><a href="#5-Tomcat有那些自定义类加载器？" class="headerlink" title="5 Tomcat有那些自定义类加载器？"></a>5 Tomcat有那些自定义类加载器？</h3><h3 id="6-Java线程安全的集合有那些？"><a href="#6-Java线程安全的集合有那些？" class="headerlink" title="6 Java线程安全的集合有那些？"></a>6 Java线程安全的集合有那些？</h3><h3 id="7-ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？"><a href="#7-ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？" class="headerlink" title="7 ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？"></a>7 ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？</h3><h3 id="8-ConcurrentHashMap和Hashtable的区别？数据结构、锁？"><a href="#8-ConcurrentHashMap和Hashtable的区别？数据结构、锁？" class="headerlink" title="8 ConcurrentHashMap和Hashtable的区别？数据结构、锁？"></a>8 ConcurrentHashMap和Hashtable的区别？数据结构、锁？</h3><h3 id="9-线程池有哪些种类？"><a href="#9-线程池有哪些种类？" class="headerlink" title="9 线程池有哪些种类？"></a>9 线程池有哪些种类？</h3><h3 id="10-线程池参数"><a href="#10-线程池参数" class="headerlink" title="10 线程池参数"></a>10 线程池参数</h3><h3 id="11-来一个任务，线程池工作流程"><a href="#11-来一个任务，线程池工作流程" class="headerlink" title="11 来一个任务，线程池工作流程"></a>11 来一个任务，线程池工作流程</h3><h3 id="12-拒绝策略有那些？"><a href="#12-拒绝策略有那些？" class="headerlink" title="12 拒绝策略有那些？"></a>12 拒绝策略有那些？</h3><h3 id="13-IO模型有哪些？"><a href="#13-IO模型有哪些？" class="headerlink" title="13 IO模型有哪些？"></a>13 IO模型有哪些？</h3><h3 id="14-BIO和NIO区别？"><a href="#14-BIO和NIO区别？" class="headerlink" title="14 BIO和NIO区别？"></a>14 BIO和NIO区别？</h3><h3 id="15-MySQL事务隔离级别"><a href="#15-MySQL事务隔离级别" class="headerlink" title="15 MySQL事务隔离级别"></a>15 MySQL事务隔离级别</h3><h3 id="16-可重复读和读已提交怎么实现的，详细说说？"><a href="#16-可重复读和读已提交怎么实现的，详细说说？" class="headerlink" title="16 可重复读和读已提交怎么实现的，详细说说？"></a>16 可重复读和读已提交怎么实现的，详细说说？</h3><h3 id="17-Redis数据类型有哪些？"><a href="#17-Redis数据类型有哪些？" class="headerlink" title="17 Redis数据类型有哪些？"></a>17 Redis数据类型有哪些？</h3><h3 id="18-自身优势"><a href="#18-自身优势" class="headerlink" title="18 自身优势"></a>18 自身优势</h3><h3 id="19-算法题：二叉树最小深度"><a href="#19-算法题：二叉树最小深度" class="headerlink" title="19 算法题：二叉树最小深度"></a>19 算法题：二叉树最小深度</h3>]]></content>
-      <categories>
-        <category>面试</category>
-      </categories>
-      <tags>
-        <tag>美团</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>markdown</title>
-    <url>/2021/04/15/markdown/</url>
-    <content><![CDATA[<p><strong>Markdown</strong>是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档，然后转换成有效的XHTML（或者HTML）文档。</p>
-<p>格式如下图：</p>
-<img src="/2021/04/15/markdown/md.jpg" class="">]]></content>
-      <categories>
-        <category>Tool</category>
-      </categories>
-      <tags>
-        <tag>markdown</tag>
       </tags>
   </entry>
   <entry>
@@ -2403,170 +2403,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>mysql_basic_3</title>
-    <url>/2022/04/17/mysql-basic-3/</url>
-    <content><![CDATA[<h3 id="多表查询"><a href="#多表查询" class="headerlink" title="多表查询"></a>多表查询</h3><h4 id="多表关系"><a href="#多表关系" class="headerlink" title="多表关系"></a>多表关系</h4><p><strong>一对多</strong><br>部门和员工的关系<br>实现：在员工表中建立外键（部门表的id）</p>
-<p><strong>多对多</strong><br>学生与课程的关系<br>实现：建立一张中间表，包含两个外键（学生表的id，课程表的id）</p>
-<p><strong>一对一</strong><br>用户与用户详情的关系<br>多用于单表拆分，将一张表的基础字段放在一张表中，其它详情字段放在另一张表中，以提升效率<br>实现：在任意一张被拆分的表中加入外键，并且设置为unique</p>
-<h4 id="多表查询-1"><a href="#多表查询-1" class="headerlink" title="多表查询"></a>多表查询</h4><p><strong>笛卡尔积</strong>：在数学中，两个集合A和B的所有组合情况。（多表查询时，需要消除无效的笛卡尔积）</p>
-<p>简单的多表查询：SELECT * FROM emp, dept WHERE emp.dept_id = dept.id;</p>
-<h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><h5 id="连接查询"><a href="#连接查询" class="headerlink" title="连接查询"></a>连接查询</h5><p><strong>内连接</strong>：查询集合A、B的交集数据。</p>
-<ul>
-<li><p>隐式内连接：select 字段列表 from 表1,表2 where 条件;<br>SELECT emp.name, dept.name FROM emp, dept WHERE emp.dept_id = dept.id;<br>SELECT e.name, d.name FROM emp e, dept d WHERE e.dept_id = d.id; // 使用别名</p>
-</li>
-<li><p>显示内连接：select 字段列表 from 表1 [inner] join 表2 on 连接条件;<br>SELECT e.name, d.name FROM emp e JOIN dept d ON e.dept_id = d.id;</p>
-</li>
-</ul>
-<p><strong>外连接</strong>：</p>
-<ul>
-<li><p>左外连接：查询左表所有数据，以及两张表的交集数据。<br>select 字段列表 from 表1 left [outer] join 表2 on 条件;<br>SELECT e.*, d.name FROM emp e LEFT JOIN dept d ON e.dept_id = d.id;</p>
-</li>
-<li><p>右外连接：查询右表所有数据，以及两张表的交集数据。<br>select 字段列表 from 表1 right [outer] join 表2 on 条件;<br>SELECT e.name, d.* FROM emp e RIGHT JOIN dept d ON e.dept_id = d.id;</p>
-</li>
-</ul>
-<p><strong>自连接</strong>：当前表与自身的连接查询，必须使用别名。<br>select 字段列表 from 表1 别名1 join 表1 别名2 on 条件;<br>SELECT a.name, b.name FROM emp a, emp b WHERE a.managerid = b.id;<br>或SELECT a.name, b.name FROM emp a JOIN emp b ON a.managerid = b.id;<br>或SELECT a.name, b.name FROM emp a LEFT JOIN emp b ON a.managerid = b.id;</p>
-<h5 id="联合查询"><a href="#联合查询" class="headerlink" title="联合查询"></a>联合查询</h5><p>把多次查询的结果合并起来，形成一个新的查询结果集。<br>select * 字段列表 表1 … union [all] select 字段列表 from 表2 …;</p>
-<p>SELECT * FROM emp WHERE salary &gt; 5000 UNION ALL SELECT * FROM emp WHERE age &gt; 40;<br>SELECT * FROM emp WHERE salary &gt; 5000 UNION SELECT * FROM emp WHERE age &gt; 40; // 去重</p>
-<p>对于联合查询的多张表的字段列数必须保持一致，字段类型也要保持一致。<br>union all会将全部的数据直接合并在一起，union会对合并之后的数据去重。</p>
-<h5 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h5><p>SQL语句中嵌套select语句，又称为嵌套查询。<br>select * from 表1 where column1=(select column1 from 表2);</p>
-<p>根据查询结果不同，子查询可分为：</p>
-<ul>
-<li><p>标量子查询（子查询结果为单个值）<br>SELECT * FROM emp WHERE dept_id = (SELECT id FROM dept WHERE name = ‘销售部’);<br>SELECT * from emp where entrydate &gt;= (SELECT entrydate FROM emp WHERE name = ‘hyh’);</p>
-</li>
-<li><p>列子查询（子查询结果为一列）<br>常用操作符：IN、NOT IN、ANY、SOME、ALL</p>
-</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="center">操作符</th>
-<th align="center">描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">IN</td>
-<td align="center">在指定的集合范围之内，多选一</td>
-</tr>
-<tr>
-<td align="center">NOT IN</td>
-<td align="center">不在指定的集合范围之内</td>
-</tr>
-<tr>
-<td align="center">ANY</td>
-<td align="center">子查询返回列表中有任意一个满足即可</td>
-</tr>
-<tr>
-<td align="center">SOME</td>
-<td align="center">同ANY</td>
-</tr>
-<tr>
-<td align="center">ALL</td>
-<td align="center">子查询返回列表的所有值都必须满足</td>
-</tr>
-</tbody></table>
-<p>SELECT * FROM emp WHERE dept_id IN (SELECT id FROM dept WHERE name = ‘销售部’ OR name = ‘市场部’);<br>SELECT * FROM emp WHERE salary &gt; ALL (SELECT salary FROM emp WHERE dept_id = (SELECT id FROM dept WHERE name = ‘财务部’));</p>
-<ul>
-<li><p>行子查询（子查询结果为一行）<br>SELECT * FROM emp WHERE (salary,managerid) = (SELECT salary, managerid FROM emp WHERE name = ‘hyh’);</p>
-</li>
-<li><p>表子查询（子查询结果为多行多列）<br>SELECT * FROM emp WHERE (age,salary) in (SELECT age, salary FROM emp WHERE name = ‘cjm’ OR name = ‘hyh’);<br>SELECT e.name,d.name FROM (SELECT * FROM emp WHERE entrydate &gt; ‘2022-03-16’) e LEFT JOIN dept d ON e.dept_id = d.id;</p>
-</li>
-</ul>
-<p>根据查询的位置，子查询可分为：</p>
-<ul>
-<li>where之后</li>
-<li>from之后</li>
-<li>select之后</li>
-</ul>
-]]></content>
-      <categories>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mysql_basic_4</title>
-    <url>/2022/04/22/mysql-basic-4/</url>
-    <content><![CDATA[<h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><h4 id="事务简介"><a href="#事务简介" class="headerlink" title="事务简介"></a>事务简介</h4><p>事务是一组不可分割的操作集合，是数据库操作的最小工作单元，这些操作作为一个整体一起向系统提交，要么都执行、要么都不执行。</p>
-<h4 id="事务操作"><a href="#事务操作" class="headerlink" title="事务操作"></a>事务操作</h4><h5 id="查看、设置事务提交方式"><a href="#查看、设置事务提交方式" class="headerlink" title="查看、设置事务提交方式"></a>查看、设置事务提交方式</h5><p>select @@autocommit;<br>结果为1自动提交（默认），结果为0手动提交。</p>
-<p>set @@autocommit = 0;<br>事务提交方式设置为手动提交。</p>
-<p>提交事务<br>commit;</p>
-<p>回滚事务<br>rollback;</p>
-<h5 id="开启事务"><a href="#开启事务" class="headerlink" title="开启事务"></a>开启事务</h5><p>start transaction 或 begin</p>
-<p>提交事务<br>commit;</p>
-<p>回滚事务<br>rollback;</p>
-<h4 id="事务四大特性"><a href="#事务四大特性" class="headerlink" title="事务四大特性"></a>事务四大特性</h4><p><strong>原子性（Atomicity）</strong><br>原子性指事务是一个不可分割的工作单元，事务中的操作要么全部成功，要么全部失败。</p>
-<p><strong>一致性（Consistency）</strong><br>事务必须使数据库从一个一致性状态变换到另一个一致性状态。</p>
-<p><strong>隔离性（Isolation）</strong><br>隔离性指多个用户并发访问数据库时，数据库为每一个用户开启的事务，不能被其他事务的数据操作所干扰，多个并发事务之间要相互隔离。</p>
-<p><strong>持久性（Durability）</strong><br>持久性指一个事务一旦被提交，它对数据库中数据的改变就是永久性的。</p>
-<h4 id="并发事务问题"><a href="#并发事务问题" class="headerlink" title="并发事务问题"></a>并发事务问题</h4><table>
-<thead>
-<tr>
-<th align="center">问题</th>
-<th align="center">描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">脏读</td>
-<td align="center">一个事务读到另一个事务未提交的数据</td>
-</tr>
-<tr>
-<td align="center">不可重复读</td>
-<td align="center">一个事务先后读取同一条记录，但两次读取的数据不一样</td>
-</tr>
-<tr>
-<td align="center">幻读</td>
-<td align="center">一个事务在前后两次查询同一个范围数据的时候，后一次查询看到了前一次查询没有看到的行</td>
-</tr>
-</tbody></table>
-<img src="/2022/04/22/mysql-basic-4/zd.png" class="">
-
-<img src="/2022/04/22/mysql-basic-4/unredu.png" class="">
-
-<img src="/2022/04/22/mysql-basic-4/hd.png" class="">
-
-<h4 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h4><p>READ_UNCOMMITTED（读未提交）<br>允许读取还没有被提交的数据变更，所以很明显这个级别的隔离机制会产生脏读、不可重复读、幻读问题。</p>
-<p>READ_COMMITED（读已提交）（Oracle默认隔离级别）<br>允许读取并发事务已经提交的数据，自然能够防止脏读，但是会出现不可重复读和幻读。</p>
-<p>REPEATABLE_READ（可重复读）（Mysql默认隔离级别）<br>对同一条记录的多次读取结果都是一致的，除非记录被事务本身所修改，可以防止脏读和不可重复读，但幻读仍有可能发生。</p>
-<p>SERLALIZABLE（串行化）<br>最高的事务隔离级别，所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，解决了脏读、不可重复读和幻读问题。</p>
-<p>查看MySQL数据库默认隔离级别命令：SELECT @@tx_isolation;</p>
-]]></content>
-      <categories>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>1024</title>
-    <url>/2021/10/24/new-day/</url>
-    <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
-<p>下午呆坐在实验室的我静静的听着歌，一首记忆发光让我想起了18年，三年了，《我的青春遇见你》这部电视剧又在脑海里回忆。直接看了最后一集，羡慕陈也与李招娣的爱情。一路走来，嫁给爱情是多么美好啊！不知不觉自己竟然流泪了，是啊，就像招娣拒绝贾方舟所说的，这座城市很大，坐在车里看外面的世界，灯红酒绿的，给人很美好的感觉。但你下车之后，漫步在雨中，发现这才是我的生活。是啊，生活中大多数人是陈也，不是贾方舟。那时的街道没有车水马龙，也没有太多的钢筋水泥，我们的生活却充实有趣。</p>
-<p>农历九月十九</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>程序员</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>十月</title>
-    <url>/2021/10/30/oct-day/</url>
-    <content><![CDATA[<p>十月的北京可谓是诈寒还暖，十月的倒数第二天竟然有二十多度，比起国庆之后的最低气温，现在不可谓不舒适。后天就是十一月了，日子总是这么轻飘飘的就过去了，明天三年之约也来了。多么令人期待了，等待了数个三年之后，炎帝迎来了他的三年之约。十一月总是给人美好，十一月的自己也要更加自律了，毕竟毕业不是儿戏啊！而且实习经验也没有的自己更要抓紧时间了。</p>
-<p>农历九月二十五日</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>天气</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>sql_function</title>
     <url>/2022/03/16/mysql-basic/</url>
     <content><![CDATA[<h2 id="1-mysql相关知识"><a href="#1-mysql相关知识" class="headerlink" title="1 mysql相关知识"></a>1 mysql相关知识</h2><p>事务、存储引擎、索引、SQL优化、锁、日志、主从复制、读写分离、分库分表等。</p>
@@ -2846,6 +2682,75 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
+    <title>1024</title>
+    <url>/2021/10/24/new-day/</url>
+    <content><![CDATA[<p>今天是10月24号，程序员节。首先祝广大程序员们节日快乐！</p>
+<p>下午呆坐在实验室的我静静的听着歌，一首记忆发光让我想起了18年，三年了，《我的青春遇见你》这部电视剧又在脑海里回忆。直接看了最后一集，羡慕陈也与李招娣的爱情。一路走来，嫁给爱情是多么美好啊！不知不觉自己竟然流泪了，是啊，就像招娣拒绝贾方舟所说的，这座城市很大，坐在车里看外面的世界，灯红酒绿的，给人很美好的感觉。但你下车之后，漫步在雨中，发现这才是我的生活。是啊，生活中大多数人是陈也，不是贾方舟。那时的街道没有车水马龙，也没有太多的钢筋水泥，我们的生活却充实有趣。</p>
+<p>农历九月十九</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>程序员</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mysql_basic_4</title>
+    <url>/2022/04/22/mysql-basic-4/</url>
+    <content><![CDATA[<h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><h4 id="事务简介"><a href="#事务简介" class="headerlink" title="事务简介"></a>事务简介</h4><p>事务是一组不可分割的操作集合，是数据库操作的最小工作单元，这些操作作为一个整体一起向系统提交，要么都执行、要么都不执行。</p>
+<h4 id="事务操作"><a href="#事务操作" class="headerlink" title="事务操作"></a>事务操作</h4><h5 id="查看、设置事务提交方式"><a href="#查看、设置事务提交方式" class="headerlink" title="查看、设置事务提交方式"></a>查看、设置事务提交方式</h5><p>select @@autocommit;<br>结果为1自动提交（默认），结果为0手动提交。</p>
+<p>set @@autocommit = 0;<br>事务提交方式设置为手动提交。</p>
+<p>提交事务<br>commit;</p>
+<p>回滚事务<br>rollback;</p>
+<h5 id="事务操作-1"><a href="#事务操作-1" class="headerlink" title="事务操作"></a>事务操作</h5><p>开启事务<br>start transaction 或 begin</p>
+<p>提交事务<br>commit;</p>
+<p>回滚事务<br>rollback;</p>
+<h4 id="事务四大特性"><a href="#事务四大特性" class="headerlink" title="事务四大特性"></a>事务四大特性</h4><p><strong>原子性（Atomicity）</strong><br>原子性指事务是一个不可分割的工作单元，事务中的操作要么全部成功，要么全部失败。</p>
+<p><strong>一致性（Consistency）</strong><br>事务必须使数据库从一个一致性状态变换到另一个一致性状态。</p>
+<p><strong>隔离性（Isolation）</strong><br>隔离性指多个用户并发访问数据库时，数据库为每一个用户开启的事务，不能被其他事务的数据操作所干扰，多个并发事务之间要相互隔离。</p>
+<p><strong>持久性（Durability）</strong><br>持久性指一个事务一旦被提交，它对数据库中数据的改变就是永久性的。</p>
+<h4 id="并发事务问题"><a href="#并发事务问题" class="headerlink" title="并发事务问题"></a>并发事务问题</h4><table>
+<thead>
+<tr>
+<th align="center">问题</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">脏读</td>
+<td align="center">一个事务读到另一个事务未提交的数据</td>
+</tr>
+<tr>
+<td align="center">不可重复读</td>
+<td align="center">一个事务先后读取同一条记录，但两次读取的数据不一样</td>
+</tr>
+<tr>
+<td align="center">幻读</td>
+<td align="center">一个事务按照条件查询时，没有对应的数据行，但是在插入数据时，发现数据行已经存在</td>
+</tr>
+</tbody></table>
+<img src="/2022/04/22/mysql-basic-4/zd.png" class="">
+
+<img src="/2022/04/22/mysql-basic-4/unredu.png" class="">
+
+<img src="/2022/04/22/mysql-basic-4/hd.png" class="">
+
+<h4 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h4><p>READ_UNCOMMITTED（读未提交）<br>允许读取还没有被提交的数据变更，所以很明显这个级别的隔离机制会产生脏读、不可重复读、幻读。</p>
+<p>READ_COMMITED（读已提交）（Oracle默认隔离级别）<br>允许读取并发事务已经提交的数据，自然能够防止脏读，但是会出现不可重复读和幻读。</p>
+<p>REPEATABLE_READ（可重复读）（Mysql默认隔离级别）<br>对同一条记录的多次读取结果都是一致的，除非记录被事务本身所修改，可以防止脏读和不可重复读，但幻读仍有可能发生。</p>
+<p>SERLALIZABLE（串行化）<br>最高的事务隔离级别，所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，解决了脏读、不可重复读和幻读问题。</p>
+<p>查看MySQL数据库默认隔离级别命令：SELECT @@tx_isolation;</p>
+<p>设置事务隔离级别<br>set session|global transaction isolation level read uncommitted|read committed|repeatable read|serializable</p>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>do_it</title>
     <url>/2021/10/29/now-do-it/</url>
     <content><![CDATA[<p>不知不觉已经10月29号了，时间如白驹过隙，还有一个月就要开题答辩了。昨天老师腾讯会议聊完开题的事情，我的上一届师兄师姐在这个时候或多或少都有一定的研究成果了。但我的研究成果似乎还停滞在了2个月之前，安全多方计算、区块链、物联网。一个热门又新的领域，但似乎对我不太友好，可能我就不适合做科研工作者吧！但是没办法，你必须得硬着头皮往前冲，科研就是这样，培养的就是解决未知问题的能力。就是找没有答案的问题，如果是有答案的问题，那用部着进行科学研究。科研的道路注定充满艰辛、孤独。科研工作者就像勇士一样，必须连续作战，保持胜利战果，所以他是孤独的，同时也是令人敬佩的。加油吧，年轻人！</p>
@@ -2856,6 +2761,89 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>going</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mysql_basic_3</title>
+    <url>/2022/04/17/mysql-basic-3/</url>
+    <content><![CDATA[<h3 id="多表查询"><a href="#多表查询" class="headerlink" title="多表查询"></a>多表查询</h3><h4 id="多表关系"><a href="#多表关系" class="headerlink" title="多表关系"></a>多表关系</h4><p><strong>一对多</strong><br>部门和员工的关系<br>实现：在员工表中建立外键（部门表的id）</p>
+<p><strong>多对多</strong><br>学生与课程的关系<br>实现：建立一张中间表，包含两个外键（学生表的id，课程表的id）</p>
+<p><strong>一对一</strong><br>用户与用户详情的关系<br>多用于单表拆分，将一张表的基础字段放在一张表中，其它详情字段放在另一张表中，以提升效率<br>实现：在任意一张被拆分的表中加入外键，并且设置为unique</p>
+<h4 id="多表查询-1"><a href="#多表查询-1" class="headerlink" title="多表查询"></a>多表查询</h4><p><strong>笛卡尔积</strong>：在数学中，两个集合A和B的所有组合情况。（多表查询时，需要消除无效的笛卡尔积）</p>
+<p>简单的多表查询：SELECT * FROM emp, dept WHERE emp.dept_id = dept.id;</p>
+<h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><h5 id="连接查询"><a href="#连接查询" class="headerlink" title="连接查询"></a>连接查询</h5><p><strong>内连接</strong>：查询集合A、B的交集数据。</p>
+<ul>
+<li><p>隐式内连接：select 字段列表 from 表1,表2 where 条件;<br>SELECT emp.name, dept.name FROM emp, dept WHERE emp.dept_id = dept.id;<br>SELECT e.name, d.name FROM emp e, dept d WHERE e.dept_id = d.id; // 使用别名</p>
+</li>
+<li><p>显示内连接：select 字段列表 from 表1 [inner] join 表2 on 连接条件;<br>SELECT e.name, d.name FROM emp e JOIN dept d ON e.dept_id = d.id;</p>
+</li>
+</ul>
+<p><strong>外连接</strong>：</p>
+<ul>
+<li><p>左外连接：查询左表所有数据，以及两张表的交集数据。<br>select 字段列表 from 表1 left [outer] join 表2 on 条件;<br>SELECT e.*, d.name FROM emp e LEFT JOIN dept d ON e.dept_id = d.id;</p>
+</li>
+<li><p>右外连接：查询右表所有数据，以及两张表的交集数据。<br>select 字段列表 from 表1 right [outer] join 表2 on 条件;<br>SELECT e.name, d.* FROM emp e RIGHT JOIN dept d ON e.dept_id = d.id;</p>
+</li>
+</ul>
+<p><strong>自连接</strong>：当前表与自身的连接查询，必须使用别名。<br>select 字段列表 from 表1 别名1 join 表1 别名2 on 条件;<br>SELECT a.name, b.name FROM emp a, emp b WHERE a.managerid = b.id;<br>或SELECT a.name, b.name FROM emp a JOIN emp b ON a.managerid = b.id;<br>或SELECT a.name, b.name FROM emp a LEFT JOIN emp b ON a.managerid = b.id;</p>
+<h5 id="联合查询"><a href="#联合查询" class="headerlink" title="联合查询"></a>联合查询</h5><p>把多次查询的结果合并起来，形成一个新的查询结果集。<br>select * 字段列表 表1 … union [all] select 字段列表 from 表2 …;</p>
+<p>SELECT * FROM emp WHERE salary &gt; 5000 UNION ALL SELECT * FROM emp WHERE age &gt; 40;<br>SELECT * FROM emp WHERE salary &gt; 5000 UNION SELECT * FROM emp WHERE age &gt; 40; // 去重</p>
+<p>对于联合查询的多张表的字段列数必须保持一致，字段类型也要保持一致。<br>union all会将全部的数据直接合并在一起，union会对合并之后的数据去重。</p>
+<h5 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h5><p>SQL语句中嵌套select语句，又称为嵌套查询。<br>select * from 表1 where column1=(select column1 from 表2);</p>
+<p>根据查询结果不同，子查询可分为：</p>
+<ul>
+<li><p>标量子查询（子查询结果为单个值）<br>SELECT * FROM emp WHERE dept_id = (SELECT id FROM dept WHERE name = ‘销售部’);<br>SELECT * from emp where entrydate &gt;= (SELECT entrydate FROM emp WHERE name = ‘hyh’);</p>
+</li>
+<li><p>列子查询（子查询结果为一列）<br>常用操作符：IN、NOT IN、ANY、SOME、ALL</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">操作符</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">IN</td>
+<td align="center">在指定的集合范围之内，多选一</td>
+</tr>
+<tr>
+<td align="center">NOT IN</td>
+<td align="center">不在指定的集合范围之内</td>
+</tr>
+<tr>
+<td align="center">ANY</td>
+<td align="center">子查询返回列表中有任意一个满足即可</td>
+</tr>
+<tr>
+<td align="center">SOME</td>
+<td align="center">同ANY</td>
+</tr>
+<tr>
+<td align="center">ALL</td>
+<td align="center">子查询返回列表的所有值都必须满足</td>
+</tr>
+</tbody></table>
+<p>SELECT * FROM emp WHERE dept_id IN (SELECT id FROM dept WHERE name = ‘销售部’ OR name = ‘市场部’);<br>SELECT * FROM emp WHERE salary &gt; ALL (SELECT salary FROM emp WHERE dept_id = (SELECT id FROM dept WHERE name = ‘财务部’));</p>
+<ul>
+<li><p>行子查询（子查询结果为一行）<br>SELECT * FROM emp WHERE (salary,managerid) = (SELECT salary, managerid FROM emp WHERE name = ‘hyh’);</p>
+</li>
+<li><p>表子查询（子查询结果为多行多列）<br>SELECT * FROM emp WHERE (age,salary) in (SELECT age, salary FROM emp WHERE name = ‘cjm’ OR name = ‘hyh’);<br>SELECT e.name,d.name FROM (SELECT * FROM emp WHERE entrydate &gt; ‘2022-03-16’) e LEFT JOIN dept d ON e.dept_id = d.id;</p>
+</li>
+</ul>
+<p>根据查询的位置，子查询可分为：</p>
+<ul>
+<li>where之后</li>
+<li>from之后</li>
+<li>select之后</li>
+</ul>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
       </tags>
   </entry>
   <entry>
@@ -2872,6 +2860,19 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>如晴似雨</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>十月</title>
+    <url>/2021/10/30/oct-day/</url>
+    <content><![CDATA[<p>十月的北京可谓是诈寒还暖，十月的倒数第二天竟然有二十多度，比起国庆之后的最低气温，现在不可谓不舒适。后天就是十一月了，日子总是这么轻飘飘的就过去了，明天三年之约也来了。多么令人期待了，等待了数个三年之后，炎帝迎来了他的三年之约。十一月总是给人美好，十一月的自己也要更加自律了，毕竟毕业不是儿戏啊！而且实习经验也没有的自己更要抓紧时间了。</p>
+<p>农历九月二十五日</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>天气</tag>
       </tags>
   </entry>
   <entry>
@@ -2913,70 +2914,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>shiro</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>首汽面试</title>
-    <url>/2022/03/09/shouqi/</url>
-    <content><![CDATA[<p>2022年3月9号<br>由于本次面试是线下面试，一些问题记不太清，本次面试基本都是拿着简历问问题。</p>
-<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍研究方向"><a href="#2-介绍研究方向" class="headerlink" title="2 介绍研究方向"></a>2 介绍研究方向</h3><h3 id="3-docker常用命令"><a href="#3-docker常用命令" class="headerlink" title="3 docker常用命令"></a>3 docker常用命令</h3><p><a href="https://cool-jun.github.io/2022/04/16/docker/">docker</a></p>
-<h3 id="4-redis数据类型"><a href="#4-redis数据类型" class="headerlink" title="4 redis数据类型"></a>4 redis数据类型</h3><p>string、list、hash、set、zset</p>
-<h3 id="5-说说spring-ioc与aop"><a href="#5-说说spring-ioc与aop" class="headerlink" title="5 说说spring ioc与aop"></a>5 说说spring ioc与aop</h3><p><a href="https://cool-jun.github.io/2021/12/05/12-05-Spring/">ioc</a><br><a href="https://cool-jun.github.io/2021/12/10/12-10-Spring/">aop</a></p>
-<h3 id="6-创建多线程的方式"><a href="#6-创建多线程的方式" class="headerlink" title="6 创建多线程的方式"></a>6 创建多线程的方式</h3><p>见蔚来一面</p>
-<h3 id="7-说说线程池"><a href="#7-说说线程池" class="headerlink" title="7 说说线程池"></a>7 说说线程池</h3><p><a href="https://cool-jun.github.io/2021/11/24/11-24-Java/">概念</a><br><a href="https://cool-jun.github.io/2021/11/26/11-26-Java/">创建方式</a></p>
-<h3 id="8-jvm详细说一下"><a href="#8-jvm详细说一下" class="headerlink" title="8 jvm详细说一下"></a>8 jvm详细说一下</h3><p><a href="https://cool-jun.github.io/2021/11/27/11-27-Java/">jvm</a></p>
-<h3 id="9-垃圾回收机制"><a href="#9-垃圾回收机制" class="headerlink" title="9 垃圾回收机制"></a>9 垃圾回收机制</h3><p><a href="https://cool-jun.github.io/2021/12/04/12-04-Java/">gc</a></p>
-<h3 id="10-垃圾收集器有哪些？说一下G1"><a href="#10-垃圾收集器有哪些？说一下G1" class="headerlink" title="10 垃圾收集器有哪些？说一下G1"></a>10 垃圾收集器有哪些？说一下G1</h3><p><a href="https://cool-jun.github.io/2021/12/04/12-04-Java/">collector</a></p>
-<h3 id="11-spring有哪些注解，说一下-Resource注解"><a href="#11-spring有哪些注解，说一下-Resource注解" class="headerlink" title="11 spring有哪些注解，说一下@Resource注解"></a>11 spring有哪些注解，说一下@Resource注解</h3><p>Spring中的注解主要分为两类：</p>
-<ul>
-<li><p>类级别的注解：如@Component、@Repository、@Controller、@Service以及JavaEE6的@ManagedBean和@Named注解，都是添加在类上面的类级别注解。</p>
-</li>
-<li><p>类内部的注解：如@Autowire、@Value、@Resource以及EJB和WebService相关的注解等，都是添加在类内部的字段或者方法上的类内部注解。</p>
-</li>
-</ul>
-<p>具体的来说又有以下几种类型的注解方式</p>
-<ol>
-<li><p>声明bean的注解<br>@Component，通用的注解方式<br>@Service，在业务逻辑层使用（service层）<br>@Repository，在数据访问层使用（dao层）<br>@Controller，在表现层使用，控制器的声明</p>
-</li>
-<li><p>注入bean的注解<br>@Autowired：由Spring提供<br>@Inject：由JSR-330提供<br>@Resource：由JSR-250提供<br>都可以注解在set方法和属性上，推荐注解在属性上（一目了然，少写代码）。</p>
-</li>
-<li><p>java配置类相关注解<br>@Configuration，声明当前类为配置类，相当于xml形式的Spring配置（类上）<br>@Bean，注解在方法上，声明当前方法的返回值为一个bean，替代xml中的方式（方法上）<br>@Configuration，声明当前类为配置类，其中内部组合了@Component注解，表明这个类是一个bean（类上）<br>@ComponentScan，用于对Component进行扫描，相当于xml中的（类上）<br>@WishlyConfiguration，为@Configuration与@ComponentScan的组合注解，可以替代这两个注解</p>
-</li>
-<li><p>切面（AOP）相关注解 Spring支持AspectJ的注解式切面编程。<br>@Aspect，声明一个切面（类上）<br>使用@After、@Before、@Around定义通知（advice），可直接将拦截规则（切点）作为参数。<br>@After，在方法执行之后执行（方法上） @Before 在方法执行之前执行（方法上） @Around 在方法执行之前与之后执行（方法上）<br>@PointCut，声明切点<br>在java配置类中使用@EnableAspectJAutoProxy注解开启Spring对AspectJ代理的支持（类上）</p>
-</li>
-<li><p>@Bean的属性支持<br>@Scope，设置Spring容器如何新建Bean实例（方法上，得有@Bean）<br>其设置类型包括：<br>· Singleton （单例，一个Spring容器中只有一个bean实例，默认模式）,<br>· Protetype （每次调用新建一个bean）,<br>· Request （web项目中，给每个http request新建一个bean）,<br>· Session （web项目中，给每个http session新建一个bean）,<br>· GlobalSession（给每一个 global http session新建一个Bean实例）</p>
-</li>
-</ol>
-<p>@Autowired与@Resource<br>@Autowired默认按类型查找，有查找的优先顺序。<br>按Type匹配（Match by Type）<br>按Qualifier匹配（Match by Qualifier）<br>按Name匹配（Match by Name）</p>
-<p>如果要允许null值，可以设置它的required属性为false，如：@Autowired(required=false)。<br>若想要按名称装配，可以结合@Qualifier注解一起使用，如：@Autowired(required=false)<br>@Qualifier(“bean”)</p>
-<p>@Resource默认按名字查找，但是也有查找的优先顺序。<br>按Name匹配（Match by Name）<br>按Type匹配（Match by Type）<br>按Qualifier匹配（Match by Qualifier）</p>
-<p>@Resource注解和@Autowired一样，也可以标注在字段或属性的setter方法上。<br>Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不指定name也不指定type属性，这时将通过反射机制使用byName自动注入策略。</p>
-<p>@Resource装配顺序</p>
-<ol>
-<li>如果同时指定了name和type，则从Spring上下文中找到唯一匹配的bean进行装配，找不到则抛出异常</li>
-<li>如果指定了name，则从上下文中查找名称（id）匹配的bean进行装配，找不到则抛出异常</li>
-<li>如果指定了type，则从上下文中找到类型匹配的唯一bean进行装配，找不到或者找到多个，都会抛出异常</li>
-<li>如果既没有指定name，又没有指定type，则自动按照byName方式进行装配；如果没有匹配，则回退为一个原始类型进行匹配，如果匹配则自动装配；</li>
-</ol>
-<h3 id="12-说一下git常用命令，rebase命令了解吗？"><a href="#12-说一下git常用命令，rebase命令了解吗？" class="headerlink" title="12 说一下git常用命令，rebase命令了解吗？"></a>12 说一下git常用命令，rebase命令了解吗？</h3><p><a href="https://cool-jun.github.io/2022/01/08/01-08-git/">git</a></p>
-<h3 id="13-说一下osi七层模型"><a href="#13-说一下osi七层模型" class="headerlink" title="13 说一下osi七层模型"></a>13 说一下osi七层模型</h3><img src="/2022/03/09/shouqi/osi.png" class="">
-
-<h3 id="14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？"><a href="#14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？" class="headerlink" title="14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？"></a>14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？</h3><p><a href="https://cool-jun.github.io/2021/12/11/12-11-Network/">三次握手</a><br><a href="https://cool-jun.github.io/2021/12/13/12-13-Network/">四次挥手</a></p>
-<h3 id="15-十亿条无序的数据，找出其中最大的10条。（top-k问题）"><a href="#15-十亿条无序的数据，找出其中最大的10条。（top-k问题）" class="headerlink" title="15 十亿条无序的数据，找出其中最大的10条。（top k问题）"></a>15 十亿条无序的数据，找出其中最大的10条。（top k问题）</h3><p>针对top K问题，通常比较好的方案是：分治+hash+小顶堆。</p>
-<p>例如：1亿个数据中找出最大的前100个。<br>hash：如果这1亿个数里面有很多重复的数，先通过Hash，把这1亿个数去重复，这样如果重复率很高的话，会减少很大的内存用量，从而缩小运算空间，然后通过分治法或最小堆法查找最大的100个数。<br>分治：将1亿个数据分成100份，每份100万个数据，找到每份数据中最大的100个，最后在剩下的10000个数据里面找出最大的100个。<br>小顶堆。</p>
-<p><strong>PriorityQueue</strong></p>
-<h3 id="16-算法题：单链表反转"><a href="#16-算法题：单链表反转" class="headerlink" title="16 算法题：单链表反转"></a>16 算法题：单链表反转</h3><p>头插法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ListNode reverseList(ListNode head) &#123;</span><br><span class="line">    ListNode previous &#x3D; null;</span><br><span class="line">    ListNode current &#x3D; head;</span><br><span class="line">    while (current !&#x3D; null) &#123;</span><br><span class="line">        ListNode after &#x3D; current.next;</span><br><span class="line">        current.next &#x3D; previous;</span><br><span class="line">        previous &#x3D; current;</span><br><span class="line">        current &#x3D; after;</span><br><span class="line">    &#125;</span><br><span class="line">    return previous;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>递归</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ListNode reverseList(ListNode head) &#123;</span><br><span class="line">    if (head &#x3D;&#x3D; null || head.next &#x3D;&#x3D; null) &#123;</span><br><span class="line">        return head;</span><br><span class="line">    &#125;</span><br><span class="line">    ListNode newHead &#x3D; reverseList(head.next);</span><br><span class="line">    head.next.next &#x3D; head;</span><br><span class="line">    head.next &#x3D; null;</span><br><span class="line">    return newHead;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="17-HR面"><a href="#17-HR面" class="headerlink" title="17 HR面"></a>17 HR面</h3><p>日常聊天半小时，面试通过。<br>3月15日婉拒offer。</p>
-]]></content>
-      <categories>
-        <category>面试</category>
-      </categories>
-      <tags>
-        <tag>首汽</tag>
       </tags>
   </entry>
   <entry>
@@ -3057,6 +2994,36 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>design_mode</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>uml</title>
+    <url>/2021/03/31/umlarrow/</url>
+    <content><![CDATA[<h3 id="泛化（继承）"><a href="#泛化（继承）" class="headerlink" title="泛化（继承）"></a>泛化（继承）</h3><p>泛化是一种一般与特殊、一般与具体关系的描述，具体建立在一般之上并对其进行扩展。<br><strong>实线空心三角箭头表示</strong></p>
+<img src="/2021/03/31/umlarrow/generate.png" class="">
+
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>实现是类与接口之间关系的描述，类是接口所有特征和行为的具体实现。<br><strong>虚线空心三角箭头表示</strong></p>
+<img src="/2021/03/31/umlarrow/implement.png" class="">
+
+<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><p>依赖是一种使用关系，即一个类的实现需要另一个类的帮助。通常一个类的方法参数中需要传入另一个类的对象，即表示依赖这个类。<br><strong>虚线箭头</strong></p>
+<img src="/2021/03/31/umlarrow/rely.png" class="">
+
+<h3 id="关联"><a href="#关联" class="headerlink" title="关联"></a>关联</h3><p>关联表示类与类之间的联接，一个类知道另一个类的方法和属性，这种关系比依赖更强。一般一个类作为另一个类的全局变量，即表示关联这个类。<br><strong>实线箭头</strong></p>
+<img src="/2021/03/31/umlarrow/relevance.png" class="">
+
+
+<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><p>聚合是关联的一种特例，是更强的关联。聚合是整体和个体之间的关系，即<strong>has-a</strong>的关系。关联关系中两个类是处于相同的层次,而聚合关系中两个类是处于不同的层次，一个表示整体, 一个表示个体。</p>
+<img src="/2021/03/31/umlarrow/juhe.png" class="">
+
+<h3 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h3><p>组合也是关联的一种特例。组合是整体与部分的关系，即<strong>contains-a</strong>的关系，比聚合更强。</p>
+<img src="/2021/03/31/umlarrow/union.png" class="">
+
+]]></content>
+      <categories>
+        <category>UML</category>
+      </categories>
+      <tags>
+        <tag>arrow</tag>
       </tags>
   </entry>
   <entry>
@@ -3160,62 +3127,67 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>uml</title>
-    <url>/2021/03/31/umlarrow/</url>
-    <content><![CDATA[<h3 id="泛化（继承）"><a href="#泛化（继承）" class="headerlink" title="泛化（继承）"></a>泛化（继承）</h3><p>泛化是一种一般与特殊、一般与具体关系的描述，具体建立在一般之上并对其进行扩展。<br><strong>实线空心三角箭头表示</strong></p>
-<img src="/2021/03/31/umlarrow/generate.png" class="">
+    <title>首汽面试</title>
+    <url>/2022/03/09/shouqi/</url>
+    <content><![CDATA[<p>2022年3月9号<br>由于本次面试是线下面试，一些问题记不太清，本次面试基本都是拿着简历问问题。</p>
+<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍研究方向"><a href="#2-介绍研究方向" class="headerlink" title="2 介绍研究方向"></a>2 介绍研究方向</h3><h3 id="3-docker常用命令"><a href="#3-docker常用命令" class="headerlink" title="3 docker常用命令"></a>3 docker常用命令</h3><p><a href="https://cool-jun.github.io/2022/04/16/docker/">docker</a></p>
+<h3 id="4-redis数据类型"><a href="#4-redis数据类型" class="headerlink" title="4 redis数据类型"></a>4 redis数据类型</h3><p>string、list、hash、set、zset</p>
+<h3 id="5-说说spring-ioc与aop"><a href="#5-说说spring-ioc与aop" class="headerlink" title="5 说说spring ioc与aop"></a>5 说说spring ioc与aop</h3><p><a href="https://cool-jun.github.io/2021/12/05/12-05-Spring/">ioc</a><br><a href="https://cool-jun.github.io/2021/12/10/12-10-Spring/">aop</a></p>
+<h3 id="6-创建多线程的方式"><a href="#6-创建多线程的方式" class="headerlink" title="6 创建多线程的方式"></a>6 创建多线程的方式</h3><p>见蔚来一面</p>
+<h3 id="7-说说线程池"><a href="#7-说说线程池" class="headerlink" title="7 说说线程池"></a>7 说说线程池</h3><p><a href="https://cool-jun.github.io/2021/11/24/11-24-Java/">概念</a><br><a href="https://cool-jun.github.io/2021/11/26/11-26-Java/">创建方式</a></p>
+<h3 id="8-jvm详细说一下"><a href="#8-jvm详细说一下" class="headerlink" title="8 jvm详细说一下"></a>8 jvm详细说一下</h3><p><a href="https://cool-jun.github.io/2021/11/27/11-27-Java/">jvm</a></p>
+<h3 id="9-垃圾回收机制"><a href="#9-垃圾回收机制" class="headerlink" title="9 垃圾回收机制"></a>9 垃圾回收机制</h3><p><a href="https://cool-jun.github.io/2021/12/04/12-04-Java/">gc</a></p>
+<h3 id="10-垃圾收集器有哪些？说一下G1"><a href="#10-垃圾收集器有哪些？说一下G1" class="headerlink" title="10 垃圾收集器有哪些？说一下G1"></a>10 垃圾收集器有哪些？说一下G1</h3><p><a href="https://cool-jun.github.io/2021/12/04/12-04-Java/">collector</a></p>
+<h3 id="11-spring有哪些注解，说一下-Resource注解"><a href="#11-spring有哪些注解，说一下-Resource注解" class="headerlink" title="11 spring有哪些注解，说一下@Resource注解"></a>11 spring有哪些注解，说一下@Resource注解</h3><p>Spring中的注解主要分为两类：</p>
+<ul>
+<li><p>类级别的注解：如@Component、@Repository、@Controller、@Service以及JavaEE6的@ManagedBean和@Named注解，都是添加在类上面的类级别注解。</p>
+</li>
+<li><p>类内部的注解：如@Autowire、@Value、@Resource以及EJB和WebService相关的注解等，都是添加在类内部的字段或者方法上的类内部注解。</p>
+</li>
+</ul>
+<p>具体的来说又有以下几种类型的注解方式</p>
+<ol>
+<li><p>声明bean的注解<br>@Component，通用的注解方式<br>@Service，在业务逻辑层使用（service层）<br>@Repository，在数据访问层使用（dao层）<br>@Controller，在表现层使用，控制器的声明</p>
+</li>
+<li><p>注入bean的注解<br>@Autowired：由Spring提供<br>@Inject：由JSR-330提供<br>@Resource：由JSR-250提供<br>都可以注解在set方法和属性上，推荐注解在属性上（一目了然，少写代码）。</p>
+</li>
+<li><p>java配置类相关注解<br>@Configuration，声明当前类为配置类，相当于xml形式的Spring配置（类上）<br>@Bean，注解在方法上，声明当前方法的返回值为一个bean，替代xml中的方式（方法上）<br>@Configuration，声明当前类为配置类，其中内部组合了@Component注解，表明这个类是一个bean（类上）<br>@ComponentScan，用于对Component进行扫描，相当于xml中的（类上）<br>@WishlyConfiguration，为@Configuration与@ComponentScan的组合注解，可以替代这两个注解</p>
+</li>
+<li><p>切面（AOP）相关注解 Spring支持AspectJ的注解式切面编程。<br>@Aspect，声明一个切面（类上）<br>使用@After、@Before、@Around定义通知（advice），可直接将拦截规则（切点）作为参数。<br>@After，在方法执行之后执行（方法上） @Before 在方法执行之前执行（方法上） @Around 在方法执行之前与之后执行（方法上）<br>@PointCut，声明切点<br>在java配置类中使用@EnableAspectJAutoProxy注解开启Spring对AspectJ代理的支持（类上）</p>
+</li>
+<li><p>@Bean的属性支持<br>@Scope，设置Spring容器如何新建Bean实例（方法上，得有@Bean）<br>其设置类型包括：<br>· Singleton （单例，一个Spring容器中只有一个bean实例，默认模式）,<br>· Protetype （每次调用新建一个bean）,<br>· Request （web项目中，给每个http request新建一个bean）,<br>· Session （web项目中，给每个http session新建一个bean）,<br>· GlobalSession（给每一个 global http session新建一个Bean实例）</p>
+</li>
+</ol>
+<p>@Autowired与@Resource<br>@Autowired默认按类型查找，有查找的优先顺序。<br>按Type匹配（Match by Type）<br>按Qualifier匹配（Match by Qualifier）<br>按Name匹配（Match by Name）</p>
+<p>如果要允许null值，可以设置它的required属性为false，如：@Autowired(required=false)。<br>若想要按名称装配，可以结合@Qualifier注解一起使用，如：@Autowired(required=false)<br>@Qualifier(“bean”)</p>
+<p>@Resource默认按名字查找，但是也有查找的优先顺序。<br>按Name匹配（Match by Name）<br>按Type匹配（Match by Type）<br>按Qualifier匹配（Match by Qualifier）</p>
+<p>@Resource注解和@Autowired一样，也可以标注在字段或属性的setter方法上。<br>Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不指定name也不指定type属性，这时将通过反射机制使用byName自动注入策略。</p>
+<p>@Resource装配顺序</p>
+<ol>
+<li>如果同时指定了name和type，则从Spring上下文中找到唯一匹配的bean进行装配，找不到则抛出异常</li>
+<li>如果指定了name，则从上下文中查找名称（id）匹配的bean进行装配，找不到则抛出异常</li>
+<li>如果指定了type，则从上下文中找到类型匹配的唯一bean进行装配，找不到或者找到多个，都会抛出异常</li>
+<li>如果既没有指定name，又没有指定type，则自动按照byName方式进行装配；如果没有匹配，则回退为一个原始类型进行匹配，如果匹配则自动装配；</li>
+</ol>
+<h3 id="12-说一下git常用命令，rebase命令了解吗？"><a href="#12-说一下git常用命令，rebase命令了解吗？" class="headerlink" title="12 说一下git常用命令，rebase命令了解吗？"></a>12 说一下git常用命令，rebase命令了解吗？</h3><p><a href="https://cool-jun.github.io/2022/01/08/01-08-git/">git</a></p>
+<h3 id="13-说一下osi七层模型"><a href="#13-说一下osi七层模型" class="headerlink" title="13 说一下osi七层模型"></a>13 说一下osi七层模型</h3><img src="/2022/03/09/shouqi/osi.png" class="">
 
-<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>实现是类与接口之间关系的描述，类是接口所有特征和行为的具体实现。<br><strong>虚线空心三角箭头表示</strong></p>
-<img src="/2021/03/31/umlarrow/implement.png" class="">
+<h3 id="14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？"><a href="#14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？" class="headerlink" title="14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？"></a>14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？</h3><p><a href="https://cool-jun.github.io/2021/12/11/12-11-Network/">三次握手</a><br><a href="https://cool-jun.github.io/2021/12/13/12-13-Network/">四次挥手</a></p>
+<h3 id="15-十亿条无序的数据，找出其中最大的10条。（top-k问题）"><a href="#15-十亿条无序的数据，找出其中最大的10条。（top-k问题）" class="headerlink" title="15 十亿条无序的数据，找出其中最大的10条。（top k问题）"></a>15 十亿条无序的数据，找出其中最大的10条。（top k问题）</h3><p>针对top K问题，通常比较好的方案是：分治+hash+小顶堆。</p>
+<p>例如：1亿个数据中找出最大的前100个。<br>hash：如果这1亿个数里面有很多重复的数，先通过Hash，把这1亿个数去重复，这样如果重复率很高的话，会减少很大的内存用量，从而缩小运算空间，然后通过分治法或最小堆法查找最大的100个数。<br>分治：将1亿个数据分成100份，每份100万个数据，找到每份数据中最大的100个，最后在剩下的10000个数据里面找出最大的100个。<br>小顶堆。</p>
+<p><strong>PriorityQueue</strong></p>
+<h3 id="16-算法题：单链表反转"><a href="#16-算法题：单链表反转" class="headerlink" title="16 算法题：单链表反转"></a>16 算法题：单链表反转</h3><p>头插法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ListNode reverseList(ListNode head) &#123;</span><br><span class="line">    ListNode previous &#x3D; null;</span><br><span class="line">    ListNode current &#x3D; head;</span><br><span class="line">    while (current !&#x3D; null) &#123;</span><br><span class="line">        ListNode after &#x3D; current.next;</span><br><span class="line">        current.next &#x3D; previous;</span><br><span class="line">        previous &#x3D; current;</span><br><span class="line">        current &#x3D; after;</span><br><span class="line">    &#125;</span><br><span class="line">    return previous;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>递归</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ListNode reverseList(ListNode head) &#123;</span><br><span class="line">    if (head &#x3D;&#x3D; null || head.next &#x3D;&#x3D; null) &#123;</span><br><span class="line">        return head;</span><br><span class="line">    &#125;</span><br><span class="line">    ListNode newHead &#x3D; reverseList(head.next);</span><br><span class="line">    head.next.next &#x3D; head;</span><br><span class="line">    head.next &#x3D; null;</span><br><span class="line">    return newHead;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h3><p>依赖是一种使用关系，即一个类的实现需要另一个类的帮助。通常一个类的方法参数中需要传入另一个类的对象，即表示依赖这个类。<br><strong>虚线箭头</strong></p>
-<img src="/2021/03/31/umlarrow/rely.png" class="">
-
-<h3 id="关联"><a href="#关联" class="headerlink" title="关联"></a>关联</h3><p>关联表示类与类之间的联接，一个类知道另一个类的方法和属性，这种关系比依赖更强。一般一个类作为另一个类的全局变量，即表示关联这个类。<br><strong>实线箭头</strong></p>
-<img src="/2021/03/31/umlarrow/relevance.png" class="">
-
-
-<h3 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h3><p>聚合是关联的一种特例，是更强的关联。聚合是整体和个体之间的关系，即<strong>has-a</strong>的关系。关联关系中两个类是处于相同的层次,而聚合关系中两个类是处于不同的层次，一个表示整体, 一个表示个体。</p>
-<img src="/2021/03/31/umlarrow/juhe.png" class="">
-
-<h3 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h3><p>组合也是关联的一种特例。组合是整体与部分的关系，即<strong>contains-a</strong>的关系，比聚合更强。</p>
-<img src="/2021/03/31/umlarrow/union.png" class="">
-
+<h3 id="17-HR面"><a href="#17-HR面" class="headerlink" title="17 HR面"></a>17 HR面</h3><p>日常聊天半小时，面试通过。<br>3月15日婉拒offer。</p>
 ]]></content>
       <categories>
-        <category>UML</category>
+        <category>面试</category>
       </categories>
       <tags>
-        <tag>arrow</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>冬至</title>
-    <url>/2021/12/21/winter-solstice/</url>
-    <content><![CDATA[<p>距离开题答辩也快有一周时间了，感叹时间消逝如此之快。<br>今天是冬至日，不知道大家吃饺子了吗？反正我是没吃，哈哈。我的印象中似乎没有冬至这个概念，更没有冬至吃饺子的记忆。不过美食圆卖饺子的档口今天排的队确是够长，看来北方人似乎比较喜欢吃饺子。</p>
-<p>开完题了，自己却并没有感到诸如如释重负的感觉，下一步就要开始动真格的了，以发论文为导向，争取发个英文的CCF-C类期刊。但是又觉得实习似乎更重要，没有实习经验也找不到好的工作，唉。争取在1月份左右能够找到一份实习。加油吧，打工人！</p>
-<p>2021-12-21<br>农历十一月十八</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>饺子</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>圆明园</title>
-    <url>/2022/03/03/ymy/</url>
-    <content><![CDATA[<p>圆明园游记！<br>虽漫天大雪，吾往矣。</p>
-<p>入园后，园内破败的建筑与墙上绘画着的昔日辉煌遥相呼应，历史书上八国联军侵华的一幕又在脑海浮起。落后就要挨打，就要受欺负。走着走着，雪愈发下的紧了，衬托着如今的荒凉，也告诉我们勿忘历史，砥砺前行！</p>
-<p>大水法</p>
-<img src="/2022/03/03/ymy/ymy.jpg" class="">
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>景点</tag>
+        <tag>首汽</tag>
       </tags>
   </entry>
   <entry>
@@ -3283,6 +3255,20 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>lock</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>冬至</title>
+    <url>/2021/12/21/winter-solstice/</url>
+    <content><![CDATA[<p>距离开题答辩也快有一周时间了，感叹时间消逝如此之快。<br>今天是冬至日，不知道大家吃饺子了吗？反正我是没吃，哈哈。我的印象中似乎没有冬至这个概念，更没有冬至吃饺子的记忆。不过美食圆卖饺子的档口今天排的队确是够长，看来北方人似乎比较喜欢吃饺子。</p>
+<p>开完题了，自己却并没有感到诸如如释重负的感觉，下一步就要开始动真格的了，以发论文为导向，争取发个英文的CCF-C类期刊。但是又觉得实习似乎更重要，没有实习经验也找不到好的工作，唉。争取在1月份左右能够找到一份实习。加油吧，打工人！</p>
+<p>2021-12-21<br>农历十一月十八</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>饺子</tag>
       </tags>
   </entry>
   <entry>
@@ -3479,6 +3465,21 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>四次挥手</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>圆明园</title>
+    <url>/2022/03/03/ymy/</url>
+    <content><![CDATA[<p>圆明园游记！<br>虽漫天大雪，吾往矣。</p>
+<p>入园后，园内破败的建筑与墙上绘画着的昔日辉煌遥相呼应，历史书上八国联军侵华的一幕又在脑海浮起。落后就要挨打，就要受欺负。走着走着，雪愈发下的紧了，衬托着如今的荒凉，也告诉我们勿忘历史，砥砺前行！</p>
+<p>大水法</p>
+<img src="/2022/03/03/ymy/ymy.jpg" class="">
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>景点</tag>
       </tags>
   </entry>
   <entry>
