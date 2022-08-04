@@ -35,8 +35,15 @@
 <meta property="og:image" content="http://example.com/2022/08/01/mysql-advance/hash.jpg">
 <meta property="og:image" content="http://example.com/2022/08/01/mysql-advance/two-index.jpg">
 <meta property="og:image" content="http://example.com/2022/08/01/mysql-advance/huibiao.jpg">
+<meta property="og:image" content="http://example.com/2022/08/01/mysql-advance/innodb-b+height.jpg">
+<meta property="og:image" content="http://example.com/2022/08/01/mysql-advance/show_index.jpg">
+<meta property="og:image" content="http://example.com/2022/08/01/mysql-advance/ddl_index.jpg">
+<meta property="og:image" content="http://example.com/2022/08/01/mysql-advance/db_status.jpg">
+<meta property="og:image" content="http://example.com/2022/08/01/mysql-advance/slow_query_log.jpg">
+<meta property="og:image" content="http://example.com/2022/08/01/mysql-advance/profiles.jpg">
+<meta property="og:image" content="http://example.com/2022/08/01/mysql-advance/explain.jpg">
 <meta property="article:published_time" content="2022-08-01T02:00:51.000Z">
-<meta property="article:modified_time" content="2022-08-01T10:33:58.237Z">
+<meta property="article:modified_time" content="2022-08-04T13:05:02.988Z">
 <meta property="article:author" content="He Jun">
 <meta property="article:tag" content="mysql">
 <meta name="twitter:card" content="summary">
@@ -221,10 +228,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-08-01 10:00:51 / 修改时间：18:33:58" itemprop="dateCreated datePublished" datetime="2022-08-01T10:00:51+08:00">2022-08-01</time>
+              <time title="创建时间：2022-08-01 10:00:51" itemprop="dateCreated datePublished" datetime="2022-08-01T10:00:51+08:00">2022-08-01</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-04 21:05:02" itemprop="dateModified" datetime="2022-08-04T21:05:02+08:00">2022-08-04</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -352,7 +365,7 @@
 </tr>
 <tr>
 <td align="center">全文索引</td>
-<td align="center">查询的时文本中关键词，而不是比较索引中的值</td>
+<td align="center">查询的是文本中关键词，而不是比较索引中的值</td>
 <td align="center">可以有多个</td>
 <td align="center">FULLTEXT</td>
 </tr>
@@ -379,16 +392,47 @@
 </tbody></table>
 <ul>
 <li>如果存在主键，主键索引就是聚集索引；</li>
-<li>如果不存在主键，将使用第一个唯一索引作为聚集索引；</li>
+<li>如果不存在主键，将使用第一个非空唯一索引作为聚集索引；</li>
 <li>如果没有主键，也没有合适的唯一索引，则InnoDB会自动生成一个rowid作为隐藏的聚集索引。</li>
 </ul>
 <p>聚集索引与二级索引示意图</p>
 <img src="/2022/08/01/mysql-advance/two-index.jpg" class="">
 
-<p><strong>回表查询</strong></p>
+<p><strong>回表查询</strong><br>非主键索引查找数据时需要先找到主键，再根据主键查找具体行数据，这种现象叫回表查询。</p>
 <img src="/2022/08/01/mysql-advance/huibiao.jpg" class="">
 
+<p>InnoDB主键索引B+树高度</p>
+<img src="/2022/08/01/mysql-advance/innodb-b+height.jpg" class="">
 
+<h4 id="2-3-索引语法"><a href="#2-3-索引语法" class="headerlink" title="2.3 索引语法"></a>2.3 索引语法</h4><p><strong>创建索引</strong><br>create [unique|fulltext] index index_name on table_name(index_col_name,…)<br>单列索引：一个索引只关联一个字段。<br>联合索引：一个索引关联多个字段。</p>
+<p><strong>查看索引</strong><br>show index from table_name;</p>
+<img src="/2022/08/01/mysql-advance/show_index.jpg" class="">
+
+<p><strong>删除索引</strong><br>drop index index_name on table_name;</p>
+<p>t_user表中执行以下操作：</p>
+<ul>
+<li><p>name字段可能会重复，为其创建索引<br>create index idx_user_name on t_user(name)</p>
+</li>
+<li><p>phone字段非空并且唯一，为其创建索引<br>create unique index idx_user_phone on t_user(phone)</p>
+</li>
+<li><p>为profession、age、status创建联合索引<br>create index idx_user_pro_age_status on t_user(profession,age,status)</p>
+</li>
+<li><p>为email建立索引提升查询效率<br>create index idx_user_email on t_user(email)</p>
+</li>
+</ul>
+<img src="/2022/08/01/mysql-advance/ddl_index.jpg" class="">
+
+<h4 id="2-4-SQL性能优化"><a href="#2-4-SQL性能优化" class="headerlink" title="2.4 SQL性能优化"></a>2.4 SQL性能优化</h4><p><strong>sql执行频率</strong><br>通过命令 show [session|global] status 可以查询当前数据库的增删改查访问频次。<br>show global status like ‘Com_______’;<br>确认当前数据以插入？查询？删除？更新？为主，方便优化。</p>
+<img src="/2022/08/01/mysql-advance/db_status.jpg" class="">
+
+<p><strong>慢查询日志</strong><br>慢查询日志：记录了所有执行时间超过指定参数（默认10s）的sql语句的日志。<br>慢查询日志默认关闭。</p>
+<img src="/2022/08/01/mysql-advance/slow_query_log.jpg" class="">
+<p>在配置文件/etc/my.cnf开启<br>slow_query_log=1  开启慢查询日志<br>log_query_time=2</p>
+<p><strong>profile</strong><br>show profiles命令帮助了解sql语句耗费时间。<br>select @@have_profiling<br>select @@profiling<br>set profiling=1</p>
+<img src="/2022/08/01/mysql-advance/profiles.jpg" class="">
+
+<p><strong>explain</strong><br>explain select 字段列表 from 表名 where 条件</p>
+<img src="/2022/08/01/mysql-advance/explain.jpg" class="">
 
 
     </div>
@@ -491,7 +535,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#mysql%E8%BF%9B%E9%98%B6%E7%AF%87"><span class="nav-number">1.</span> <span class="nav-text">mysql进阶篇</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">1.1.</span> <span class="nav-text">1 存储引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-InnoDB"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 InnoDB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-MyISAM"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 MyISAM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-MEMORY"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.3 MEMORY</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%B4%A2%E5%BC%95"><span class="nav-number">1.2.</span> <span class="nav-text">2 索引</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E7%B4%A2%E5%BC%95%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 索引类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E7%B4%A2%E5%BC%95%E5%88%86%E7%B1%BB"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 索引分类</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#mysql%E8%BF%9B%E9%98%B6%E7%AF%87"><span class="nav-number">1.</span> <span class="nav-text">mysql进阶篇</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">1.1.</span> <span class="nav-text">1 存储引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-InnoDB"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 InnoDB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-MyISAM"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 MyISAM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-MEMORY"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.3 MEMORY</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%B4%A2%E5%BC%95"><span class="nav-number">1.2.</span> <span class="nav-text">2 索引</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E7%B4%A2%E5%BC%95%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 索引类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E7%B4%A2%E5%BC%95%E5%88%86%E7%B1%BB"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 索引分类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E7%B4%A2%E5%BC%95%E8%AF%AD%E6%B3%95"><span class="nav-number">1.2.3.</span> <span class="nav-text">2.3 索引语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-4-SQL%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="nav-number">1.2.4.</span> <span class="nav-text">2.4 SQL性能优化</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
