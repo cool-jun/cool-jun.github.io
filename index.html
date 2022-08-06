@@ -218,7 +218,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-08-04 21:05:02" itemprop="dateModified" datetime="2022-08-04T21:05:02+08:00">2022-08-04</time>
+                <time title="修改时间：2022-08-06 16:22:52" itemprop="dateModified" datetime="2022-08-06T16:22:52+08:00">2022-08-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -373,13 +373,15 @@
 <p>聚集索引与二级索引示意图</p>
 <img src="/2022/08/01/mysql-advance/two-index.jpg" class="">
 
-<p><strong>回表查询</strong><br>非主键索引查找数据时需要先找到主键，再根据主键查找具体行数据，这种现象叫回表查询。</p>
+<p><strong>回表查询</strong><br>由于二级索引只存储主键的值，如果使用二级索引搜索数据就必须先从二级索引取到主键的值，再使用主键的值去主键索引上查询，直到找到叶子节点上的数据返回，这种现象叫回表查询。</p>
 <img src="/2022/08/01/mysql-advance/huibiao.jpg" class="">
 
 <p>InnoDB主键索引B+树高度</p>
 <img src="/2022/08/01/mysql-advance/innodb-b+height.jpg" class="">
 
-<h4 id="2-3-索引语法"><a href="#2-3-索引语法" class="headerlink" title="2.3 索引语法"></a>2.3 索引语法</h4><p><strong>创建索引</strong><br>create [unique|fulltext] index index_name on table_name(index_col_name,…)<br>单列索引：一个索引只关联一个字段。<br>联合索引：一个索引关联多个字段。</p>
+<h4 id="2-3-索引语法"><a href="#2-3-索引语法" class="headerlink" title="2.3 索引语法"></a>2.3 索引语法</h4><p><strong>创建索引</strong><br>create [unique|fulltext] index index_name on table_name(index_col_name,…)<br>单列索引：一个索引只包含一个字段。<br>联合索引：一个索引包含了多个字段。<br>推荐使用联合索引。</p>
+<img src="/2022/08/01/mysql-advance/union-index.jpg" class="">
+
 <p><strong>查看索引</strong><br>show index from table_name;</p>
 <img src="/2022/08/01/mysql-advance/show_index.jpg" class="">
 
@@ -397,7 +399,7 @@
 </ul>
 <img src="/2022/08/01/mysql-advance/ddl_index.jpg" class="">
 
-<h4 id="2-4-SQL性能优化"><a href="#2-4-SQL性能优化" class="headerlink" title="2.4 SQL性能优化"></a>2.4 SQL性能优化</h4><p><strong>sql执行频率</strong><br>通过命令 show [session|global] status 可以查询当前数据库的增删改查访问频次。<br>show global status like ‘Com_______’;<br>确认当前数据以插入？查询？删除？更新？为主，方便优化。</p>
+<h4 id="2-4-SQL性能优化"><a href="#2-4-SQL性能优化" class="headerlink" title="2.4 SQL性能优化"></a>2.4 SQL性能优化</h4><p><strong>sql执行频率</strong><br>通过命令show [session|global] status可以查询当前数据库的增删改查访问频次。<br>show global status like ‘Com_______’;<br>确认当前数据以插入？查询？删除？更新？为主，方便优化。</p>
 <img src="/2022/08/01/mysql-advance/db_status.jpg" class="">
 
 <p><strong>慢查询日志</strong><br>慢查询日志：记录了所有执行时间超过指定参数（默认10s）的sql语句的日志。<br>慢查询日志默认关闭。</p>
@@ -409,6 +411,46 @@
 <p><strong>explain</strong><br>explain select 字段列表 from 表名 where 条件</p>
 <img src="/2022/08/01/mysql-advance/explain.jpg" class="">
 
+<h4 id="2-5-索引使用"><a href="#2-5-索引使用" class="headerlink" title="2.5 索引使用"></a>2.5 索引使用</h4><p><strong>最左前缀原则</strong><br>如果索引了多列（联合索引），要遵守最左前缀法则。<br>最左前缀原则：查询从索引的最左列开始，并且不跳过索引中的列。如果跳过某一列，索引将部分失效（后面的字段索引失效）</p>
+<img src="/2022/08/01/mysql-advance/left-index.jpg" class="">
+
+<h4 id="2-6-索引失效情况"><a href="#2-6-索引失效情况" class="headerlink" title="2.6 索引失效情况"></a>2.6 索引失效情况</h4><p><strong>范围查询</strong><br>联合索引中，出现范围查询（&gt;,&lt;），范围查询右侧的列索引失效。</p>
+<img src="/2022/08/01/mysql-advance/rang-index.jpg" class="">
+
+<p><strong>索引列函数运算</strong><br>不要在索引列上进行运算操作，索引将会失效。</p>
+<img src="/2022/08/01/mysql-advance/index-compute.jpg" class="">
+
+<p><strong>字符串不加引号</strong><br>字符串类型字段使用时，不加引号，索引将会失效。</p>
+<img src="/2022/08/01/mysql-advance/char-index.jpg" class="">
+
+<p><strong>模糊查询</strong><br>如果是尾部模糊匹配，索引不会失效。如果是头部模糊匹配，索引失效。</p>
+<img src="/2022/08/01/mysql-advance/like-index.jpg" class="">
+
+<p><strong>or连接的条件</strong><br>用or分隔开的条件，如果or前面的条件中的列有索引，而后面的列中没有索引，那么涉及的索引都会失效。or两侧都有索引，才会生效。</p>
+<p><strong>数据分布影响</strong><br>如果MySQL评估使用索引比全表扫描慢，则不使用索引。<br>is null，is not null走不走索引，取决于表中数据的分布。</p>
+<h4 id="2-7-覆盖索引"><a href="#2-7-覆盖索引" class="headerlink" title="2.7 覆盖索引"></a>2.7 覆盖索引</h4><p>查询使用了索引，并且需要返回的列在该索引中全部能够找到，（不需要通过主键值回表查询）。或者覆盖索引是select的数据列只用从索引中就能够取得，不必读取数据行，换句话说查询列要被所建的索引覆盖。<br>覆盖索引是一种数据查询方式，不是索引类型。</p>
+<img src="/2022/08/01/mysql-advance/cover-index.jpg" class="">
+
+<p>覆盖索引示例图</p>
+<img src="/2022/08/01/mysql-advance/fg-demo.jpg" class="">
+
+<p>回表查询示例图</p>
+<img src="/2022/08/01/mysql-advance/hb-demo.jpg" class="">
+
+<p><strong>tips</strong><br>Using where; Using index：查询使用了索引，但是需要的数据在索引列中都能找到，不需要回表查询。<br>Using index condition：查询使用了索引，但是需要回表查询数据。</p>
+<h4 id="2-8-前缀索引"><a href="#2-8-前缀索引" class="headerlink" title="2.8 前缀索引"></a>2.8 前缀索引</h4><p>定义字符串的一部分当做索引，而不是把整个字符串当做索引。默认地，如果你创建索引的语句不指定前缀长度，那么索引就会包含整个字符串。<br>create index idx_xxx on table_name(column(n))</p>
+<p>例如：<br>普通索引：create index idx_email1 on table_name(email)<br>前缀索引：create index idx_email2 on table_name(email(6))</p>
+<img src="/2022/08/01/mysql-advance/pre-index.jpg" class="">
+
+<p>前缀长度：索引选择性<br>关于索引的选择性（Index Selectivity），它是指不重复的索引值（也称为基数cardinality)和数据表的记录总数的比值，取值范围在[0,1]之间。索引的选择性越高则查询效率越高，因为选择性高的索引可以让MySQL在查找时过滤掉更多的行。</p>
+<h4 id="2-9-索引设计原则"><a href="#2-9-索引设计原则" class="headerlink" title="2.9 索引设计原则"></a>2.9 索引设计原则</h4><ul>
+<li>对于数据量大（几十万条往上），且查询比较频繁的表建立索引。</li>
+<li>为经常需要排序、分组和联合操作的字段建立索引。经常需要ORDER BY、GROUP BY、DISTINCT和UNION等操作的字段。</li>
+<li>为常作为查询条件的字段建立索引。（where）</li>
+<li>尽量选择区分度高的列作为索引，尽量建立唯一性索引。</li>
+<li>尽量使用前缀来索引。TEXT和BLOG类型的字段，进行全文检索会很浪费时间。</li>
+<li>尽量建立联合索引，减少单列索引。</li>
+</ul>
 
       
     </div>
