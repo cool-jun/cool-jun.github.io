@@ -187,6 +187,133 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/08/mysql-advance-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/08/08/mysql-advance-2/" class="post-title-link" itemprop="url">mysql_advance_2</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-08-08 09:27:25 / 修改时间：15:53:34" itemprop="dateCreated datePublished" datetime="2022-08-08T09:27:25+08:00">2022-08-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/08/08/mysql-advance-2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/08/08/mysql-advance-2/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-SQL优化"><a href="#1-SQL优化" class="headerlink" title="1 SQL优化"></a>1 SQL优化</h3><h4 id="1-1-插入数据"><a href="#1-1-插入数据" class="headerlink" title="1.1 插入数据"></a>1.1 插入数据</h4><ul>
+<li>批量插入 insert into table_name values(1,’tom’),(2,’jack’),(3,’hj’)</li>
+<li>手动提交事务</li>
+<li>主键顺序插入</li>
+</ul>
+<p><strong>大批量插入数据</strong><br>加载本地文件到数据库中。百万级别的数据量<br>select @@local_infile;结果为1，开关已打开。</p>
+<img src="/2022/08/08/mysql-advance-2/load.jpg" class="">
+
+<h4 id="1-2-主键优化"><a href="#1-2-主键优化" class="headerlink" title="1.2 主键优化"></a>1.2 主键优化</h4><p>主键顺序插入</p>
+<img src="/2022/08/08/mysql-advance-2/shunxu.jpg" class="">
+
+<p>主键乱序插入（会发生页分裂）</p>
+<img src="/2022/08/08/mysql-advance-2/luanxu.jpg" class="">
+
+<ul>
+<li>满足业务需求的情况下，尽量降低主键的长度。</li>
+<li>插入数据时，尽量选择顺序插入，选择使用auto_increment自增主键。</li>
+<li>尽量不要使用uuid做主键或其它自然主键，例如：身份证号。</li>
+</ul>
+<h4 id="1-3-order-by优化"><a href="#1-3-order-by优化" class="headerlink" title="1.3 order by优化"></a>1.3 order by优化</h4><p><strong>Using index</strong><br>通过有序索引顺序扫描直接返回有序数据，这种方式在使用explain分析查询的时候显示为Using index(即通过索引列就能返回所需要的数据)，不需要额外的排序，操作效率较高。</p>
+<img src="/2022/08/08/mysql-advance-2/using-index.jpg" class="">
+
+<p><strong>Using filesort</strong><br>通过返回数据进行排序，即Filesort排序，所有不是通过索引直接返回排序结果的排序都叫Filesort排序。Filesort排序是使用磁盘文件还是临时表取决于MySQL服务器对排序参数的设置和需要排序数据的大小。</p>
+<p>尽量减少额外的排序，通过索引直接返回有序数据。WHERE条件和ORDER BY使用相同的索引，并且ORDER BY的顺序和索引顺序相同，ORDER BY的字段都是升序或者降序，否则一般需要额外的排序操作，这样就会出现filesort。</p>
+<h4 id="1-4-group-by优化"><a href="#1-4-group-by优化" class="headerlink" title="1.4 group by优化"></a>1.4 group by优化</h4><img src="/2022/08/08/mysql-advance-2/group-by1.jpg" class="">
+<img src="/2022/08/08/mysql-advance-2/group-by2.jpg" class="">
+
+<h4 id="1-5-limit优化"><a href="#1-5-limit优化" class="headerlink" title="1.5 limit优化"></a>1.5 limit优化</h4><p>覆盖索引+子查询<br>例如emp表中有一千万条数据，执行select * from emp limit 1000000,10;耗时时间长。<br>这条SQL的执行过程如下：<br>从数据表中读取第N条数据添加到数据集中；<br>重复第一步直到N=1000000 + 10；<br>根据offset丢弃前面的1000000条数据；<br>返回剩余的10条数据；<br>可以发现，数据库在进行limit操作时，必须先查询出对应数量的数据，而数据量越大，数据库的查询时间也会越长。</p>
+<p>优化：条件查询转化为基于主键id的查询 + (inner join)可选<br>select e.* from emp e,(select id from emp order by id limit 1000000,10) a where e.id = a.id;</p>
+<h4 id="1-6-count优化"><a href="#1-6-count优化" class="headerlink" title="1.6 count优化"></a>1.6 count优化</h4><p>COUNT()是一个聚合函数，返回指定匹配条件的行数。开发中常用来统计表中数据，全部数据，不为NULL数据，或者去重数据。</p>
+<ul>
+<li>count(*)：统计所有的记录（包括NULL）</li>
+<li>count(字段)：统计该”字段”不为NULL的记录</li>
+<li>COUNT(DISTINCT 字段)：统计该”字段”去重且不为NULL的记录。</li>
+</ul>
+<img src="/2022/08/08/mysql-advance-2/count.jpg" class="">
+
+<ol>
+<li>count(主键id)：InnoDB引擎会遍历整张表，把每一行的id值都取出来，返回给server层。server层拿到id后，判断是不可能为空的，就按行累加；</li>
+<li>count(1)：InnoDB引擎遍历整张表，但不取值。server层对于返回的每一行，放一个数字“1”进去，判断是不可能为空的，按行累加。</li>
+<li>count(字段)：如果这个“字段”是定义为not null的话，一行行地从记录里面读出这个字段，判断不能为 null，按行累加; 如果这个“字段”定义允许为null，那么执行的时候，判断到有可能是null，还要把值取出来再判断一下，不是null才累加。</li>
+<li>count(*)：并不会把全部字段取出来，而是专门做了优化，不取值，按行累加。</li>
+</ol>
+<p>按照效率排序的话：count(字段) &lt; count(主键 id) &lt; count(1) ≈ count(<em>)，所以尽量使用count(</em>)。</p>
+<p>特例<br>select count(‘’) from table; 返回表的记录数<br>select count(null) from table; 返回0</p>
+<h4 id="1-7-update优化"><a href="#1-7-update优化" class="headerlink" title="1.7 update优化"></a>1.7 update优化</h4><p>MySQL的InnoDB存储引擎支持事务、外键、行锁（InnoDB的行锁是通过给索引项加锁实现的）。得益于这些特性，数据库支持高并发。<br>InnoDB的行锁是针对索引加的锁，不是针对记录加的锁，并且该索引不能失效，否则会从行锁升级为表锁。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/07/java-advance/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1390,95 +1517,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/26/gnosis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/03/26/gnosis/" class="post-title-link" itemprop="url">gnosis</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-03-26 21:30:31" itemprop="dateCreated datePublished" datetime="2022-03-26T21:30:31+08:00">2022-03-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-29 18:48:22" itemprop="dateModified" datetime="2022-03-29T18:48:22+08:00">2022-03-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/03/26/gnosis/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/26/gnosis/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="面试感悟"><a href="#面试感悟" class="headerlink" title="面试感悟"></a>面试感悟</h3><p>笔试题做了一些大厂，小公司、大公司面试加起来也有近10家了，offer也拿了几个了（无大厂）。自己在这近一个月的时间也学习颇多，感悟颇多。<br>实习或面试找工作，学校（学历）很重要，项目经验次之，当然基础知识得扎实，最后加上一部分的运气。<br>目前自己缺的就是一个好的项目经验，涵盖大多数后端开发方面的知识。诸如redis，mysql，多线程，springboot，mybatis等等。</p>
-<p>再接再厉吧，继续加油！</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1550,7 +1588,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">82</span>
+          <span class="site-state-item-count">83</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
