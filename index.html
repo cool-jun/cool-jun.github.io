@@ -210,10 +210,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-08-08 09:27:25 / 修改时间：15:53:34" itemprop="dateCreated datePublished" datetime="2022-08-08T09:27:25+08:00">2022-08-08</time>
+              <time title="创建时间：2022-08-08 09:27:25" itemprop="dateCreated datePublished" datetime="2022-08-08T09:27:25+08:00">2022-08-08</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-09 22:34:05" itemprop="dateModified" datetime="2022-08-09T22:34:05+08:00">2022-08-09</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -295,6 +301,39 @@
 <p>按照效率排序的话：count(字段) &lt; count(主键 id) &lt; count(1) ≈ count(<em>)，所以尽量使用count(</em>)。</p>
 <p>特例<br>select count(‘’) from table; 返回表的记录数<br>select count(null) from table; 返回0</p>
 <h4 id="1-7-update优化"><a href="#1-7-update优化" class="headerlink" title="1.7 update优化"></a>1.7 update优化</h4><p>MySQL的InnoDB存储引擎支持事务、外键、行锁（InnoDB的行锁是通过给索引项加锁实现的）。得益于这些特性，数据库支持高并发。<br>InnoDB的行锁是针对索引加的锁，不是针对记录加的锁，并且该索引不能失效，否则会从行锁升级为表锁。</p>
+<p><strong>MySQL优化步骤</strong></p>
+<ol>
+<li>SQL语句优化</li>
+<li>索引优化</li>
+<li>表结构优化</li>
+<li>事务的处理</li>
+<li>锁</li>
+<li>系统配置优化</li>
+<li>硬件优化</li>
+</ol>
+<h3 id="2-视图、存储过程、触发器"><a href="#2-视图、存储过程、触发器" class="headerlink" title="2 视图、存储过程、触发器"></a>2 视图、存储过程、触发器</h3><h4 id="2-1-视图"><a href="#2-1-视图" class="headerlink" title="2.1 视图"></a>2.1 视图</h4><p>视图是从一个或多个表中导出来的表，是一种虚拟存在的表。视图就像一个窗口，通过这个窗口可以看到系统专门提供的数据，这样用户可以不看整个数据库表中的数据，而只关心对自己有用的数据。<br>视图可以使用户的操作更方便，而且可以保障数据库系统的安全性。</p>
+<p>根据视图的概念可以发现其数据来源于查询语句，因此创建视图的基本语法为：<br>CREATE[OR REPLACE] VIEW viewname[(columnlist)] AS SELECT语句<br>例如：create or replace view stu_v1 as select id,name from student where id &lt;= 3;</p>
+<p>查询视图<br>show create view stu_v1;<br>select * from stu_v1 where id=2;</p>
+<p>修改视图<br>create or replace view stu_v1 as select id,name,no from student where id&lt;=3;<br>alter view stu_v1 as select id,name from student where id&lt;=3;</p>
+<p>删除视图<br>drop view if exists stu_v1;</p>
+<p>案例1<br>开发人员在操作t_user表时，只能看到用户的基本字段，屏蔽手机号和邮箱两个字段。</p>
+<img src="/2022/08/08/mysql-advance-2/view.jpg" class="">
+
+<p>通过视图还可以简化多表联查。</p>
+<h4 id="2-2-存储过程"><a href="#2-2-存储过程" class="headerlink" title="2.2 存储过程"></a>2.2 存储过程</h4><p>存储过程（Stored Procedure）是一组为了完成特定功能的SQL语句集合，存储在数据库中，经过一次编译后再次调用不需要编译，用户通过指定存储过程的名字并给出参数（如果该存储过程有参数）来调用存储过程。</p>
+<p>创建<br>create procedure p1()<br>begin<br>    select count(*) from student;<br>end;</p>
+<p>调用<br>call p1();</p>
+<p>查看<br>select * from information_schema.ROUTINES where ROUTINE_SCHEMA=’heima’;<br>show create procedure p1;</p>
+<p>删除<br>drop procedure if exists p1;</p>
+<h4 id="2-3-触发器"><a href="#2-3-触发器" class="headerlink" title="2.3 触发器"></a>2.3 触发器</h4><p>触发器是一种特殊的存储过程，它在试图更改触发器所保护的数据时自动执行。</p>
+<ul>
+<li>在MySQL中，只有执行insert,delete,update操作时才能触发触发器的执行；</li>
+<li>触发器的这种特性可以协助应用在数据库端确保数据的完整性，日志记录，数据校验等操作；</li>
+<li>使用别名OLD和NEW来引用触发器中发生变化的记录，这与其他的数据库是相似的。现在触发器还只支持行级触发，不支持语句级触发；</li>
+</ul>
+<p>创建<br>create trigger user_insert_trigger<br>    after insert on t_user for each row<br>begin<br>    insert into user_logs(id, operation, operation_id, operation_params)<br>    values (null, ‘insert’, NEW.id, concat(‘插入数据：id=’,NEW.id,’name=’,NEW.name));<br>end;</p>
+<p>查看<br>show triggers;</p>
+<p>删除<br>drop trigger user_insert_trigger;</p>
 
       
     </div>
