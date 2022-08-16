@@ -210,10 +210,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-08-15 20:23:33 / 修改时间：22:09:25" itemprop="dateCreated datePublished" datetime="2022-08-15T20:23:33+08:00">2022-08-15</time>
+              <time title="创建时间：2022-08-15 20:23:33" itemprop="dateCreated datePublished" datetime="2022-08-15T20:23:33+08:00">2022-08-15</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-16 20:10:09" itemprop="dateModified" datetime="2022-08-16T20:10:09+08:00">2022-08-16</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -264,7 +270,91 @@
 <img src="/2022/08/15/mysql-advance-mvcc/yc.jpg" class="">
 </li>
 <li><p>undo log<br>回滚日志，在insert、update、delete的时候产生的便于数据回滚的日志。<br>当insert的时候，产生的undo log日志只在回滚时需要，在事务提交后，可被立即删除。<br>而update、delete的时候，产生的undo log日志不仅在回滚时需要，在快照读时也需要，不会立即被删除。</p>
-<img src="/2022/08/15/mysql-advance-mvcc/undo-log.jpg" class=""></li>
+<img src="/2022/08/15/mysql-advance-mvcc/undo-log.jpg" class="">
+</li>
+<li><p>Read View<br>Read View（读视图）是快照读SQL执行时MVCC提取数据的依据，记录并维护系统当前活跃的事务（未提交的）id。</p>
+<table>
+<thead>
+<tr>
+<th align="center">字段</th>
+<th align="center">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">m_ids</td>
+<td align="center">当前活跃的事务ID集合</td>
+</tr>
+<tr>
+<td align="center">min_trx_id</td>
+<td align="center">最小活跃事务ID</td>
+</tr>
+<tr>
+<td align="center">max_trx_id</td>
+<td align="center">预分配事务ID，当前最大事务ID+1（因为事务ID是自增的）</td>
+</tr>
+<tr>
+<td align="center">creator_trx_id</td>
+<td align="center">ReadView创建者的事务ID</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<img src="/2022/08/15/mysql-advance-mvcc/readview.jpg" class="">
+
+<p><strong>RC隔离级别</strong></p>
+<img src="/2022/08/15/mysql-advance-mvcc/rv-1.jpg" class="">
+<img src="/2022/08/15/mysql-advance-mvcc/rv-2.jpg" class="">
+
+<p><strong>RR隔离级别</strong></p>
+<img src="/2022/08/15/mysql-advance-mvcc/rv-3.jpg" class="">
+
+<p><strong>总结</strong></p>
+<img src="/2022/08/15/mysql-advance-mvcc/summary.jpg" class="">
+
+<h3 id="2-MySQL管理"><a href="#2-MySQL管理" class="headerlink" title="2 MySQL管理"></a>2 MySQL管理</h3><p>MySQL数据库自带以下四个系统数据库：</p>
+<table>
+<thead>
+<tr>
+<th align="center">系统数据库</th>
+<th align="center">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">mysql</td>
+<td align="center">存储MySQL服务器正常运行所需要的各种信息 （时区、主从、用户、权限等）</td>
+</tr>
+<tr>
+<td align="center">information_schema</td>
+<td align="center">提供了访问数据库元数据的各种表和视图，包含数据库，表，字段类型及访问权限等</td>
+</tr>
+<tr>
+<td align="center">performance_schema</td>
+<td align="center">为MySQL服务器运行时状态提供了一个底层监控功能，主要用于手机数据库服务器性能参数</td>
+</tr>
+<tr>
+<td align="center">sys</td>
+<td align="center">包含了一系列方便DBA和开发人员利用performance_schema性能数据库进行性能调优和诊断的视图</td>
+</tr>
+</tbody></table>
+<p><strong>常用工具</strong></p>
+<ul>
+<li><p>mysql</p>
+<img src="/2022/08/15/mysql-advance-mvcc/tool-1.jpg" class="">
+</li>
+<li><p>mysqladmin</p>
+<img src="/2022/08/15/mysql-advance-mvcc/tool-2.jpg" class="">
+</li>
+<li><p>mysqlbinlog</p>
+<img src="/2022/08/15/mysql-advance-mvcc/tool-3.jpg" class="">
+</li>
+<li><p>mysqlshow</p>
+<img src="/2022/08/15/mysql-advance-mvcc/tool-4.jpg" class="">
+</li>
+<li><p>mysqldump</p>
+<img src="/2022/08/15/mysql-advance-mvcc/tool-5.jpg" class="">
+</li>
+<li><p>mysqlimport/source</p>
+<img src="/2022/08/15/mysql-advance-mvcc/tool-6.jpg" class=""></li>
 </ul>
 
       
