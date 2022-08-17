@@ -187,6 +187,123 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/18/about-os/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/03/18/about-os/" class="post-title-link" itemprop="url">about_os</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-18 10:10:51" itemprop="dateCreated datePublished" datetime="2022-03-18T10:10:51+08:00">2022-03-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-21 20:49:42" itemprop="dateModified" datetime="2022-03-21T20:49:42+08:00">2022-03-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/03/18/about-os/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/18/about-os/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-用户态与内核态"><a href="#1-用户态与内核态" class="headerlink" title="1 用户态与内核态"></a>1 用户态与内核态</h3><p>用户态与内核态是操作系统的两种运行级别，大部分程序都是运行在用户态。</p>
+<p>运行在用户态下的程序不能直接访问操作系统内核数据结构和程序。当我们在系统中执行一个程序时，大部分时间是运行在用户态下的，在其需要操作系统帮助完成某些它没有权力和能力完成的工作时就会切换到内核态（比如操作硬件）。</p>
+<p>用户态就是提供应用程序运行的空间，为了使应用程序访问到内核管理的资源，例如CPU，内存，I/O。内核必须提供一组通用的访问接口，这些接口就叫系统调用。</p>
+<p>区别：权限不同。<br>用户态的进程能够访问的资源受到了极大的限制，而运行在内核态的进程可以“为所欲为”。<br>如果用户态和内核态拥有相同的特权，应用程序就可以直接访问物理内存，破坏它，读取私有数据或者完全控制系统，通过用户态模式可以限制应用程序。</p>
+<p>用户态切换到内核态</p>
+<ul>
+<li>系统调用，这是用户态进程主动要求切换到内核态的一种方式，用户态进程通过系统调用申请使用操作系统提供的服务程序完成工作。</li>
+<li>异常，运行在用户态下的程序发生了某些事先不可知的异常，这时会触发由当前运行进程切换到处理此异常的内核相关程序中，也就转到了内核态，比如缺页异常。</li>
+<li>外设中断，当外设完成用户的请求时，会向CPU发送中断信号。</li>
+</ul>
+<h3 id="2-进程切换为什么比线程切换慢"><a href="#2-进程切换为什么比线程切换慢" class="headerlink" title="2 进程切换为什么比线程切换慢?"></a>2 进程切换为什么比线程切换慢?</h3><p><strong>虚拟地址（逻辑地址）vs物理地址</strong><br>操作系统会给每个进程分配一个虚拟地址空间（vitural address），每个进程包含的栈、堆等这些都会从这个地址空间中被分配一个地址，这个地址就被称为虚拟地址。底层指令写入的地址也是虚拟地址。</p>
+<p>每个进程都拥有一个自己的虚拟地址空间，并且独立于其他进程的地址空间。</p>
+<p>有了虚拟地址空间后，CPU就可以通过生成一个虚拟地址来访问主存，这个虚拟地址在被送到内存之前会先被转换成物理地址，这个虚拟地址到物理地址的转换过程称为地址翻译/地址转换（address translation）。</p>
+<p>CPU上的内存管理单元（Memory Management Unit，MMU）就是专门用来进行虚拟地址到物理地址的转换的，不过MMU需要借助存放在内存中的页表，而这张表的内容正是由操作系统进行管理的。</p>
+<p>操作系统为每个进程建立了一张页表。一个进程对应一张页表，进程的每个页面对应一个页表项，每个页表项由页号和块号（页框号）组成，记录着进程页面和实际存放的内存块之间的映射关系。</p>
+<p>进程切换会涉及到虚拟地址空间的切换，而这正是导致进程切换比线程切换慢的原因。虚拟地址转换为物理地址需要两个东西：CPU上的MMU和内存中的页表。访问页表（内存）次数太多导致其成为了操作系统地一个性能瓶颈。</p>
+<p>转换检测缓冲区（Translation Lookaside Buffer，TLB）也称为快表，通常内置在CPU的MMU中。TLB的出现是基于这样一种现象的：大多数程序总是对少量的页面进行多次的访问。因此，只有很少的页表项会被反复读取，而其他的页表项很少被访问。</p>
+<p>TLB中存放的就是那些会被反复读取的页表项，若TLB命中，就不需要再访问内存了；若TLB中没有目标页表项，则还需要去查询内存中的页表（慢表），从页表中得到物理页框地址，同时将页表中的该表项添加到TLB中。</p>
+<p>由于进程切换会涉及到虚拟地址空间的切换，这就导致内存中的页表也需要进行切换，一个进程对应一个页表是不假，但是CPU中的TLB只有一个，页表切换后这个TLB就失效了。这样，TLB在一段时间内肯定是无法被命中的，操作系统就必须去访问内存，那么虚拟地址转换为物理地址就会变慢，表现出来的就是程序运行会变慢。<br>而线程切换呢，由于不涉及虚拟地址空间的切换，也就不存在这个问题了。</p>
+<h3 id="3-有了进程，为什么还需要线程？"><a href="#3-有了进程，为什么还需要线程？" class="headerlink" title="3 有了进程，为什么还需要线程？"></a>3 有了进程，为什么还需要线程？</h3><ul>
+<li>进程在同一时间只能干一件事，进程在执行的过程中如果被阻塞，整个进程就会挂起，即使进程中有些工作不依赖于等待的资源，仍然不会执行。</li>
+<li>从资源上来讲，创建进程，需要为其分配系统资源、创建进程控制块（PCB）等操作，代价比较大。而创建线程，则不需要分配系统资源，因为线程可以共享同一进程的资源。</li>
+<li>从调度角度来看，进程间的调度开销要比同一进程中的线程之间的大。</li>
+</ul>
+<h3 id="3-协程"><a href="#3-协程" class="headerlink" title="3 协程"></a>3 协程</h3><p>协程也被称为轻量级线程，协程运行在线程之上，当一个协程执行完成后，可以选择主动让出，让另一个协程运行在当前线程之上。<br>协程并没有增加线程数量，只是在线程的基础之上通过分时复用的方式运行多个协程，而且协程的切换在用户态完成，切换的代价比线程从用户态到内核态的代价小很多。<br>协程只有和异步IO结合起来才能发挥出最大的威力。</p>
+<h3 id="4-虚拟内存"><a href="#4-虚拟内存" class="headerlink" title="4 虚拟内存"></a>4 虚拟内存</h3><p>虚拟内存是计算机系统内存管理的一种技术。</p>
+<p>虚拟内存可以让程序拥有超过系统实际物理内存大小的可用内存空间，虚拟内存会为每个进程提供一个一致的，私有的地址空间，它让每个进程都拥有一片连续完整的内存空间，这样能更加有效管理内存并减少出错。</p>
+<p>由操作系统完成从虚拟内存的虚拟地址到真实内存的物理地址之间的映射工作。</p>
+<p>定义了一个连续的虚拟地址空间，并将内存扩展到了硬盘空间。</p>
+<p>虚拟内存使得应用程序认为它拥有连续的可用内存（一个连续完整的地址空间），而实际上，它通常是被分隔成多个物理内存碎片，还有部分暂时存储在外部磁盘存储器上，在需要时进行数据交换。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/16/mysql-basic/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1584,125 +1701,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/08/01-08-git/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/01/08/01-08-git/" class="post-title-link" itemprop="url">git</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-01-08 16:26:36" itemprop="dateCreated datePublished" datetime="2022-01-08T16:26:36+08:00">2022-01-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-04-16 16:08:43" itemprop="dateModified" datetime="2022-04-16T16:08:43+08:00">2022-04-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Tool/" itemprop="url" rel="index"><span itemprop="name">Tool</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/01/08/01-08-git/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/08/01-08-git/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><strong>Git</strong><br>Git是一种分布式版本控制系统（Distributed Version Control System，DVCS），分为两种类型的仓库：本地仓库和远程仓库。</p>
-<p>本地仓库：开发人员自己电脑上的Git仓库。<br>远程仓库：远程服务器上的Git仓库。</p>
-<p>clone：就是将远程仓库代码复制到本地仓库。<br>push：就是将本地仓库代码上传到远程仓库。<br>pull：就是将远程仓库代码下载到本地仓库。</p>
-<p><strong>Git工作区、暂存区和版本库</strong></p>
-<ul>
-<li>工作区：就是电脑里存放项目代码的地方。</li>
-<li>暂存区：英文叫stage或index。一般存放在.git目录下的index文件（.git/index）中，暂存区有时也叫作索引（index）。用于临时存放你的改动，它只是一个文件，保存即将提交的文件列表信息。</li>
-<li>版本库（repository）：存放已提交的数据，这里边有你提交的所有版本的数据，push的时候，就是把这个区的数据push到远程仓库。其中，HEAD指向最新放入仓库的版本。</li>
-</ul>
-<p>工作流程：<br>在工作目录中添加、修改文件；<br>将需要进行版本管理的文件放入暂存区；<br>将暂存区的文件提交到版本库；<br>push到远端仓库。</p>
-<img src="/2022/01/08/01-08-git/git.png" class="">
-<p>Git管理的文件有三种状态：已修改（modified）、已暂存（staged）和已提交（committed）。</p>
-<p>将工作区的代码存放到暂存区：<br>git add . （将当前工作区的所有文件存放到暂存区）<br>git add -u （提交更新所有改变的文件，即提交所有变化的文件）<br>git add -A （提交已被修改和已被删除文件，但是不包括新的文件）</p>
-<p><strong>stage</strong><br>修改了4个文件，在不放弃任何修改的情况下，其中一个文件不想提交，如何操作？<br>（没add : git add；已经add: git reset –soft ）</p>
-<p>修改到一半的文件，突然间不需要或者放弃修改了，怎么恢复未修改前文件？<br>(git checkout)</p>
-<p>代码写一半，被打断去做其他功能开发，未完成代码保存？<br>(git stash)能够将所有未提交的修改（工作区和暂存区）保存至堆栈中，用于后续恢复当前工作目录。</p>
-<p>代码写一半，发现忘记切换分支了？<br>(git stash &amp; git checkout)</p>
-<p>代码需要回滚了？<br>（git reset）</p>
-<p><strong>常用命令</strong><br>备份当前工作区的内容<br>git stash</p>
-<p>从远程仓库克隆<br>git clone [url]</p>
-<p>从远程仓库中抓取与拉取<br>git fetch 是从远程仓库获取最新版本到本地仓库，不会自动merge。<br>git pull 是从远程仓库获取最新版本并merge到本地仓库。</p>
-<p>推送到远程仓库<br>git push remote-name branch-name</p>
-<p><strong>Git分支</strong><br>列出所有本地分支<br>git branch<br>列出所有远程分支<br>git branch -r<br>列出所有本地分支和远程分支<br>git branch -a<br>创建分支<br>git branch [branch_name]<br>切换分支<br>git checkout [branch_name]<br>合并分支<br>git merge [branch_name]</p>
-<p><strong>rebase</strong><br>假设现在有两个分支master和hj，其中hj是在提交点B处从master上拉出的分支，master上有一个新提交M，hj上有两个新提交C和D。<br>此时要切换到hj分支上，执行如下命令，相当于是想要把master分支合并到hj分支（可以类比为我们在自己的分支hj上开发了一段时间，现在准备从主干master上拉一下最新改动）。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git checkout hj</span><br><span class="line">git rebase master</span><br><span class="line">等价于git rebase master hj</span><br></pre></td></tr></table></figure>
-<img src="/2022/01/08/01-08-git/rebase.png" class="">
-<ul>
-<li>hj：待变基分支、当前分支</li>
-<li>master：基分支、目标分支</li>
-</ul>
-<p>当执行rebase操作时，git会从两个分支的共同祖先开始提取待变基分支上的修改，然后将待变基分支指向基分支的最新提交，最后将刚才提取的修改应用到基分支的最新提交的后面。</p>
-<p>场景：张三从B拉了代码进行开发，目前提交了两次，开发到D了；李四也从B拉代码开发并且开发完毕，他提交到了M，然后合到主干上了。<br>此时张三想拉下最新代码，于是他在hj分支上执行了git rebase master，即把master分支给rebase过来，由于李四更早开发完并合了主干，如此就相当于张三是基于李四的最新提交M进行的开发了。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1774,7 +1772,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">86</span>
+          <span class="site-state-item-count">87</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
