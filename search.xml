@@ -1,46 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>git</title>
-    <url>/2022/01/08/01-08-git/</url>
-    <content><![CDATA[<p><strong>Git</strong><br>Git是一种分布式版本控制系统（Distributed Version Control System，DVCS），分为两种类型的仓库：本地仓库和远程仓库。</p>
-<p>本地仓库：开发人员自己电脑上的Git仓库。<br>远程仓库：远程服务器上的Git仓库。</p>
-<p>clone：就是将远程仓库代码复制到本地仓库。<br>push：就是将本地仓库代码上传到远程仓库。<br>pull：就是将远程仓库代码下载到本地仓库。</p>
-<p><strong>Git工作区、暂存区和版本库</strong></p>
+    <title>annotation</title>
+    <url>/2022/02/18/02-18-Spring/</url>
+    <content><![CDATA[<h3 id="1-SpringBootApplication"><a href="#1-SpringBootApplication" class="headerlink" title="1 @SpringBootApplication"></a>1 @SpringBootApplication</h3><p>这是Spring Boot最最最核心的注解，用在Spring Boot主类上，标识这是一个Spring Boot应用，用来开启Spring Boot。<br>这个注解是@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan这三个注解的组合，也可以用这三个注解来代替@SpringBootApplication注解。<br>@Configuration：Spring 3.0添加的一个注解，用来代替applicationContext.xml配置文件，所有这个配置文件里面能做到的事情都可以通过这个注解所在类来完成。</p>
 <ul>
-<li>工作区：就是电脑里存放项目代码的地方。</li>
-<li>暂存区：英文叫stage或index。一般存放在.git目录下的index文件（.git/index）中，暂存区有时也叫作索引（index）。用于临时存放你的改动，它只是一个文件，保存即将提交的文件列表信息。</li>
-<li>版本库（repository）：存放已提交的数据，这里边有你提交的所有版本的数据，push的时候，就是把这个区的数据push到远程仓库。其中，HEAD指向最新放入仓库的版本。</li>
+<li>@SpringBootConfiguration：@Configuration注解的变体，用来修饰Spring Boot配置。</li>
+<li>@EnableAutoConfiguration：允许Spring Boot自动配置注解，开启这个注解之后，Spring Boot就能根据当前类路径下的包或者类来配置Spring Bean。</li>
+<li>@ComponentScan：Spring 3.1添加的一个注解，用来代替配置文件中的component-scan配置，开启组件扫描，即自动扫描包路径下的@Component注解进行注册bean实例到context中。</li>
 </ul>
-<p>工作流程：<br>在工作目录中添加、修改文件；<br>将需要进行版本管理的文件放入暂存区；<br>将暂存区的文件提交到版本库；<br>push到远端仓库。</p>
-<img src="/2022/01/08/01-08-git/git.png" class="">
-<p>Git管理的文件有三种状态：已修改（modified）、已暂存（staged）和已提交（committed）。</p>
-<p>将工作区的代码存放到暂存区：<br>git add . （将当前工作区的所有文件存放到暂存区）<br>git add -u （提交更新所有改变的文件，即提交所有变化的文件）<br>git add -A （提交已被修改和已被删除文件，但是不包括新的文件）</p>
-<p><strong>stage</strong><br>修改了4个文件，在不放弃任何修改的情况下，其中一个文件不想提交，如何操作？<br>（没add : git add；已经add: git reset –soft ）</p>
-<p>修改到一半的文件，突然间不需要或者放弃修改了，怎么恢复未修改前文件？<br>(git checkout)</p>
-<p>代码写一半，被打断去做其他功能开发，未完成代码保存？<br>(git stash)能够将所有未提交的修改（工作区和暂存区）保存至堆栈中，用于后续恢复当前工作目录。</p>
-<p>代码写一半，发现忘记切换分支了？<br>(git stash &amp; git checkout)</p>
-<p>代码需要回滚了？<br>（git reset）</p>
-<p><strong>常用命令</strong><br>备份当前工作区的内容<br>git stash</p>
-<p>从远程仓库克隆<br>git clone [url]</p>
-<p>从远程仓库中抓取与拉取<br>git fetch 是从远程仓库获取最新版本到本地仓库，不会自动merge。<br>git pull 是从远程仓库获取最新版本并merge到本地仓库。</p>
-<p>推送到远程仓库<br>git push remote-name branch-name</p>
-<p><strong>Git分支</strong><br>列出所有本地分支<br>git branch<br>列出所有远程分支<br>git branch -r<br>列出所有本地分支和远程分支<br>git branch -a<br>创建分支<br>git branch [branch_name]<br>切换分支<br>git checkout [branch_name]<br>合并分支<br>git merge [branch_name]</p>
-<p><strong>rebase</strong><br>假设现在有两个分支master和hj，其中hj是在提交点B处从master上拉出的分支，master上有一个新提交M，hj上有两个新提交C和D。<br>此时要切换到hj分支上，执行如下命令，相当于是想要把master分支合并到hj分支（可以类比为我们在自己的分支hj上开发了一段时间，现在准备从主干master上拉一下最新改动）。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git checkout hj</span><br><span class="line">git rebase master</span><br><span class="line">等价于git rebase master hj</span><br></pre></td></tr></table></figure>
-<img src="/2022/01/08/01-08-git/rebase.png" class="">
-<ul>
-<li>hj：待变基分支、当前分支</li>
-<li>master：基分支、目标分支</li>
-</ul>
-<p>当执行rebase操作时，git会从两个分支的共同祖先开始提取待变基分支上的修改，然后将待变基分支指向基分支的最新提交，最后将刚才提取的修改应用到基分支的最新提交的后面。</p>
-<p>场景：张三从B拉了代码进行开发，目前提交了两次，开发到D了；李四也从B拉代码开发并且开发完毕，他提交到了M，然后合到主干上了。<br>此时张三想拉下最新代码，于是他在hj分支上执行了git rebase master，即把master分支给rebase过来，由于李四更早开发完并合了主干，如此就相当于张三是基于李四的最新提交M进行的开发了。</p>
+<h3 id="2-RestController"><a href="#2-RestController" class="headerlink" title="2 @RestController"></a>2 @RestController</h3><p>@Controller用于标记一个类，使用它标记的类就是一个Spring MVC Controller对象，处理器会扫描使用该注解的类的方法，并检测该方法是否使用了@RequestMapping注解。</p>
+<p>@ResponseBody注解用于将@Controller修饰的类的方法返回的对象，通过适当的HttpMessageConverter转换为指定格式后，写入到Response对象的body数据区，通常用来返回JSON或者XML数据，返回JSON数据的情况比较多。</p>
+<p>@RestController=@Controller+@ResponseBody</p>
 ]]></content>
       <categories>
-        <category>Tool</category>
+        <category>Spring</category>
       </categories>
       <tags>
-        <tag>git</tag>
+        <tag>注解</tag>
       </tags>
   </entry>
   <entry>
@@ -159,23 +136,28 @@
       </tags>
   </entry>
   <entry>
-    <title>annotation</title>
-    <url>/2022/02/18/02-18-Spring/</url>
-    <content><![CDATA[<h3 id="1-SpringBootApplication"><a href="#1-SpringBootApplication" class="headerlink" title="1 @SpringBootApplication"></a>1 @SpringBootApplication</h3><p>这是Spring Boot最最最核心的注解，用在Spring Boot主类上，标识这是一个Spring Boot应用，用来开启Spring Boot。<br>这个注解是@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan这三个注解的组合，也可以用这三个注解来代替@SpringBootApplication注解。<br>@Configuration：Spring 3.0添加的一个注解，用来代替applicationContext.xml配置文件，所有这个配置文件里面能做到的事情都可以通过这个注解所在类来完成。</p>
+    <title>reflect</title>
+    <url>/2021/10/30/1030-java/</url>
+    <content><![CDATA[<h3 id="1-深克隆和浅克隆的区别？"><a href="#1-深克隆和浅克隆的区别？" class="headerlink" title="1 深克隆和浅克隆的区别？"></a>1 深克隆和浅克隆的区别？</h3><p>浅克隆：<strong>简单复制了原始对象的引用地址，两个对象指向同一个内存地址</strong>。所以任意修改一个的值，另一个都会随之变化。<br>深克隆：将原始对象及值复制过来，任意修改其中一个的值，另一个不会改变。<br>深克隆就是所在类实现Cloneable接口，并使用public修饰符重写clone方法。但Java中clone没有深浅之分，都是统一调用Object的clone方法。只是我们刻意的重写了clone方法。</p>
+<h3 id="2-Java序列化，怎样实现？"><a href="#2-Java序列化，怎样实现？" class="headerlink" title="2 Java序列化，怎样实现？"></a>2 Java序列化，怎样实现？</h3><p>序列化是将对象转换为字节流的过程，可以将其保存到磁盘文件或进行网络传输。序列化为了解决在对象流进行读写操作时所引发的问题。所有可在网络上传输的对象都必须是可序列化的。比如RMI（remote method invoke）。<br>如果要将某个对象保存到磁盘上或者通过网络传输，那么这个类应该实现Serializable接口。<br>反序列化则是相反的过程。</p>
+<p><strong>注意</strong><br>Java序列化过程：<br>所有保存到磁盘的对象都有一个序列化编码，当程序试图序列化一个对象时，会先检查此对象是否已经序列化过，只有此对象未（在此虚拟机）被序列化过，才会将此对象序列化为字节流输出。<br>如果此对象已经序列化过，则直接输出编号。<br>如果想让某个变量不被序列化，使用<strong>transient</strong>修饰。</p>
+<h3 id="3-Java泛型、类型擦除"><a href="#3-Java泛型、类型擦除" class="headerlink" title="3 Java泛型、类型擦除"></a>3 Java泛型、类型擦除</h3><p>泛型通过在编译时检测到更多错误来增加代码的稳定性。简而言之，<strong>泛型使类型（类和接口）在定义类、接口和方法时成为参数</strong>。类型参数为您提供了一种对不同输入重复使用相同代码的方法。<br>区别在于形式参数的输入是值，而类型参数的输入是类型。<br>泛型的使用：泛型类、泛型接口和泛型方法。</p>
+<p>类型擦除：泛型信息只存在于代码编译阶段，在进入JVM之前，与泛型相关的信息会被擦除。类型擦除确保不会为参数化类型创建新类，因此，泛型不会产生运行时开销。<br>在类型擦除过程中，Java编译器擦除所有类型参数，如果类型参数有界，则用其第一个边界替换每个参数，如果类型参数无界，则用Object替换。</p>
+<p>上限通配符，&lt;? extends Foo&gt;，其中Foo是任何类型，匹配Foo和Foo的任何子类型。<br>下限通配符将未知类型限制为特定类型或该类型的超类型。下限通配符使用通配符(‘?’)表示，后跟super关键字，最后跟其下限。即&lt;? super A&gt;。</p>
+<h3 id="4-Java反射、应用场景、优缺点"><a href="#4-Java反射、应用场景、优缺点" class="headerlink" title="4 Java反射、应用场景、优缺点"></a>4 Java反射、应用场景、优缺点</h3><p>反射：<strong>在程序运行时动态的获取信息以及动态的调用对象方法的一种机制</strong>。<br>一般来说，程序中对象是new出来的，程序相当于写死了给jvm去跑。假如这时需要用到某个类，但这个类还没有加载进jvm，此时就需要动态的加载这个类。<br>举个例子：假如我们的项目数据库用到了mysql和oracle，需要动态地根据实际情况加载驱动类。</p>
 <ul>
-<li>@SpringBootConfiguration：@Configuration注解的变体，用来修饰Spring Boot配置。</li>
-<li>@EnableAutoConfiguration：允许Spring Boot自动配置注解，开启这个注解之后，Spring Boot就能根据当前类路径下的包或者类来配置Spring Bean。</li>
-<li>@ComponentScan：Spring 3.1添加的一个注解，用来代替配置文件中的component-scan配置，开启组件扫描，即自动扫描包路径下的@Component注解进行注册bean实例到context中。</li>
+<li>根据类名创建实例（类名可以从配置文件读取，不用new，达到解耦）</li>
+<li>调用Method.invoke</li>
 </ul>
-<h3 id="2-RestController"><a href="#2-RestController" class="headerlink" title="2 @RestController"></a>2 @RestController</h3><p>@Controller用于标记一个类，使用它标记的类就是一个Spring MVC Controller对象，处理器会扫描使用该注解的类的方法，并检测该方法是否使用了@RequestMapping注解。</p>
-<p>@ResponseBody注解用于将@Controller修饰的类的方法返回的对象，通过适当的HttpMessageConverter转换为指定格式后，写入到Response对象的body数据区，通常用来返回JSON或者XML数据，返回JSON数据的情况比较多。</p>
-<p>@RestController=@Controller+@ResponseBody</p>
+<p>Reflection可以在运行时加载、探知和使用编译期间完全未知的classes。即Java程序可以加载一个运行时才得知名称的class，获取其完整构造，并生成其对象实体、或对其fields设值、或唤起其methods。<br>java.lang.reflect包中的主要类：Class、Field、Method、Constructor、Array。</p>
+<p>应用：工厂模式，使用了反射机制。</p>
+<p>优点：运行时类型的判断，class.forName()动态加载类，提高代码灵活度。<br>缺点：性能开销；安全限制；内部暴露。</p>
 ]]></content>
       <categories>
-        <category>Spring</category>
+        <category>Java</category>
       </categories>
       <tags>
-        <tag>注解</tag>
+        <tag>反射</tag>
       </tags>
   </entry>
   <entry>
@@ -213,31 +195,6 @@
       </tags>
   </entry>
   <entry>
-    <title>reflect</title>
-    <url>/2021/10/30/1030-java/</url>
-    <content><![CDATA[<h3 id="1-深克隆和浅克隆的区别？"><a href="#1-深克隆和浅克隆的区别？" class="headerlink" title="1 深克隆和浅克隆的区别？"></a>1 深克隆和浅克隆的区别？</h3><p>浅克隆：<strong>简单复制了原始对象的引用地址，两个对象指向同一个内存地址</strong>。所以任意修改一个的值，另一个都会随之变化。<br>深克隆：将原始对象及值复制过来，任意修改其中一个的值，另一个不会改变。<br>深克隆就是所在类实现Cloneable接口，并使用public修饰符重写clone方法。但Java中clone没有深浅之分，都是统一调用Object的clone方法。只是我们刻意的重写了clone方法。</p>
-<h3 id="2-Java序列化，怎样实现？"><a href="#2-Java序列化，怎样实现？" class="headerlink" title="2 Java序列化，怎样实现？"></a>2 Java序列化，怎样实现？</h3><p>序列化是将对象转换为字节流的过程，可以将其保存到磁盘文件或进行网络传输。序列化为了解决在对象流进行读写操作时所引发的问题。所有可在网络上传输的对象都必须是可序列化的。比如RMI（remote method invoke）。<br>如果要将某个对象保存到磁盘上或者通过网络传输，那么这个类应该实现Serializable接口。<br>反序列化则是相反的过程。</p>
-<p><strong>注意</strong><br>Java序列化过程：<br>所有保存到磁盘的对象都有一个序列化编码，当程序试图序列化一个对象时，会先检查此对象是否已经序列化过，只有此对象未（在此虚拟机）被序列化过，才会将此对象序列化为字节流输出。<br>如果此对象已经序列化过，则直接输出编号。<br>如果想让某个变量不被序列化，使用<strong>transient</strong>修饰。</p>
-<h3 id="3-Java泛型、类型擦除"><a href="#3-Java泛型、类型擦除" class="headerlink" title="3 Java泛型、类型擦除"></a>3 Java泛型、类型擦除</h3><p>泛型通过在编译时检测到更多错误来增加代码的稳定性。简而言之，<strong>泛型使类型（类和接口）在定义类、接口和方法时成为参数</strong>。类型参数为您提供了一种对不同输入重复使用相同代码的方法。<br>区别在于形式参数的输入是值，而类型参数的输入是类型。<br>泛型的使用：泛型类、泛型接口和泛型方法。</p>
-<p>类型擦除：泛型信息只存在于代码编译阶段，在进入JVM之前，与泛型相关的信息会被擦除。类型擦除确保不会为参数化类型创建新类，因此，泛型不会产生运行时开销。<br>在类型擦除过程中，Java编译器擦除所有类型参数，如果类型参数有界，则用其第一个边界替换每个参数，如果类型参数无界，则用Object替换。</p>
-<p>上限通配符，&lt;? extends Foo&gt;，其中Foo是任何类型，匹配Foo和Foo的任何子类型。<br>下限通配符将未知类型限制为特定类型或该类型的超类型。下限通配符使用通配符(‘?’)表示，后跟super关键字，最后跟其下限。即&lt;? super A&gt;。</p>
-<h3 id="4-Java反射、应用场景、优缺点"><a href="#4-Java反射、应用场景、优缺点" class="headerlink" title="4 Java反射、应用场景、优缺点"></a>4 Java反射、应用场景、优缺点</h3><p>反射：<strong>在程序运行时动态的获取信息以及动态的调用对象方法的一种机制</strong>。<br>一般来说，程序中对象是new出来的，程序相当于写死了给jvm去跑。假如这时需要用到某个类，但这个类还没有加载进jvm，此时就需要动态的加载这个类。<br>举个例子：假如我们的项目数据库用到了mysql和oracle，需要动态地根据实际情况加载驱动类。</p>
-<ul>
-<li>根据类名创建实例（类名可以从配置文件读取，不用new，达到解耦）</li>
-<li>调用Method.invoke</li>
-</ul>
-<p>Reflection可以在运行时加载、探知和使用编译期间完全未知的classes。即Java程序可以加载一个运行时才得知名称的class，获取其完整构造，并生成其对象实体、或对其fields设值、或唤起其methods。<br>java.lang.reflect包中的主要类：Class、Field、Method、Constructor、Array。</p>
-<p>应用：工厂模式，使用了反射机制。</p>
-<p>优点：运行时类型的判断，class.forName()动态加载类，提高代码灵活度。<br>缺点：性能开销；安全限制；内部暴露。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>反射</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>string</title>
     <url>/2021/11/10/11-10-Java/</url>
     <content><![CDATA[<h3 id="1-Java中String为什么是final？"><a href="#1-Java中String为什么是final？" class="headerlink" title="1 Java中String为什么是final？"></a>1 Java中String为什么是final？</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">源码</span><br><span class="line">public final class String</span><br><span class="line">    implements java.io.Serializable, Comparable&lt;String&gt;, CharSequence &#123;</span><br><span class="line">    &#x2F;** The value is used for character storage. *&#x2F;</span><br><span class="line">    private final char value[];</span><br></pre></td></tr></table></figure>
@@ -260,43 +217,6 @@
       </categories>
       <tags>
         <tag>string</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>collection</title>
-    <url>/2021/11/15/11-15-Java/</url>
-    <content><![CDATA[<h3 id="1-Java-Collection"><a href="#1-Java-Collection" class="headerlink" title="1 Java Collection"></a>1 Java Collection</h3><p>集合（也称为容器）是一个将多个元素组合成一个单元的对象。<br>常见的集合层次结构如下图：</p>
-<img src="/2021/11/15/11-15-Java/JavaCore.png" class="">
-
-<p>Collection：集合层次结构的根。集合表示一组称为其元素的对象。某些类型的集合允许重复元素，而其他类型则不允许。有些是有序的，有些是无序的。Java平台不提供该接口的任何直接实现，但提供了更具体的子接口的实现，例如Set和List。</p>
-<p>Set：<strong>不能包含重复元素的集合</strong>。Set接口仅包含继承自Collection的方法，并添加了禁止重复元素的限制。</p>
-<p>List：有序集合。List可以包含重复的元素。List的用户通常可以精确控制每个元素在列表中的插入位置，并且可以通过它们的整数索引（位置）访问元素。</p>
-<p>Queue：用于在处理之前保存多个元素的集合。除了基本的Collection操作，Queue还提供了额外的插入、提取和检查操作。队列通常但不一定以FIFO（先进先出）方式对元素进行排序。例外情况是优先级队列，它根据提供的比较器或元素的自然顺序对元素进行排序。无论使用何种顺序，队列的头部都是将通过调用remove或poll方法删除元素。在FIFO队列中，所有新元素都插入到队列的尾部。其他类型的队列可能使用不同的放置规则。每个Queue实现都必须指定其排序属性。</p>
-<p>Deque：用于在处理之前保存多个元素的集合。Deque是双端队列。双端队列既可以用作FIFO（先进先出），也可以用作LIFO（后进先出）。双端队列是元素的线性集合，支持在两个端点插入和删除元素。<strong>Deque接口是比Stack和Queue更丰富的抽象数据类型，因为它同时实现了栈和队列。</strong>Deque接口定义了访问Deque实例两端元素的方法。提供了插入、删除和检查元素的方法。ArrayDeque和LinkedList等预定义类实现了Deque接口。</p>
-<p>Map：将键映射到值的对象。<strong>Map不能包含重复的键</strong>，每个键最多可以映射到一个值。</p>
-<p>SortedSet—按升序维护其元素的Set。提供了几个额外的操作来利用排序。<br>SortedMap—以键升序维护其映射的Map。这是SortedSet的Map模拟。</p>
-<p>HashSet：这个类实现了Set接口，由一个哈希表（实际上是一个HashMap实例）支持。此类允许空元素。HashSet将其元素存储在哈希表中，是性能最好的实现，但它不保证迭代的顺序。</p>
-<p>LinkedHashSet：此实现与HashSet的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，也就是元素被插入到集合中的顺序（插入顺序）。</p>
-<p>TreeSet：基于TreeMap的NavigableSet实现。元素使用它们的自然顺序进行排序，或者通过在集合创建时提供的Comparator进行排序，具体取决于使用的构造函数。<br>TreeSet将其元素存储在红黑树中，根据元素的值对其进行排序，它比HashSet慢得多。此实现为基本操作提供有保证的log(n)时间成本（添加、删除和包含）。</p>
-<p>ArrayList：List接口的可调整大小的数组实现。实现所有可选的列表操作，并允许所有元素，包括null。除了实现List接口之外，该类还提供了操作内部用于存储列表的数组大小的方法。（这个类大致相当于Vector，只是它是不同步的）。size、isEmpty、get、set、iterator和listIterator操作在恒定时间内运行。add操作在分摊常数时间内运行，即添加 n 个元素需要 O(n) 时间。所有其他操作都在线性时间内运行（粗略地说）。与LinkedList实现相比，常量因子较低。</p>
-<p>LinkedList：List和Deque接口的双向链表实现。实现所有可选的列表操作，并允许所有元素（包括空值）。</p>
-<p>ArrayList通常是性能更好的实现，而LinkedList在某些情况下提供更好的性能。</p>
-<p>HashMap：Map接口的基于哈希表的实现。此实现提供了所有可选的映射操作，并允许空值和空键。（HashMap类大致等同于Hashtable，只是hashmap是不同步的并且允许空值），该类不保证映射的顺序。</p>
-<p>LinkedHashMap：Map接口的哈希表和链表实现，迭代顺序可预测。此实现与HashMap的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
-<p>TreeMap：基于红黑树的NavigableMap实现。映射根据其键的自然顺序进行排序，或者通过映射创建时提供的Comparator进行排序，具体取决于使用的构造函数。此实现为containsKey、get、put和remove操作提供有保证的log(n)时间成本。</p>
-<ol>
-<li>对于Set接口，HashSet是最常用的实现。</li>
-<li>对于List接口，ArrayList是最常用的实现。</li>
-<li>对于Map接口，HashMap是最常用的实现。</li>
-<li>对于Queue接口，LinkedList是最常用的实现。</li>
-<li>对于Deque接口，ArrayDeque是最常用的实现。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>集合</tag>
       </tags>
   </entry>
   <entry>
@@ -335,6 +255,43 @@
       </categories>
       <tags>
         <tag>io_stream</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>collection</title>
+    <url>/2021/11/15/11-15-Java/</url>
+    <content><![CDATA[<h3 id="1-Java-Collection"><a href="#1-Java-Collection" class="headerlink" title="1 Java Collection"></a>1 Java Collection</h3><p>集合（也称为容器）是一个将多个元素组合成一个单元的对象。<br>常见的集合层次结构如下图：</p>
+<img src="/2021/11/15/11-15-Java/JavaCore.png" class="">
+
+<p>Collection：集合层次结构的根。集合表示一组称为其元素的对象。某些类型的集合允许重复元素，而其他类型则不允许。有些是有序的，有些是无序的。Java平台不提供该接口的任何直接实现，但提供了更具体的子接口的实现，例如Set和List。</p>
+<p>Set：<strong>不能包含重复元素的集合</strong>。Set接口仅包含继承自Collection的方法，并添加了禁止重复元素的限制。</p>
+<p>List：有序集合。List可以包含重复的元素。List的用户通常可以精确控制每个元素在列表中的插入位置，并且可以通过它们的整数索引（位置）访问元素。</p>
+<p>Queue：用于在处理之前保存多个元素的集合。除了基本的Collection操作，Queue还提供了额外的插入、提取和检查操作。队列通常但不一定以FIFO（先进先出）方式对元素进行排序。例外情况是优先级队列，它根据提供的比较器或元素的自然顺序对元素进行排序。无论使用何种顺序，队列的头部都是将通过调用remove或poll方法删除元素。在FIFO队列中，所有新元素都插入到队列的尾部。其他类型的队列可能使用不同的放置规则。每个Queue实现都必须指定其排序属性。</p>
+<p>Deque：用于在处理之前保存多个元素的集合。Deque是双端队列。双端队列既可以用作FIFO（先进先出），也可以用作LIFO（后进先出）。双端队列是元素的线性集合，支持在两个端点插入和删除元素。<strong>Deque接口是比Stack和Queue更丰富的抽象数据类型，因为它同时实现了栈和队列。</strong>Deque接口定义了访问Deque实例两端元素的方法。提供了插入、删除和检查元素的方法。ArrayDeque和LinkedList等预定义类实现了Deque接口。</p>
+<p>Map：将键映射到值的对象。<strong>Map不能包含重复的键</strong>，每个键最多可以映射到一个值。</p>
+<p>SortedSet—按升序维护其元素的Set。提供了几个额外的操作来利用排序。<br>SortedMap—以键升序维护其映射的Map。这是SortedSet的Map模拟。</p>
+<p>HashSet：这个类实现了Set接口，由一个哈希表（实际上是一个HashMap实例）支持。此类允许空元素。HashSet将其元素存储在哈希表中，是性能最好的实现，但它不保证迭代的顺序。</p>
+<p>LinkedHashSet：此实现与HashSet的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，也就是元素被插入到集合中的顺序（插入顺序）。</p>
+<p>TreeSet：基于TreeMap的NavigableSet实现。元素使用它们的自然顺序进行排序，或者通过在集合创建时提供的Comparator进行排序，具体取决于使用的构造函数。<br>TreeSet将其元素存储在红黑树中，根据元素的值对其进行排序，它比HashSet慢得多。此实现为基本操作提供有保证的log(n)时间成本（添加、删除和包含）。</p>
+<p>ArrayList：List接口的可调整大小的数组实现。实现所有可选的列表操作，并允许所有元素，包括null。除了实现List接口之外，该类还提供了操作内部用于存储列表的数组大小的方法。（这个类大致相当于Vector，只是它是不同步的）。size、isEmpty、get、set、iterator和listIterator操作在恒定时间内运行。add操作在分摊常数时间内运行，即添加 n 个元素需要 O(n) 时间。所有其他操作都在线性时间内运行（粗略地说）。与LinkedList实现相比，常量因子较低。</p>
+<p>LinkedList：List和Deque接口的双向链表实现。实现所有可选的列表操作，并允许所有元素（包括空值）。</p>
+<p>ArrayList通常是性能更好的实现，而LinkedList在某些情况下提供更好的性能。</p>
+<p>HashMap：Map接口的基于哈希表的实现。此实现提供了所有可选的映射操作，并允许空值和空键。（HashMap类大致等同于Hashtable，只是hashmap是不同步的并且允许空值），该类不保证映射的顺序。</p>
+<p>LinkedHashMap：Map接口的哈希表和链表实现，迭代顺序可预测。此实现与HashMap的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
+<p>TreeMap：基于红黑树的NavigableMap实现。映射根据其键的自然顺序进行排序，或者通过映射创建时提供的Comparator进行排序，具体取决于使用的构造函数。此实现为containsKey、get、put和remove操作提供有保证的log(n)时间成本。</p>
+<ol>
+<li>对于Set接口，HashSet是最常用的实现。</li>
+<li>对于List接口，ArrayList是最常用的实现。</li>
+<li>对于Map接口，HashMap是最常用的实现。</li>
+<li>对于Queue接口，LinkedList是最常用的实现。</li>
+<li>对于Deque接口，ArrayDeque是最常用的实现。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>集合</tag>
       </tags>
   </entry>
   <entry>
@@ -408,44 +365,6 @@
       </tags>
   </entry>
   <entry>
-    <title>map</title>
-    <url>/2021/11/20/11-20-Java/</url>
-    <content><![CDATA[<h3 id="1-HashMap多线程死循环问题"><a href="#1-HashMap多线程死循环问题" class="headerlink" title="1 HashMap多线程死循环问题"></a>1 HashMap多线程死循环问题</h3><p>HashMap采用链表解决Hash冲突，因为是链表结构，那么就很容易形成闭合的链路。当多个线程同时put时，如果同时触发了rehash操作，会导致HashMap的链表中出现循环节点，使得后面get的时候会死循环。</p>
-<p>resize方法：<br>条件：size &gt; capacity * loadFactor<br>创建一个新的Node空数组，长度是原数组的2倍。<br>rehash：遍历原Node数组，把所有的Node重新Hash到新数组。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-HashMap与Hashtable"><a href="#2-HashMap与Hashtable" class="headerlink" title="2 HashMap与Hashtable"></a>2 HashMap与Hashtable</h3><p>Hashtable：基于哈希表实现，它将键映射到值。任何非空对象都可以用作键或值。<br>HashMap的key和value都允许为null，而Hashtable的key和value都不允许为null。<br>HashMap遇到key为null的时候，调用putForNullKey方法进行处理，但对value没有处理。Hashtable遇到null，直接返回NullPointerException。<br>Hashtable是线程安全的，HashMap是非线程安全的。<br>HashMap继承了AbstractMap，Hashtable继承Dictionary抽象类，两者均实现Map接口。</p>
-<p>虽然HashMap和Hashtable都是基于单链表的，但是HashMap进行put或者get操作时，可以达到常数时间的性能；而Hashtable的put和get操作都是加了synchronized锁，所以效率很差。<br>Hashtable的初始长度是11，之后每次扩充容量变为之前的2n+1（n为上一次的长度），而HashMap的初始长度为16，之后每次扩充变为原来的两倍。创建时，如果给定了容量初始值，那么Hashtable会直接使用你给定的大小，而HashMap会将其扩充为2的幂次方大小。</p>
-<p>Java中Hashtable、Collections.synchronizedMap、以及ConcurrentHashMap均可以实现线程安全的Map。<br>Hashtable是直接在方法上加synchronized关键字，锁住整个数组，粒度比较大；即每次锁住整张表让线程独占，致使效率低下。<br>Collections.synchronizedMap是使用Collections集合工具的内部类，通过传入Map封装出一个SynchronizedMap对象，内部定义了一个对象锁，方法内通过对象锁实现。<br>ConcurrentHashMap使用分段锁，降低了锁粒度，让并发度大大提高。</p>
-<h3 id="2-ConcurrentHashMap"><a href="#2-ConcurrentHashMap" class="headerlink" title="2 ConcurrentHashMap"></a>2 ConcurrentHashMap</h3><p>ConcurrentHashMap：一个哈希表，支持检索的完全并发性和更新的高预期并发性。该类遵循与Hashtable相同的功能规范，包括与Hashtable的每个方法对应的方法版本。但是，即使所有操作都是线程安全的，检索操作也不需要锁定，并且不支持以防止所有访问的方式锁定整个表。在依赖其线程安全但不依赖于其同步细节的程序中，此类与Hashtable完全可互操作。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bin数组。第一次插入时延迟初始化。大小始终是2的幂。由迭代器直接访问。</span><br><span class="line">transient volatile Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
-
-<p><strong>实现原理</strong><br>“分段锁”：容器中有多把锁，每一把锁锁一段数据，这样在多线程访问不同段的数据时，就不会存在锁竞争了，这样可以有效地提高并发效率。</p>
-<p>JDK1.7 数组+链表。（segment[]+hashentry[]）。<br>ConcurrentHashMap采用了分段锁技术，ConcurrentHashMap在对象中保存了一个Segment数组，将整个Hash表划分为多个Segment。在执行put操作时会先根据hash算法定位到元素属于哪个Segment，然后对该Segment加锁。每当一个线程占用锁访问一个Segment时，不会影响到其他的Segment。ConcurrentHashMap的get方法是非常高效的，因为整个过程都不需要加锁。</p>
-<p>ConcurrentHashMap使用Segment来表示不同的部分，每个Segment其实就是一个小的Hashtable，它们有自己的锁。每个segment使用单独的ReentrantLock（重入锁）。如果操作涉及不同segment，则可以并发执行，如果是同一个segment，则会进行锁的竞争和等待。<br>ConcurrentHashMap定位一个元素的过程需要进行两次Hash操作。第一次Hash定位到Segment，第二次Hash定位到元素所在的链表的头部。</p>
-<p>JDK 1.8 数组+链表+红黑树。<br>舍弃了JDK1.7中的Segment分段锁，而采用了CAS + synchronized来保证并发安全性。<br>1.7中锁的粒度是基于Segment的，一个Segment包含多个HashEntry，而1.8锁的粒度就是Node（HashEntry）。<br>1.8的数据结构变得更加简单，操作也更加清晰流畅，因为已经使用synchronized来进行同步，所以不需要分段锁的概念，也就不需要Segment这种数据结构了，由于粒度的降低，实现的复杂度也增加了。1.8使用红黑树来优化链表，将查询效率降到o（logn）。</p>
-<p>CAS（Compare and Swap，比较并替换）。CAS本质上很简单，一般至少有3个参数：V表示要更新的变量、E表示预期值、N表示新值变量。如果V值等于E值，则将V的值设为N。若V值和E值不同，则说明已经有其他线程做了更新，则当前线程什么都不做。<br>通俗的理解就是CAS操作需要我们提供一个期望值，当期望值与当前线程的变量值相同时，说明还没有线程修改该值，则当前线程可以进行修改，也就是执行CAS操作。但如果期望值与当前线程的变量值不等，则说明该值已被其他线程修改，此时不执行更新操作，但可以选择重新读取该变量再次尝试修改该变量，也可以放弃操作。</p>
-<h3 id="3-LinkedHashMap"><a href="#3-LinkedHashMap" class="headerlink" title="3 LinkedHashMap"></a>3 LinkedHashMap</h3><p>Map接口的哈希表和链表实现，迭代顺序可预测。<br>此实现与HashMap的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LinkedHashMap&lt;K,V&gt;</span><br><span class="line">    extends HashMap&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;</span><br><span class="line">普通LinkedHashMap条目的HashMap.Node子类。</span><br><span class="line">static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; &#123;</span><br><span class="line">        Entry&lt;K,V&gt; before, after;</span><br><span class="line">        Entry(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            super(hash, key, value, next);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">双向链表的头部（最年长的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; head;</span><br><span class="line">双向链表的尾部（最年轻的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br><span class="line">此链接哈希映射的迭代排序方法：访问顺序为true，插入顺序为false。</span><br><span class="line">final boolean accessOrder;</span><br></pre></td></tr></table></figure>
-<p>双向链表<br>key和value都允许为空<br>key重复会覆盖<br>有序<br>LinkedHashMap是非线程安全的</p>
-<p>LinkedHashMap中的Entry增加了before和after两个指针，用于维护双向链表。before、after用于维护Entry插入的先后顺序。正是因为before、after的存在，LinkedHashMap才形成了双向链表。<br>LinkedHashMap可以认为是散列表与链表（HashMap+LinkedList）的结合，它继承了HashMap，也用LinkedList维护插入/访问元素的先后顺序。从性能上而言，因为额外维护了链表的关系，性能上要略差于HashMap。</p>
-<p>TreeMap是按照Key的自然顺序或者Comprator的顺序进行排序，内部是通过红黑树来实现。所以要么key所属的类实现Comparable接口，或者自定义一个实现了Comparator接口的比较器。</p>
-<h3 id="4-HashSet"><a href="#4-HashSet" class="headerlink" title="4 HashSet"></a>4 HashSet</h3><p>这个类实现了Set接口，由一个哈希表（实际上是一个HashMap实例）支持。它不保证集合的迭代顺序，此类允许空元素。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class HashSet&lt;E&gt;</span><br><span class="line">    extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements Set&lt;E&gt;, Cloneable, java.io.Serializable</span><br><span class="line">private transient HashMap&lt;E,Object&gt; map;</span><br><span class="line">构造一个新的空集，后备HashMap实例具有默认初始容量(16)和负载因子(0.75)。</span><br><span class="line">public HashSet() &#123;</span><br><span class="line">        map &#x3D; new HashMap&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p><strong>HashSet为什么元素不能重复</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        return map.put(e, PRESENT)&#x3D;&#x3D;null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>元素值是作为map的key，map的value则是PRESENT变量，这个变量只作为放入map时的一个占位符存在。HashMap的key是不能重复的，HashSet的元素作为map的key，当然也不能重复了。</p>
-<h3 id="5-Iterator"><a href="#5-Iterator" class="headerlink" title="5 Iterator"></a>5 Iterator</h3><p>集合上的迭代器。迭代器取代了Java集合框架中的枚举。<br>迭代器在两个方面不同于枚举：<br>迭代器允许调用者在具有明确定义语义的迭代期间从底层集合中删除元素。<br>方法名称已得到改进。</p>
-<p>ListIterator<br>public interface ListIterator<E> extends Iterator<E><br>列表的迭代器，允许程序员沿任一方向遍历列表，在迭代期间修改列表，并获取迭代器在列表中的当前位置。ListIterator没有当前元素，它的光标位置始终位于调用previous()返回的元素和调用next()返回的元素之间。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>集合</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>thread</title>
     <url>/2021/11/21/11-21-Java/</url>
     <content><![CDATA[<h3 id="1-进程与线程"><a href="#1-进程与线程" class="headerlink" title="1 进程与线程"></a>1 进程与线程</h3><p>Processes：进程是程序的一次执行过程，是一个动态概念，是程序在执行过程中分配和管理资源的基本单位，每一个进程都有一个自己的地址空间，它有5种基本状态：初始态，执行态，等待状态，就绪状态，终止状态。</p>
@@ -481,6 +400,44 @@
       </categories>
       <tags>
         <tag>线程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>map</title>
+    <url>/2021/11/20/11-20-Java/</url>
+    <content><![CDATA[<h3 id="1-HashMap多线程死循环问题"><a href="#1-HashMap多线程死循环问题" class="headerlink" title="1 HashMap多线程死循环问题"></a>1 HashMap多线程死循环问题</h3><p>HashMap采用链表解决Hash冲突，因为是链表结构，那么就很容易形成闭合的链路。当多个线程同时put时，如果同时触发了rehash操作，会导致HashMap的链表中出现循环节点，使得后面get的时候会死循环。</p>
+<p>resize方法：<br>条件：size &gt; capacity * loadFactor<br>创建一个新的Node空数组，长度是原数组的2倍。<br>rehash：遍历原Node数组，把所有的Node重新Hash到新数组。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int index &#x3D; (n - 1) &amp; hash;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-HashMap与Hashtable"><a href="#2-HashMap与Hashtable" class="headerlink" title="2 HashMap与Hashtable"></a>2 HashMap与Hashtable</h3><p>Hashtable：基于哈希表实现，它将键映射到值。任何非空对象都可以用作键或值。<br>HashMap的key和value都允许为null，而Hashtable的key和value都不允许为null。<br>HashMap遇到key为null的时候，调用putForNullKey方法进行处理，但对value没有处理。Hashtable遇到null，直接返回NullPointerException。<br>Hashtable是线程安全的，HashMap是非线程安全的。<br>HashMap继承了AbstractMap，Hashtable继承Dictionary抽象类，两者均实现Map接口。</p>
+<p>虽然HashMap和Hashtable都是基于单链表的，但是HashMap进行put或者get操作时，可以达到常数时间的性能；而Hashtable的put和get操作都是加了synchronized锁，所以效率很差。<br>Hashtable的初始长度是11，之后每次扩充容量变为之前的2n+1（n为上一次的长度），而HashMap的初始长度为16，之后每次扩充变为原来的两倍。创建时，如果给定了容量初始值，那么Hashtable会直接使用你给定的大小，而HashMap会将其扩充为2的幂次方大小。</p>
+<p>Java中Hashtable、Collections.synchronizedMap、以及ConcurrentHashMap均可以实现线程安全的Map。<br>Hashtable是直接在方法上加synchronized关键字，锁住整个数组，粒度比较大；即每次锁住整张表让线程独占，致使效率低下。<br>Collections.synchronizedMap是使用Collections集合工具的内部类，通过传入Map封装出一个SynchronizedMap对象，内部定义了一个对象锁，方法内通过对象锁实现。<br>ConcurrentHashMap使用分段锁，降低了锁粒度，让并发度大大提高。</p>
+<h3 id="2-ConcurrentHashMap"><a href="#2-ConcurrentHashMap" class="headerlink" title="2 ConcurrentHashMap"></a>2 ConcurrentHashMap</h3><p>ConcurrentHashMap：一个哈希表，支持检索的完全并发性和更新的高预期并发性。该类遵循与Hashtable相同的功能规范，包括与Hashtable的每个方法对应的方法版本。但是，即使所有操作都是线程安全的，检索操作也不需要锁定，并且不支持以防止所有访问的方式锁定整个表。在依赖其线程安全但不依赖于其同步细节的程序中，此类与Hashtable完全可互操作。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bin数组。第一次插入时延迟初始化。大小始终是2的幂。由迭代器直接访问。</span><br><span class="line">transient volatile Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
+
+<p><strong>实现原理</strong><br>“分段锁”：容器中有多把锁，每一把锁锁一段数据，这样在多线程访问不同段的数据时，就不会存在锁竞争了，这样可以有效地提高并发效率。</p>
+<p>JDK1.7 数组+链表。（segment[]+hashentry[]）。<br>ConcurrentHashMap采用了分段锁技术，ConcurrentHashMap在对象中保存了一个Segment数组，将整个Hash表划分为多个Segment。在执行put操作时会先根据hash算法定位到元素属于哪个Segment，然后对该Segment加锁。每当一个线程占用锁访问一个Segment时，不会影响到其他的Segment。ConcurrentHashMap的get方法是非常高效的，因为整个过程都不需要加锁。</p>
+<p>ConcurrentHashMap使用Segment来表示不同的部分，每个Segment其实就是一个小的Hashtable，它们有自己的锁。每个segment使用单独的ReentrantLock（重入锁）。如果操作涉及不同segment，则可以并发执行，如果是同一个segment，则会进行锁的竞争和等待。<br>ConcurrentHashMap定位一个元素的过程需要进行两次Hash操作。第一次Hash定位到Segment，第二次Hash定位到元素所在的链表的头部。</p>
+<p>JDK 1.8 数组+链表+红黑树。<br>舍弃了JDK1.7中的Segment分段锁，而采用了CAS + synchronized来保证并发安全性。<br>1.7中锁的粒度是基于Segment的，一个Segment包含多个HashEntry，而1.8锁的粒度就是Node（HashEntry）。<br>1.8的数据结构变得更加简单，操作也更加清晰流畅，因为已经使用synchronized来进行同步，所以不需要分段锁的概念，也就不需要Segment这种数据结构了，由于粒度的降低，实现的复杂度也增加了。1.8使用红黑树来优化链表，将查询效率降到o（logn）。</p>
+<p>CAS（Compare and Swap，比较并替换）。CAS本质上很简单，一般至少有3个参数：V表示要更新的变量、E表示预期值、N表示新值变量。如果V值等于E值，则将V的值设为N。若V值和E值不同，则说明已经有其他线程做了更新，则当前线程什么都不做。<br>通俗的理解就是CAS操作需要我们提供一个期望值，当期望值与当前线程的变量值相同时，说明还没有线程修改该值，则当前线程可以进行修改，也就是执行CAS操作。但如果期望值与当前线程的变量值不等，则说明该值已被其他线程修改，此时不执行更新操作，但可以选择重新读取该变量再次尝试修改该变量，也可以放弃操作。</p>
+<h3 id="3-LinkedHashMap"><a href="#3-LinkedHashMap" class="headerlink" title="3 LinkedHashMap"></a>3 LinkedHashMap</h3><p>Map接口的哈希表和链表实现，迭代顺序可预测。<br>此实现与HashMap的不同之处在于它维护一个双向链表，贯穿其所有条目。这个链表定义了迭代顺序，这通常是键被插入到映射中的顺序（插入顺序）。请注意，如果将键重新插入到映射中，则插入顺序不会受到影响。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class LinkedHashMap&lt;K,V&gt;</span><br><span class="line">    extends HashMap&lt;K,V&gt;</span><br><span class="line">    implements Map&lt;K,V&gt;</span><br><span class="line">普通LinkedHashMap条目的HashMap.Node子类。</span><br><span class="line">static class Entry&lt;K,V&gt; extends HashMap.Node&lt;K,V&gt; &#123;</span><br><span class="line">        Entry&lt;K,V&gt; before, after;</span><br><span class="line">        Entry(int hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">            super(hash, key, value, next);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">双向链表的头部（最年长的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; head;</span><br><span class="line">双向链表的尾部（最年轻的）。</span><br><span class="line">transient LinkedHashMap.Entry&lt;K,V&gt; tail;</span><br><span class="line">此链接哈希映射的迭代排序方法：访问顺序为true，插入顺序为false。</span><br><span class="line">final boolean accessOrder;</span><br></pre></td></tr></table></figure>
+<p>双向链表<br>key和value都允许为空<br>key重复会覆盖<br>有序<br>LinkedHashMap是非线程安全的</p>
+<p>LinkedHashMap中的Entry增加了before和after两个指针，用于维护双向链表。before、after用于维护Entry插入的先后顺序。正是因为before、after的存在，LinkedHashMap才形成了双向链表。<br>LinkedHashMap可以认为是散列表与链表（HashMap+LinkedList）的结合，它继承了HashMap，也用LinkedList维护插入/访问元素的先后顺序。从性能上而言，因为额外维护了链表的关系，性能上要略差于HashMap。</p>
+<p>TreeMap是按照Key的自然顺序或者Comprator的顺序进行排序，内部是通过红黑树来实现。所以要么key所属的类实现Comparable接口，或者自定义一个实现了Comparator接口的比较器。</p>
+<h3 id="4-HashSet"><a href="#4-HashSet" class="headerlink" title="4 HashSet"></a>4 HashSet</h3><p>这个类实现了Set接口，由一个哈希表（实际上是一个HashMap实例）支持。它不保证集合的迭代顺序，此类允许空元素。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class HashSet&lt;E&gt;</span><br><span class="line">    extends AbstractSet&lt;E&gt;</span><br><span class="line">    implements Set&lt;E&gt;, Cloneable, java.io.Serializable</span><br><span class="line">private transient HashMap&lt;E,Object&gt; map;</span><br><span class="line">构造一个新的空集，后备HashMap实例具有默认初始容量(16)和负载因子(0.75)。</span><br><span class="line">public HashSet() &#123;</span><br><span class="line">        map &#x3D; new HashMap&lt;&gt;();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><strong>HashSet为什么元素不能重复</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public boolean add(E e) &#123;</span><br><span class="line">        return map.put(e, PRESENT)&#x3D;&#x3D;null;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>元素值是作为map的key，map的value则是PRESENT变量，这个变量只作为放入map时的一个占位符存在。HashMap的key是不能重复的，HashSet的元素作为map的key，当然也不能重复了。</p>
+<h3 id="5-Iterator"><a href="#5-Iterator" class="headerlink" title="5 Iterator"></a>5 Iterator</h3><p>集合上的迭代器。迭代器取代了Java集合框架中的枚举。<br>迭代器在两个方面不同于枚举：<br>迭代器允许调用者在具有明确定义语义的迭代期间从底层集合中删除元素。<br>方法名称已得到改进。</p>
+<p>ListIterator<br>public interface ListIterator<E> extends Iterator<E><br>列表的迭代器，允许程序员沿任一方向遍历列表，在迭代期间修改列表，并获取迭代器在列表中的当前位置。ListIterator没有当前元素，它的光标位置始终位于调用previous()返回的元素和调用next()返回的元素之间。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>集合</tag>
       </tags>
   </entry>
   <entry>
@@ -687,6 +644,68 @@
       </tags>
   </entry>
   <entry>
+    <title>jvm_gc</title>
+    <url>/2021/12/04/12-04-Java/</url>
+    <content><![CDATA[<h3 id="1-分代收集理论中新生代和老年代采用的收集算法"><a href="#1-分代收集理论中新生代和老年代采用的收集算法" class="headerlink" title="1 分代收集理论中新生代和老年代采用的收集算法"></a>1 分代收集理论中新生代和老年代采用的收集算法</h3><p>新生代（主要是复制算法）</p>
+<ol>
+<li>把新生代分为一块较大的Eden空间和两块较小的Survivor（Survivor0，Survivor1）空间，每次分配内存只使用Eden和其中一块Survivor。</li>
+<li>HotSpot虚拟机默认Eden和Survivor的大小比例为8：1。垃圾收集时，将Eden和Survivor0中仍然存活的对象一次性复制到Survivor1空间上，然后直接清理掉Eden和Survivor0空间。</li>
+<li>当Survivor1区域不足以存放Eden和Survivor0区域的存活对象时，就将存活对象直接存放到老年代。若是老年代也满了就会触发一次Full GC，也就是新生代、老年代都进行回收。</li>
+</ol>
+<p>老年代（主要是Mark-Compact算法）</p>
+<ol>
+<li>在新生代中经历了N次垃圾回收后仍然存活的对象，就会被放到老年代中。因此，可以认为老年代中存放的都是一些生命周期比较长的对象。</li>
+<li>当老年代内存满时会触发Full GC，Full GC发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
+</ol>
+<h3 id="2-常用的垃圾收集器"><a href="#2-常用的垃圾收集器" class="headerlink" title="2 常用的垃圾收集器"></a>2 常用的垃圾收集器</h3><ol>
+<li>Serial，它是最古老的垃圾收集器，这是一个单线程工作的收集器，“单线程”强调的是在它进行垃圾收集时，必须暂停其它所有工作线程，直到它收集结束。它会进入臭名昭著的“Stop The World”状态。当然，其单线程设计也意味着精简的GC实现，无需维护复杂的数据结构，初始化也简单，所以一直是Client模式下默认新生代收集器。</li>
+<li>Serial Old，它是Serial收集器的老年代版本，同样是一个单线程收集器，使用了标记-整理（Mark-Compact）算法。</li>
+<li>ParNew，是一款新生代收集器，它实际上是Serial的多线程并行版本，最常见的应用场景是配合老年代的CMS工作。</li>
+<li>Parrallel Scavenge，它是一款新生代收集器，基于复制算法实现的收集器。它的目标是达到一个可扩展的吞吐量，也被称为“吞吐量优先收集器”。</li>
+<li>Parrallel Old，它是Parrallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法实现。</li>
+<li>CMS（Concurrent Mark Sweep），基于标记-清除（Mark-Sweep）算法实现，设计目标是尽量缩短停顿时间，这一点对于Web等反应时间敏感的应用非常重要。一直到今天，仍然有很多系统使用CMS GC。但是，CMS采用的标记-清除算法，存在内存碎片化问题，所以难以避免在长时间运行情况下发生full GC，导致恶劣的停顿。另外，既然强调了并发（Concurrent），CMS会占用更多CPU资源，并和用户线程争抢。</li>
+<li>G1（Garbage First），这是一种兼顾吞吐量和停顿时间的GC实现，是Oracle JDK 9以后的默认GC选项，主要面向服务端应用的垃圾收集器。</li>
+</ol>
+<h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>它开创了收集器面向<strong>局部收集</strong>的设计思路和基于<strong>Region</strong>的堆内存布局形式。<br>一般的垃圾收集器收集范围要么是整个新生代、要么是整个老年代，再要么是整个Java堆。而G1可以面向堆内存任何部分来组成回收集（collection set）进行回收。<br>G1把连续的Java堆划分为多个大小相等的独立区域（region），每一个region都可以扮演新生代的Eden空间、Survivor空间或者老年代空间。<br>为了达到对回收时间的可预计性，G1在扫描了region以后，对其中活跃对象的大小进行排序，会首先收集那些活跃对象小的region，以便快速回收空间（要复制的活跃对象少了）。因为活跃对象小，可以认为多数对象都是垃圾，所以这种方式被称为Garbage First（G1）的垃圾回收算法。</p>
+<p><strong>cms vs g1</strong></p>
+<h3 id="4-内存分配的理解？大对象怎么分配？空间分配担保？"><a href="#4-内存分配的理解？大对象怎么分配？空间分配担保？" class="headerlink" title="4 内存分配的理解？大对象怎么分配？空间分配担保？"></a>4 内存分配的理解？大对象怎么分配？空间分配担保？</h3><ol>
+<li>对象优先在Eden分配。大多数情况下，对象在新生代Eden区中分配，当Eden区没有足够空间进行分配时，虚拟机将发起一次Minor GC。</li>
+<li>大对象直接进入老年代。大对象是指需要大量连续内存空间的Java对象，最典型的大对象便是那种很长的字符串，或者元素数量很庞大的数组。经常出现提前触发垃圾收集以获取足够的连续空间分配给大对象的情况。虚拟机提供了-XX:PretenureSizeThreshold参数，大于此值的对象直接在老年代分配，避免在Eden区和两个Survivor区之间的大量内存复制。</li>
+<li>长期存活的对象进入老年代。虚拟机给每个对象定义了一个对象年龄计数器，存储在对象头中。对象通常在Eden区诞生，如果经过一次Minor GC后依然存活，并且能被Survivor容纳的话，该对象会被移动到Survivor空间，并将其对象年龄增加1岁，当它的年龄增加到一定程度（默认为15），就移动到老年代中。</li>
+<li>动态对象年龄判定。为了更好的适应不同程序的内存情况，虚拟机不是永远要求对象年龄必须达到了阙值才能进入老年代，如果Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需等到阙值要求的年龄。</li>
+<li>空间分配担保。在发生Minor GC之前，虚拟机必须先检查老年代中最大可用的连续空间是否大于新生代所有对象总空间，如果大于的话，那么这一次Minor GC可以确保是安全的。</li>
+</ol>
+<h3 id="5-jvm性能监控、故障处理工具"><a href="#5-jvm性能监控、故障处理工具" class="headerlink" title="5 jvm性能监控、故障处理工具"></a>5 jvm性能监控、故障处理工具</h3><p>jps（jvm process status tool，虚拟机进程状况工具）：可以列出正在运行的虚拟机进程。<br>jstat（jvm statistics monitoring tool，虚拟机统计信息监视工具）：可以显示虚拟机进程中的类加载、内存、垃圾收集等运行时数据。<br>jinfo（Configuration info for Java，Java配置信息工具）：实时查看和调整虚拟机各项参数。<br>jmap（memory map for java，Java内存映像工具）：用于生成堆转储快照。<br>jhat（jvm heap analysis tool，虚拟机堆转储快照分析工具）：与jmap搭配使用，来分析jmap生成的堆转储快照。<br>jstack（stack trace for Java，Java堆栈跟踪工具）：用于生成虚拟机当前时刻的线程快照。</p>
+<h3 id="6-class类文件的结构"><a href="#6-class类文件的结构" class="headerlink" title="6 class类文件的结构"></a>6 class类文件的结构</h3><p>Class文件结构采用一种类似于C语言结构体的伪结构来存储数据，有两种数据类型，“无符号数”和“表”。<br>无符号数属于基本数据类型，以u1，u2，u4，u8来分别代表1个字节，2个字节，4个字节，8个字节的无符号数，无符号数可以用来描述数字，索引引用、数量值或者字符串值。<br>表是由多个无符号数或者其它表作为数据项构成的复合数据类型，习惯性地以_info结尾。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic;</span><br><span class="line">    u2             minor_version;</span><br><span class="line">    u2             major_version;</span><br><span class="line">    u2             constant_pool_count;</span><br><span class="line">    cp_info        constant_pool[constant_pool_count-1];</span><br><span class="line">    u2             access_flags;</span><br><span class="line">    u2             this_class;</span><br><span class="line">    u2             super_class;</span><br><span class="line">    u2             interfaces_count;</span><br><span class="line">    u2             interfaces[interfaces_count];</span><br><span class="line">    u2             fields_count;</span><br><span class="line">    field_info     fields[fields_count];</span><br><span class="line">    u2             methods_count;</span><br><span class="line">    method_info    methods[methods_count];</span><br><span class="line">    u2             attributes_count;</span><br><span class="line">    attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每个Class文件的头4个字节称为魔数（magic number），它的值固定为0xCAFEBABE，作用是确定这个文件是否是一个能被虚拟机接受的Class文件。<br>紧接着魔数的4个字节存储的是Class文件的版本号。第五和第六个字节是次版本号，第七和第八个字节是主版本号。<br>在主次版本号之后是常量池入口。常量池主要存放两大类常量：字面量和符号引用。</p>
+<h3 id="7-部分收集与整堆收集"><a href="#7-部分收集与整堆收集" class="headerlink" title="7 部分收集与整堆收集"></a>7 部分收集与整堆收集</h3><p>部分收集</p>
+<ul>
+<li>新生代收集（Minor GC）：目标只是新生代的垃圾收集。</li>
+<li>老年代收集（Major GC）：目标只是老年代的垃圾收集。目前只有CMS收集器会有单独收集老年代的行为。注意：有些场合“Major GC”是指整堆收集。</li>
+<li>混合收集（Mixed GC）：目标是收集整个新生代以及部分老年代的垃圾收集。目前只有G1收集器会有这种行为。</li>
+</ul>
+<p>整堆收集</p>
+<ul>
+<li>Full GC：目标是整个Java堆和方法区的垃圾收集。</li>
+</ul>
+<h3 id="8-堆栈的区别"><a href="#8-堆栈的区别" class="headerlink" title="8 堆栈的区别"></a>8 堆栈的区别</h3><ul>
+<li>堆存放的是对象实例。</li>
+<li>栈存放的是局部变量，操作数栈等信息。</li>
+<li>堆是所有线程所共享的一块内存区域，在虚拟机启动时创建。</li>
+<li>栈是线程私有的。</li>
+<li>栈的性能比堆要快，仅次于CPU中的寄存器。但是，在分配内存的时候，存放在栈中的数据大小与生存周期必须在编译时是确定的，缺乏灵活性。</li>
+<li>堆可以动态分配内存大小，编译器不必知道要从堆里分配多少存储空间，生存周期也不必事先告诉编译器。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>gc_collection</title>
     <url>/2021/12/01/12-01-Java/</url>
     <content><![CDATA[<h3 id="1-判断对象存活的算法"><a href="#1-判断对象存活的算法" class="headerlink" title="1 判断对象存活的算法"></a>1 判断对象存活的算法</h3><p>垃圾收集器在对堆和方法区进行回收前，首先要确定这些区域的对象哪些可以回收，哪些暂时还不能回收，这就要用到判断对象是否存活的算法。</p>
@@ -742,68 +761,6 @@
 </tbody></table>
 <p>在JVM中，内存分为堆内存跟栈内存。当我们创建一个对象（new Object）时，就会调用对象的构造函数来开辟空间，将对象数据存储到堆内存中，与此同时在栈内存中生成对应的引用，当我们在后续代码中调用的时候都是栈内存中的引用。还需注意的一点，基本数据类型是存储在栈内存中。</p>
 <p>Java在方法调用传递参数时，都是值传递。只不过对于对象参数，值的内容是对象的引用。会影响原始对象只是因为传递的时候拷贝的是对象的引用地址。</p>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>jvm_gc</title>
-    <url>/2021/12/04/12-04-Java/</url>
-    <content><![CDATA[<h3 id="1-分代收集理论中新生代和老年代采用的收集算法"><a href="#1-分代收集理论中新生代和老年代采用的收集算法" class="headerlink" title="1 分代收集理论中新生代和老年代采用的收集算法"></a>1 分代收集理论中新生代和老年代采用的收集算法</h3><p>新生代（主要是复制算法）</p>
-<ol>
-<li>把新生代分为一块较大的Eden空间和两块较小的Survivor（Survivor0，Survivor1）空间，每次分配内存只使用Eden和其中一块Survivor。</li>
-<li>HotSpot虚拟机默认Eden和Survivor的大小比例为8：1。垃圾收集时，将Eden和Survivor0中仍然存活的对象一次性复制到Survivor1空间上，然后直接清理掉Eden和Survivor0空间。</li>
-<li>当Survivor1区域不足以存放Eden和Survivor0区域的存活对象时，就将存活对象直接存放到老年代。若是老年代也满了就会触发一次Full GC，也就是新生代、老年代都进行回收。</li>
-</ol>
-<p>老年代（主要是Mark-Compact算法）</p>
-<ol>
-<li>在新生代中经历了N次垃圾回收后仍然存活的对象，就会被放到老年代中。因此，可以认为老年代中存放的都是一些生命周期比较长的对象。</li>
-<li>当老年代内存满时会触发Full GC，Full GC发生频率比较低，老年代对象存活时间比较长，存活率标记高。</li>
-</ol>
-<h3 id="2-常用的垃圾收集器"><a href="#2-常用的垃圾收集器" class="headerlink" title="2 常用的垃圾收集器"></a>2 常用的垃圾收集器</h3><ol>
-<li>Serial，它是最古老的垃圾收集器，这是一个单线程工作的收集器，“单线程”强调的是在它进行垃圾收集时，必须暂停其它所有工作线程，直到它收集结束。它会进入臭名昭著的“Stop The World”状态。当然，其单线程设计也意味着精简的GC实现，无需维护复杂的数据结构，初始化也简单，所以一直是Client模式下默认新生代收集器。</li>
-<li>Serial Old，它是Serial收集器的老年代版本，同样是一个单线程收集器，使用了标记-整理（Mark-Compact）算法。</li>
-<li>ParNew，是一款新生代收集器，它实际上是Serial的多线程并行版本，最常见的应用场景是配合老年代的CMS工作。</li>
-<li>Parrallel Scavenge，它是一款新生代收集器，基于复制算法实现的收集器。它的目标是达到一个可扩展的吞吐量，也被称为“吞吐量优先收集器”。</li>
-<li>Parrallel Old，它是Parrallel Scavenge收集器的老年代版本，支持多线程并发收集，基于标记-整理算法实现。</li>
-<li>CMS（Concurrent Mark Sweep），基于标记-清除（Mark-Sweep）算法实现，设计目标是尽量缩短停顿时间，这一点对于Web等反应时间敏感的应用非常重要。一直到今天，仍然有很多系统使用CMS GC。但是，CMS采用的标记-清除算法，存在内存碎片化问题，所以难以避免在长时间运行情况下发生full GC，导致恶劣的停顿。另外，既然强调了并发（Concurrent），CMS会占用更多CPU资源，并和用户线程争抢。</li>
-<li>G1（Garbage First），这是一种兼顾吞吐量和停顿时间的GC实现，是Oracle JDK 9以后的默认GC选项，主要面向服务端应用的垃圾收集器。</li>
-</ol>
-<h3 id="3-G1-GC"><a href="#3-G1-GC" class="headerlink" title="3 G1 GC"></a>3 G1 GC</h3><p>它开创了收集器面向<strong>局部收集</strong>的设计思路和基于<strong>Region</strong>的堆内存布局形式。<br>一般的垃圾收集器收集范围要么是整个新生代、要么是整个老年代，再要么是整个Java堆。而G1可以面向堆内存任何部分来组成回收集（collection set）进行回收。<br>G1把连续的Java堆划分为多个大小相等的独立区域（region），每一个region都可以扮演新生代的Eden空间、Survivor空间或者老年代空间。<br>为了达到对回收时间的可预计性，G1在扫描了region以后，对其中活跃对象的大小进行排序，会首先收集那些活跃对象小的region，以便快速回收空间（要复制的活跃对象少了）。因为活跃对象小，可以认为多数对象都是垃圾，所以这种方式被称为Garbage First（G1）的垃圾回收算法。</p>
-<p><strong>cms vs g1</strong></p>
-<h3 id="4-内存分配的理解？大对象怎么分配？空间分配担保？"><a href="#4-内存分配的理解？大对象怎么分配？空间分配担保？" class="headerlink" title="4 内存分配的理解？大对象怎么分配？空间分配担保？"></a>4 内存分配的理解？大对象怎么分配？空间分配担保？</h3><ol>
-<li>对象优先在Eden分配。大多数情况下，对象在新生代Eden区中分配，当Eden区没有足够空间进行分配时，虚拟机将发起一次Minor GC。</li>
-<li>大对象直接进入老年代。大对象是指需要大量连续内存空间的Java对象，最典型的大对象便是那种很长的字符串，或者元素数量很庞大的数组。经常出现提前触发垃圾收集以获取足够的连续空间分配给大对象的情况。虚拟机提供了-XX:PretenureSizeThreshold参数，大于此值的对象直接在老年代分配，避免在Eden区和两个Survivor区之间的大量内存复制。</li>
-<li>长期存活的对象进入老年代。虚拟机给每个对象定义了一个对象年龄计数器，存储在对象头中。对象通常在Eden区诞生，如果经过一次Minor GC后依然存活，并且能被Survivor容纳的话，该对象会被移动到Survivor空间，并将其对象年龄增加1岁，当它的年龄增加到一定程度（默认为15），就移动到老年代中。</li>
-<li>动态对象年龄判定。为了更好的适应不同程序的内存情况，虚拟机不是永远要求对象年龄必须达到了阙值才能进入老年代，如果Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无需等到阙值要求的年龄。</li>
-<li>空间分配担保。在发生Minor GC之前，虚拟机必须先检查老年代中最大可用的连续空间是否大于新生代所有对象总空间，如果大于的话，那么这一次Minor GC可以确保是安全的。</li>
-</ol>
-<h3 id="5-jvm性能监控、故障处理工具"><a href="#5-jvm性能监控、故障处理工具" class="headerlink" title="5 jvm性能监控、故障处理工具"></a>5 jvm性能监控、故障处理工具</h3><p>jps（jvm process status tool，虚拟机进程状况工具）：可以列出正在运行的虚拟机进程。<br>jstat（jvm statistics monitoring tool，虚拟机统计信息监视工具）：可以显示虚拟机进程中的类加载、内存、垃圾收集等运行时数据。<br>jinfo（Configuration info for Java，Java配置信息工具）：实时查看和调整虚拟机各项参数。<br>jmap（memory map for java，Java内存映像工具）：用于生成堆转储快照。<br>jhat（jvm heap analysis tool，虚拟机堆转储快照分析工具）：与jmap搭配使用，来分析jmap生成的堆转储快照。<br>jstack（stack trace for Java，Java堆栈跟踪工具）：用于生成虚拟机当前时刻的线程快照。</p>
-<h3 id="6-class类文件的结构"><a href="#6-class类文件的结构" class="headerlink" title="6 class类文件的结构"></a>6 class类文件的结构</h3><p>Class文件结构采用一种类似于C语言结构体的伪结构来存储数据，有两种数据类型，“无符号数”和“表”。<br>无符号数属于基本数据类型，以u1，u2，u4，u8来分别代表1个字节，2个字节，4个字节，8个字节的无符号数，无符号数可以用来描述数字，索引引用、数量值或者字符串值。<br>表是由多个无符号数或者其它表作为数据项构成的复合数据类型，习惯性地以_info结尾。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ClassFile &#123;</span><br><span class="line">    u4             magic;</span><br><span class="line">    u2             minor_version;</span><br><span class="line">    u2             major_version;</span><br><span class="line">    u2             constant_pool_count;</span><br><span class="line">    cp_info        constant_pool[constant_pool_count-1];</span><br><span class="line">    u2             access_flags;</span><br><span class="line">    u2             this_class;</span><br><span class="line">    u2             super_class;</span><br><span class="line">    u2             interfaces_count;</span><br><span class="line">    u2             interfaces[interfaces_count];</span><br><span class="line">    u2             fields_count;</span><br><span class="line">    field_info     fields[fields_count];</span><br><span class="line">    u2             methods_count;</span><br><span class="line">    method_info    methods[methods_count];</span><br><span class="line">    u2             attributes_count;</span><br><span class="line">    attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>每个Class文件的头4个字节称为魔数（magic number），它的值固定为0xCAFEBABE，作用是确定这个文件是否是一个能被虚拟机接受的Class文件。<br>紧接着魔数的4个字节存储的是Class文件的版本号。第五和第六个字节是次版本号，第七和第八个字节是主版本号。<br>在主次版本号之后是常量池入口。常量池主要存放两大类常量：字面量和符号引用。</p>
-<h3 id="7-部分收集与整堆收集"><a href="#7-部分收集与整堆收集" class="headerlink" title="7 部分收集与整堆收集"></a>7 部分收集与整堆收集</h3><p>部分收集</p>
-<ul>
-<li>新生代收集（Minor GC）：目标只是新生代的垃圾收集。</li>
-<li>老年代收集（Major GC）：目标只是老年代的垃圾收集。目前只有CMS收集器会有单独收集老年代的行为。注意：有些场合“Major GC”是指整堆收集。</li>
-<li>混合收集（Mixed GC）：目标是收集整个新生代以及部分老年代的垃圾收集。目前只有G1收集器会有这种行为。</li>
-</ul>
-<p>整堆收集</p>
-<ul>
-<li>Full GC：目标是整个Java堆和方法区的垃圾收集。</li>
-</ul>
-<h3 id="8-堆栈的区别"><a href="#8-堆栈的区别" class="headerlink" title="8 堆栈的区别"></a>8 堆栈的区别</h3><ul>
-<li>堆存放的是对象实例。</li>
-<li>栈存放的是局部变量，操作数栈等信息。</li>
-<li>堆是所有线程所共享的一块内存区域，在虚拟机启动时创建。</li>
-<li>栈是线程私有的。</li>
-<li>栈的性能比堆要快，仅次于CPU中的寄存器。但是，在分配内存的时候，存放在栈中的数据大小与生存周期必须在编译时是确定的，缺乏灵活性。</li>
-<li>堆可以动态分配内存大小，编译器不必知道要从堆里分配多少存储空间，生存周期也不必事先告诉编译器。</li>
-</ul>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -869,32 +826,6 @@
       </tags>
   </entry>
   <entry>
-    <title>tcp_connect</title>
-    <url>/2021/12/11/12-11-Network/</url>
-    <content><![CDATA[<h3 id="1-三次握手"><a href="#1-三次握手" class="headerlink" title="1 三次握手"></a>1 三次握手</h3><p>为什么只有三次握手才能确认双方的接收与发送能力是否正常，而两次握手却不可以。<br>第一次握手：客户端发送网络包，服务端收到了。此时服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>第二次握手：服务端发包，客户端收到了。此时客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务端并不能确认客户端的接收能力是否正常。<br>第三次握手：客户端发包，服务端收到了。此时服务端就能得出结论：客户端的接收、发送能力正常，服务端的发送、接收能力也正常。<br>因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
-<p>三次握手过程：刚开始客户端处于closed的状态，服务端处于listen状态。<br>SYN，ACK都是标志位，可置为0或1，三次握手时为1。<br>在TCP报文段中，字段ACK=1时，确认号字段（ack）才有效。TCP规定，在连接建立后所有传送的报文段都必须把ACK置1。<br>确认号字段：该字段存放的信息为期望收到对方下一个报文段的第一个数据字节的序号。</p>
-<ol>
-<li>第一次握手：客户端向服务器发送一个同步数据包请求建立连接，并指明客户端的初始化序列号ISN(c)。此时客户端处于SYN_Send状态。</li>
-<li>第二次握手：服务器收到同步请求数据包后，会对客户端进行一个同步确认。数据包中指定了自己的初始化序列号ISN(s)，同时会把客户端的ISN + 1作为 确认号字段 的值，此时服务端处于SYN_RCVD的状态。</li>
-<li>第三次握手：客户端收到这个同步确认数据包后，会对服务器进行一个确认。数据包中把服务端的ISN + 1作为 确认号字段 的值，此时客户端处于establised状态。服务器收到数据包之后，也处于establised状态，此时，双方建立起了连接。</li>
-</ol>
-<p>三次握手好处：<br>确认双方的接收能力、发送能力是否正常。<br>指定自己的初始化序列号，为后面的可靠传送做准备。</p>
-<p>ISN不是固定的<br>三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。<br>如果ISN是固定的，攻击者很容易猜出后续的确认号(acknowledgement number)，因此ISN是动态生成的。</p>
-<p>半连接队列<br>服务端第一次收到客户端的SYN(Synchronize Sequence Numbers)之后，处于SYN_RCVD状态，此时双方还没有完全建立连接，服务端会把此种状态下的请求连接放在一个队列里，称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列里。如果队列满了就有可能会出现丢包现象。</p>
-<p>SYN-ACK重传次数问题<br>服务器发送完SYN－ACK包，如果未收到客户端的确认包，服务器进行首次重传，等待一段时间仍未收到客户端确认包，进行第二次重传，如果重传次数超过系统规定的最大重传次数，系统会将该连接信息从半连接队列中删除。</p>
-<p>三次握手过程中可以携带数据吗？<br>第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。<br>第三次握手时，客户端已经处于established状态，已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的，所以能携带数据。</p>
-<p>SYN洪泛攻击<br>服务器端的资源分配是在第二次握手时分配的，而客户端的资源分配是在完成三次握手后分配的，所以服务器容易受到SYN洪泛攻击。</p>
-<p>SYN攻击就是Client在短时间内伪造大量不存在的IP地址，并向Server不断地发送SYN包，Server回复确认包，并等待Client确认。由于源地址不存在，因此Server需要不断重发直至超时，这些伪造的SYN包将长时间占用半连接队列，导致正常的SYN请求因为队列满而被丢弃，从而引起网络拥塞甚至系统瘫痪。SYN攻击是一种典型的DoS/DDoS攻击。</p>
-<p>防御方法：<br>缩短超时时间（SYN Timeout)<br>增加最大半连接数<br>过滤网关防护<br>SYN cookies技术</p>
-]]></content>
-      <categories>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>三次握手</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>spring_aop</title>
     <url>/2021/12/10/12-10-Spring/</url>
     <content><![CDATA[<h3 id="1-AOP-Aspect-Oriented-Programming"><a href="#1-AOP-Aspect-Oriented-Programming" class="headerlink" title="1 AOP(Aspect Oriented Programming)"></a>1 AOP(Aspect Oriented Programming)</h3><p>面向方面编程（AOP）通过提供另一种思考程序结构的方式来补充面向对象编程（OOP）。OOP中模块化的关键单元是类，而AOP中模块化的单元是方面。<strong>方面支持跨多个类型和对象的关注点（例如：事务管理）的模块化</strong>。（在AOP文献中，此类关注点通常被称为“横切”关注点。）<br>Spring的关键组件之一是AOP框架。虽然Spring IoC容器不依赖于AOP（这意味着如果您不想使用AOP，就不需要使用AOP），但AOP补充了Spring IoC，提供了一个功能非常强大的中间件解决方案。</p>
@@ -936,6 +867,49 @@
       </tags>
   </entry>
   <entry>
+    <title>git</title>
+    <url>/2022/01/08/01-08-git/</url>
+    <content><![CDATA[<p><strong>Git</strong><br>Git是一种分布式版本控制系统（Distributed Version Control System，DVCS），分为两种类型的仓库：本地仓库和远程仓库。</p>
+<p>本地仓库：开发人员自己电脑上的Git仓库。<br>远程仓库：远程服务器上的Git仓库。</p>
+<p>clone：就是将远程仓库代码复制到本地仓库。<br>push：就是将本地仓库代码上传到远程仓库。<br>pull：就是将远程仓库代码下载到本地仓库。</p>
+<p><strong>Git工作区、暂存区和版本库</strong></p>
+<ul>
+<li>工作区：就是电脑里存放项目代码的地方。</li>
+<li>暂存区：英文叫stage或index。一般存放在.git目录下的index文件（.git/index）中，暂存区有时也叫作索引（index）。用于临时存放你的改动，它只是一个文件，保存即将提交的文件列表信息。</li>
+<li>版本库（repository）：存放已提交的数据，这里边有你提交的所有版本的数据，push的时候，就是把这个区的数据push到远程仓库。其中，HEAD指向最新放入仓库的版本。</li>
+</ul>
+<p>工作流程：<br>在工作目录中添加、修改文件；<br>将需要进行版本管理的文件放入暂存区；<br>将暂存区的文件提交到版本库；<br>push到远端仓库。</p>
+<img src="/2022/01/08/01-08-git/git.png" class="">
+<p>Git管理的文件有三种状态：已修改（modified）、已暂存（staged）和已提交（committed）。</p>
+<p>将工作区的代码存放到暂存区：<br>git add . （将当前工作区的所有文件存放到暂存区）<br>git add -u （提交更新所有改变的文件，即提交所有变化的文件）<br>git add -A （提交已被修改和已被删除文件，但是不包括新的文件）</p>
+<p><strong>stage</strong><br>修改了4个文件，在不放弃任何修改的情况下，其中一个文件不想提交，如何操作？<br>（没add : git add；已经add: git reset –soft ）</p>
+<p>修改到一半的文件，突然间不需要或者放弃修改了，怎么恢复未修改前文件？<br>(git checkout)</p>
+<p>代码写一半，被打断去做其他功能开发，未完成代码保存？<br>(git stash)能够将所有未提交的修改（工作区和暂存区）保存至堆栈中，用于后续恢复当前工作目录。</p>
+<p>代码写一半，发现忘记切换分支了？<br>(git stash &amp; git checkout)</p>
+<p>代码需要回滚了？<br>（git reset）</p>
+<p><strong>常用命令</strong><br>备份当前工作区的内容<br>git stash</p>
+<p>从远程仓库克隆<br>git clone [url]</p>
+<p>从远程仓库中抓取与拉取<br>git fetch 是从远程仓库获取最新版本到本地仓库，不会自动merge。<br>git pull 是从远程仓库获取最新版本并merge到本地仓库。</p>
+<p>推送到远程仓库<br>git push remote-name branch-name</p>
+<p><strong>Git分支</strong><br>列出所有本地分支<br>git branch<br>列出所有远程分支<br>git branch -r<br>列出所有本地分支和远程分支<br>git branch -a<br>创建分支<br>git branch [branch_name]<br>切换分支<br>git checkout [branch_name]<br>合并分支<br>git merge [branch_name]</p>
+<p><strong>rebase</strong><br>假设现在有两个分支master和hj，其中hj是在提交点B处从master上拉出的分支，master上有一个新提交M，hj上有两个新提交C和D。<br>此时要切换到hj分支上，执行如下命令，相当于是想要把master分支合并到hj分支（可以类比为我们在自己的分支hj上开发了一段时间，现在准备从主干master上拉一下最新改动）。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git checkout hj</span><br><span class="line">git rebase master</span><br><span class="line">等价于git rebase master hj</span><br></pre></td></tr></table></figure>
+<img src="/2022/01/08/01-08-git/rebase.png" class="">
+<ul>
+<li>hj：待变基分支、当前分支</li>
+<li>master：基分支、目标分支</li>
+</ul>
+<p>当执行rebase操作时，git会从两个分支的共同祖先开始提取待变基分支上的修改，然后将待变基分支指向基分支的最新提交，最后将刚才提取的修改应用到基分支的最新提交的后面。</p>
+<p>场景：张三从B拉了代码进行开发，目前提交了两次，开发到D了；李四也从B拉代码开发并且开发完毕，他提交到了M，然后合到主干上了。<br>此时张三想拉下最新代码，于是他在hj分支上执行了git rebase master，即把master分支给rebase过来，由于李四更早开发完并合了主干，如此就相当于张三是基于李四的最新提交M进行的开发了。</p>
+]]></content>
+      <categories>
+        <category>Tool</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>spring_transaction</title>
     <url>/2021/12/11/12-11-Spring/</url>
     <content><![CDATA[<h3 id="1-Spring事务"><a href="#1-Spring事务" class="headerlink" title="1 Spring事务"></a>1 Spring事务</h3><p>Spring事务的本质其实就是数据库对事务的支持，没有数据库的事务支持，Spring是无法提供事务功能的。对于纯JDBC操作数据库，想要用到事务，可以按照以下步骤进行：</p>
@@ -961,6 +935,32 @@
       </categories>
       <tags>
         <tag>事务</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>tcp_connect</title>
+    <url>/2021/12/11/12-11-Network/</url>
+    <content><![CDATA[<h3 id="1-三次握手"><a href="#1-三次握手" class="headerlink" title="1 三次握手"></a>1 三次握手</h3><p>为什么只有三次握手才能确认双方的接收与发送能力是否正常，而两次握手却不可以。<br>第一次握手：客户端发送网络包，服务端收到了。此时服务端就能得出结论：客户端的发送能力、服务端的接收能力是正常的。<br>第二次握手：服务端发包，客户端收到了。此时客户端就能得出结论：服务端的接收、发送能力，客户端的接收、发送能力是正常的。不过此时服务端并不能确认客户端的接收能力是否正常。<br>第三次握手：客户端发包，服务端收到了。此时服务端就能得出结论：客户端的接收、发送能力正常，服务端的发送、接收能力也正常。<br>因此，需要三次握手才能确认双方的接收与发送能力是否正常。</p>
+<p>三次握手过程：刚开始客户端处于closed的状态，服务端处于listen状态。<br>SYN，ACK都是标志位，可置为0或1，三次握手时为1。<br>在TCP报文段中，字段ACK=1时，确认号字段（ack）才有效。TCP规定，在连接建立后所有传送的报文段都必须把ACK置1。<br>确认号字段：该字段存放的信息为期望收到对方下一个报文段的第一个数据字节的序号。</p>
+<ol>
+<li>第一次握手：客户端向服务器发送一个同步数据包请求建立连接，并指明客户端的初始化序列号ISN(c)。此时客户端处于SYN_Send状态。</li>
+<li>第二次握手：服务器收到同步请求数据包后，会对客户端进行一个同步确认。数据包中指定了自己的初始化序列号ISN(s)，同时会把客户端的ISN + 1作为 确认号字段 的值，此时服务端处于SYN_RCVD的状态。</li>
+<li>第三次握手：客户端收到这个同步确认数据包后，会对服务器进行一个确认。数据包中把服务端的ISN + 1作为 确认号字段 的值，此时客户端处于establised状态。服务器收到数据包之后，也处于establised状态，此时，双方建立起了连接。</li>
+</ol>
+<p>三次握手好处：<br>确认双方的接收能力、发送能力是否正常。<br>指定自己的初始化序列号，为后面的可靠传送做准备。</p>
+<p>ISN不是固定的<br>三次握手的一个重要功能是客户端和服务端交换ISN(Initial Sequence Number), 以便让对方知道接下来接收数据的时候如何按序列号组装数据。<br>如果ISN是固定的，攻击者很容易猜出后续的确认号(acknowledgement number)，因此ISN是动态生成的。</p>
+<p>半连接队列<br>服务端第一次收到客户端的SYN(Synchronize Sequence Numbers)之后，处于SYN_RCVD状态，此时双方还没有完全建立连接，服务端会把此种状态下的请求连接放在一个队列里，称之为半连接队列。当然还有一个全连接队列，就是已经完成三次握手，建立起连接的就会放在全连接队列里。如果队列满了就有可能会出现丢包现象。</p>
+<p>SYN-ACK重传次数问题<br>服务器发送完SYN－ACK包，如果未收到客户端的确认包，服务器进行首次重传，等待一段时间仍未收到客户端确认包，进行第二次重传，如果重传次数超过系统规定的最大重传次数，系统会将该连接信息从半连接队列中删除。</p>
+<p>三次握手过程中可以携带数据吗？<br>第一次、第二次握手不可以携带数据，而第三次握手是可以携带数据的。<br>第三次握手时，客户端已经处于established状态，已经建立起连接了，并且也已经知道服务器的接收、发送能力是正常的，所以能携带数据。</p>
+<p>SYN洪泛攻击<br>服务器端的资源分配是在第二次握手时分配的，而客户端的资源分配是在完成三次握手后分配的，所以服务器容易受到SYN洪泛攻击。</p>
+<p>SYN攻击就是Client在短时间内伪造大量不存在的IP地址，并向Server不断地发送SYN包，Server回复确认包，并等待Client确认。由于源地址不存在，因此Server需要不断重发直至超时，这些伪造的SYN包将长时间占用半连接队列，导致正常的SYN请求因为队列满而被丢弃，从而引起网络拥塞甚至系统瘫痪。SYN攻击是一种典型的DoS/DDoS攻击。</p>
+<p>防御方法：<br>缩短超时时间（SYN Timeout)<br>增加最大半连接数<br>过滤网关防护<br>SYN cookies技术</p>
+]]></content>
+      <categories>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>三次握手</tag>
       </tags>
   </entry>
   <entry>
@@ -1010,47 +1010,6 @@
       </tags>
   </entry>
   <entry>
-    <title>OSI_model</title>
-    <url>/2021/12/16/12-16-Network/</url>
-    <content><![CDATA[<h3 id="1-OSI五层模型"><a href="#1-OSI五层模型" class="headerlink" title="1 OSI五层模型"></a>1 OSI五层模型</h3><img src="/2021/12/16/12-16-Network/protocol.png" class="">
-
-<h3 id="2-ARP协议"><a href="#2-ARP协议" class="headerlink" title="2 ARP协议"></a>2 ARP协议</h3><p>地址解析协议，即ARP（Address Resolution Protocol），是根据IP地址获取物理地址的一个TCP/IP协议。</p>
-<p>首先，每台主机都会在自己的 ARP 缓冲区中建立一个 ARP 列表，以表示 IP 地址和 MAC 地址之间的对应关系。当源主机需要将一个数据包发送到目的主机时，会首先检查自己 ARP 列表中是否存在该 IP 地址对应的 MAC 地址。如果有，就直接将数据包发送到这个 MAC 地址；如果没有，就向本地网段发起一个 ARP 请求的广播包，查询此目的主机对应的 MAC 地址。</p>
-<p>ARP请求数据包中包括源主机的 IP 地址、硬件地址、以及目的主机的 IP 地址。网络中所有的主机收到这个 ARP 请求后，会检查数据包中的目的 IP 是否和自己的 IP 地址一致。如果不相同就忽略此数据包；如果相同，该主机首先将发送端的 MAC 地址和 IP 地址添加到自己的 ARP 列表中，如果 ARP 表中已经存在该 IP 的信息，则将其覆盖，然后给源主机发送一个 ARP 响应数据包，告诉对方自己是它需要查找的 MAC 地址；源主机收到这个 ARP 响应数据包后，将得到的目的主机的 IP 地址和 MAC 地址添加到自己的 ARP 列表中，并利用此信息开始数据的传输。如果源主机一直没有收到 ARP 响应数据包，表示 ARP 查询失败。</p>
-<h3 id="3-粘包"><a href="#3-粘包" class="headerlink" title="3 粘包"></a>3 粘包</h3><p>客户端连续不断的向服务端发送数据包时，服务端接收的数据会出现两个数据包粘在一起的情况。</p>
-<ol>
-<li>TCP是基于字节流的，虽然应用层和传输层之间的数据交互是大小不等的数据块，但是TCP把这些数据块仅仅看成是一连串无结构的字节流，没有边界；</li>
-<li>从 TCP 的帧结构也可以看出，在 TCP 的首部没有表示数据长度的字段。<br>基于上面两点，在使用 TCP 传输数据时，才有粘包或者拆包现象发生的可能。</li>
-</ol>
-<p>一个数据包中包含了发送端发送的两个数据包的信息，这种现象称为粘包。<br>接收端收到了两个数据包，但是这两个数据包要么是不完整的，要么就是多出来一块，这种情况即发生了拆包和粘包。拆包和粘包的问题导致接收端在处理的时候会非常困难，因为无法区分一个完整的数据包。</p>
-<p>TCP粘包的产生：<br>发送方产生粘包：采用 TCP 协议传输数据的客户端与服务器经常是保持一个长连接的状态，双方在连接不断开的情况下，可以一直传输数据。当发送的数据包太小时，那么 TCP 协议默认会启用 Nagle 算法，将这些较小的数据包进行合并（缓冲区数据发送是一个堆压的过程）；这个合并过程就是在发送缓冲区中进行的，也就是说数据发送出来时它已经是粘包的状态了。</p>
-<p>接收方产生粘包：由于tcp是面向字节流的协议，即协议的内容是像流水一样的字节流，内容与内容之间没有明确的分界标志，需要我们人为地去给这些协议划分边界。</p>
-<p>解决办法：<br>以指定字符（串）作为包的结束标志；<br>包头定长（在包头的首部添加数据包的长度）。</p>
-<h3 id="4-在浏览器中输入URL地址到显示网页的过程"><a href="#4-在浏览器中输入URL地址到显示网页的过程" class="headerlink" title="4 在浏览器中输入URL地址到显示网页的过程"></a>4 在浏览器中输入URL地址到显示网页的过程</h3><ol>
-<li>DNS解析<br>如果输入ip地址表示直接从主机上调用内容。如果输入域名，则是通过域名解析服务器指向对应主机的IP地址，再从主机上调用网址的内容。<br>DNS解析过程：查询<strong>浏览器缓存</strong>，如果没有查到会进入<strong>系统缓存</strong>进行查询，此时主要查询host文件，这个文件主要保存以前访问过的域名和IP地址，类似本地数据库。如果找到，可直接获取目标主机的IP地址，如果没找到，进入<strong>路由器缓存</strong>，路由器有自己的DNS缓存，如果查到就返回，否则进入<strong>ISP DNS缓存</strong>。从根域名服务器 –&gt; 顶级域名服务器 –&gt; 极限域名服务器，依次搜索查找对应目标域名的IP，找到以后，会建立TCP连接。</li>
-<li>建立TCP连接<br>浏览器获得域名对应的IP地址以后，会向服务器请求建立连接，发起三次握手。</li>
-<li>发起HTTP请求<br>TCP连接建立后，浏览器会向服务器发起HTTP请求。<br>一个HTTP请求报文由请求行（request line）、请求头部（headers）、空行（blank line）和请求数据（request body）4个部分组成。</li>
-<li>服务器响应HTTP请求<br>服务器在收到http请求后，会根据路径参数映射到特定的请求处理器进行处理，并将处理结果及相应的视图返回给浏览器。</li>
-<li>浏览器解析渲染页面<br>这是一个边解析边渲染的过程。首先浏览器解析HTML文件构建DOM树，然后解析CSS文件构建渲染树，等到渲染树构建完成后，浏览器开始布局渲染树并将其绘制到屏幕上。JS的解析是由浏览器中的JS解析引擎完成的。</li>
-<li>连接结束<br>TCP四次挥手。</li>
-</ol>
-<h3 id="5-HTTPS工作过程"><a href="#5-HTTPS工作过程" class="headerlink" title="5 HTTPS工作过程"></a>5 HTTPS工作过程</h3><p>HTTPS是一种通过计算机网络进行安全通信的传输协议，经由HTTP进行通信，利用SSL/TLS建立安全信道，加密数据包。HTTPS的主要目的：提供对网站服务器的身份认证，同时保护交换数据的隐私与完整性。</p>
-<p>1.客户端向服务器发起HTTPS请求，连接到服务器的443端口。<br>2.服务器端有一个密钥对，即公钥和私钥，用来进行非对称加密。服务器端保存着私钥，不能将其泄露，公钥可以发送给任何人。服务器将自己的公钥发送给客户端（以证书的形式）。<br>3.客户端收到服务器端的证书之后，会对证书进行检查，验证其合法性，如果发现证书有问题，那么HTTPS传输就无法继续。如果验证通过，那么客户端会生成一个随机值，这个随机值就是用于对称加密的密钥，我们将该密钥称之为client key，即客户端密钥。然后用服务器的公钥对客户端密钥进行非对称加密，这样客户端密钥就变成密文了。至此，HTTPS中的第一次HTTP请求结束。<br>4.客户端发起HTTPS中的第二次HTTP请求，将加密之后的客户端密钥发送给服务器。<br>5.服务器接收到客户端发来的密文之后，会用自己的私钥对其进行非对称解密，解密之后的明文就是客户端密钥，然后用客户端密钥对数据进行对称加密，这样数据就变成了密文。最后服务器将加密后的密文发送给客户端。<br>6.客户端收到服务器发来的密文，用客户端密钥对其进行解密，得到服务器发送的数据。这样HTTPS中的第二个HTTP请求结束，整个HTTPS传输完成。</p>
-<p>优点：<br>使用HTTPS协议可认证用户和服务器，确保数据发送到正确的客户端和服务器。<br>HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议。它比http协议更安全，可防止数据在传输过程中被窃取、篡改，确保了数据的完整性。<br>HTTPS是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</p>
-<p>缺点：<br>HTTPS协议握手阶段比较费时，会使页面的加载时间延长近50%，增加10%到20%的耗电。<br>HTTPS连接缓存不如HTTP高效，会增加数据开销和功耗，甚至已有的安全措施也会因此而受到影响。</p>
-<h3 id="6-HTTP与HTTPS"><a href="#6-HTTP与HTTPS" class="headerlink" title="6 HTTP与HTTPS"></a>6 HTTP与HTTPS</h3><p>安全性不同：HTTP协议是无状态、无连接的。<br>无状态的意思是协议对于交互性场景没有记忆能力。服务器中没有保存客户端的状态，每次请求都是独立的。<br>无连接的含义是限制每次连接只处理一个请求。服务器处理完客户端的请求，并收到客户端的应答后，立即断开连接。<br>HTTPS协议是由 TSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 HTTP 协议安全。</p>
-<p>默认端口不同：http和https使用的是完全不同的连接方式，同时使用的端口也不同。http使用的是80端口，https使用的是443端口。在网络模型中，HTTP工作于应用层，而HTTPS工作在传输层。</p>
-<p>网站申请流程不同：https协议需要到CA申请证书，一般免费证书很少，需要交费。Web服务器启用SSL需要获得一个服务器证书并将该证书与要使用SSL的服务器进行绑定。</p>
-<h3 id="7-数字签名与数字证书"><a href="#7-数字签名与数字证书" class="headerlink" title="7 数字签名与数字证书"></a>7 数字签名与数字证书</h3><p>为了避免数据在传输过程中被替换，发送端做一个数字签名。把数据的摘要消息进行加密，得到一个签名，它和数据一起发送。接收端把数据摘要进行加密，如果和签名一样，则说明数据确实是真的。<br>虽然数字签名可以保证数据不被替换，但是数据是由公钥加密的，如果公钥也被替换，则仍然可以伪造数据。<br>为了保证发送方的公钥是真的，CA证书机构会负责颁发一个证书，里面的公钥保证是真的，用户请求服务器时，服务器将证书发给用户。</p>
-]]></content>
-      <categories>
-        <category>计算机网络</category>
-      </categories>
-      <tags>
-        <tag>网络协议</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>mybatis</title>
     <url>/2021/12/14/12-14-Mybatis/</url>
     <content><![CDATA[<h3 id="1-mybatis"><a href="#1-mybatis" class="headerlink" title="1 mybatis"></a>1 mybatis</h3><p>MyBatis是一个持久层框架，它内部封装了JDBC，开发者只需要关注SQL语句本身，不需要花费精力去处理加载驱动、创建连接、创建statement等过程。<br>它免除了几乎所有的JDBC代码以及设置参数和获取结果集的工作。MyBatis可以通过简单的 XML 或注解来配置和映射原始类型、接口和Java POJO（Plain Old Java Objects，普通老式Java对象）为数据库中的记录。<br>通过XML或注解的方式将要执行的各种statement配置起来，并通过java对象和statement中sql的动态参数进行映射生成最终执行的sql语句，最后由mybatis框架执行sql并将结果映射为java对象并返回。</p>
@@ -1095,6 +1054,47 @@
       </categories>
       <tags>
         <tag>http</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>OSI_model</title>
+    <url>/2021/12/16/12-16-Network/</url>
+    <content><![CDATA[<h3 id="1-OSI五层模型"><a href="#1-OSI五层模型" class="headerlink" title="1 OSI五层模型"></a>1 OSI五层模型</h3><img src="/2021/12/16/12-16-Network/protocol.png" class="">
+
+<h3 id="2-ARP协议"><a href="#2-ARP协议" class="headerlink" title="2 ARP协议"></a>2 ARP协议</h3><p>地址解析协议，即ARP（Address Resolution Protocol），是根据IP地址获取物理地址的一个TCP/IP协议。</p>
+<p>首先，每台主机都会在自己的 ARP 缓冲区中建立一个 ARP 列表，以表示 IP 地址和 MAC 地址之间的对应关系。当源主机需要将一个数据包发送到目的主机时，会首先检查自己 ARP 列表中是否存在该 IP 地址对应的 MAC 地址。如果有，就直接将数据包发送到这个 MAC 地址；如果没有，就向本地网段发起一个 ARP 请求的广播包，查询此目的主机对应的 MAC 地址。</p>
+<p>ARP请求数据包中包括源主机的 IP 地址、硬件地址、以及目的主机的 IP 地址。网络中所有的主机收到这个 ARP 请求后，会检查数据包中的目的 IP 是否和自己的 IP 地址一致。如果不相同就忽略此数据包；如果相同，该主机首先将发送端的 MAC 地址和 IP 地址添加到自己的 ARP 列表中，如果 ARP 表中已经存在该 IP 的信息，则将其覆盖，然后给源主机发送一个 ARP 响应数据包，告诉对方自己是它需要查找的 MAC 地址；源主机收到这个 ARP 响应数据包后，将得到的目的主机的 IP 地址和 MAC 地址添加到自己的 ARP 列表中，并利用此信息开始数据的传输。如果源主机一直没有收到 ARP 响应数据包，表示 ARP 查询失败。</p>
+<h3 id="3-粘包"><a href="#3-粘包" class="headerlink" title="3 粘包"></a>3 粘包</h3><p>客户端连续不断的向服务端发送数据包时，服务端接收的数据会出现两个数据包粘在一起的情况。</p>
+<ol>
+<li>TCP是基于字节流的，虽然应用层和传输层之间的数据交互是大小不等的数据块，但是TCP把这些数据块仅仅看成是一连串无结构的字节流，没有边界；</li>
+<li>从 TCP 的帧结构也可以看出，在 TCP 的首部没有表示数据长度的字段。<br>基于上面两点，在使用 TCP 传输数据时，才有粘包或者拆包现象发生的可能。</li>
+</ol>
+<p>一个数据包中包含了发送端发送的两个数据包的信息，这种现象称为粘包。<br>接收端收到了两个数据包，但是这两个数据包要么是不完整的，要么就是多出来一块，这种情况即发生了拆包和粘包。拆包和粘包的问题导致接收端在处理的时候会非常困难，因为无法区分一个完整的数据包。</p>
+<p>TCP粘包的产生：<br>发送方产生粘包：采用 TCP 协议传输数据的客户端与服务器经常是保持一个长连接的状态，双方在连接不断开的情况下，可以一直传输数据。当发送的数据包太小时，那么 TCP 协议默认会启用 Nagle 算法，将这些较小的数据包进行合并（缓冲区数据发送是一个堆压的过程）；这个合并过程就是在发送缓冲区中进行的，也就是说数据发送出来时它已经是粘包的状态了。</p>
+<p>接收方产生粘包：由于tcp是面向字节流的协议，即协议的内容是像流水一样的字节流，内容与内容之间没有明确的分界标志，需要我们人为地去给这些协议划分边界。</p>
+<p>解决办法：<br>以指定字符（串）作为包的结束标志；<br>包头定长（在包头的首部添加数据包的长度）。</p>
+<h3 id="4-在浏览器中输入URL地址到显示网页的过程"><a href="#4-在浏览器中输入URL地址到显示网页的过程" class="headerlink" title="4 在浏览器中输入URL地址到显示网页的过程"></a>4 在浏览器中输入URL地址到显示网页的过程</h3><ol>
+<li>DNS解析<br>如果输入ip地址表示直接从主机上调用内容。如果输入域名，则是通过域名解析服务器指向对应主机的IP地址，再从主机上调用网址的内容。<br>DNS解析过程：查询<strong>浏览器缓存</strong>，如果没有查到会进入<strong>系统缓存</strong>进行查询，此时主要查询host文件，这个文件主要保存以前访问过的域名和IP地址，类似本地数据库。如果找到，可直接获取目标主机的IP地址，如果没找到，进入<strong>路由器缓存</strong>，路由器有自己的DNS缓存，如果查到就返回，否则进入<strong>ISP DNS缓存</strong>。从根域名服务器 –&gt; 顶级域名服务器 –&gt; 极限域名服务器，依次搜索查找对应目标域名的IP，找到以后，会建立TCP连接。</li>
+<li>建立TCP连接<br>浏览器获得域名对应的IP地址以后，会向服务器请求建立连接，发起三次握手。</li>
+<li>发起HTTP请求<br>TCP连接建立后，浏览器会向服务器发起HTTP请求。<br>一个HTTP请求报文由请求行（request line）、请求头部（headers）、空行（blank line）和请求数据（request body）4个部分组成。</li>
+<li>服务器响应HTTP请求<br>服务器在收到http请求后，会根据路径参数映射到特定的请求处理器进行处理，并将处理结果及相应的视图返回给浏览器。</li>
+<li>浏览器解析渲染页面<br>这是一个边解析边渲染的过程。首先浏览器解析HTML文件构建DOM树，然后解析CSS文件构建渲染树，等到渲染树构建完成后，浏览器开始布局渲染树并将其绘制到屏幕上。JS的解析是由浏览器中的JS解析引擎完成的。</li>
+<li>连接结束<br>TCP四次挥手。</li>
+</ol>
+<h3 id="5-HTTPS工作过程"><a href="#5-HTTPS工作过程" class="headerlink" title="5 HTTPS工作过程"></a>5 HTTPS工作过程</h3><p>HTTPS是一种通过计算机网络进行安全通信的传输协议，经由HTTP进行通信，利用SSL/TLS建立安全信道，加密数据包。HTTPS的主要目的：提供对网站服务器的身份认证，同时保护交换数据的隐私与完整性。</p>
+<p>1.客户端向服务器发起HTTPS请求，连接到服务器的443端口。<br>2.服务器端有一个密钥对，即公钥和私钥，用来进行非对称加密。服务器端保存着私钥，不能将其泄露，公钥可以发送给任何人。服务器将自己的公钥发送给客户端（以证书的形式）。<br>3.客户端收到服务器端的证书之后，会对证书进行检查，验证其合法性，如果发现证书有问题，那么HTTPS传输就无法继续。如果验证通过，那么客户端会生成一个随机值，这个随机值就是用于对称加密的密钥，我们将该密钥称之为client key，即客户端密钥。然后用服务器的公钥对客户端密钥进行非对称加密，这样客户端密钥就变成密文了。至此，HTTPS中的第一次HTTP请求结束。<br>4.客户端发起HTTPS中的第二次HTTP请求，将加密之后的客户端密钥发送给服务器。<br>5.服务器接收到客户端发来的密文之后，会用自己的私钥对其进行非对称解密，解密之后的明文就是客户端密钥，然后用客户端密钥对数据进行对称加密，这样数据就变成了密文。最后服务器将加密后的密文发送给客户端。<br>6.客户端收到服务器发来的密文，用客户端密钥对其进行解密，得到服务器发送的数据。这样HTTPS中的第二个HTTP请求结束，整个HTTPS传输完成。</p>
+<p>优点：<br>使用HTTPS协议可认证用户和服务器，确保数据发送到正确的客户端和服务器。<br>HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议。它比http协议更安全，可防止数据在传输过程中被窃取、篡改，确保了数据的完整性。<br>HTTPS是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</p>
+<p>缺点：<br>HTTPS协议握手阶段比较费时，会使页面的加载时间延长近50%，增加10%到20%的耗电。<br>HTTPS连接缓存不如HTTP高效，会增加数据开销和功耗，甚至已有的安全措施也会因此而受到影响。</p>
+<h3 id="6-HTTP与HTTPS"><a href="#6-HTTP与HTTPS" class="headerlink" title="6 HTTP与HTTPS"></a>6 HTTP与HTTPS</h3><p>安全性不同：HTTP协议是无状态、无连接的。<br>无状态的意思是协议对于交互性场景没有记忆能力。服务器中没有保存客户端的状态，每次请求都是独立的。<br>无连接的含义是限制每次连接只处理一个请求。服务器处理完客户端的请求，并收到客户端的应答后，立即断开连接。<br>HTTPS协议是由 TSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 HTTP 协议安全。</p>
+<p>默认端口不同：http和https使用的是完全不同的连接方式，同时使用的端口也不同。http使用的是80端口，https使用的是443端口。在网络模型中，HTTP工作于应用层，而HTTPS工作在传输层。</p>
+<p>网站申请流程不同：https协议需要到CA申请证书，一般免费证书很少，需要交费。Web服务器启用SSL需要获得一个服务器证书并将该证书与要使用SSL的服务器进行绑定。</p>
+<h3 id="7-数字签名与数字证书"><a href="#7-数字签名与数字证书" class="headerlink" title="7 数字签名与数字证书"></a>7 数字签名与数字证书</h3><p>为了避免数据在传输过程中被替换，发送端做一个数字签名。把数据的摘要消息进行加密，得到一个签名，它和数据一起发送。接收端把数据摘要进行加密，如果和签名一样，则说明数据确实是真的。<br>虽然数字签名可以保证数据不被替换，但是数据是由公钥加密的，如果公钥也被替换，则仍然可以伪造数据。<br>为了保证发送方的公钥是真的，CA证书机构会负责颁发一个证书，里面的公钥保证是真的，用户请求服务器时，服务器将证书发给用户。</p>
+]]></content>
+      <categories>
+        <category>计算机网络</category>
+      </categories>
+      <tags>
+        <tag>网络协议</tag>
       </tags>
   </entry>
   <entry>
@@ -1252,6 +1252,21 @@
       </tags>
   </entry>
   <entry>
+    <title>long_for</title>
+    <url>/2021/12/04/12-life/</url>
+    <content><![CDATA[<img src="/2021/12/04/12-life/life.png" class="">
+
+<p>江城子 乙卯正月二十日夜记梦<br>宋 苏轼</p>
+<p>十年生死两茫茫，不思量，自难忘。千里孤坟，无处话凄凉。纵使相逢应不识，尘满面，鬓如霜。<br>夜来幽梦忽还乡，小轩窗，正梳妆。相顾无言，惟有泪千行。料得年年肠断处，明月夜，短松冈。</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>爱情</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Tree</title>
     <url>/2021/12/29/12-29-Tree/</url>
     <content><![CDATA[<h3 id="1-二叉树"><a href="#1-二叉树" class="headerlink" title="1 二叉树"></a>1 二叉树</h3><p>1）每个结点最多有两颗子树，所以二叉树中不存在度大于2的结点。<br>2）左子树和右子树是有顺序的，次序不能颠倒。<br>3）即使树中某结点只有一棵子树，也要区分它是左子树还是右子树。</p>
@@ -1273,21 +1288,6 @@
       </categories>
       <tags>
         <tag>二叉树</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>long_for</title>
-    <url>/2021/12/04/12-life/</url>
-    <content><![CDATA[<img src="/2021/12/04/12-life/life.png" class="">
-
-<p>江城子 乙卯正月二十日夜记梦<br>宋 苏轼</p>
-<p>十年生死两茫茫，不思量，自难忘。千里孤坟，无处话凄凉。纵使相逢应不识，尘满面，鬓如霜。<br>夜来幽梦忽还乡，小轩窗，正梳妆。相顾无言，惟有泪千行。料得年年肠断处，明月夜，短松冈。</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>爱情</tag>
       </tags>
   </entry>
   <entry>
@@ -1347,6 +1347,44 @@
       </tags>
   </entry>
   <entry>
+    <title>binary_search</title>
+    <url>/2021/09/19/binary-search/</url>
+    <content><![CDATA[<h3 id="704-二分查找"><a href="#704-二分查找" class="headerlink" title="704 二分查找"></a>704 二分查找</h3><p>给定一个n个元素有序的（升序）整型数组nums和一个目标值target，写一个函数搜索nums中的target，如果目标值存在返回下标，否则返回-1。<br>tips<br>你可以假设 nums 中的所有元素是不重复的。<br>n 将在 [1, 10000]之间。<br>nums 的每个元素都将在[-9999, 9999]之间。</p>
+<p><strong>代码</strong><br>思路：有序整型数组查找给定的target，标准的二分查找。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int search(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return -1;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>减少内存消耗</strong><br>变量只有在用到它的时候才定义和实例化<br>尽量避免使用static变量，类里面私有常量可以用final来代替<br>StringBuffer代替String进行字符串相加</p>
+<p><strong>小知识</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">System.out.println(8 &gt;&gt; 1);  &#x2F;&#x2F;4  右移1位相当于除以2</span><br><span class="line">System.out.println(32 &gt;&gt; 3); &#x2F;&#x2F; 4 右移3位相当于除以2^3</span><br><span class="line">System.out.println(8 &lt;&lt; 1);  &#x2F;&#x2F;16 左移1位相当于乘以2</span><br><span class="line">System.out.println(2 &lt;&lt; 3);  &#x2F;&#x2F;16 左移3位相当于乘以2^3</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="278-First-Bad-Version"><a href="#278-First-Bad-Version" class="headerlink" title="278 First Bad Version"></a>278 First Bad Version</h3><p>寻找左侧边界的二分查找<br>你是产品经理，目前正在带领一个团队开发新的产品。不幸的是，你的产品的最新版本没有通过质量检测。由于每个版本都是基于之前的版本开发的，所以错误的版本之后的所有版本都是错的。</p>
+<p>假设你有 n 个版本 [1, 2, …, n]，你想找出导致之后所有版本出错的第一个错误的版本。</p>
+<p>你可以通过调用 bool isBadVersion(version) 接口来判断版本号 version 是否在单元测试中出错。实现一个函数来查找第一个错误的版本。你应该尽量减少对调用 API 的次数。</p>
+<p>tips<br>1 &lt;= bad &lt;= n &lt;= 2^31 - 1</p>
+<p><strong>代码</strong><br>思路：因为每个版本都是基于之前的版本开发的，所以正确的版本之前的版本都是正确的，错误的版本之后的版本都是错误的。因此需要找到正确和错误版本的临界点，可以采用二分查找法，每查找一次都可以缩小范围（左边界或右边界），效率高。<br>实现一</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 二分搜索的演化版本</span><br><span class="line">    public int firstBadVersion(int n) &#123;</span><br><span class="line">        int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        &#x2F;&#x2F; 终止条件是low &#x3D;&#x3D; high</span><br><span class="line">        while (low &lt; high) &#123;</span><br><span class="line">            &#x2F;&#x2F; 防止溢出超时,low和high相加超过int表示的最大范围时就会溢出变为负数</span><br><span class="line">            &#x2F;&#x2F; int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            &#x2F;&#x2F; 错误的版本</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 可能这就是第一个错误的版本</span><br><span class="line">                high &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现二</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        int firstBadVersion &#x3D; n;  &#x2F;&#x2F; 假设n为第一个错误版本</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &gt;&gt; 1;  &#x2F;&#x2F; 防止溢出</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 错误版本，可能是第一个，也可能不是。继续往左边搜索，同时记录下错误版本位置</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">                firstBadVersion &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                &#x2F;&#x2F; 不是错误版本，往右边搜索</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return firstBadVersion;</span><br></pre></td></tr></table></figure>
+
+<h3 id="35-搜索插入位置"><a href="#35-搜索插入位置" class="headerlink" title="35 搜索插入位置"></a>35 搜索插入位置</h3><p>给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。<br>请必须使用时间复杂度为 O(log n) 的算法。</p>
+<p>tips<br>1 &lt;= nums.length &lt;= 10^4<br>-10^4 &lt;= nums[i] &lt;= 10^4<br>nums 为无重复元素的升序排列数组<br>-10^4 &lt;= target &lt;= 10^4</p>
+<p><strong>代码</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int searchInsert(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &gt; nums[middle]) &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;  &#x2F;&#x2F; 目标值未找到，返回应插入的位置</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="二分查找法详解"><a href="#二分查找法详解" class="headerlink" title="二分查找法详解"></a>二分查找法详解</h3><h4 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h4><p><strong>循环结束条件</strong><br>while（low&lt;=high）还是while（low&lt;high);<br>low&lt;=high意味着循环终止条件为low=high+1;<br>low&lt;high意味着循环终止条件为low==high,具体问题具体分析。</p>
+<p><strong>middle值</strong><br>low=middle or low=middle+1 or high=middle or high=middle-1 and so on</p>
+<p><strong>防止溢出</strong><br>初始化时middle=low+(high-low)/2</p>
+]]></content>
+      <categories>
+        <category>Algorithm</category>
+      </categories>
+      <tags>
+        <tag>二分查找</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>bitmap</title>
     <url>/2020/11/16/bitmap/</url>
     <content><![CDATA[<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>在一个结构中，用一个比特位来描述一个数据的状态，这种结构就称为位图。0表示数据不存在，1表示数据存在。位图实际上是哈希表的一种变形。<br>在数据存储方面，位图的应用非常广泛。比如说现在要存储20亿个不重复的数据，int类型为4个字节，就需要80亿个字节来存储。1GB的内存表示的是10亿个字节，此时就需要8GB的内存来存放这些数据，而我们普通的电脑内存一般都是4G的内存，这显然是存放不下的。但是如果能用一个比特位来存放一个整型数据，则只需要0.5GB的内存。这大大节省了内存空间。</p>
@@ -1403,44 +1441,6 @@
       </categories>
       <tags>
         <tag>位图</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>binary_search</title>
-    <url>/2021/09/19/binary-search/</url>
-    <content><![CDATA[<h3 id="704-二分查找"><a href="#704-二分查找" class="headerlink" title="704 二分查找"></a>704 二分查找</h3><p>给定一个n个元素有序的（升序）整型数组nums和一个目标值target，写一个函数搜索nums中的target，如果目标值存在返回下标，否则返回-1。<br>tips<br>你可以假设 nums 中的所有元素是不重复的。<br>n 将在 [1, 10000]之间。<br>nums 的每个元素都将在[-9999, 9999]之间。</p>
-<p><strong>代码</strong><br>思路：有序整型数组查找给定的target，标准的二分查找。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int search(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return -1;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>减少内存消耗</strong><br>变量只有在用到它的时候才定义和实例化<br>尽量避免使用static变量，类里面私有常量可以用final来代替<br>StringBuffer代替String进行字符串相加</p>
-<p><strong>小知识</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">System.out.println(8 &gt;&gt; 1);  &#x2F;&#x2F;4  右移1位相当于除以2</span><br><span class="line">System.out.println(32 &gt;&gt; 3); &#x2F;&#x2F; 4 右移3位相当于除以2^3</span><br><span class="line">System.out.println(8 &lt;&lt; 1);  &#x2F;&#x2F;16 左移1位相当于乘以2</span><br><span class="line">System.out.println(2 &lt;&lt; 3);  &#x2F;&#x2F;16 左移3位相当于乘以2^3</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="278-First-Bad-Version"><a href="#278-First-Bad-Version" class="headerlink" title="278 First Bad Version"></a>278 First Bad Version</h3><p>寻找左侧边界的二分查找<br>你是产品经理，目前正在带领一个团队开发新的产品。不幸的是，你的产品的最新版本没有通过质量检测。由于每个版本都是基于之前的版本开发的，所以错误的版本之后的所有版本都是错的。</p>
-<p>假设你有 n 个版本 [1, 2, …, n]，你想找出导致之后所有版本出错的第一个错误的版本。</p>
-<p>你可以通过调用 bool isBadVersion(version) 接口来判断版本号 version 是否在单元测试中出错。实现一个函数来查找第一个错误的版本。你应该尽量减少对调用 API 的次数。</p>
-<p>tips<br>1 &lt;= bad &lt;= n &lt;= 2^31 - 1</p>
-<p><strong>代码</strong><br>思路：因为每个版本都是基于之前的版本开发的，所以正确的版本之前的版本都是正确的，错误的版本之后的版本都是错误的。因此需要找到正确和错误版本的临界点，可以采用二分查找法，每查找一次都可以缩小范围（左边界或右边界），效率高。<br>实现一</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; 二分搜索的演化版本</span><br><span class="line">    public int firstBadVersion(int n) &#123;</span><br><span class="line">        int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        &#x2F;&#x2F; 终止条件是low &#x3D;&#x3D; high</span><br><span class="line">        while (low &lt; high) &#123;</span><br><span class="line">            &#x2F;&#x2F; 防止溢出超时,low和high相加超过int表示的最大范围时就会溢出变为负数</span><br><span class="line">            &#x2F;&#x2F; int middle &#x3D; (low + high) &#x2F; 2;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            &#x2F;&#x2F; 错误的版本</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 可能这就是第一个错误的版本</span><br><span class="line">                high &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>实现二</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int low &#x3D; 1, high &#x3D; n;</span><br><span class="line">        int firstBadVersion &#x3D; n;  &#x2F;&#x2F; 假设n为第一个错误版本</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &gt;&gt; 1;  &#x2F;&#x2F; 防止溢出</span><br><span class="line">            if (isBadVersion(middle)) &#123;</span><br><span class="line">                &#x2F;&#x2F; 错误版本，可能是第一个，也可能不是。继续往左边搜索，同时记录下错误版本位置</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">                firstBadVersion &#x3D; middle;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                &#x2F;&#x2F; 不是错误版本，往右边搜索</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return firstBadVersion;</span><br></pre></td></tr></table></figure>
-
-<h3 id="35-搜索插入位置"><a href="#35-搜索插入位置" class="headerlink" title="35 搜索插入位置"></a>35 搜索插入位置</h3><p>给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。<br>请必须使用时间复杂度为 O(log n) 的算法。</p>
-<p>tips<br>1 &lt;= nums.length &lt;= 10^4<br>-10^4 &lt;= nums[i] &lt;= 10^4<br>nums 为无重复元素的升序排列数组<br>-10^4 &lt;= target &lt;= 10^4</p>
-<p><strong>代码</strong></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public static int searchInsert(int[] nums, int target) &#123;</span><br><span class="line">        int low &#x3D; 0, high &#x3D; nums.length - 1;</span><br><span class="line">        while (low &lt;&#x3D; high) &#123;</span><br><span class="line">            int middle &#x3D; low + (high - low) &#x2F; 2;</span><br><span class="line">            if (target &#x3D;&#x3D; nums[middle]) &#123;</span><br><span class="line">                return middle;</span><br><span class="line">            &#125; else if (target &gt; nums[middle]) &#123;</span><br><span class="line">                low &#x3D; middle + 1;</span><br><span class="line">            &#125; else if (target &lt; nums[middle]) &#123;</span><br><span class="line">                high &#x3D; middle - 1;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return low;  &#x2F;&#x2F; 目标值未找到，返回应插入的位置</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="二分查找法详解"><a href="#二分查找法详解" class="headerlink" title="二分查找法详解"></a>二分查找法详解</h3><h4 id="关键点"><a href="#关键点" class="headerlink" title="关键点"></a>关键点</h4><p><strong>循环结束条件</strong><br>while（low&lt;=high）还是while（low&lt;high);<br>low&lt;=high意味着循环终止条件为low=high+1;<br>low&lt;high意味着循环终止条件为low==high,具体问题具体分析。</p>
-<p><strong>middle值</strong><br>low=middle or low=middle+1 or high=middle or high=middle-1 and so on</p>
-<p><strong>防止溢出</strong><br>初始化时middle=low+(high-low)/2</p>
-]]></content>
-      <categories>
-        <category>Algorithm</category>
-      </categories>
-      <tags>
-        <tag>二分查找</tag>
       </tags>
   </entry>
   <entry>
@@ -1547,6 +1547,19 @@
       </tags>
   </entry>
   <entry>
+    <title>郁</title>
+    <url>/2021/08/25/evening/</url>
+    <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
+<p>农历七月十八</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>时光</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>double-pointer</title>
     <url>/2021/09/27/double-pointer/</url>
     <content><![CDATA[<h3 id="977-有序数组的平方"><a href="#977-有序数组的平方" class="headerlink" title="977 有序数组的平方"></a>977 有序数组的平方</h3><p>给你一个按非递减顺序排序的整数数组nums，返回每个数字的平方组成的新数组，要求也按非递减顺序排序。</p>
@@ -1604,19 +1617,6 @@
       </tags>
   </entry>
   <entry>
-    <title>郁</title>
-    <url>/2021/08/25/evening/</url>
-    <content><![CDATA[<p>距离上一篇博客发出已经过去三月有余，感觉一直没有时间写博客却又满是时间。日子一天天过去，心中渐渐感觉浪费掉了，科研任务也遇到了瓶颈。最近一段时间心中焦躁，不能平静。已经许久未有这种感觉了，还是要收拾好心情，转变态度。毕竟马上研二了，学弟学妹也都要来了。也不经感叹时光飞逝，犹记得去年彼时的自己。初入北京，初识工大。一年的时光还是有成长的，自己也渐渐知道了what is responsibility？研二，收拾身心再出发，论文，冲冲冲。</p>
-<p>农历七月十八</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>时光</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>firstblog</title>
     <url>/2020/09/20/firstblog/</url>
     <content><![CDATA[<pre><code>金秋九月，硕果累累。在这个充满收获的季节，一身戎装的我踏上了求学之路。甲子工大，幸运的我考上了这所学校。梦开始的地方，希望在这里发芽。</code></pre>
@@ -1639,19 +1639,6 @@
       </tags>
   </entry>
   <entry>
-    <title>gnosis</title>
-    <url>/2022/03/26/gnosis/</url>
-    <content><![CDATA[<h3 id="面试感悟"><a href="#面试感悟" class="headerlink" title="面试感悟"></a>面试感悟</h3><p>笔试题做了一些大厂，小公司、大公司面试加起来也有近10家了，offer也拿了几个了（无大厂）。自己在这近一个月的时间也学习颇多，感悟颇多。<br>实习或面试找工作，学校（学历）很重要，项目经验次之，当然基础知识得扎实，最后加上一部分的运气。<br>目前自己缺的就是一个好的项目经验，涵盖大多数后端开发方面的知识。诸如redis，mysql，多线程，springboot，mybatis等等。</p>
-<p>再接再厉吧，继续加油！</p>
-]]></content>
-      <categories>
-        <category>面试</category>
-      </categories>
-      <tags>
-        <tag>感悟</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>human</title>
     <url>/2021/10/25/human/</url>
     <content><![CDATA[<p><strong>人性经得起考验吗？</strong><br>最近Netflix出版的影片《鱿鱼游戏》将人及人性刻画的如此xxx，每个看完的人估计都会有自己的思考吧！《鱿鱼游戏》，一场充满血腥、残忍和将人性最黑暗面完全的打开的影片，一上映就火爆全球。影片中每个参与游戏的人都是走投无路的、被生活压得起不来的人，但这却是现实生活中的一个缩影。参与游戏的人涵盖了各行各业的人，不乏有行业精英、也有被看不起的弱势底层任务。他们渴望着出头，渴望着幸福美满的生活。而这些愿望的实现离不开一个东西—-钱。几百亿的奖金吸引着他们去参与游戏，尽管输掉游戏他们会死，但就像他们所说的，不玩出去也是死，还不如赌一把。对他们来说，赖活着不如死了。于是几百人参与了游戏，一关关过去，参与游戏的人也越来越少，即便淘汰意味着死，但他们还是义无反顾的选择继续游戏。为了生存，为了赢，在这个游戏中，人命如同草芥一般，互相残杀，为了赢不择手段。考验人性的方方面面在社会中无时无刻存在着，有多少人能经受住考验？《鱿鱼游戏》的结局是人性还未泯灭的男主赢了。最后，这部影片还是凸显除了人性的真、善、美。这算是点睛之笔，导演想传达给大家人间还有温暖在吧。其实每个人的心里，都有黑暗的角落。而你，却把心里最阴暗的角落都打开了。</p>
@@ -1662,6 +1649,19 @@
       </categories>
       <tags>
         <tag>humanity</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>gnosis</title>
+    <url>/2022/03/26/gnosis/</url>
+    <content><![CDATA[<h3 id="面试感悟"><a href="#面试感悟" class="headerlink" title="面试感悟"></a>面试感悟</h3><p>笔试题做了一些大厂，小公司、大公司面试加起来也有近10家了，offer也拿了几个了（无大厂）。自己在这近一个月的时间也学习颇多，感悟颇多。<br>实习或面试找工作，学校（学历）很重要，项目经验次之，当然基础知识得扎实，最后加上一部分的运气。<br>目前自己缺的就是一个好的项目经验，涵盖大多数后端开发方面的知识。诸如redis，mysql，多线程，springboot，mybatis等等。</p>
+<p>再接再厉吧，继续加油！</p>
+]]></content>
+      <categories>
+        <category>面试</category>
+      </categories>
+      <tags>
+        <tag>感悟</tag>
       </tags>
   </entry>
   <entry>
@@ -1737,29 +1737,32 @@
 <li>通过定义数组类引用，不会发生类的初始化</li>
 <li>引用常量不会触发此类的初始化（常量在链接阶段就存入调用类的常量池了）</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestDemo2 &#123;</span><br><span class="line">    static &#123;</span><br><span class="line">        System.out.println(&quot;Main类被加载&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws ClassNotFoundException &#123;</span><br><span class="line">        &#x2F;&#x2F; 主动引用</span><br><span class="line">        &#x2F;&#x2F;Son son &#x3D; new Son();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 反射也会产生主动引用</span><br><span class="line">        &#x2F;&#x2F;Class.forName(&quot;com.hj.javabasic.reflection.Son&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;**</span><br><span class="line">         * Main类被加载</span><br><span class="line">         * 父类被加载</span><br><span class="line">         * 子类被加载</span><br><span class="line">         *&#x2F;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 不会产生</span><br><span class="line">        System.out.println(Son.b);</span><br><span class="line">        &#x2F;**</span><br><span class="line">         * Main类被加载</span><br><span class="line">         * 父类被加载</span><br><span class="line">         * 2</span><br><span class="line">         *&#x2F;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;Son[] sons &#x3D; new Son[5];</span><br><span class="line">        &#x2F;**</span><br><span class="line">         * Main类被加载</span><br><span class="line">         *&#x2F;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Father &#123;</span><br><span class="line">    static int b &#x3D; 2;</span><br><span class="line"></span><br><span class="line">    static &#123;</span><br><span class="line">        System.out.println(&quot;父类被加载&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Son extends Father &#123;</span><br><span class="line"></span><br><span class="line">    static &#123;</span><br><span class="line">        System.out.println(&quot;子类被加载&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestDemo2 &#123;</span><br><span class="line">    static &#123;</span><br><span class="line">        System.out.println(&quot;Main类被加载&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws ClassNotFoundException &#123;</span><br><span class="line">        &#x2F;&#x2F; 主动引用</span><br><span class="line">        &#x2F;&#x2F;Son son &#x3D; new Son();</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 反射也会产生主动引用</span><br><span class="line">        &#x2F;&#x2F;Class.forName(&quot;com.hj.javabasic.reflection.Son&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;**</span><br><span class="line">         * Main类被加载</span><br><span class="line">         * 父类被加载</span><br><span class="line">         * 子类被加载</span><br><span class="line">         *&#x2F;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 被动引用</span><br><span class="line">        System.out.println(Son.b);</span><br><span class="line">        &#x2F;**</span><br><span class="line">         * Main类被加载</span><br><span class="line">         * 父类被加载</span><br><span class="line">         * 2</span><br><span class="line">         *&#x2F;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;Son[] sons &#x3D; new Son[5];</span><br><span class="line">        &#x2F;**</span><br><span class="line">         * Main类被加载</span><br><span class="line">         *&#x2F;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Father &#123;</span><br><span class="line">    static int b &#x3D; 2;</span><br><span class="line"></span><br><span class="line">    static &#123;</span><br><span class="line">        System.out.println(&quot;父类被加载&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Son extends Father &#123;</span><br><span class="line"></span><br><span class="line">    static &#123;</span><br><span class="line">        System.out.println(&quot;子类被加载&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p><strong>类加载器</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestDemo3 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        &#x2F;&#x2F; 获取应用程序类加载器AppClassLoader</span><br><span class="line">        ClassLoader appClassLoader &#x3D; ClassLoader.getSystemClassLoader();</span><br><span class="line">        System.out.println(appClassLoader);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 获取拓展类加载器ExtClassLoader</span><br><span class="line">        ClassLoader parent &#x3D; appClassLoader.getParent();</span><br><span class="line">        System.out.println(parent);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 启动类加载器，直接获取不到</span><br><span class="line">        ClassLoader topParent &#x3D; parent.getParent();</span><br><span class="line">        System.out.println(topParent);</span><br><span class="line"></span><br><span class="line">        &#x2F;**</span><br><span class="line">         * sun.misc.Launcher$AppClassLoader@18b4aac2</span><br><span class="line">         * sun.misc.Launcher$ExtClassLoader@4d7e1886</span><br><span class="line">         * null</span><br><span class="line">         *&#x2F;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 获取AppClassLoader的加载路径</span><br><span class="line">        System.out.println(System.getProperty(&quot;java.class.path&quot;));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>获取运行时类的完整结构</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestDemo4 &#123;</span><br><span class="line">    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException &#123;</span><br><span class="line">        Class c &#x3D; Class.forName(&quot;com.hj.javabasic.reflection.User&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 获得类的名字</span><br><span class="line">        System.out.println(c.getName());  &#x2F;&#x2F;com.hj.javabasic.reflection.User</span><br><span class="line">        System.out.println(c.getSimpleName());  &#x2F;&#x2F;User</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 获得类的属性</span><br><span class="line">        Field[] fields &#x3D; c.getFields();  &#x2F;&#x2F;只能获得public的属性</span><br><span class="line"></span><br><span class="line">        fields &#x3D; c.getDeclaredFields();  &#x2F;&#x2F;可以获得所有的属性</span><br><span class="line">        for (Field field : fields) &#123;</span><br><span class="line">            System.out.println(field);</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;**</span><br><span class="line">         * private java.lang.String com.hj.javabasic.reflection.User.name</span><br><span class="line">         * private int com.hj.javabasic.reflection.User.age</span><br><span class="line">         *&#x2F;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;获得类的方法同上</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;获得构造器同上</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;获得指定的构造器</span><br><span class="line">        Constructor constructor &#x3D; c.getDeclaredConstructor(String.class, int.class);</span><br><span class="line">        System.out.println(constructor);</span><br><span class="line">        &#x2F;&#x2F;public com.hj.javabasic.reflection.User(java.lang.String,int)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>通过反射动态的创建对象</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestDemo5 &#123;</span><br><span class="line">    public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, NoSuchFieldException &#123;</span><br><span class="line">        &#x2F;&#x2F;获得Class对象</span><br><span class="line">        Class c &#x3D; Class.forName(&quot;com.hj.javabasic.reflection.User&quot;);</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;构造一个对象</span><br><span class="line">        User user &#x3D; (User) c.newInstance();  &#x2F;&#x2F;调用了类的无参构造器</span><br><span class="line">        System.out.println(user);  &#x2F;&#x2F;User&#123;name&#x3D;&#39;null&#39;, age&#x3D;0&#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;通过构造器创建对象</span><br><span class="line">        Constructor constructor &#x3D; c.getDeclaredConstructor(String.class, int.class);</span><br><span class="line">        User user2 &#x3D; (User) constructor.newInstance(&quot;hj&quot;, 18);</span><br><span class="line">        System.out.println(user2);  &#x2F;&#x2F;User&#123;name&#x3D;&#39;hj&#39;, age&#x3D;18&#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;通过反射调用方法</span><br><span class="line">        User user3 &#x3D; (User) c.newInstance();</span><br><span class="line">        Method setName &#x3D; c.getDeclaredMethod(&quot;setName&quot;, String.class);</span><br><span class="line">        setName.invoke(user3, &quot;hejun&quot;);</span><br><span class="line">        System.out.println(user3.getName());</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F;通过反射调用属性</span><br><span class="line">        User user4 &#x3D; (User) c.newInstance();</span><br><span class="line">        Field name &#x3D; c.getDeclaredField(&quot;name&quot;);</span><br><span class="line">        &#x2F;&#x2F;不能直接操作私有属性，要开启访问权限</span><br><span class="line">        name.setAccessible(true);</span><br><span class="line">        name.set(user4, &quot;hejun-111&quot;);</span><br><span class="line">        System.out.println(user4.getName());  &#x2F;&#x2F;hejun-111</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>泛型</strong><br>泛型只在编译阶段有效。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public class TestDemo6 &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        List&lt;String&gt; stringList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">        List&lt;Integer&gt; integerList &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        Class classString &#x3D; stringList.getClass();</span><br><span class="line">        Class classInt &#x3D; integerList.getClass();</span><br><span class="line"></span><br><span class="line">        if (classString &#x3D;&#x3D; classInt) &#123;</span><br><span class="line">            System.out.println(&quot;类型相同&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (classString.equals(classInt)) &#123;</span><br><span class="line">            System.out.println(&quot;类型相同&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;**</span><br><span class="line">         * 类型相同</span><br><span class="line">         * 类型相同</span><br><span class="line">         *&#x2F;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在编译之后程序会采取去泛型化的措施。也就是说Java中的泛型，只在编译阶段有效。在编译过程中，正确检验泛型结果后，会将泛型的相关信息擦除，并且在对象进入和离开方法的边界处添加类型检查和类型转换的方法。也就是说，泛型信息不会进入到运行时阶段。</p>
+<p>泛型作用</p>
+<ul>
+<li>泛化，可以用T代表任意类型。</li>
+<li>类型安全，泛型的一个主要目标就是提高Java程序的类型安全，使用泛型可以使编译器知道变量的类型限制，进而可以在更高程度上验证类型假设。如果不用泛型，则必须使用强制类型转换，而强制类型转换不安全，在运行期可能发生ClassCast Exception异常，如果使用泛型，则会在编译期就能发现该错误。</li>
+<li>消除强制类型转换，泛型可以消除源代码中的许多强制类型转换，这样可以使代码更加可读，并减少出错的机会。</li>
+</ul>
 ]]></content>
       <categories>
         <category>Java</category>
       </categories>
       <tags>
         <tag>Java进阶</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>jd</title>
-    <url>/2022/03/26/jd/</url>
-    <content><![CDATA[<p>2022年3月23日</p>
-<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-讲一下static关键字，什么情况下会用到它，具体说说？"><a href="#2-讲一下static关键字，什么情况下会用到它，具体说说？" class="headerlink" title="2 讲一下static关键字，什么情况下会用到它，具体说说？"></a>2 讲一下static关键字，什么情况下会用到它，具体说说？</h3><p><a href="https://cool-jun.github.io/2021/04/07/java-keyword/">static</a></p>
-<h3 id="3-Java访问修饰符"><a href="#3-Java访问修饰符" class="headerlink" title="3 Java访问修饰符"></a>3 Java访问修饰符</h3><h3 id="4-什么是线程安全？"><a href="#4-什么是线程安全？" class="headerlink" title="4 什么是线程安全？"></a>4 什么是线程安全？</h3><p>当多个线程访问一个对象时，如果不用考虑这些线程在运行时环境下的调度和交替执行，也不需要进行额外的同步，或者在调用方进行任何其他的协调操作，调用这个对象的行为都可以获得正确的结果，那这个对象就是线程安全的。（线程安全：在堆内存中的数据由于可以被任何线程访问到，在没有限制的情况下存在被意外修改的风险。）</p>
-<h3 id="5-springboot与spring的区别是什么？"><a href="#5-springboot与spring的区别是什么？" class="headerlink" title="5 springboot与spring的区别是什么？"></a>5 springboot与spring的区别是什么？</h3><h3 id="6-spring核心思想是什么？"><a href="#6-spring核心思想是什么？" class="headerlink" title="6 spring核心思想是什么？"></a>6 spring核心思想是什么？</h3><h3 id="7-synchronized"><a href="#7-synchronized" class="headerlink" title="7 synchronized"></a>7 synchronized</h3><p><strong>无算法题，面试共30分钟，后面都是一些开放性问题</strong></p>
-]]></content>
-      <categories>
-        <category>面试</category>
-      </categories>
-      <tags>
-        <tag>京东</tag>
       </tags>
   </entry>
   <entry>
@@ -1802,17 +1805,6 @@
       </tags>
   </entry>
   <entry>
-    <title>jenkins</title>
-    <url>/2022/04/16/jenkins/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>Tool</category>
-      </categories>
-      <tags>
-        <tag>jenkins</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>jd1</title>
     <url>/2022/03/29/jd1/</url>
     <content><![CDATA[<p>2022年3月29日</p>
@@ -1828,6 +1820,32 @@
       </tags>
   </entry>
   <entry>
+    <title>jenkins</title>
+    <url>/2022/04/16/jenkins/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>Tool</category>
+      </categories>
+      <tags>
+        <tag>jenkins</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>jd</title>
+    <url>/2022/03/26/jd/</url>
+    <content><![CDATA[<p>2022年3月23日</p>
+<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-讲一下static关键字，什么情况下会用到它，具体说说？"><a href="#2-讲一下static关键字，什么情况下会用到它，具体说说？" class="headerlink" title="2 讲一下static关键字，什么情况下会用到它，具体说说？"></a>2 讲一下static关键字，什么情况下会用到它，具体说说？</h3><p><a href="https://cool-jun.github.io/2021/04/07/java-keyword/">static</a></p>
+<h3 id="3-Java访问修饰符"><a href="#3-Java访问修饰符" class="headerlink" title="3 Java访问修饰符"></a>3 Java访问修饰符</h3><h3 id="4-什么是线程安全？"><a href="#4-什么是线程安全？" class="headerlink" title="4 什么是线程安全？"></a>4 什么是线程安全？</h3><p>当多个线程访问一个对象时，如果不用考虑这些线程在运行时环境下的调度和交替执行，也不需要进行额外的同步，或者在调用方进行任何其他的协调操作，调用这个对象的行为都可以获得正确的结果，那这个对象就是线程安全的。（线程安全：在堆内存中的数据由于可以被任何线程访问到，在没有限制的情况下存在被意外修改的风险。）</p>
+<h3 id="5-springboot与spring的区别是什么？"><a href="#5-springboot与spring的区别是什么？" class="headerlink" title="5 springboot与spring的区别是什么？"></a>5 springboot与spring的区别是什么？</h3><h3 id="6-spring核心思想是什么？"><a href="#6-spring核心思想是什么？" class="headerlink" title="6 spring核心思想是什么？"></a>6 spring核心思想是什么？</h3><h3 id="7-synchronized"><a href="#7-synchronized" class="headerlink" title="7 synchronized"></a>7 synchronized</h3><p><strong>无算法题，面试共30分钟，后面都是一些开放性问题</strong></p>
+]]></content>
+      <categories>
+        <category>面试</category>
+      </categories>
+      <tags>
+        <tag>京东</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>鲸算二面</title>
     <url>/2022/03/15/jingsuan-2/</url>
     <content><![CDATA[<p>2022年3月15号，鲸算二面。</p>
@@ -1837,17 +1855,6 @@
       </categories>
       <tags>
         <tag>鲸算</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>k8s</title>
-    <url>/2022/04/16/k8s/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>Tool</category>
-      </categories>
-      <tags>
-        <tag>k8s</tag>
       </tags>
   </entry>
   <entry>
@@ -1861,6 +1868,17 @@
       </categories>
       <tags>
         <tag>开域</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>k8s</title>
+    <url>/2022/04/16/k8s/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>Tool</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
       </tags>
   </entry>
   <entry>
@@ -1955,24 +1973,6 @@
       </categories>
       <tags>
         <tag>密码学</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>memory</title>
-    <url>/2021/03/21/memory/</url>
-    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
-<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
-<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
-<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
-<img src="/2021/03/21/memory/memory.jpg" class="">
-
-<p>辛丑牛年农历二月初十</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>景点</tag>
       </tags>
   </entry>
   <entry>
@@ -2341,6 +2341,69 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
+    <title>memory</title>
+    <url>/2021/03/21/memory/</url>
+    <content><![CDATA[<p>阴沉的天气夹杂着一丝微雨，糟糕的天气也阻挡不了橘子洲的人来人往。这是我第二次来橘子洲了，一代伟人毛主席的头像依然屹立在橘子洲头，来来往往的游客依旧络绎不绝。每一次来都有不同的感受，但这次却又冥冥之中透露着一种伤感。不知所来，又似一语成谶。不变的永远在，变的确是弹指之间。</p>
+<p>漫步在橘间小道，淅淅沥沥的雨点滴在左肩。走着走着树上的鸟窝便吸引了我的注意，那时觉得有点不可思议，因为满树全是人造的鸟窝，但很快就理解了。原来鸟窝里面夹杂着五彩的灯光，为夜间的橘子洲增添一份绚丽。此时的我完全沉浸在幸福愉悦之中，想象不到几天之后的世界，却也从未想过。</p>
+<p>毛主席伟岸的身躯依旧耀眼的矗立着，游客换了一波又一波。人生如匆匆过客，无论是在她人的生活还是自己的生活中。</p>
+<p>转眼间新学期又开始了，宿舍和实验室完成了这篇看似惆怅却满是牢骚的日志。新的学期新的开始！有一句话说的好不要在怀念过去回忆过去中浪费掉你现在的生活！收拾行装，未来就在脚下！</p>
+<img src="/2021/03/21/memory/memory.jpg" class="">
+
+<p>辛丑牛年农历二月初十</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>景点</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mysql-advance-4</title>
+    <url>/2022/08/14/mysql-advance-4/</url>
+    <content><![CDATA[<h3 id="1-InnoDB存储引擎"><a href="#1-InnoDB存储引擎" class="headerlink" title="1 InnoDB存储引擎"></a>1 InnoDB存储引擎</h3><h4 id="1-1-逻辑存储结构"><a href="#1-1-逻辑存储结构" class="headerlink" title="1.1 逻辑存储结构"></a>1.1 逻辑存储结构</h4><img src="/2022/08/14/mysql-advance-4/logic.jpg" class="">
+
+<h4 id="1-2-架构"><a href="#1-2-架构" class="headerlink" title="1.2 架构"></a>1.2 架构</h4><p><strong>内存架构</strong></p>
+<img src="/2022/08/14/mysql-advance-4/buffer.jpg" class="">
+
+<img src="/2022/08/14/mysql-advance-4/change.jpg" class="">
+
+<img src="/2022/08/14/mysql-advance-4/hash.jpg" class="">
+
+<img src="/2022/08/14/mysql-advance-4/log.jpg" class="">
+
+<p><strong>磁盘架构</strong></p>
+<img src="/2022/08/14/mysql-advance-4/disk-1.jpg" class="">
+
+<img src="/2022/08/14/mysql-advance-4/disk-2.jpg" class="">
+
+<img src="/2022/08/14/mysql-advance-4/disk-3.jpg" class="">
+
+<p><strong>后台线程</strong></p>
+<img src="/2022/08/14/mysql-advance-4/thread.jpg" class="">
+
+<h4 id="1-3-事务原理"><a href="#1-3-事务原理" class="headerlink" title="1.3 事务原理"></a>1.3 事务原理</h4><p>事务是一组操作的集合，它是一个不可分割的工作单位，事务会把所有的操作作为一个整体一起向系统提交或撤销操作请求，即这些操作要么同时成功，要么同时失败。</p>
+<ul>
+<li>原子性（Atomicity）：事务是不可分割的最小操作单元，要么全部成功，要么全部失败。</li>
+<li>一致性（Consistency）：事务完成时，必须使所有的数据都保持一致状态。</li>
+<li>隔离性（Isolation）：数据库系统提供的隔离机制，保证事务在不受外部并发操作影响的独立环境下运行。</li>
+<li>持久性（Durability）：事务一旦提交或回滚，它对数据库中的数据的改变就是永久的。</li>
+</ul>
+<img src="/2022/08/14/mysql-advance-4/tx.jpg" class="">
+
+<p><strong>redo log（持久性）</strong></p>
+<img src="/2022/08/14/mysql-advance-4/redo.jpg" class="">
+
+<p><strong>undo log（原子性）</strong></p>
+<img src="/2022/08/14/mysql-advance-4/undo.jpg" class="">]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>mysql_advance_3</title>
     <url>/2022/08/10/mysql-advance-3/</url>
     <content><![CDATA[<h3 id="1-锁"><a href="#1-锁" class="headerlink" title="1 锁"></a>1 锁</h3><p>MySQL里面的锁根据粒度大致可以分成全局锁、表级锁和行级锁三类。</p>
@@ -2399,118 +2462,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
 <li>索引上的范围查询(唯一索引)，会访问到不满足条件的第一个值为止。</li>
 </ol>
 <p>注意：间隙锁唯一目的是防止其他事务插入间隙。间隙锁可以共存，一个事务采用的间隙锁不会阻止另一个事务在同一间隙上采用间隙锁。</p>
-]]></content>
-      <categories>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mysql-advance-mvcc</title>
-    <url>/2022/08/15/mysql-advance-mvcc/</url>
-    <content><![CDATA[<h3 id="1-MVCC"><a href="#1-MVCC" class="headerlink" title="1 MVCC"></a>1 MVCC</h3><p><strong>当前读</strong><br>读取的是记录的最新版本，读取时还要保证其他并发事务不能修改当前记录，会对读取的记录进行加锁。<br>对于操作，如：select … lock in share mode(共享锁)，select … for update、update、insert、delete(排他锁)都是一种当前读。</p>
-<img src="/2022/08/15/mysql-advance-mvcc/cur-read.jpg" class="">
-
-<p><strong>快照读</strong><br>简单的select（不加锁）就是快照读，读取的是记录的可见版本，有可能是历史数据。不加锁意味着是非阻塞读。</p>
-<ul>
-<li>Read Committed：每次select，都生成一个快照读。</li>
-<li>Repeatable Read：开启事务后第一个select语句才是快照读的地方。</li>
-<li>Serializable：快照读会退化为当前读。</li>
-</ul>
-<p><strong>MVCC</strong><br>Multi-Version Concurrency Control，多版本并发控制。指维护一个数据的多个版本，使得读写操作没有冲突，快照读为MySQL实现MVCC提供了一个非阻塞读功能。<br>MVCC实现原理是通过隐藏字段（三个）、undo log日志、read view来实现的。<br>MVCC只在事务隔离级别为RC和RR的情况下生效。</p>
-<ul>
-<li><p>隐藏字段</p>
-<img src="/2022/08/15/mysql-advance-mvcc/yc.jpg" class="">
-</li>
-<li><p>undo log<br>回滚日志，在insert、update、delete的时候产生的便于数据回滚的日志。<br>当insert的时候，产生的undo log日志只在回滚时需要，在事务提交后，可被立即删除。<br>而update、delete的时候，产生的undo log日志不仅在回滚时需要，在快照读时也需要，不会立即被删除。</p>
-<img src="/2022/08/15/mysql-advance-mvcc/undo-log.jpg" class="">
-</li>
-<li><p>Read View<br>Read View（读视图）是快照读SQL执行时MVCC提取数据的依据，记录并维护系统当前活跃的事务（未提交的）id。</p>
-<table>
-<thead>
-<tr>
-<th align="center">字段</th>
-<th align="center">含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">m_ids</td>
-<td align="center">当前活跃的事务ID集合</td>
-</tr>
-<tr>
-<td align="center">min_trx_id</td>
-<td align="center">最小活跃事务ID</td>
-</tr>
-<tr>
-<td align="center">max_trx_id</td>
-<td align="center">预分配事务ID，当前最大事务ID+1（因为事务ID是自增的）</td>
-</tr>
-<tr>
-<td align="center">creator_trx_id</td>
-<td align="center">ReadView创建者的事务ID</td>
-</tr>
-</tbody></table>
-</li>
-</ul>
-<img src="/2022/08/15/mysql-advance-mvcc/readview.jpg" class="">
-
-<p><strong>RC隔离级别</strong></p>
-<img src="/2022/08/15/mysql-advance-mvcc/rv-1.jpg" class="">
-<img src="/2022/08/15/mysql-advance-mvcc/rv-2.jpg" class="">
-
-<p><strong>RR隔离级别</strong></p>
-<img src="/2022/08/15/mysql-advance-mvcc/rv-3.jpg" class="">
-
-<p><strong>总结</strong></p>
-<img src="/2022/08/15/mysql-advance-mvcc/summary.jpg" class="">
-
-<h3 id="2-MySQL管理"><a href="#2-MySQL管理" class="headerlink" title="2 MySQL管理"></a>2 MySQL管理</h3><p>MySQL数据库自带以下四个系统数据库：</p>
-<table>
-<thead>
-<tr>
-<th align="center">系统数据库</th>
-<th align="center">含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">mysql</td>
-<td align="center">存储MySQL服务器正常运行所需要的各种信息 （时区、主从、用户、权限等）</td>
-</tr>
-<tr>
-<td align="center">information_schema</td>
-<td align="center">提供了访问数据库元数据的各种表和视图，包含数据库，表，字段类型及访问权限等</td>
-</tr>
-<tr>
-<td align="center">performance_schema</td>
-<td align="center">为MySQL服务器运行时状态提供了一个底层监控功能，主要用于手机数据库服务器性能参数</td>
-</tr>
-<tr>
-<td align="center">sys</td>
-<td align="center">包含了一系列方便DBA和开发人员利用performance_schema性能数据库进行性能调优和诊断的视图</td>
-</tr>
-</tbody></table>
-<p><strong>常用工具</strong></p>
-<ul>
-<li><p>mysql</p>
-<img src="/2022/08/15/mysql-advance-mvcc/tool-1.jpg" class="">
-</li>
-<li><p>mysqladmin</p>
-<img src="/2022/08/15/mysql-advance-mvcc/tool-2.jpg" class="">
-</li>
-<li><p>mysqlbinlog</p>
-<img src="/2022/08/15/mysql-advance-mvcc/tool-3.jpg" class="">
-</li>
-<li><p>mysqlshow</p>
-<img src="/2022/08/15/mysql-advance-mvcc/tool-4.jpg" class="">
-</li>
-<li><p>mysqldump</p>
-<img src="/2022/08/15/mysql-advance-mvcc/tool-5.jpg" class="">
-</li>
-<li><p>mysqlimport/source</p>
-<img src="/2022/08/15/mysql-advance-mvcc/tool-6.jpg" class=""></li>
-</ul>
 ]]></content>
       <categories>
         <category>数据库</category>
@@ -2717,6 +2668,118 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
 <li>尽量选择区分度高的列作为索引，尽量建立唯一性索引。</li>
 <li>尽量使用前缀来索引。TEXT和BLOG类型的字段，进行全文检索会很浪费时间。</li>
 <li>尽量建立联合索引，减少单列索引。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mysql-advance-mvcc</title>
+    <url>/2022/08/15/mysql-advance-mvcc/</url>
+    <content><![CDATA[<h3 id="1-MVCC"><a href="#1-MVCC" class="headerlink" title="1 MVCC"></a>1 MVCC</h3><p><strong>当前读</strong><br>读取的是记录的最新版本，读取时还要保证其他并发事务不能修改当前记录，会对读取的记录进行加锁。<br>对于操作，如：select … lock in share mode(共享锁)，select … for update、update、insert、delete(排他锁)都是一种当前读。</p>
+<img src="/2022/08/15/mysql-advance-mvcc/cur-read.jpg" class="">
+
+<p><strong>快照读</strong><br>简单的select（不加锁）就是快照读，读取的是记录的可见版本，有可能是历史数据。不加锁意味着是非阻塞读。</p>
+<ul>
+<li>Read Committed：每次select，都生成一个快照读。</li>
+<li>Repeatable Read：开启事务后第一个select语句才是快照读的地方。</li>
+<li>Serializable：快照读会退化为当前读。</li>
+</ul>
+<p><strong>MVCC</strong><br>Multi-Version Concurrency Control，多版本并发控制。指维护一个数据的多个版本，使得读写操作没有冲突，快照读为MySQL实现MVCC提供了一个非阻塞读功能。<br>MVCC实现原理是通过隐藏字段（三个）、undo log日志、read view来实现的。<br>MVCC只在事务隔离级别为RC和RR的情况下生效。</p>
+<ul>
+<li><p>隐藏字段</p>
+<img src="/2022/08/15/mysql-advance-mvcc/yc.jpg" class="">
+</li>
+<li><p>undo log<br>回滚日志，在insert、update、delete的时候产生的便于数据回滚的日志。<br>当insert的时候，产生的undo log日志只在回滚时需要，在事务提交后，可被立即删除。<br>而update、delete的时候，产生的undo log日志不仅在回滚时需要，在快照读时也需要，不会立即被删除。</p>
+<img src="/2022/08/15/mysql-advance-mvcc/undo-log.jpg" class="">
+</li>
+<li><p>Read View<br>Read View（读视图）是快照读SQL执行时MVCC提取数据的依据，记录并维护系统当前活跃的事务（未提交的）id。</p>
+<table>
+<thead>
+<tr>
+<th align="center">字段</th>
+<th align="center">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">m_ids</td>
+<td align="center">当前活跃的事务ID集合</td>
+</tr>
+<tr>
+<td align="center">min_trx_id</td>
+<td align="center">最小活跃事务ID</td>
+</tr>
+<tr>
+<td align="center">max_trx_id</td>
+<td align="center">预分配事务ID，当前最大事务ID+1（因为事务ID是自增的）</td>
+</tr>
+<tr>
+<td align="center">creator_trx_id</td>
+<td align="center">ReadView创建者的事务ID</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<img src="/2022/08/15/mysql-advance-mvcc/readview.jpg" class="">
+
+<p><strong>RC隔离级别</strong></p>
+<img src="/2022/08/15/mysql-advance-mvcc/rv-1.jpg" class="">
+<img src="/2022/08/15/mysql-advance-mvcc/rv-2.jpg" class="">
+
+<p><strong>RR隔离级别</strong></p>
+<img src="/2022/08/15/mysql-advance-mvcc/rv-3.jpg" class="">
+
+<p><strong>总结</strong></p>
+<img src="/2022/08/15/mysql-advance-mvcc/summary.jpg" class="">
+
+<h3 id="2-MySQL管理"><a href="#2-MySQL管理" class="headerlink" title="2 MySQL管理"></a>2 MySQL管理</h3><p>MySQL数据库自带以下四个系统数据库：</p>
+<table>
+<thead>
+<tr>
+<th align="center">系统数据库</th>
+<th align="center">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">mysql</td>
+<td align="center">存储MySQL服务器正常运行所需要的各种信息 （时区、主从、用户、权限等）</td>
+</tr>
+<tr>
+<td align="center">information_schema</td>
+<td align="center">提供了访问数据库元数据的各种表和视图，包含数据库，表，字段类型及访问权限等</td>
+</tr>
+<tr>
+<td align="center">performance_schema</td>
+<td align="center">为MySQL服务器运行时状态提供了一个底层监控功能，主要用于手机数据库服务器性能参数</td>
+</tr>
+<tr>
+<td align="center">sys</td>
+<td align="center">包含了一系列方便DBA和开发人员利用performance_schema性能数据库进行性能调优和诊断的视图</td>
+</tr>
+</tbody></table>
+<p><strong>常用工具</strong></p>
+<ul>
+<li><p>mysql</p>
+<img src="/2022/08/15/mysql-advance-mvcc/tool-1.jpg" class="">
+</li>
+<li><p>mysqladmin</p>
+<img src="/2022/08/15/mysql-advance-mvcc/tool-2.jpg" class="">
+</li>
+<li><p>mysqlbinlog</p>
+<img src="/2022/08/15/mysql-advance-mvcc/tool-3.jpg" class="">
+</li>
+<li><p>mysqlshow</p>
+<img src="/2022/08/15/mysql-advance-mvcc/tool-4.jpg" class="">
+</li>
+<li><p>mysqldump</p>
+<img src="/2022/08/15/mysql-advance-mvcc/tool-5.jpg" class="">
+</li>
+<li><p>mysqlimport/source</p>
+<img src="/2022/08/15/mysql-advance-mvcc/tool-6.jpg" class=""></li>
 </ul>
 ]]></content>
       <categories>
@@ -2954,51 +3017,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
 </tbody></table>
 <p>alter table 表名 add constraint 外键名称 foreign key(外键字段名) references 主表(主表列名) on update cascade on delete cascade;</p>
 ]]></content>
-      <categories>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>mysql</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mysql-advance-4</title>
-    <url>/2022/08/14/mysql-advance-4/</url>
-    <content><![CDATA[<h3 id="1-InnoDB存储引擎"><a href="#1-InnoDB存储引擎" class="headerlink" title="1 InnoDB存储引擎"></a>1 InnoDB存储引擎</h3><h4 id="1-1-逻辑存储结构"><a href="#1-1-逻辑存储结构" class="headerlink" title="1.1 逻辑存储结构"></a>1.1 逻辑存储结构</h4><img src="/2022/08/14/mysql-advance-4/logic.jpg" class="">
-
-<h4 id="1-2-架构"><a href="#1-2-架构" class="headerlink" title="1.2 架构"></a>1.2 架构</h4><p><strong>内存架构</strong></p>
-<img src="/2022/08/14/mysql-advance-4/buffer.jpg" class="">
-
-<img src="/2022/08/14/mysql-advance-4/change.jpg" class="">
-
-<img src="/2022/08/14/mysql-advance-4/hash.jpg" class="">
-
-<img src="/2022/08/14/mysql-advance-4/log.jpg" class="">
-
-<p><strong>磁盘架构</strong></p>
-<img src="/2022/08/14/mysql-advance-4/disk-1.jpg" class="">
-
-<img src="/2022/08/14/mysql-advance-4/disk-2.jpg" class="">
-
-<img src="/2022/08/14/mysql-advance-4/disk-3.jpg" class="">
-
-<p><strong>后台线程</strong></p>
-<img src="/2022/08/14/mysql-advance-4/thread.jpg" class="">
-
-<h4 id="1-3-事务原理"><a href="#1-3-事务原理" class="headerlink" title="1.3 事务原理"></a>1.3 事务原理</h4><p>事务是一组操作的集合，它是一个不可分割的工作单位，事务会把所有的操作作为一个整体一起向系统提交或撤销操作请求，即这些操作要么同时成功，要么同时失败。</p>
-<ul>
-<li>原子性（Atomicity）：事务是不可分割的最小操作单元，要么全部成功，要么全部失败。</li>
-<li>一致性（Consistency）：事务完成时，必须使所有的数据都保持一致状态。</li>
-<li>隔离性（Isolation）：数据库系统提供的隔离机制，保证事务在不受外部并发操作影响的独立环境下运行。</li>
-<li>持久性（Durability）：事务一旦提交或回滚，它对数据库中的数据的改变就是永久的。</li>
-</ul>
-<img src="/2022/08/14/mysql-advance-4/tx.jpg" class="">
-
-<p><strong>redo log（持久性）</strong></p>
-<img src="/2022/08/14/mysql-advance-4/redo.jpg" class="">
-
-<p><strong>undo log（原子性）</strong></p>
-<img src="/2022/08/14/mysql-advance-4/undo.jpg" class="">]]></content>
       <categories>
         <category>数据库</category>
       </categories>
@@ -3452,19 +3470,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </tags>
   </entry>
   <entry>
-    <title>十月</title>
-    <url>/2021/10/30/oct-day/</url>
-    <content><![CDATA[<p>十月的北京可谓是诈寒还暖，十月的倒数第二天竟然有二十多度，比起国庆之后的最低气温，现在不可谓不舒适。后天就是十一月了，日子总是这么轻飘飘的就过去了，明天三年之约也来了。多么令人期待了，等待了数个三年之后，炎帝迎来了他的三年之约。十一月总是给人美好，十一月的自己也要更加自律了，毕竟毕业不是儿戏啊！而且实习经验也没有的自己更要抓紧时间了。</p>
-<p>农历九月二十五日</p>
-]]></content>
-      <categories>
-        <category>生活</category>
-      </categories>
-      <tags>
-        <tag>天气</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>rain</title>
     <url>/2021/03/26/rain/</url>
     <content><![CDATA[<p>今日，北京的天空雾霾霾的，温度也不如前几日舒服。不到中午，天空便下起了小雨。原定于今天打篮球的计划也泡汤了。只得呆在实验室学习，这或许是老天想让我好好学习，天天向上吧！</p>
@@ -3478,6 +3483,19 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>如晴似雨</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>十月</title>
+    <url>/2021/10/30/oct-day/</url>
+    <content><![CDATA[<p>十月的北京可谓是诈寒还暖，十月的倒数第二天竟然有二十多度，比起国庆之后的最低气温，现在不可谓不舒适。后天就是十一月了，日子总是这么轻飘飘的就过去了，明天三年之约也来了。多么令人期待了，等待了数个三年之后，炎帝迎来了他的三年之约。十一月总是给人美好，十一月的自己也要更加自律了，毕竟毕业不是儿戏啊！而且实习经验也没有的自己更要抓紧时间了。</p>
+<p>农历九月二十五日</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>天气</tag>
       </tags>
   </entry>
   <entry>
@@ -3519,70 +3537,6 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>shiro</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>首汽面试</title>
-    <url>/2022/03/09/shouqi/</url>
-    <content><![CDATA[<p>2022年3月9号<br>由于本次面试是线下面试，一些问题记不太清，本次面试基本都是拿着简历问问题。</p>
-<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍研究方向"><a href="#2-介绍研究方向" class="headerlink" title="2 介绍研究方向"></a>2 介绍研究方向</h3><h3 id="3-docker常用命令"><a href="#3-docker常用命令" class="headerlink" title="3 docker常用命令"></a>3 docker常用命令</h3><p><a href="https://cool-jun.github.io/2022/04/16/docker/">docker</a></p>
-<h3 id="4-redis数据类型"><a href="#4-redis数据类型" class="headerlink" title="4 redis数据类型"></a>4 redis数据类型</h3><p>string、list、hash、set、zset</p>
-<h3 id="5-说说spring-ioc与aop"><a href="#5-说说spring-ioc与aop" class="headerlink" title="5 说说spring ioc与aop"></a>5 说说spring ioc与aop</h3><p><a href="https://cool-jun.github.io/2021/12/05/12-05-Spring/">ioc</a><br><a href="https://cool-jun.github.io/2021/12/10/12-10-Spring/">aop</a></p>
-<h3 id="6-创建多线程的方式"><a href="#6-创建多线程的方式" class="headerlink" title="6 创建多线程的方式"></a>6 创建多线程的方式</h3><p>见蔚来一面</p>
-<h3 id="7-说说线程池"><a href="#7-说说线程池" class="headerlink" title="7 说说线程池"></a>7 说说线程池</h3><p><a href="https://cool-jun.github.io/2021/11/24/11-24-Java/">概念</a><br><a href="https://cool-jun.github.io/2021/11/26/11-26-Java/">创建方式</a></p>
-<h3 id="8-jvm详细说一下"><a href="#8-jvm详细说一下" class="headerlink" title="8 jvm详细说一下"></a>8 jvm详细说一下</h3><p><a href="https://cool-jun.github.io/2021/11/27/11-27-Java/">jvm</a></p>
-<h3 id="9-垃圾回收机制"><a href="#9-垃圾回收机制" class="headerlink" title="9 垃圾回收机制"></a>9 垃圾回收机制</h3><p><a href="https://cool-jun.github.io/2021/12/04/12-04-Java/">gc</a></p>
-<h3 id="10-垃圾收集器有哪些？说一下G1"><a href="#10-垃圾收集器有哪些？说一下G1" class="headerlink" title="10 垃圾收集器有哪些？说一下G1"></a>10 垃圾收集器有哪些？说一下G1</h3><p><a href="https://cool-jun.github.io/2021/12/04/12-04-Java/">collector</a></p>
-<h3 id="11-spring有哪些注解，说一下-Resource注解"><a href="#11-spring有哪些注解，说一下-Resource注解" class="headerlink" title="11 spring有哪些注解，说一下@Resource注解"></a>11 spring有哪些注解，说一下@Resource注解</h3><p>Spring中的注解主要分为两类：</p>
-<ul>
-<li><p>类级别的注解：如@Component、@Repository、@Controller、@Service以及JavaEE6的@ManagedBean和@Named注解，都是添加在类上面的类级别注解。</p>
-</li>
-<li><p>类内部的注解：如@Autowire、@Value、@Resource以及EJB和WebService相关的注解等，都是添加在类内部的字段或者方法上的类内部注解。</p>
-</li>
-</ul>
-<p>具体的来说又有以下几种类型的注解方式</p>
-<ol>
-<li><p>声明bean的注解<br>@Component，通用的注解方式<br>@Service，在业务逻辑层使用（service层）<br>@Repository，在数据访问层使用（dao层）<br>@Controller，在表现层使用，控制器的声明</p>
-</li>
-<li><p>注入bean的注解<br>@Autowired：由Spring提供<br>@Inject：由JSR-330提供<br>@Resource：由JSR-250提供<br>都可以注解在set方法和属性上，推荐注解在属性上（一目了然，少写代码）。</p>
-</li>
-<li><p>java配置类相关注解<br>@Configuration，声明当前类为配置类，相当于xml形式的Spring配置（类上）<br>@Bean，注解在方法上，声明当前方法的返回值为一个bean，替代xml中的方式（方法上）<br>@Configuration，声明当前类为配置类，其中内部组合了@Component注解，表明这个类是一个bean（类上）<br>@ComponentScan，用于对Component进行扫描，相当于xml中的（类上）<br>@WishlyConfiguration，为@Configuration与@ComponentScan的组合注解，可以替代这两个注解</p>
-</li>
-<li><p>切面（AOP）相关注解 Spring支持AspectJ的注解式切面编程。<br>@Aspect，声明一个切面（类上）<br>使用@After、@Before、@Around定义通知（advice），可直接将拦截规则（切点）作为参数。<br>@After，在方法执行之后执行（方法上） @Before 在方法执行之前执行（方法上） @Around 在方法执行之前与之后执行（方法上）<br>@PointCut，声明切点<br>在java配置类中使用@EnableAspectJAutoProxy注解开启Spring对AspectJ代理的支持（类上）</p>
-</li>
-<li><p>@Bean的属性支持<br>@Scope，设置Spring容器如何新建Bean实例（方法上，得有@Bean）<br>其设置类型包括：<br>· Singleton （单例，一个Spring容器中只有一个bean实例，默认模式）,<br>· Protetype （每次调用新建一个bean）,<br>· Request （web项目中，给每个http request新建一个bean）,<br>· Session （web项目中，给每个http session新建一个bean）,<br>· GlobalSession（给每一个 global http session新建一个Bean实例）</p>
-</li>
-</ol>
-<p>@Autowired与@Resource<br>@Autowired默认按类型查找，有查找的优先顺序。<br>按Type匹配（Match by Type）<br>按Qualifier匹配（Match by Qualifier）<br>按Name匹配（Match by Name）</p>
-<p>如果要允许null值，可以设置它的required属性为false，如：@Autowired(required=false)。<br>若想要按名称装配，可以结合@Qualifier注解一起使用，如：@Autowired(required=false)<br>@Qualifier(“bean”)</p>
-<p>@Resource默认按名字查找，但是也有查找的优先顺序。<br>按Name匹配（Match by Name）<br>按Type匹配（Match by Type）<br>按Qualifier匹配（Match by Qualifier）</p>
-<p>@Resource注解和@Autowired一样，也可以标注在字段或属性的setter方法上。<br>Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不指定name也不指定type属性，这时将通过反射机制使用byName自动注入策略。</p>
-<p>@Resource装配顺序</p>
-<ol>
-<li>如果同时指定了name和type，则从Spring上下文中找到唯一匹配的bean进行装配，找不到则抛出异常</li>
-<li>如果指定了name，则从上下文中查找名称（id）匹配的bean进行装配，找不到则抛出异常</li>
-<li>如果指定了type，则从上下文中找到类型匹配的唯一bean进行装配，找不到或者找到多个，都会抛出异常</li>
-<li>如果既没有指定name，又没有指定type，则自动按照byName方式进行装配；如果没有匹配，则回退为一个原始类型进行匹配，如果匹配则自动装配；</li>
-</ol>
-<h3 id="12-说一下git常用命令，rebase命令了解吗？"><a href="#12-说一下git常用命令，rebase命令了解吗？" class="headerlink" title="12 说一下git常用命令，rebase命令了解吗？"></a>12 说一下git常用命令，rebase命令了解吗？</h3><p><a href="https://cool-jun.github.io/2022/01/08/01-08-git/">git</a></p>
-<h3 id="13-说一下osi七层模型"><a href="#13-说一下osi七层模型" class="headerlink" title="13 说一下osi七层模型"></a>13 说一下osi七层模型</h3><img src="/2022/03/09/shouqi/osi.png" class="">
-
-<h3 id="14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？"><a href="#14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？" class="headerlink" title="14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？"></a>14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？</h3><p><a href="https://cool-jun.github.io/2021/12/11/12-11-Network/">三次握手</a><br><a href="https://cool-jun.github.io/2021/12/13/12-13-Network/">四次挥手</a></p>
-<h3 id="15-十亿条无序的数据，找出其中最大的10条。（top-k问题）"><a href="#15-十亿条无序的数据，找出其中最大的10条。（top-k问题）" class="headerlink" title="15 十亿条无序的数据，找出其中最大的10条。（top k问题）"></a>15 十亿条无序的数据，找出其中最大的10条。（top k问题）</h3><p>针对top K问题，通常比较好的方案是：分治+hash+小顶堆。</p>
-<p>例如：1亿个数据中找出最大的前100个。<br>hash：如果这1亿个数里面有很多重复的数，先通过Hash，把这1亿个数去重复，这样如果重复率很高的话，会减少很大的内存用量，从而缩小运算空间，然后通过分治法或最小堆法查找最大的100个数。<br>分治：将1亿个数据分成100份，每份100万个数据，找到每份数据中最大的100个，最后在剩下的10000个数据里面找出最大的100个。<br>小顶堆。</p>
-<p><strong>PriorityQueue</strong></p>
-<h3 id="16-算法题：单链表反转"><a href="#16-算法题：单链表反转" class="headerlink" title="16 算法题：单链表反转"></a>16 算法题：单链表反转</h3><p>头插法</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ListNode reverseList(ListNode head) &#123;</span><br><span class="line">    ListNode previous &#x3D; null;</span><br><span class="line">    ListNode current &#x3D; head;</span><br><span class="line">    while (current !&#x3D; null) &#123;</span><br><span class="line">        ListNode after &#x3D; current.next;</span><br><span class="line">        current.next &#x3D; previous;</span><br><span class="line">        previous &#x3D; current;</span><br><span class="line">        current &#x3D; after;</span><br><span class="line">    &#125;</span><br><span class="line">    return previous;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>递归</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ListNode reverseList(ListNode head) &#123;</span><br><span class="line">    if (head &#x3D;&#x3D; null || head.next &#x3D;&#x3D; null) &#123;</span><br><span class="line">        return head;</span><br><span class="line">    &#125;</span><br><span class="line">    ListNode newHead &#x3D; reverseList(head.next);</span><br><span class="line">    head.next.next &#x3D; head;</span><br><span class="line">    head.next &#x3D; null;</span><br><span class="line">    return newHead;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="17-HR面"><a href="#17-HR面" class="headerlink" title="17 HR面"></a>17 HR面</h3><p>日常聊天半小时，面试通过。<br>3月15日婉拒offer。</p>
-]]></content>
-      <categories>
-        <category>面试</category>
-      </categories>
-      <tags>
-        <tag>首汽</tag>
       </tags>
   </entry>
   <entry>
@@ -3663,6 +3617,70 @@ docker build --no-cache -t fabric-ccenv-carbuy:x86_64-1.1.0-alpha-mpc .</code></
       </categories>
       <tags>
         <tag>design_mode</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>首汽面试</title>
+    <url>/2022/03/09/shouqi/</url>
+    <content><![CDATA[<p>2022年3月9号<br>由于本次面试是线下面试，一些问题记不太清，本次面试基本都是拿着简历问问题。</p>
+<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍研究方向"><a href="#2-介绍研究方向" class="headerlink" title="2 介绍研究方向"></a>2 介绍研究方向</h3><h3 id="3-docker常用命令"><a href="#3-docker常用命令" class="headerlink" title="3 docker常用命令"></a>3 docker常用命令</h3><p><a href="https://cool-jun.github.io/2022/04/16/docker/">docker</a></p>
+<h3 id="4-redis数据类型"><a href="#4-redis数据类型" class="headerlink" title="4 redis数据类型"></a>4 redis数据类型</h3><p>string、list、hash、set、zset</p>
+<h3 id="5-说说spring-ioc与aop"><a href="#5-说说spring-ioc与aop" class="headerlink" title="5 说说spring ioc与aop"></a>5 说说spring ioc与aop</h3><p><a href="https://cool-jun.github.io/2021/12/05/12-05-Spring/">ioc</a><br><a href="https://cool-jun.github.io/2021/12/10/12-10-Spring/">aop</a></p>
+<h3 id="6-创建多线程的方式"><a href="#6-创建多线程的方式" class="headerlink" title="6 创建多线程的方式"></a>6 创建多线程的方式</h3><p>见蔚来一面</p>
+<h3 id="7-说说线程池"><a href="#7-说说线程池" class="headerlink" title="7 说说线程池"></a>7 说说线程池</h3><p><a href="https://cool-jun.github.io/2021/11/24/11-24-Java/">概念</a><br><a href="https://cool-jun.github.io/2021/11/26/11-26-Java/">创建方式</a></p>
+<h3 id="8-jvm详细说一下"><a href="#8-jvm详细说一下" class="headerlink" title="8 jvm详细说一下"></a>8 jvm详细说一下</h3><p><a href="https://cool-jun.github.io/2021/11/27/11-27-Java/">jvm</a></p>
+<h3 id="9-垃圾回收机制"><a href="#9-垃圾回收机制" class="headerlink" title="9 垃圾回收机制"></a>9 垃圾回收机制</h3><p><a href="https://cool-jun.github.io/2021/12/04/12-04-Java/">gc</a></p>
+<h3 id="10-垃圾收集器有哪些？说一下G1"><a href="#10-垃圾收集器有哪些？说一下G1" class="headerlink" title="10 垃圾收集器有哪些？说一下G1"></a>10 垃圾收集器有哪些？说一下G1</h3><p><a href="https://cool-jun.github.io/2021/12/04/12-04-Java/">collector</a></p>
+<h3 id="11-spring有哪些注解，说一下-Resource注解"><a href="#11-spring有哪些注解，说一下-Resource注解" class="headerlink" title="11 spring有哪些注解，说一下@Resource注解"></a>11 spring有哪些注解，说一下@Resource注解</h3><p>Spring中的注解主要分为两类：</p>
+<ul>
+<li><p>类级别的注解：如@Component、@Repository、@Controller、@Service以及JavaEE6的@ManagedBean和@Named注解，都是添加在类上面的类级别注解。</p>
+</li>
+<li><p>类内部的注解：如@Autowire、@Value、@Resource以及EJB和WebService相关的注解等，都是添加在类内部的字段或者方法上的类内部注解。</p>
+</li>
+</ul>
+<p>具体的来说又有以下几种类型的注解方式</p>
+<ol>
+<li><p>声明bean的注解<br>@Component，通用的注解方式<br>@Service，在业务逻辑层使用（service层）<br>@Repository，在数据访问层使用（dao层）<br>@Controller，在表现层使用，控制器的声明</p>
+</li>
+<li><p>注入bean的注解<br>@Autowired：由Spring提供<br>@Inject：由JSR-330提供<br>@Resource：由JSR-250提供<br>都可以注解在set方法和属性上，推荐注解在属性上（一目了然，少写代码）。</p>
+</li>
+<li><p>java配置类相关注解<br>@Configuration，声明当前类为配置类，相当于xml形式的Spring配置（类上）<br>@Bean，注解在方法上，声明当前方法的返回值为一个bean，替代xml中的方式（方法上）<br>@Configuration，声明当前类为配置类，其中内部组合了@Component注解，表明这个类是一个bean（类上）<br>@ComponentScan，用于对Component进行扫描，相当于xml中的（类上）<br>@WishlyConfiguration，为@Configuration与@ComponentScan的组合注解，可以替代这两个注解</p>
+</li>
+<li><p>切面（AOP）相关注解 Spring支持AspectJ的注解式切面编程。<br>@Aspect，声明一个切面（类上）<br>使用@After、@Before、@Around定义通知（advice），可直接将拦截规则（切点）作为参数。<br>@After，在方法执行之后执行（方法上） @Before 在方法执行之前执行（方法上） @Around 在方法执行之前与之后执行（方法上）<br>@PointCut，声明切点<br>在java配置类中使用@EnableAspectJAutoProxy注解开启Spring对AspectJ代理的支持（类上）</p>
+</li>
+<li><p>@Bean的属性支持<br>@Scope，设置Spring容器如何新建Bean实例（方法上，得有@Bean）<br>其设置类型包括：<br>· Singleton （单例，一个Spring容器中只有一个bean实例，默认模式）,<br>· Protetype （每次调用新建一个bean）,<br>· Request （web项目中，给每个http request新建一个bean）,<br>· Session （web项目中，给每个http session新建一个bean）,<br>· GlobalSession（给每一个 global http session新建一个Bean实例）</p>
+</li>
+</ol>
+<p>@Autowired与@Resource<br>@Autowired默认按类型查找，有查找的优先顺序。<br>按Type匹配（Match by Type）<br>按Qualifier匹配（Match by Qualifier）<br>按Name匹配（Match by Name）</p>
+<p>如果要允许null值，可以设置它的required属性为false，如：@Autowired(required=false)。<br>若想要按名称装配，可以结合@Qualifier注解一起使用，如：@Autowired(required=false)<br>@Qualifier(“bean”)</p>
+<p>@Resource默认按名字查找，但是也有查找的优先顺序。<br>按Name匹配（Match by Name）<br>按Type匹配（Match by Type）<br>按Qualifier匹配（Match by Qualifier）</p>
+<p>@Resource注解和@Autowired一样，也可以标注在字段或属性的setter方法上。<br>Spring将@Resource注解的name属性解析为bean的名字，而type属性则解析为bean的类型。所以如果使用name属性，则使用byName的自动注入策略，而使用type属性时则使用byType自动注入策略。如果既不指定name也不指定type属性，这时将通过反射机制使用byName自动注入策略。</p>
+<p>@Resource装配顺序</p>
+<ol>
+<li>如果同时指定了name和type，则从Spring上下文中找到唯一匹配的bean进行装配，找不到则抛出异常</li>
+<li>如果指定了name，则从上下文中查找名称（id）匹配的bean进行装配，找不到则抛出异常</li>
+<li>如果指定了type，则从上下文中找到类型匹配的唯一bean进行装配，找不到或者找到多个，都会抛出异常</li>
+<li>如果既没有指定name，又没有指定type，则自动按照byName方式进行装配；如果没有匹配，则回退为一个原始类型进行匹配，如果匹配则自动装配；</li>
+</ol>
+<h3 id="12-说一下git常用命令，rebase命令了解吗？"><a href="#12-说一下git常用命令，rebase命令了解吗？" class="headerlink" title="12 说一下git常用命令，rebase命令了解吗？"></a>12 说一下git常用命令，rebase命令了解吗？</h3><p><a href="https://cool-jun.github.io/2022/01/08/01-08-git/">git</a></p>
+<h3 id="13-说一下osi七层模型"><a href="#13-说一下osi七层模型" class="headerlink" title="13 说一下osi七层模型"></a>13 说一下osi七层模型</h3><img src="/2022/03/09/shouqi/osi.png" class="">
+
+<h3 id="14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？"><a href="#14-为什么tcp建立连接是三次握手，释放连接却是四次挥手？" class="headerlink" title="14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？"></a>14 为什么tcp建立连接是三次握手，释放连接却是四次挥手？</h3><p><a href="https://cool-jun.github.io/2021/12/11/12-11-Network/">三次握手</a><br><a href="https://cool-jun.github.io/2021/12/13/12-13-Network/">四次挥手</a></p>
+<h3 id="15-十亿条无序的数据，找出其中最大的10条。（top-k问题）"><a href="#15-十亿条无序的数据，找出其中最大的10条。（top-k问题）" class="headerlink" title="15 十亿条无序的数据，找出其中最大的10条。（top k问题）"></a>15 十亿条无序的数据，找出其中最大的10条。（top k问题）</h3><p>针对top K问题，通常比较好的方案是：分治+hash+小顶堆。</p>
+<p>例如：1亿个数据中找出最大的前100个。<br>hash：如果这1亿个数里面有很多重复的数，先通过Hash，把这1亿个数去重复，这样如果重复率很高的话，会减少很大的内存用量，从而缩小运算空间，然后通过分治法或最小堆法查找最大的100个数。<br>分治：将1亿个数据分成100份，每份100万个数据，找到每份数据中最大的100个，最后在剩下的10000个数据里面找出最大的100个。<br>小顶堆。</p>
+<p><strong>PriorityQueue</strong></p>
+<h3 id="16-算法题：单链表反转"><a href="#16-算法题：单链表反转" class="headerlink" title="16 算法题：单链表反转"></a>16 算法题：单链表反转</h3><p>头插法</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ListNode reverseList(ListNode head) &#123;</span><br><span class="line">    ListNode previous &#x3D; null;</span><br><span class="line">    ListNode current &#x3D; head;</span><br><span class="line">    while (current !&#x3D; null) &#123;</span><br><span class="line">        ListNode after &#x3D; current.next;</span><br><span class="line">        current.next &#x3D; previous;</span><br><span class="line">        previous &#x3D; current;</span><br><span class="line">        current &#x3D; after;</span><br><span class="line">    &#125;</span><br><span class="line">    return previous;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>递归</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">public ListNode reverseList(ListNode head) &#123;</span><br><span class="line">    if (head &#x3D;&#x3D; null || head.next &#x3D;&#x3D; null) &#123;</span><br><span class="line">        return head;</span><br><span class="line">    &#125;</span><br><span class="line">    ListNode newHead &#x3D; reverseList(head.next);</span><br><span class="line">    head.next.next &#x3D; head;</span><br><span class="line">    head.next &#x3D; null;</span><br><span class="line">    return newHead;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="17-HR面"><a href="#17-HR面" class="headerlink" title="17 HR面"></a>17 HR面</h3><p>日常聊天半小时，面试通过。<br>3月15日婉拒offer。</p>
+]]></content>
+      <categories>
+        <category>面试</category>
+      </categories>
+      <tags>
+        <tag>首汽</tag>
       </tags>
   </entry>
   <entry>
