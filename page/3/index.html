@@ -187,6 +187,91 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/18/about-java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/03/18/about-java/" class="post-title-link" itemprop="url">about_java</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-18 14:36:37 / 修改时间：15:28:39" itemprop="dateCreated datePublished" datetime="2022-03-18T14:36:37+08:00">2022-03-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">Java基础</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/03/18/about-java/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/18/about-java/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-Java中重写equals方法为什么要重写hashcode方法？"><a href="#1-Java中重写equals方法为什么要重写hashcode方法？" class="headerlink" title="1 Java中重写equals方法为什么要重写hashcode方法？"></a>1 Java中重写equals方法为什么要重写hashcode方法？</h3><p>如果一个类没有重写equals(Object obj)方法，则等价于通过==比较两个对象，即比较的是对象在内存中的地址是否相等；如果重写了equals(Object obj)方法，一般是比较值是否相等。<br>当我们将equals方法重写后有必要将hashCode方法也重写，这样做才能保证不违背hashCode方法中“相同对象必须有相同哈希值”的约定。<br>一个对象多次调用它的hashCode方法，应当返回相同的integer（哈希值）；<br>两个对象如果通过equals方法判定为相等，那么就应当返回相同integer；<br>hashCode方法实际上必须要完成的一件事情就是，为equals方法认定为相同的对象返回相同的哈希值。<br>为什么重写equals方法就得重写hashCode方法—–因为必须保证重写后的equals方法认定为相同的两个对象拥有相同的哈希值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">String类重写了equals方法和hashCode方法</span><br><span class="line">    public boolean equals(Object anObject) &#123;</span><br><span class="line">        if (this &#x3D;&#x3D; anObject) &#123;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">        if (anObject instanceof String) &#123;</span><br><span class="line">            String anotherString &#x3D; (String)anObject;</span><br><span class="line">            int n &#x3D; value.length;</span><br><span class="line">            if (n &#x3D;&#x3D; anotherString.value.length) &#123;</span><br><span class="line">                char v1[] &#x3D; value;</span><br><span class="line">                char v2[] &#x3D; anotherString.value;</span><br><span class="line">                int i &#x3D; 0;</span><br><span class="line">                while (n-- !&#x3D; 0) &#123;</span><br><span class="line">                    if (v1[i] !&#x3D; v2[i])</span><br><span class="line">                        return false;</span><br><span class="line">                    i++;</span><br><span class="line">                &#125;</span><br><span class="line">                return true;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int hashCode() &#123;</span><br><span class="line">        int h &#x3D; hash;</span><br><span class="line">        if (h &#x3D;&#x3D; 0 &amp;&amp; value.length &gt; 0) &#123;</span><br><span class="line">            char val[] &#x3D; value;</span><br><span class="line"></span><br><span class="line">            for (int i &#x3D; 0; i &lt; value.length; i++) &#123;</span><br><span class="line">                h &#x3D; 31 * h + val[i];</span><br><span class="line">            &#125;</span><br><span class="line">            hash &#x3D; h;</span><br><span class="line">        &#125;</span><br><span class="line">        return h;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>如果重写equals方法不重写hashCode方法会怎样？</strong><br>String类为例：String类中对equals方法进行了重写，但是如果此时我们不将hashCode方法也进行重写，那么String类调用的就是来自顶级父类Obejct类中的hashCode方法。即，对于两个字符串对象，使用它们各自的地址值映射为哈希值。也就是说，被String类中的equals方法认定为相等的两个对象拥有不同的哈希值——因为它们的地址值不同。<br>hashmap中会出现用equals比较相等的对象存在不同的地方（因为hash值不同）。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/18/about-os/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1510,197 +1595,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/13/01-13-sort/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/01/13/01-13-sort/" class="post-title-link" itemprop="url">sort</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-01-13 19:31:36" itemprop="dateCreated datePublished" datetime="2022-01-13T19:31:36+08:00">2022-01-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-21 11:19:02" itemprop="dateModified" datetime="2022-03-21T11:19:02+08:00">2022-03-21</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/sort/" itemprop="url" rel="index"><span itemprop="name">sort</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/01/13/01-13-sort/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/13/01-13-sort/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-排序算法分类"><a href="#1-排序算法分类" class="headerlink" title="1 排序算法分类"></a>1 排序算法分类</h3><img src="/2022/01/13/01-13-sort/sort.png" class="">
-
-<h3 id="2-内部排序和外部排序"><a href="#2-内部排序和外部排序" class="headerlink" title="2 内部排序和外部排序"></a>2 内部排序和外部排序</h3><p>排序有内部排序和外部排序，内部排序是指数据记录在内存中进行排序，而外部排序是指因为排序的数据很大，内存一次不能容纳全部的排序记录，在排序过程中需要访问外存。<br>我们通常所说的排序算法往往指的是内部排序算法，即数据记录在内存中进行排序。</p>
-<h3 id="3-比较和非比较"><a href="#3-比较和非比较" class="headerlink" title="3 比较和非比较"></a>3 比较和非比较</h3><p>常见的如快速排序、归并排序、堆排序、冒泡排序等属于比较排序。在排序的最终结果中，元素之间的次序依赖于它们之间的比较。每个数都必须和其他数进行比较，才能确定自己的位置。<br>比较排序的优势：适用于各种规模的数据，也不在乎数据的分布，都能进行排序。</p>
-<p>计数排序、基数排序、桶排序则属于非比较排序。非比较排序是通过确定每个元素之前应该有多少个元素来排序。针对数组arr，计算arr[i]之前有多少个元素，则唯一确定了arr[i]在排序后数组中的位置。<br>非比较排序只要确定每个元素之前的已有的元素个数即可，一次遍历解决。算法时间复杂度O(n)。<br>非比较排序的时间复杂度低，但由于非比较排序需要占用空间来确定唯一的位置。所以对数据规模和数据分布有一定的要求。</p>
-<h3 id="4-常用排序算法总结"><a href="#4-常用排序算法总结" class="headerlink" title="4 常用排序算法总结"></a>4 常用排序算法总结</h3><table>
-<thead>
-<tr>
-<th>排序算法</th>
-<th align="center">平均时间复杂度</th>
-<th align="center">最好情况</th>
-<th align="center">最坏情况</th>
-<th align="center">空间复杂度</th>
-<th align="center">稳定性</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>直接插入排序</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(n)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(1)</td>
-<td align="center">稳定</td>
-</tr>
-<tr>
-<td>希尔排序</td>
-<td align="center">o(n^1.3)~o(n^2)</td>
-<td align="center">o(n^1.3)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(1)</td>
-<td align="center">不稳定</td>
-</tr>
-<tr>
-<td>简单选择排序</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(1)</td>
-<td align="center">不稳定</td>
-</tr>
-<tr>
-<td>堆排序</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(1)</td>
-<td align="center">不稳定</td>
-</tr>
-<tr>
-<td>冒泡排序</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(n)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(1)</td>
-<td align="center">稳定</td>
-</tr>
-<tr>
-<td>快速排序</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(n^2)</td>
-<td align="center">o(logn)~o(n)</td>
-<td align="center">不稳定</td>
-</tr>
-<tr>
-<td>归并排序</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(nlogn)</td>
-<td align="center">o(n)</td>
-<td align="center">稳定</td>
-</tr>
-<tr>
-<td>基数排序</td>
-<td align="center">o(d(n+r))</td>
-<td align="center">o(d(n+r))</td>
-<td align="center">o(d(n+r))</td>
-<td align="center">o(n+r)</td>
-<td align="center">稳定</td>
-</tr>
-</tbody></table>
-<h3 id="5-冒泡排序与快速排序"><a href="#5-冒泡排序与快速排序" class="headerlink" title="5 冒泡排序与快速排序"></a>5 冒泡排序与快速排序</h3><p><strong>冒泡排序</strong><br>每次比较相邻的两个元素，如果它们的顺序错误就把他们交换。<br>n个数需要进行n-1趟排序。每一趟只能确定一个数的位置，如果有n个数进行排序，只需将n-1个数置于正确位置，也就是说要进行n-1趟操作，而每一趟操作都需要从第1位开始进行相邻两个数的比较。</p>
-<p>优化：当第i趟冒泡排序一次都没有交换，说明该序列已经有序了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public int[] bubbleSort(int[] nums) &#123;</span><br><span class="line">        if (nums.length &lt; 2) &#123;</span><br><span class="line">            return nums;</span><br><span class="line">        &#125;</span><br><span class="line">        int flag &#x3D; 0;  &#x2F;&#x2F; 表示序列是否交换</span><br><span class="line">        for (int i &#x3D; 0; i &lt; nums.length - 1; i++) &#123;</span><br><span class="line">            flag &#x3D; 0;</span><br><span class="line">            for (int j &#x3D; 0; j &lt; nums.length - i - 1; j++) &#123;</span><br><span class="line">                if (nums[j] &gt; nums[j + 1]) &#123;</span><br><span class="line">                    int temp &#x3D; nums[j];</span><br><span class="line">                    nums[j] &#x3D; nums[j + 1];</span><br><span class="line">                    nums[j + 1] &#x3D; temp;</span><br><span class="line">                    flag &#x3D; 1;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F; 一次都没有交换，说明该序列已经有序了</span><br><span class="line">            if (flag &#x3D;&#x3D; 0) &#123;</span><br><span class="line">                break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return nums;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>快速排序</strong><br>快速排序基于分治的思想，通过一趟排序将要排序的数据分割成独立的两部分：分割点左边都是比它小的数，右边都是比它大的数。然后再按此方法对这两部分数据分别进行快速排序，整个排序过程可以递归进行，以此达到整个数据有序。</p>
-<p>快速排序的优化<br>基准元素的选取：固定位置选取、随机位置选取、三数取中法。<br>优化小数组时的排序方案：当局部排序数组长度较小时，采用插入排序，因为长度分割到够小后，继续分割的效率要低于直接插入排序。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">public class QuickSort &#123;</span><br><span class="line">    &#x2F;&#x2F; 快速排序基于分治的思想，通过一趟排序将要排序的数据分割成独立的两部分：</span><br><span class="line">    &#x2F;&#x2F; 分割点左边都是比它小的数，右边都是比它大的数。</span><br><span class="line">    &#x2F;&#x2F; 然后再按此方法对这两部分数据分别进行快速排序，整个排序过程可以递归进行，</span><br><span class="line">    &#x2F;&#x2F; 以此达到整个数据有序。</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 快速排序的优化</span><br><span class="line">    &#x2F;&#x2F; 基准元素的选取：固定位置选取、随机位置选取、三数取中法</span><br><span class="line">    &#x2F;&#x2F; 优化小数组时的排序方案：当局部排序数组长度较小时，采用插入排序，</span><br><span class="line">    &#x2F;&#x2F; 因为长度分割到够小后，继续分割的效率要低于直接插入排序</span><br><span class="line">    public void quickSort(int[] nums, int low, int high) &#123;</span><br><span class="line">        if (low &lt; high) &#123;</span><br><span class="line">            int pos &#x3D; partition(nums, low, high);  &#x2F;&#x2F; 划分子数组的位置</span><br><span class="line">            quickSort(nums, low, pos - 1);    &#x2F;&#x2F; 左子数组递归调用</span><br><span class="line">            quickSort(nums, pos + 1, high);    &#x2F;&#x2F; 右子数组递归调用</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public int partition(int[] nums, int low, int high) &#123;</span><br><span class="line">        int pivot &#x3D; nums[low];  &#x2F;&#x2F; 基准元素</span><br><span class="line">        while (low &lt; high) &#123;</span><br><span class="line">            while (low &lt; high &amp;&amp; nums[high] &gt;&#x3D; pivot) &#123;</span><br><span class="line">                high--;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F; 如果nums[j]小于基准元素，nums[i] &#x3D; nums[j]</span><br><span class="line">            nums[low] &#x3D; nums[high];</span><br><span class="line"></span><br><span class="line">            while (low &lt; high &amp;&amp; nums[low] &lt;&#x3D; pivot) &#123;</span><br><span class="line">                low++;</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F; 如果nums[i]大于基准元素，nums[j] &#x3D; nums[i]</span><br><span class="line">            nums[high] &#x3D; nums[low];</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F; 基准元素将数据分成2部分</span><br><span class="line">        nums[low] &#x3D; pivot;</span><br><span class="line">        return low;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="6-归并排序"><a href="#6-归并排序" class="headerlink" title="6 归并排序"></a>6 归并排序</h3><p>归并排序（Merge Sort）是建立在归并操作上的一种有效的排序算法，该算法是采用分治思想的一个非常典型的应用。<br>分解–&gt;合并<br>它将已经有序的子序列合并，得到完全有序的序列。即先使每个子序列有序，再使子序列段间有序。若将两个有序表合并成一个有序表，称为二路归并。归并排序是一种稳定的排序方法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">public void merge(int[] nums, int l, int mid, int r, int[] temp) &#123;</span><br><span class="line">        int i &#x3D; l, j &#x3D; mid + 1;  &#x2F;&#x2F; 左边序列和右边序列下标指针</span><br><span class="line">        int t &#x3D; 0;  &#x2F;&#x2F; 临时数组下标指针</span><br><span class="line">        while (i &lt;&#x3D; mid &amp;&amp; j &lt;&#x3D; r) &#123;</span><br><span class="line">            if (nums[i] &lt; nums[j]) &#123;</span><br><span class="line">                temp[t++] &#x3D; nums[i++];</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                temp[t++] &#x3D; nums[j++];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F; 若左边序列还有元素，将其拷贝至数组temp</span><br><span class="line">        while (i &lt;&#x3D; mid) &#123;</span><br><span class="line">            temp[t++] &#x3D; nums[i++];</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F; 若右边序列还有元素，将其拷贝至数组temp</span><br><span class="line">        while (j &lt;&#x3D; r) &#123;</span><br><span class="line">            temp[t++] &#x3D; nums[j++];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;&#x2F; 将temp中元素拷贝至原数组</span><br><span class="line">        t &#x3D; 0;</span><br><span class="line">        while (l &lt;&#x3D; r) &#123;</span><br><span class="line">            nums[l++] &#x3D; temp[t++];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void mergeSort(int[] nums, int l, int r, int[] temp) &#123;</span><br><span class="line">        if (l &lt; r) &#123;</span><br><span class="line">            int mid &#x3D; (l + r) &#x2F; 2;</span><br><span class="line">            mergeSort(nums, l, mid, temp);  &#x2F;&#x2F; 对左边序列进行归并排序</span><br><span class="line">            mergeSort(nums, mid+1, r, temp);  &#x2F;&#x2F; 对右边序列进行归并排序</span><br><span class="line">            merge(nums, l, mid, r, temp);  &#x2F;&#x2F; 合并两个有序序列</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="7-直接插入排序与希尔排序"><a href="#7-直接插入排序与希尔排序" class="headerlink" title="7 直接插入排序与希尔排序"></a>7 直接插入排序与希尔排序</h3><p><strong>直接插入排序</strong><br>把n个待排序的元素看成一个有序表和一个无序表。开始时有序表中只包含1个元素，无序表中包含有n-1个元素，排序过程中每次从无序表中取出第一个元素，将它插入到有序表中的适当位置，使之成为新的有序表，重复n-1次可完成排序过程。<br>将一个记录插入到已排序好的有序表中，从而得到一个新、记录数增1的有序表。即：先将序列的第1个记录看成是一个有序的子序列，然后从第2个记录逐个进行插入，直至整个序列有序为止。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 直接插入排序</span><br><span class="line">    &#x2F;&#x2F; 将一个记录插入到已排序好的有序表中，从而得到一个新、记录数增1的有序表。</span><br><span class="line">    &#x2F;&#x2F; 先将序列的第1个记录看成是一个有序的子序列，然后从第2个记录逐个进行插入，</span><br><span class="line">    &#x2F;&#x2F; 直至整个序列有序为止。</span><br><span class="line">    &#x2F;&#x2F; 局部有序--&gt;全局有序</span><br><span class="line">    public void insertSort(int[] nums) &#123;</span><br><span class="line">        for (int i &#x3D; 1; i &lt; nums.length; i++) &#123;</span><br><span class="line">            if (nums[i] &lt; nums[i-1]) &#123;</span><br><span class="line">                int temp &#x3D; nums[i];  &#x2F;&#x2F; 设置哨兵，保存待插入元素</span><br><span class="line">                int j &#x3D; i - 1;</span><br><span class="line">                &#x2F;&#x2F; 元素后移，直到找到插入位置</span><br><span class="line">                while (j &gt;&#x3D; 0 &amp;&amp; nums[j] &gt; temp) &#123;</span><br><span class="line">                    nums[j+1] &#x3D; nums[j];</span><br><span class="line">                    j--;</span><br><span class="line">                &#125;</span><br><span class="line">                nums[j+1] &#x3D; temp;  &#x2F;&#x2F; 插入正确位置</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>希尔排序</strong><br>希尔排序是把记录按下标的一定增量分组，对每组使用直接插入排序算法排序；随着增量逐渐减少，每组包含的关键词越来越多，当增量减至1时，整个文件恰被分成一组，算法便终止。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 希尔排序（缩小增量排序）</span><br><span class="line">    public void shellSort(int[] nums) &#123;</span><br><span class="line">        &#x2F;&#x2F; gap 增量</span><br><span class="line">        for (int gap &#x3D; nums.length &#x2F; 2; gap &gt; 0; gap &#x2F;&#x3D; 2) &#123;</span><br><span class="line">            &#x2F;&#x2F; 对一个增量区间进行比较</span><br><span class="line">            &#x2F;&#x2F; 例如：</span><br><span class="line">            &#x2F;&#x2F; 3  4  5  1  2  6</span><br><span class="line">            &#x2F;&#x2F; |--|--|--^  ^  ^</span><br><span class="line">            &#x2F;&#x2F;    |--|-----|  |</span><br><span class="line">            &#x2F;&#x2F;       |--------|</span><br><span class="line">            for (int i &#x3D; gap; i &lt; nums.length; i++) &#123;</span><br><span class="line">                int temp &#x3D; nums[i];</span><br><span class="line">                int j &#x3D; i - gap;</span><br><span class="line">                while (j &gt;&#x3D; 0 &amp;&amp; nums[j] &gt; temp) &#123;</span><br><span class="line">                    nums[j + gap] &#x3D; nums[j];  &#x2F;&#x2F; j为左区间的取值，j+gap为右区间与左区间的对应值</span><br><span class="line">                    j -&#x3D; gap;</span><br><span class="line">                &#125;</span><br><span class="line">                nums[j + gap] &#x3D; temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="8-简单选择排序与堆排序"><a href="#8-简单选择排序与堆排序" class="headerlink" title="8 简单选择排序与堆排序"></a>8 简单选择排序与堆排序</h3><p><strong>简单选择排序</strong><br>首先在未排序序列中找到最小（大）元素，存放到排序序列的起始位置，然后，再从剩余未排序元素中继续寻找最小（大）元素，然后放到已排序序列的末尾。以此类推，直到所有元素均排序完毕。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public void selectSort(int[] nums) &#123;</span><br><span class="line">        int min;  &#x2F;&#x2F; 记录每一趟最小值记录的下标</span><br><span class="line">        for (int i &#x3D; 0; i &lt; nums.length - 1; i++) &#123;</span><br><span class="line">            min &#x3D; i;</span><br><span class="line">            for (int j &#x3D; i + 1; j &lt; nums.length; j++) &#123;</span><br><span class="line">                if (nums[min] &gt; nums[j]) &#123;</span><br><span class="line">                    min &#x3D; j;  &#x2F;&#x2F; 找到最小值的下标</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            if (min !&#x3D; i) &#123;</span><br><span class="line">                int temp &#x3D; nums[min];</span><br><span class="line">                nums[min] &#x3D; nums[i];</span><br><span class="line">                nums[i] &#x3D; temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>堆排序</strong><br>堆是具有以下性质的完全二叉树：<br>每个结点的值都大于或等于其左右孩子结点的值，称为大顶堆；每个结点的值都小于或等于其左右孩子结点的值，称为小顶堆。</p>
-<p>大顶堆：arr[i] &gt;= arr[2i+1] &amp;&amp; arr[i] &gt;= arr[2i+2]<br>小顶堆：arr[i] &lt;= arr[2i+1] &amp;&amp; arr[i] &lt;= arr[2i+2]</p>
-<p>堆排序的基本思想：将待排序序列构造成一个大顶堆，此时，整个序列的最大值就是堆顶的根节点。将其与末尾元素进行交换，此时末尾就为最大值。然后将剩余n-1个元素重新构造成一个堆，这样会得到n个元素的次小值。如此反复执行，便能得到一个有序序列。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">public void heapSort(int[] arr) &#123;</span><br><span class="line">    &#x2F;&#x2F; 以升序排列为例，构建大顶堆</span><br><span class="line">    int n &#x3D; arr.length;</span><br><span class="line">    for (int i &#x3D; n &#x2F; 2 - 1; i &gt;&#x3D; 0; i--) &#123;</span><br><span class="line">        adjustHeap(arr, i, n);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    for (int j &#x3D; n - 1; j &gt; 0; j--) &#123;</span><br><span class="line">        swap(arr, 0, j);  &#x2F;&#x2F; 将堆顶元素与末尾元素交换</span><br><span class="line">        adjustHeap(arr, 0, j);  &#x2F;&#x2F; 重新对堆进行调整</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 调整大顶堆</span><br><span class="line">public void adjustHeap(int[] arr, int i, int len) &#123;</span><br><span class="line">    int temp &#x3D; arr[i];</span><br><span class="line">    for (int k &#x3D; i * 2 + 1; k &lt; len; k &#x3D; k * 2 + 1) &#123;  &#x2F;&#x2F; 从i结点的左子结点开始，也就是2i+1处开始</span><br><span class="line">        if (k + 1 &lt; len &amp;&amp; arr[k] &lt; arr[k + 1]) &#123;  &#x2F;&#x2F; 如果左子结点小于右子结点，k指向右子结点</span><br><span class="line">            k++;</span><br><span class="line">        &#125;</span><br><span class="line">        if (arr[k] &gt; temp) &#123;  &#x2F;&#x2F; 如果子节点大于父节点，将子节点值赋给父节点</span><br><span class="line">            arr[i] &#x3D; arr[k];</span><br><span class="line">            i &#x3D; k;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            break;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    arr[i] &#x3D; temp;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void swap(int[] arr, int a, int b) &#123;</span><br><span class="line">    int t &#x3D; arr[a];</span><br><span class="line">    arr[a] &#x3D; arr[b];</span><br><span class="line">    arr[b] &#x3D; t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1772,7 +1666,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-count">88</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
