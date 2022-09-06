@@ -187,6 +187,156 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/20/singleton/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/03/20/singleton/" class="post-title-link" itemprop="url">singleton</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-03-20 15:42:27 / 修改时间：20:38:16" itemprop="dateCreated datePublished" datetime="2022-03-20T15:42:27+08:00">2022-03-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/03/20/singleton/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/20/singleton/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h3><p>一个类只有一个实例，且该类能自行创建这个实例的一种模式。通过单例模式可以保证，系统中使用单例模式的类只有一个对象实例。</p>
+<p><strong>应用场景</strong></p>
+<ol>
+<li>Windows系统的任务管理器。</li>
+<li>Windows系统的回收站。</li>
+<li>操作系统的文件系统，一个操作系统只能有一个文件系统。</li>
+<li>数据库连接池的设计与实现。</li>
+<li>多线程的线程池设计与实现。</li>
+<li>Spring中创建的Bean实例默认都是单例。</li>
+<li>JavaWeb中，一个Servlet类只有一个实例。</li>
+</ol>
+<p>单例的实现主要通过三个步骤：</p>
+<ol>
+<li>将类的构造方法定义为私有方法。这样其它类的代码就无法通过调用该类的构造方法来实例化该类的对象，只能通过该类提供的静态方法来得到该类的唯一实例。</li>
+<li>定义一个私有的类静态实例。</li>
+<li>提供一个公有的获取实例的静态方法。</li>
+</ol>
+<p>单例模式的常用写法<br><strong>饿汉模式</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    &#x2F;&#x2F; 饿汉式</span><br><span class="line">    private static SingletonDemo instance &#x3D; new SingletonDemo();</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonDemo getInstance() &#123;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在类加载的时候就对实例进行初始化，没有线程安全问题；获取实例的静态方法没有使用同步，调用效率高；但是没有使用懒加载，如果该实例从始至终都没被使用过，则会造成内存浪费。<br>线程安全、非懒加载、效率高，不推荐。</p>
+<p><strong>懒汉模式</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    &#x2F;&#x2F; 懒汉式</span><br><span class="line">    &#x2F;&#x2F; 延迟初始化，线程安全</span><br><span class="line">    private static SingletonDemo instance;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static synchronized SingletonDemo getInstance() &#123;</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            instance &#x3D; new SingletonDemo();</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在第一次使用的时候才进行初始化，达到了懒加载的效果；由于获取实例的静态方法用synchronized修饰，所以也没有线程安全的问题；但是，这种写法每次获取实例都要进行同步（加锁），因此效率较低，并且可能很多同步都是没有必要的。<br>线程安全、懒加载、效率低，不推荐。</p>
+<p><strong>双重校验锁（DCL）</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    &#x2F;&#x2F; DCL</span><br><span class="line">    private static volatile SingletonDemo instance;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line"></span><br><span class="line">    public static SingletonDemo getInstance() &#123;</span><br><span class="line">        if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">            synchronized (SingletonDemo.class) &#123;</span><br><span class="line">                if (instance &#x3D;&#x3D; null) &#123;</span><br><span class="line">                    instance &#x3D; new SingletonDemo();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在第一次使用的时候才进行初始化，达到了懒加载的效果；在进行初始化的时候会进行同步（加锁），因此没有线程安全问题；并且只有第一次进行初始化才进行同步，因此不会有效率方面的问题。<br>线程安全、懒加载、效率高，可以使用。</p>
+<p><strong>静态内部类</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class SingletonDemo &#123;</span><br><span class="line">    &#x2F;&#x2F; 静态内部类</span><br><span class="line">    private static class SingletonHolder &#123;</span><br><span class="line">        private static final SingletonDemo instance &#x3D; new SingletonDemo();</span><br><span class="line">    &#125;</span><br><span class="line">    private SingletonDemo() &#123;&#125;</span><br><span class="line">    public static SingletonDemo getInstance() &#123;</span><br><span class="line">        return SingletonHolder.instance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>JVM将推迟SingletonHolder的初始化操作，直到开始使用这个类时才初始化，并且由于通过一个静态初始化来初始化instance，因此不需要额外的同步。当任何一个线程第一次调用getInstance时，都会使SingletonHolder被加载和被初始化，此时静态初始化器将执行instance的初始化操作。</p>
+<p>通过静态初始化来初始化instance为什么不需要额外的同步？</p>
+<p>在初始器中采用了特殊的方式来处理静态域（或者在静态初始化代码块中初始化的值），并提供了额外的线程安全性保证。静态初始化器是由JVM在类的初始化阶段执行，即在类被加载后并且被线程使用之前。由于JVM将在初始化期间获得一个锁，并且每个线程都至少获取一次这个锁以确保这个类已经加载，因此在静态初始化期间，内存写入操作将自动对所有线程可见。因此无论是在被构造期间还是被引用时，静态初始化的对象都不需要显式的同步。然而，这个规则仅适用于在构造时的状态，如果对象是可变的，那么在读线程和写线程之间仍然需要通过同步来确保随后的修改操作是可见的，以及避免数据破坏。</p>
+<p>线程安全、懒加载、效率高，推荐使用。</p>
+<p><strong>枚举</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public enum SingletonDemo &#123;</span><br><span class="line">    &#x2F;&#x2F; 枚举</span><br><span class="line">    INSTANCE;</span><br><span class="line">    &#x2F;&#x2F; other method</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>提供了序列化机制，保证线程安全，绝对防止多次实例化，即使是在面对复杂的序列化或者反射攻击的时候。<br>线程安全、非懒加载、效率高，推荐使用。</p>
+<table>
+<thead>
+<tr>
+<th align="center">方式</th>
+<th align="center">优点</th>
+<th align="center">缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">饿汉式</td>
+<td align="center">线程安全、效率高</td>
+<td align="center">非懒加载</td>
+</tr>
+<tr>
+<td align="center">懒汉式</td>
+<td align="center">线程安全、懒加载</td>
+<td align="center">效率低</td>
+</tr>
+<tr>
+<td align="center">双重校验锁</td>
+<td align="center">线程安全、懒加载、效率高</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">静态内部类</td>
+<td align="center">线程安全、懒加载、效率高</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">枚举</td>
+<td align="center">线程安全、效率高</td>
+<td align="center">非懒加载</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/18/about-java/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1499,102 +1649,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/18/02-18-Spring/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/02/18/02-18-Spring/" class="post-title-link" itemprop="url">annotation</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-02-18 20:16:34" itemprop="dateCreated datePublished" datetime="2022-02-18T20:16:34+08:00">2022-02-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 21:25:16" itemprop="dateModified" datetime="2022-03-15T21:25:16+08:00">2022-03-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/02/18/02-18-Spring/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/02/18/02-18-Spring/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-SpringBootApplication"><a href="#1-SpringBootApplication" class="headerlink" title="1 @SpringBootApplication"></a>1 @SpringBootApplication</h3><p>这是Spring Boot最最最核心的注解，用在Spring Boot主类上，标识这是一个Spring Boot应用，用来开启Spring Boot。<br>这个注解是@SpringBootConfiguration、@EnableAutoConfiguration、@ComponentScan这三个注解的组合，也可以用这三个注解来代替@SpringBootApplication注解。<br>@Configuration：Spring 3.0添加的一个注解，用来代替applicationContext.xml配置文件，所有这个配置文件里面能做到的事情都可以通过这个注解所在类来完成。</p>
-<ul>
-<li>@SpringBootConfiguration：@Configuration注解的变体，用来修饰Spring Boot配置。</li>
-<li>@EnableAutoConfiguration：允许Spring Boot自动配置注解，开启这个注解之后，Spring Boot就能根据当前类路径下的包或者类来配置Spring Bean。</li>
-<li>@ComponentScan：Spring 3.1添加的一个注解，用来代替配置文件中的component-scan配置，开启组件扫描，即自动扫描包路径下的@Component注解进行注册bean实例到context中。</li>
-</ul>
-<h3 id="2-RestController"><a href="#2-RestController" class="headerlink" title="2 @RestController"></a>2 @RestController</h3><p>@Controller用于标记一个类，使用它标记的类就是一个Spring MVC Controller对象，处理器会扫描使用该注解的类的方法，并检测该方法是否使用了@RequestMapping注解。</p>
-<p>@ResponseBody注解用于将@Controller修饰的类的方法返回的对象，通过适当的HttpMessageConverter转换为指定格式后，写入到Response对象的body数据区，通常用来返回JSON或者XML数据，返回JSON数据的情况比较多。</p>
-<p>@RestController=@Controller+@ResponseBody</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1666,7 +1720,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-count">88</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
