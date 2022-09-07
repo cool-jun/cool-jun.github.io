@@ -187,6 +187,123 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/16/12-16-Network/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/16/12-16-Network/" class="post-title-link" itemprop="url">OSI_model</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-16 19:15:52" itemprop="dateCreated datePublished" datetime="2021-12-16T19:15:52+08:00">2021-12-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-15 20:53:53" itemprop="dateModified" datetime="2022-03-15T20:53:53+08:00">2022-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/16/12-16-Network/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/16/12-16-Network/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-OSI五层模型"><a href="#1-OSI五层模型" class="headerlink" title="1 OSI五层模型"></a>1 OSI五层模型</h3><img src="/2021/12/16/12-16-Network/protocol.png" class="">
+
+<h3 id="2-ARP协议"><a href="#2-ARP协议" class="headerlink" title="2 ARP协议"></a>2 ARP协议</h3><p>地址解析协议，即ARP（Address Resolution Protocol），是根据IP地址获取物理地址的一个TCP/IP协议。</p>
+<p>首先，每台主机都会在自己的 ARP 缓冲区中建立一个 ARP 列表，以表示 IP 地址和 MAC 地址之间的对应关系。当源主机需要将一个数据包发送到目的主机时，会首先检查自己 ARP 列表中是否存在该 IP 地址对应的 MAC 地址。如果有，就直接将数据包发送到这个 MAC 地址；如果没有，就向本地网段发起一个 ARP 请求的广播包，查询此目的主机对应的 MAC 地址。</p>
+<p>ARP请求数据包中包括源主机的 IP 地址、硬件地址、以及目的主机的 IP 地址。网络中所有的主机收到这个 ARP 请求后，会检查数据包中的目的 IP 是否和自己的 IP 地址一致。如果不相同就忽略此数据包；如果相同，该主机首先将发送端的 MAC 地址和 IP 地址添加到自己的 ARP 列表中，如果 ARP 表中已经存在该 IP 的信息，则将其覆盖，然后给源主机发送一个 ARP 响应数据包，告诉对方自己是它需要查找的 MAC 地址；源主机收到这个 ARP 响应数据包后，将得到的目的主机的 IP 地址和 MAC 地址添加到自己的 ARP 列表中，并利用此信息开始数据的传输。如果源主机一直没有收到 ARP 响应数据包，表示 ARP 查询失败。</p>
+<h3 id="3-粘包"><a href="#3-粘包" class="headerlink" title="3 粘包"></a>3 粘包</h3><p>客户端连续不断的向服务端发送数据包时，服务端接收的数据会出现两个数据包粘在一起的情况。</p>
+<ol>
+<li>TCP是基于字节流的，虽然应用层和传输层之间的数据交互是大小不等的数据块，但是TCP把这些数据块仅仅看成是一连串无结构的字节流，没有边界；</li>
+<li>从 TCP 的帧结构也可以看出，在 TCP 的首部没有表示数据长度的字段。<br>基于上面两点，在使用 TCP 传输数据时，才有粘包或者拆包现象发生的可能。</li>
+</ol>
+<p>一个数据包中包含了发送端发送的两个数据包的信息，这种现象称为粘包。<br>接收端收到了两个数据包，但是这两个数据包要么是不完整的，要么就是多出来一块，这种情况即发生了拆包和粘包。拆包和粘包的问题导致接收端在处理的时候会非常困难，因为无法区分一个完整的数据包。</p>
+<p>TCP粘包的产生：<br>发送方产生粘包：采用 TCP 协议传输数据的客户端与服务器经常是保持一个长连接的状态，双方在连接不断开的情况下，可以一直传输数据。当发送的数据包太小时，那么 TCP 协议默认会启用 Nagle 算法，将这些较小的数据包进行合并（缓冲区数据发送是一个堆压的过程）；这个合并过程就是在发送缓冲区中进行的，也就是说数据发送出来时它已经是粘包的状态了。</p>
+<p>接收方产生粘包：由于tcp是面向字节流的协议，即协议的内容是像流水一样的字节流，内容与内容之间没有明确的分界标志，需要我们人为地去给这些协议划分边界。</p>
+<p>解决办法：<br>以指定字符（串）作为包的结束标志；<br>包头定长（在包头的首部添加数据包的长度）。</p>
+<h3 id="4-在浏览器中输入URL地址到显示网页的过程"><a href="#4-在浏览器中输入URL地址到显示网页的过程" class="headerlink" title="4 在浏览器中输入URL地址到显示网页的过程"></a>4 在浏览器中输入URL地址到显示网页的过程</h3><ol>
+<li>DNS解析<br>如果输入ip地址表示直接从主机上调用内容。如果输入域名，则是通过域名解析服务器指向对应主机的IP地址，再从主机上调用网址的内容。<br>DNS解析过程：查询<strong>浏览器缓存</strong>，如果没有查到会进入<strong>系统缓存</strong>进行查询，此时主要查询host文件，这个文件主要保存以前访问过的域名和IP地址，类似本地数据库。如果找到，可直接获取目标主机的IP地址，如果没找到，进入<strong>路由器缓存</strong>，路由器有自己的DNS缓存，如果查到就返回，否则进入<strong>ISP DNS缓存</strong>。从根域名服务器 –&gt; 顶级域名服务器 –&gt; 极限域名服务器，依次搜索查找对应目标域名的IP，找到以后，会建立TCP连接。</li>
+<li>建立TCP连接<br>浏览器获得域名对应的IP地址以后，会向服务器请求建立连接，发起三次握手。</li>
+<li>发起HTTP请求<br>TCP连接建立后，浏览器会向服务器发起HTTP请求。<br>一个HTTP请求报文由请求行（request line）、请求头部（headers）、空行（blank line）和请求数据（request body）4个部分组成。</li>
+<li>服务器响应HTTP请求<br>服务器在收到http请求后，会根据路径参数映射到特定的请求处理器进行处理，并将处理结果及相应的视图返回给浏览器。</li>
+<li>浏览器解析渲染页面<br>这是一个边解析边渲染的过程。首先浏览器解析HTML文件构建DOM树，然后解析CSS文件构建渲染树，等到渲染树构建完成后，浏览器开始布局渲染树并将其绘制到屏幕上。JS的解析是由浏览器中的JS解析引擎完成的。</li>
+<li>连接结束<br>TCP四次挥手。</li>
+</ol>
+<h3 id="5-HTTPS工作过程"><a href="#5-HTTPS工作过程" class="headerlink" title="5 HTTPS工作过程"></a>5 HTTPS工作过程</h3><p>HTTPS是一种通过计算机网络进行安全通信的传输协议，经由HTTP进行通信，利用SSL/TLS建立安全信道，加密数据包。HTTPS的主要目的：提供对网站服务器的身份认证，同时保护交换数据的隐私与完整性。</p>
+<p>1.客户端向服务器发起HTTPS请求，连接到服务器的443端口。<br>2.服务器端有一个密钥对，即公钥和私钥，用来进行非对称加密。服务器端保存着私钥，不能将其泄露，公钥可以发送给任何人。服务器将自己的公钥发送给客户端（以证书的形式）。<br>3.客户端收到服务器端的证书之后，会对证书进行检查，验证其合法性，如果发现证书有问题，那么HTTPS传输就无法继续。如果验证通过，那么客户端会生成一个随机值，这个随机值就是用于对称加密的密钥，我们将该密钥称之为client key，即客户端密钥。然后用服务器的公钥对客户端密钥进行非对称加密，这样客户端密钥就变成密文了。至此，HTTPS中的第一次HTTP请求结束。<br>4.客户端发起HTTPS中的第二次HTTP请求，将加密之后的客户端密钥发送给服务器。<br>5.服务器接收到客户端发来的密文之后，会用自己的私钥对其进行非对称解密，解密之后的明文就是客户端密钥，然后用客户端密钥对数据进行对称加密，这样数据就变成了密文。最后服务器将加密后的密文发送给客户端。<br>6.客户端收到服务器发来的密文，用客户端密钥对其进行解密，得到服务器发送的数据。这样HTTPS中的第二个HTTP请求结束，整个HTTPS传输完成。</p>
+<p>优点：<br>使用HTTPS协议可认证用户和服务器，确保数据发送到正确的客户端和服务器。<br>HTTPS协议是由SSL+HTTP协议构建的可进行加密传输、身份认证的网络协议。它比http协议更安全，可防止数据在传输过程中被窃取、篡改，确保了数据的完整性。<br>HTTPS是现行架构下最安全的解决方案，虽然不是绝对安全，但它大幅增加了中间人攻击的成本。</p>
+<p>缺点：<br>HTTPS协议握手阶段比较费时，会使页面的加载时间延长近50%，增加10%到20%的耗电。<br>HTTPS连接缓存不如HTTP高效，会增加数据开销和功耗，甚至已有的安全措施也会因此而受到影响。</p>
+<h3 id="6-HTTP与HTTPS"><a href="#6-HTTP与HTTPS" class="headerlink" title="6 HTTP与HTTPS"></a>6 HTTP与HTTPS</h3><p>安全性不同：HTTP协议是无状态、无连接的。<br>无状态的意思是协议对于交互性场景没有记忆能力。服务器中没有保存客户端的状态，每次请求都是独立的。<br>无连接的含义是限制每次连接只处理一个请求。服务器处理完客户端的请求，并收到客户端的应答后，立即断开连接。<br>HTTPS协议是由 TSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 HTTP 协议安全。</p>
+<p>默认端口不同：http和https使用的是完全不同的连接方式，同时使用的端口也不同。http使用的是80端口，https使用的是443端口。在网络模型中，HTTP工作于应用层，而HTTPS工作在传输层。</p>
+<p>网站申请流程不同：https协议需要到CA申请证书，一般免费证书很少，需要交费。Web服务器启用SSL需要获得一个服务器证书并将该证书与要使用SSL的服务器进行绑定。</p>
+<h3 id="7-数字签名与数字证书"><a href="#7-数字签名与数字证书" class="headerlink" title="7 数字签名与数字证书"></a>7 数字签名与数字证书</h3><p>为了避免数据在传输过程中被替换，发送端做一个数字签名。把数据的摘要消息进行加密，得到一个签名，它和数据一起发送。接收端把数据摘要进行加密，如果和签名一样，则说明数据确实是真的。<br>虽然数字签名可以保证数据不被替换，但是数据是由公钥加密的，如果公钥也被替换，则仍然可以伪造数据。<br>为了保证发送方的公钥是真的，CA证书机构会负责颁发一个证书，里面的公钥保证是真的，用户请求服务器时，服务器将证书发给用户。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/14/12-14-Network/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1307,97 +1424,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/04/12-life/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/12/04/12-life/" class="post-title-link" itemprop="url">long_for</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-12-04 20:56:05" itemprop="dateCreated datePublished" datetime="2021-12-04T20:56:05+08:00">2021-12-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 20:48:36" itemprop="dateModified" datetime="2022-03-15T20:48:36+08:00">2022-03-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%94%9F%E6%B4%BB/" itemprop="url" rel="index"><span itemprop="name">生活</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/12/04/12-life/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/04/12-life/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <img src="/2021/12/04/12-life/life.png" class="">
-
-<p>江城子 乙卯正月二十日夜记梦<br>宋 苏轼</p>
-<p>十年生死两茫茫，不思量，自难忘。千里孤坟，无处话凄凉。纵使相逢应不识，尘满面，鬓如霜。<br>夜来幽梦忽还乡，小轩窗，正梳妆。相顾无言，惟有泪千行。料得年年肠断处，明月夜，短松冈。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1469,7 +1495,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">88</span>
+          <span class="site-state-item-count">89</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
