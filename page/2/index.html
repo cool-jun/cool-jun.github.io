@@ -187,6 +187,289 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/08/01/mysql-advance/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/08/01/mysql-advance/" class="post-title-link" itemprop="url">mysql_advance</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-08-01 10:00:51" itemprop="dateCreated datePublished" datetime="2022-08-01T10:00:51+08:00">2022-08-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-08-06 16:22:52" itemprop="dateModified" datetime="2022-08-06T16:22:52+08:00">2022-08-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/08/01/mysql-advance/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/08/01/mysql-advance/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="mysql进阶篇"><a href="#mysql进阶篇" class="headerlink" title="mysql进阶篇"></a>mysql进阶篇</h2><p>存储引擎、索引、sql优化、视图/存储过程/触发器、锁、innodb引擎、mysql管理</p>
+<h3 id="1-存储引擎"><a href="#1-存储引擎" class="headerlink" title="1 存储引擎"></a>1 存储引擎</h3><p>存储引擎就是存储数据、建立索引、更新/查询数据等技术的实现方式。存储引擎是基于表的，而不是基于库的，所以存储引擎也可被称为表类型。</p>
+<h4 id="1-1-InnoDB"><a href="#1-1-InnoDB" class="headerlink" title="1.1 InnoDB"></a>1.1 InnoDB</h4><p>支持事务、行级锁、外键</p>
+<p>逻辑存储结构</p>
+<img src="/2022/08/01/mysql-advance/innodb.jpg" class="">
+
+<h4 id="1-2-MyISAM"><a href="#1-2-MyISAM" class="headerlink" title="1.2 MyISAM"></a>1.2 MyISAM</h4><p>不支持事务、不支持外键；支持表锁，但不支持行锁；访问速度快。</p>
+<h4 id="1-3-MEMORY"><a href="#1-3-MEMORY" class="headerlink" title="1.3 MEMORY"></a>1.3 MEMORY</h4><p>基于hash的，存储在内存中的，作为临时表或缓存使用。</p>
+<h3 id="2-索引"><a href="#2-索引" class="headerlink" title="2 索引"></a>2 索引</h3><p>索引（index）是帮助MySQL高效获取数据的数据结构。<br>无索引情况下，查询数据会进行全表扫描。</p>
+<img src="/2022/08/01/mysql-advance/index.jpg" class="">
+
+<p><strong>优点</strong><br>提高数据检索的效率，降低数据库的IO成本（不需要全表扫描）；<br>通过索引列对数据进行排序，降低数据排序的成本，降低了CPU的消耗。</p>
+<p><strong>缺点</strong><br>索引列也是要占空间的；<br>会降低更新表的速度，因为更新表时，MySQL不仅要保存数据，还要保存一下索引文件。</p>
+<h4 id="2-1-索引类型"><a href="#2-1-索引类型" class="headerlink" title="2.1 索引类型"></a>2.1 索引类型</h4><p>MySQL的索引是在存储引擎层实现的，不同的存储引擎有不同的类型。</p>
+<table>
+<thead>
+<tr>
+<th align="center">索引类型</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">BTREE</td>
+<td align="center">MySQL默认和最常用的索引类型</td>
+</tr>
+<tr>
+<td align="center">HASH</td>
+<td align="center">HASH索引可以一次定位，不需要像树形索引那样逐层查找，因此具有极高的效率</td>
+</tr>
+<tr>
+<td align="center">RTREE</td>
+<td align="center">仅支持geometry数据类型，通常使用较少</td>
+</tr>
+<tr>
+<td align="center">FULLTEXT</td>
+<td align="center">full-text在mysql里仅有myisam支持它,而且支持full-text的字段只有char,varchar,以及text数据类型,它的出现是为了解决WHERE name LIKE “%word%”这类针对文本的模糊查询效率较低的问题</td>
+</tr>
+</tbody></table>
+<p><strong>BTREE</strong></p>
+<img src="/2022/08/01/mysql-advance/btree.jpg" class="">
+
+<p><strong>B+TREE</strong><br>B+树中，非叶子节点不保存数据，而是起到索引的作用，叶子节点存放数据（所有的元素都会出现在叶子节点），并且叶子节点形成一个单向链表。</p>
+<img src="/2022/08/01/mysql-advance/b+tree.jpg" class="">
+
+<p><strong>The B+TREE OF MySQL</strong><br>mysql中对B+树进行了优化，增加了一个指针，提高了区间访问的性能。</p>
+<img src="/2022/08/01/mysql-advance/mysql-b+.jpg" class="">
+
+<p><strong>HASH</strong></p>
+<img src="/2022/08/01/mysql-advance/hash.jpg" class="">
+<p>hash索引只能用于（=，in），不支持范围查询；无法利用hash索引完成排序操作；查询效率高，通常一次检索即可。</p>
+<p>为什么innodb存储引擎选择使用b+树索引结构？</p>
+<ul>
+<li>相对于二叉树，层数更少，搜索效率高。</li>
+<li>对于b树，无论是叶子节点还是非叶子节点，都会保存数据，这样会导致一页中存储的键值减少，指针跟着减少，要同样保存大量数据时，只能增加树的高度，导致性能降低。</li>
+<li>相对于hash索引，b+树索引支持范围匹配和排序操作。</li>
+</ul>
+<h4 id="2-2-索引分类"><a href="#2-2-索引分类" class="headerlink" title="2.2 索引分类"></a>2.2 索引分类</h4><table>
+<thead>
+<tr>
+<th align="center">分类</th>
+<th align="center">含义</th>
+<th align="center">特点</th>
+<th align="center">关键字</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">主键索引</td>
+<td align="center">针对表中的主键创建的索引</td>
+<td align="center">默认自动创建，只能有一个</td>
+<td align="center">PRIMARY</td>
+</tr>
+<tr>
+<td align="center">唯一索引</td>
+<td align="center">避免同一个表中某数据列中的值重复</td>
+<td align="center">可以有多个</td>
+<td align="center">UNIQUE</td>
+</tr>
+<tr>
+<td align="center">普通索引</td>
+<td align="center">加速查询</td>
+<td align="center">可以有多个</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">全文索引</td>
+<td align="center">查询的是文本中关键词，而不是比较索引中的值</td>
+<td align="center">可以有多个</td>
+<td align="center">FULLTEXT</td>
+</tr>
+</tbody></table>
+<p>InnoDB存储引擎中，索引可以分为以下两种：</p>
+<table>
+<thead>
+<tr>
+<th align="center">分类</th>
+<th align="center">含义</th>
+<th align="center">特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">聚集索引</td>
+<td align="center">将数据存储与索引放到了一块，索引结构的叶子节点保存了行数据</td>
+<td align="center">必须有，且只有一个</td>
+</tr>
+<tr>
+<td align="center">二级索引</td>
+<td align="center">将数据与索引分开存储，索引结构的叶子节点关联的是对应的主键</td>
+<td align="center">可以有多个</td>
+</tr>
+</tbody></table>
+<ul>
+<li>如果存在主键，主键索引就是聚集索引；</li>
+<li>如果不存在主键，将使用第一个非空唯一索引作为聚集索引；</li>
+<li>如果没有主键，也没有合适的唯一索引，则InnoDB会自动生成一个rowid作为隐藏的聚集索引。</li>
+</ul>
+<p>聚集索引与二级索引示意图</p>
+<img src="/2022/08/01/mysql-advance/two-index.jpg" class="">
+
+<p><strong>回表查询</strong><br>由于二级索引只存储主键的值，如果使用二级索引搜索数据就必须先从二级索引取到主键的值，再使用主键的值去主键索引上查询，直到找到叶子节点上的数据返回，这种现象叫回表查询。</p>
+<img src="/2022/08/01/mysql-advance/huibiao.jpg" class="">
+
+<p>InnoDB主键索引B+树高度</p>
+<img src="/2022/08/01/mysql-advance/innodb-b+height.jpg" class="">
+
+<h4 id="2-3-索引语法"><a href="#2-3-索引语法" class="headerlink" title="2.3 索引语法"></a>2.3 索引语法</h4><p><strong>创建索引</strong><br>create [unique|fulltext] index index_name on table_name(index_col_name,…)<br>单列索引：一个索引只包含一个字段。<br>联合索引：一个索引包含了多个字段。<br>推荐使用联合索引。</p>
+<img src="/2022/08/01/mysql-advance/union-index.jpg" class="">
+
+<p><strong>查看索引</strong><br>show index from table_name;</p>
+<img src="/2022/08/01/mysql-advance/show_index.jpg" class="">
+
+<p><strong>删除索引</strong><br>drop index index_name on table_name;</p>
+<p>t_user表中执行以下操作：</p>
+<ul>
+<li><p>name字段可能会重复，为其创建索引<br>create index idx_user_name on t_user(name)</p>
+</li>
+<li><p>phone字段非空并且唯一，为其创建索引<br>create unique index idx_user_phone on t_user(phone)</p>
+</li>
+<li><p>为profession、age、status创建联合索引<br>create index idx_user_pro_age_status on t_user(profession,age,status)</p>
+</li>
+<li><p>为email建立索引提升查询效率<br>create index idx_user_email on t_user(email)</p>
+</li>
+</ul>
+<img src="/2022/08/01/mysql-advance/ddl_index.jpg" class="">
+
+<h4 id="2-4-SQL性能优化"><a href="#2-4-SQL性能优化" class="headerlink" title="2.4 SQL性能优化"></a>2.4 SQL性能优化</h4><p><strong>sql执行频率</strong><br>通过命令show [session|global] status可以查询当前数据库的增删改查访问频次。<br>show global status like ‘Com_______’;<br>确认当前数据以插入？查询？删除？更新？为主，方便优化。</p>
+<img src="/2022/08/01/mysql-advance/db_status.jpg" class="">
+
+<p><strong>慢查询日志</strong><br>慢查询日志：记录了所有执行时间超过指定参数（默认10s）的sql语句的日志。<br>慢查询日志默认关闭。</p>
+<img src="/2022/08/01/mysql-advance/slow_query_log.jpg" class="">
+<p>在配置文件/etc/my.cnf开启<br>slow_query_log=1  开启慢查询日志<br>log_query_time=2</p>
+<p><strong>profile</strong><br>show profiles命令帮助了解sql语句耗费时间。<br>select @@have_profiling<br>select @@profiling<br>set profiling=1</p>
+<img src="/2022/08/01/mysql-advance/profiles.jpg" class="">
+
+<p><strong>explain</strong><br>explain select 字段列表 from 表名 where 条件</p>
+<img src="/2022/08/01/mysql-advance/explain.jpg" class="">
+
+<h4 id="2-5-索引使用"><a href="#2-5-索引使用" class="headerlink" title="2.5 索引使用"></a>2.5 索引使用</h4><p><strong>最左前缀原则</strong><br>如果索引了多列（联合索引），要遵守最左前缀法则。<br>最左前缀原则：查询从索引的最左列开始，并且不跳过索引中的列。如果跳过某一列，索引将部分失效（后面的字段索引失效）</p>
+<img src="/2022/08/01/mysql-advance/left-index.jpg" class="">
+
+<h4 id="2-6-索引失效情况"><a href="#2-6-索引失效情况" class="headerlink" title="2.6 索引失效情况"></a>2.6 索引失效情况</h4><p><strong>范围查询</strong><br>联合索引中，出现范围查询（&gt;,&lt;），范围查询右侧的列索引失效。</p>
+<img src="/2022/08/01/mysql-advance/rang-index.jpg" class="">
+
+<p><strong>索引列函数运算</strong><br>不要在索引列上进行运算操作，索引将会失效。</p>
+<img src="/2022/08/01/mysql-advance/index-compute.jpg" class="">
+
+<p><strong>字符串不加引号</strong><br>字符串类型字段使用时，不加引号，索引将会失效。</p>
+<img src="/2022/08/01/mysql-advance/char-index.jpg" class="">
+
+<p><strong>模糊查询</strong><br>如果是尾部模糊匹配，索引不会失效。如果是头部模糊匹配，索引失效。</p>
+<img src="/2022/08/01/mysql-advance/like-index.jpg" class="">
+
+<p><strong>or连接的条件</strong><br>用or分隔开的条件，如果or前面的条件中的列有索引，而后面的列中没有索引，那么涉及的索引都会失效。or两侧都有索引，才会生效。</p>
+<p><strong>数据分布影响</strong><br>如果MySQL评估使用索引比全表扫描慢，则不使用索引。<br>is null，is not null走不走索引，取决于表中数据的分布。</p>
+<h4 id="2-7-覆盖索引"><a href="#2-7-覆盖索引" class="headerlink" title="2.7 覆盖索引"></a>2.7 覆盖索引</h4><p>查询使用了索引，并且需要返回的列在该索引中全部能够找到，（不需要通过主键值回表查询）。或者覆盖索引是select的数据列只用从索引中就能够取得，不必读取数据行，换句话说查询列要被所建的索引覆盖。<br>覆盖索引是一种数据查询方式，不是索引类型。</p>
+<img src="/2022/08/01/mysql-advance/cover-index.jpg" class="">
+
+<p>覆盖索引示例图</p>
+<img src="/2022/08/01/mysql-advance/fg-demo.jpg" class="">
+
+<p>回表查询示例图</p>
+<img src="/2022/08/01/mysql-advance/hb-demo.jpg" class="">
+
+<p><strong>tips</strong><br>Using where; Using index：查询使用了索引，但是需要的数据在索引列中都能找到，不需要回表查询。<br>Using index condition：查询使用了索引，但是需要回表查询数据。</p>
+<h4 id="2-8-前缀索引"><a href="#2-8-前缀索引" class="headerlink" title="2.8 前缀索引"></a>2.8 前缀索引</h4><p>定义字符串的一部分当做索引，而不是把整个字符串当做索引。默认地，如果你创建索引的语句不指定前缀长度，那么索引就会包含整个字符串。<br>create index idx_xxx on table_name(column(n))</p>
+<p>例如：<br>普通索引：create index idx_email1 on table_name(email)<br>前缀索引：create index idx_email2 on table_name(email(6))</p>
+<img src="/2022/08/01/mysql-advance/pre-index.jpg" class="">
+
+<p>前缀长度：索引选择性<br>关于索引的选择性（Index Selectivity），它是指不重复的索引值（也称为基数cardinality)和数据表的记录总数的比值，取值范围在[0,1]之间。索引的选择性越高则查询效率越高，因为选择性高的索引可以让MySQL在查找时过滤掉更多的行。</p>
+<h4 id="2-9-索引设计原则"><a href="#2-9-索引设计原则" class="headerlink" title="2.9 索引设计原则"></a>2.9 索引设计原则</h4><ul>
+<li>对于数据量大（几十万条往上），且查询比较频繁的表建立索引。</li>
+<li>为经常需要排序、分组和联合操作的字段建立索引。经常需要ORDER BY、GROUP BY、DISTINCT和UNION等操作的字段。</li>
+<li>为常作为查询条件的字段建立索引。（where）</li>
+<li>尽量选择区分度高的列作为索引，尽量建立唯一性索引。</li>
+<li>尽量使用前缀来索引。TEXT和BLOG类型的字段，进行全文检索会很浪费时间。</li>
+<li>尽量建立联合索引，减少单列索引。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/22/mysql-basic-4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1097,88 +1380,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/26/meituan/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/03/26/meituan/" class="post-title-link" itemprop="url">meituan</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-03-26 21:09:36 / 修改时间：21:22:14" itemprop="dateCreated datePublished" datetime="2022-03-26T21:09:36+08:00">2022-03-26</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E9%9D%A2%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">面试</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/03/26/meituan/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/03/26/meituan/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>2022年3月22号</p>
-<h3 id="1-自我介绍"><a href="#1-自我介绍" class="headerlink" title="1 自我介绍"></a>1 自我介绍</h3><h3 id="2-介绍项目"><a href="#2-介绍项目" class="headerlink" title="2 介绍项目"></a>2 介绍项目</h3><h3 id="3-Java类加载机制"><a href="#3-Java类加载机制" class="headerlink" title="3 Java类加载机制"></a>3 Java类加载机制</h3><h3 id="4-双亲委派模型，为什么这样设计？"><a href="#4-双亲委派模型，为什么这样设计？" class="headerlink" title="4 双亲委派模型，为什么这样设计？"></a>4 双亲委派模型，为什么这样设计？</h3><h3 id="5-Tomcat有那些自定义类加载器？"><a href="#5-Tomcat有那些自定义类加载器？" class="headerlink" title="5 Tomcat有那些自定义类加载器？"></a>5 Tomcat有那些自定义类加载器？</h3><h3 id="6-Java线程安全的集合有那些？"><a href="#6-Java线程安全的集合有那些？" class="headerlink" title="6 Java线程安全的集合有那些？"></a>6 Java线程安全的集合有那些？</h3><h3 id="7-ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？"><a href="#7-ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？" class="headerlink" title="7 ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？"></a>7 ConcurrentHashMap怎样保证线程安全？分段是如何找到哪一段？</h3><h3 id="8-ConcurrentHashMap和Hashtable的区别？数据结构、锁？"><a href="#8-ConcurrentHashMap和Hashtable的区别？数据结构、锁？" class="headerlink" title="8 ConcurrentHashMap和Hashtable的区别？数据结构、锁？"></a>8 ConcurrentHashMap和Hashtable的区别？数据结构、锁？</h3><h3 id="9-线程池有哪些种类？"><a href="#9-线程池有哪些种类？" class="headerlink" title="9 线程池有哪些种类？"></a>9 线程池有哪些种类？</h3><h3 id="10-线程池参数"><a href="#10-线程池参数" class="headerlink" title="10 线程池参数"></a>10 线程池参数</h3><h3 id="11-来一个任务，线程池工作流程"><a href="#11-来一个任务，线程池工作流程" class="headerlink" title="11 来一个任务，线程池工作流程"></a>11 来一个任务，线程池工作流程</h3><h3 id="12-拒绝策略有那些？"><a href="#12-拒绝策略有那些？" class="headerlink" title="12 拒绝策略有那些？"></a>12 拒绝策略有那些？</h3><h3 id="13-IO模型有哪些？"><a href="#13-IO模型有哪些？" class="headerlink" title="13 IO模型有哪些？"></a>13 IO模型有哪些？</h3><h3 id="14-BIO和NIO区别？"><a href="#14-BIO和NIO区别？" class="headerlink" title="14 BIO和NIO区别？"></a>14 BIO和NIO区别？</h3><h3 id="15-MySQL事务隔离级别"><a href="#15-MySQL事务隔离级别" class="headerlink" title="15 MySQL事务隔离级别"></a>15 MySQL事务隔离级别</h3><h3 id="16-可重复读和读已提交怎么实现的，详细说说？"><a href="#16-可重复读和读已提交怎么实现的，详细说说？" class="headerlink" title="16 可重复读和读已提交怎么实现的，详细说说？"></a>16 可重复读和读已提交怎么实现的，详细说说？</h3><h3 id="17-Redis数据类型有哪些？"><a href="#17-Redis数据类型有哪些？" class="headerlink" title="17 Redis数据类型有哪些？"></a>17 Redis数据类型有哪些？</h3><h3 id="18-自身优势"><a href="#18-自身优势" class="headerlink" title="18 自身优势"></a>18 自身优势</h3><h3 id="19-算法题：二叉树最小深度"><a href="#19-算法题：二叉树最小深度" class="headerlink" title="19 算法题：二叉树最小深度"></a>19 算法题：二叉树最小深度</h3>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1250,7 +1451,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">89</span>
+          <span class="site-state-item-count">90</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
