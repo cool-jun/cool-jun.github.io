@@ -187,6 +187,103 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/21/12-21-OS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/header.jpg">
+      <meta itemprop="name" content="He Jun">
+      <meta itemprop="description" content="Like Sunday，Like Rain">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cool-jun的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/12/21/12-21-OS/" class="post-title-link" itemprop="url">页面置换算法</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-21 11:39:21" itemprop="dateCreated datePublished" datetime="2021-12-21T11:39:21+08:00">2021-12-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-15 20:51:35" itemprop="dateModified" datetime="2022-03-15T20:51:35+08:00">2022-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/12/21/12-21-OS/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/21/12-21-OS/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="1-分段与分页的区别"><a href="#1-分段与分页的区别" class="headerlink" title="1 分段与分页的区别"></a>1 分段与分页的区别</h3><p>段是信息的逻辑单位，它是根据用户的需要划分的，因此段对用户是可见的；<br>页是信息的物理单位，是为了管理主存的方便而划分的，对用户是不可见的；<br>段的大小不固定，由它所完成的功能决定；<br>页面大小固定，由系统决定；<br>段向用户提供二维地址空间；<br>页向用户提供一维地址空间；</p>
+<h3 id="2-死锁产生的必要条件"><a href="#2-死锁产生的必要条件" class="headerlink" title="2 死锁产生的必要条件"></a>2 死锁产生的必要条件</h3><p>互斥条件：资源是独占的且排它使用，进程互斥使用资源，即任意时刻一个资源只能给一个进程使用。其他进程若申请一个资源，而该资源被另一进程占有时，申请者等待直到资源被占有者释放。<br>不可剥夺条件：进程所获得的资源在未使用完毕之前，不能被其他进程强行剥夺，而只能由获得该资源的进程释放。<br>请求和保持条件：进程每次申请它所需要的一部分资源，在申请新的资源的同时，继续占用已分配到的资源。<br>环路等待条件：在发生死锁时必然存在一个进程等待队列{P1,P2,…,Pn}，其中P1等待P2占有的资源，P2等待P3占有的资源，…，Pn等待P1占有的资源，形成一个进程等待环路，环路中每一个进程所占有的资源同时被另一个进程申请，也就是前一个进程占有后一个进程所申请的资源。</p>
+<h3 id="3-页面置换算法"><a href="#3-页面置换算法" class="headerlink" title="3 页面置换算法"></a>3 页面置换算法</h3><p>缺页中断：要访问的页不在主存，需要操作系统将其调入主存后再进行访问。<br>当发生缺页中断时，如果操作系统内存中没有空闲页面，则操作系统必须在内存中选择一个页面将其移出，以便为即将调入的页面让出空间，而用来选择淘汰哪一页的规则叫做页面置换算法。</p>
+<p><strong>先进先出置换算法（FIFO）</strong><br>总是选择在主存中停留时间最长（即最老）的一页置换，即先进入内存的页先退出内存。理由是：最早调入内存的页，其不再被使用的可能性比刚调入内存的可能性大。建立一个FIFO队列，收容所有在内存中的页。被置换页面总是在队列头上进行。当一个页面被放入内存时，就把它插入到队尾。<br>性能较差，调出的页面可能是要经常访问的页面（驻留时间长，本身就说明可能常用）。</p>
+<p><strong>最佳置换算法（OPT）</strong><br>这是一种理想情况下的页面置换算法，但实际上不可能实现。该算法的基本思想是：发生缺页中断时，计算每个页面的下一次访问时间，选择未来最长时间不访问的页面进行置换。<br>这个算法唯一的一个问题就是它无法实现。当缺页发生时，操作系统无法知道各个页面下一次是在什么时候被访问。虽然这个算法不可能实现，但是最佳页面置换算法可以用于对可实现算法的性能进行衡量比较。</p>
+<p><strong>最近最久未使用算法（least recently used，LRU）</strong><br>当一个缺页中断发生时，选择最久未使用的那个页面进行置换。LRU算法需要记录各个页面使用时间的先后顺序，开销比较大。</p>
+<p><strong>时钟算法</strong><br>需要用到页表项的访问位（access bit），当一个页面被装入内存时，把该位初始化为0，然后如果这个页被访问（读/写），把它置为1。把各个页面组织成环形链表，指针指向最老的页面（最先进来）。<br>当发生缺页中断，考察指针所指向的最老的页面。若它的访问位为0，则立即淘汰。若访问为1，则置为0，然后指针往下移动一格。如此下去，直到找到被淘汰的页面，然后把指针移动到它的下一格。</p>
+<h3 id="4-动态链接库和静态链接库"><a href="#4-动态链接库和静态链接库" class="headerlink" title="4 动态链接库和静态链接库"></a>4 动态链接库和静态链接库</h3><p>本质上来说库是一种可执行代码的二进制形式，可以被操作系统载入内存执行。静态库（.a、.lib）和动态库（.so、.dll）。windows上对应的是.lib、.dll；linux上对应的是.a、.so。</p>
+<p>静态库对函数库的链接是放在编译时期完成的。<br>浪费空间和资源，因为所有相关的目标文件与牵涉到的函数库被链接形成一个可执行文件。</p>
+<p>动态库在程序编译时并不会被链接到目标代码中，而是在程序运行时才被载入。<br>动态库在程序运行时才被载入，解决了静态库对程序的更新、部署和发布带来的麻烦。用户只需要更新动态库即可，增量更新。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/18/12-18-OS/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1236,138 +1333,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/05/12-05-Spring/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/header.jpg">
-      <meta itemprop="name" content="He Jun">
-      <meta itemprop="description" content="Like Sunday，Like Rain">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cool-jun的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/12/05/12-05-Spring/" class="post-title-link" itemprop="url">spring_ioc</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-12-05 15:44:19" itemprop="dateCreated datePublished" datetime="2021-12-05T15:44:19+08:00">2021-12-05</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-15 21:12:11" itemprop="dateModified" datetime="2022-03-15T21:12:11+08:00">2022-03-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/12/05/12-05-Spring/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/05/12-05-Spring/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="1-IoC-Inversion-of-Control"><a href="#1-IoC-Inversion-of-Control" class="headerlink" title="1 IoC(Inversion of Control)"></a>1 IoC(Inversion of Control)</h3><p>IoC也称为依赖注入(DI)。这是一个过程，其中对象仅通过构造函数参数、工厂方法的参数或对象实例在构造或从工厂方法返回后在对象实例上设置的属性来定义它们的依赖项（即，它们使用的其他对象）。然后容器在创建bean时注入这些依赖项。这个过程基本上是bean本身通过使用类的直接构造或诸如服务定位器模式之类的机制来控制其依赖项的实例化或位置的逆过程（因此得名控制反转）。</p>
-<p>在Spring中，构成应用程序主干并由Spring IoC容器管理的对象称为bean。<strong>bean是由Spring IoC容器实例化、组装和管理的对象</strong>。否则，bean只是应用程序中的众多对象之一。bean以及它们之间的依赖关系反映在容器使用的配置元数据中。<br>Spring IoC容器就像是一个工厂一样，当我们需要创建一个对象的时候，只需要配置好配置文件/注解即可，完全不用考虑对象是如何被创建出来的。<br>IoC容器负责创建对象，将对象连接在一起，配置这些对象，并从创建中处理这些对象的整个生命周期，直到它们被完全销毁。<br>IoC降低了组件之间的耦合度，实现了软件各层之间的解耦，同时在保证不改变源码的情况下实现外部对象动态的注入到组件中，减少后期维护成本。</p>
-<p>软件系统在没有引入IOC容器之前，对象A依赖于对象B，那么对象A在初始化或者运行时，自己必须主动去创建对象B或者使用已经创建的对象B。无论是创建还是使用对象B，控制权都在自己手上。<br>软件系统在引入IOC容器之后，这种情形就完全改变了。由于IOC容器的加入，对象A与对象B之间失去了直接联系。所以，当对象A运行到需要对象B的时候，IOC容器会主动创建一个对象B注入到对象A需要的地方。<br>通过前后的对比，我们不难看出来：对象A获得对象B的过程，由主动行为变为了被动行为，控制权颠倒过来了，这就是“控制反转”这个名称的由来。</p>
-<p>借助于“第三方”实现具有依赖关系的对象之间的解耦。<br>获得依赖对象的过程被反转了。控制被反转之后，获得依赖对象的过程由自身管理变为了由IOC容器主动注入。<br>所谓依赖注入，就是IOC容器在运行期间，动态地将某种依赖关系注入到对象之中。</p>
-<p><strong>依赖注入</strong><br>DI存在两种主要的变体：基于构造函数的依赖注入和基于Setter的依赖注入。</p>
-<p>基于构造函数的DI是通过容器调用具有多个参数的构造函数来完成的，每个参数代表一个依赖项。调用带有特定参数的静态工厂方法来构造bean几乎是等效的，本讨论将类似地处理构造函数和静态工厂方法的参数。以下示例显示了一个只能使用构造函数注入进行依赖注入的类：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class SimpleMovieLister &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; the SimpleMovieLister has a dependency on a MovieFinder</span><br><span class="line">    private final MovieFinder movieFinder;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; a constructor so that the Spring container can inject a MovieFinder</span><br><span class="line">    public SimpleMovieLister(MovieFinder movieFinder) &#123;</span><br><span class="line">        this.movieFinder &#x3D; movieFinder;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; business logic that actually uses the injected MovieFinder is omitted...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>基于Setter的DI是通过容器在调用无参数构造函数或无参数静态工厂方法来实例化bean后调用bean的setter方法来完成的。以下示例显示了一个只能使用纯setter注入进行依赖注入的类。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class SimpleMovieLister &#123;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; the SimpleMovieLister has a dependency on the MovieFinder</span><br><span class="line">    private MovieFinder movieFinder;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; a setter method so that the Spring container can inject a MovieFinder</span><br><span class="line">    public void setMovieFinder(MovieFinder movieFinder) &#123;</span><br><span class="line">        this.movieFinder &#x3D; movieFinder;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; business logic that actually uses the injected MovieFinder is omitted...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>Constructor-based or setter-based DI?</strong><br>由于您可以混合使用基于构造函数和基于setter的DI，因此根据经验，对强制依赖项使用构造函数，对可选依赖项使用setter方法或配置方法是一个很好的经验法则。<br>请注意，在setter方法上使用@Required注释可用于使属性成为必需的依赖项；但是，最好使用带有参数编程验证的构造函数注入。<br>Setter注入应该主要仅用于可以在类中分配合理默认值的可选依赖项。否则，必须在代码使用依赖项的任何地方执行非空检查。setter注入的一个好处是setter方法使该类的对象可以在以后重新配置或重新注入。因此，通过JMX MBean进行管理是setter注入的一个引人注目的用例。</p>
-<p><strong>Circular dependencies</strong><br>如果您主要使用构造函数注入，则可能会创建无法解决的循环依赖场景。<br>例如：A类通过构造函数注入需要B类的实例，B类通过构造函数注入需要A类的实例。如果您将A和B的bean配置为相互注入，则Spring IoC容器在运行时检测到此循环引用，并抛出BeanCurrentlyInCreationException。<br>一种可能的解决方案是编辑一些类的源代码，以便由setter而不是构造函数来配置。或者，避免构造函数注入并仅使用setter注入。也就是说，虽然不推荐，但是可以通过setter注入来配置循环依赖。<br>与典型情况（没有循环依赖）不同，bean A和bean B之间的循环依赖迫使其中一个bean在完全初始化之前注入另一个bean（经典的鸡和蛋场景）。</p>
-<h3 id="2-Bean-Scopes"><a href="#2-Bean-Scopes" class="headerlink" title="2 Bean Scopes"></a>2 Bean Scopes</h3><table>
-<thead>
-<tr>
-<th>Scope</th>
-<th align="center">Description</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>singleton</td>
-<td align="center">（默认）为每个Spring IOC容器将单个bean定义的范围限定为单个对象实例。</td>
-</tr>
-<tr>
-<td>prototype</td>
-<td align="center">将单个bean定义的范围限定为任意数量的对象实例。</td>
-</tr>
-<tr>
-<td>request</td>
-<td align="center">将单个bean定义限定为单个HTTP请求的生命周期。也就是说，每个HTTP请求都有自己的bean实例，该实例是在单个bean定义的后面创建的。仅在支持web的Spring ApplicationContext的上下文中有效。</td>
-</tr>
-<tr>
-<td>session</td>
-<td align="center">将单个bean定义限定为HTTP Session的生命周期。仅在支持web的Spring ApplicationContext的上下文中有效。</td>
-</tr>
-<tr>
-<td>application</td>
-<td align="center">将单个bean定义限定到ServletContext的生命周期。仅在支持web的Spring ApplicationContext的上下文中有效。</td>
-</tr>
-<tr>
-<td>websocket</td>
-<td align="center">将单个bean定义的范围限定到WebSocket的生命周期。仅在支持web的Spring ApplicationContext的上下文中有效。</td>
-</tr>
-</tbody></table>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1439,20 +1404,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">89</span>
+          <span class="site-state-item-count">90</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">65</span>
+        <span class="site-state-item-count">66</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1488,7 +1453,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
